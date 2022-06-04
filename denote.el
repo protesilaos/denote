@@ -1,4 +1,4 @@
-;;; denote.el --- Unassuming Sidenotes of Little Significance -*- lexical-binding: t -*-
+;;; denote.el --- Do Easy NOTES -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
