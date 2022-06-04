@@ -284,6 +284,7 @@ alphabetically."
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
 
+;;;###autoload
 (defun denote-org-capture ()
   "Like `denote', but for integration with `org-capture'.
 WORK-IN-PROGRESS."
