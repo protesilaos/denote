@@ -98,6 +98,8 @@ If nil, show the keywords in their given order."
 (defvar denote--last-path nil "Store last path.")
 (defvar denote--last-title nil "Store last title.")
 (defvar denote--last-keywords nil "Store last keywords.")
+(defvar denote--last-buffer nil "Store last buffer.")
+(defvar denote--last-front-matter nil "Store last front-matter.")
 
 ;;;; File name helpers
 
@@ -254,12 +256,15 @@ Format current time, else use optional ID."
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
 Use optional PATH, else create it with `denote--path'."
-  (let* ((filename (or path (denote--path title keywords))))
-    (with-current-buffer (find-file filename)
-      (insert
-       (denote--file-meta-header
-        title (format-time-string "%F") keywords filename
-        (format-time-string denote-id))))))
+  (let* ((filename (or path (denote--path title keywords)))
+         (default-directory denote-directory)
+         (buffer (find-file filename))
+         (header (denote--file-meta-header
+                  title (format-time-string "%F") keywords filename
+                  (format-time-string denote-id))))
+    (with-current-buffer buffer (insert header))
+    (setq denote--last-front-matter header)
+    (setq denote--last-buffer buffer)))
 
 (defvar denote--title-history nil
   "Minibuffer history of `denote--title-prompt'.")
@@ -304,27 +309,26 @@ Search the source code of this function for a comment with a
 sample template.  We will eventually have a manual."
   (let ((title (denote--title-prompt))
         (keywords (denote--keywords-prompt)))
-    (denote--path title keywords)
-    (denote--keywords-add-to-history denote--last-keywords)
-    (denote--prepare-note denote--last-title denote--last-keywords denote--last-path)
-    denote--last-path))
+    (prog1
+        (denote--path title keywords)
+      (denote--prepare-note denote--last-title denote--last-keywords denote--last-path)
+      (denote--keywords-add-to-history denote--last-keywords))))
 
 ;; Sample of an `org-capture-templates' entry:
 ;;
-;; ("n" "Note (with denote.el)" plain
-;;  (function denote-org-capture-path)
-;;  ,(concat "%i"
-;;           "\n"
-;;           "%a")
-;;  :unnarrowed t
-;;  :no-save t
-;;  :immediate-finish nil
-;;  :kill-buffer t
-;;  :jump-to-captured t
-;;  :empty-lines-before 1)
+;; (setq org-capture-templates
+;;       `(("n" "New note (with denote.el)" plain
+;;          #'denote-org-capture
+;;          ,(concat "%i"
+;;                   "\n\n"
+;;                   "%a")
+;;          :no-save t
+;;          :immediate-finish t
+;;          :kill-buffer t
+;;          :jump-to-captured t)))
 ;;
 ;; FIXME 2022-06-04: The :kill-buffer does not actually kill the buffer
-;; of the file if we use C-c C-k in the capture buffer...
+;; of the file if we use C-c C-k in the capture buffer.
 
 
 ;; TODO 2022-06-04: `denote-rename-file'
