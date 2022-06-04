@@ -177,14 +177,15 @@ In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
 output is sorted with `string-lessp'."
   (let ((choice (denote--keywords-crm (denote-keywords))))
-    (cond
-     ((null choice)
-      "")
-     ((= (length choice) 1)
-      (car choice))
-     ((if denote-sort-keywords
-          (sort choice #'string-lessp)
-        choice)))))
+    (setq denote--last-keywords
+          (cond
+           ((null choice)
+            "")
+           ((= (length choice) 1)
+            (car choice))
+           ((if denote-sort-keywords
+                (sort choice #'string-lessp)
+              choice))))))
 
 (defun denote--keywords-combine (keywords)
   "Format KEYWORDS output of `denote--keywords-prompt'."
@@ -216,10 +217,9 @@ output is sorted with `string-lessp'."
 ;;;; New note
 
 (defun denote--format-file (path id keywords slug)
-  "Helper for `denote-new-note' to format file names.
-PATH, ID, KEYWORDS, SLUG are expected to be supplied by
-`denote-new-note': they will all be converted into a single
-string."
+  "Format file name.
+PATH, ID, KEYWORDS, SLUG are expected to be supplied by `denote'
+or equivalent: they will all be converted into a single string."
   (let ((kws (if denote-infer-keywords
                  (denote--keywords-combine keywords)
                keywords)))
@@ -237,17 +237,24 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
             "#+filename:   " filename  "\n"
             "#+identifier: " id        "\n\n")))
 
-(defun denote--path (title keywords)
-  "Return path to new file with TITLE and KEYWORDS."
-  (denote--format-file
-   (file-name-as-directory denote-directory)
-   (format-time-string denote-id)
-   keywords
-   (denote--sluggify title)))
+(defvar denote--last-path nil "Store last path.")
+(defvar denote--last-title nil "Store last title.")
+(defvar denote--last-keywords nil "Store last keywords.")
 
-(defun denote--prepare-note (title keywords)
-  "Use TITLE and KEYWORDS to prepare new note file."
-  (let ((filename (denote--path title keywords)))
+(defun denote--path (title keywords)
+  "Return path to new file with TITLE and KEYWORDS.
+Format current time, else use optional ID."
+  (setq denote--last-path
+        (denote--format-file
+         (file-name-as-directory denote-directory)
+         (format-time-string denote-id)
+         keywords
+         (denote--sluggify title))))
+
+(defun denote--prepare-note (title keywords &optional path)
+  "Use TITLE and KEYWORDS to prepare new note file.
+Use optional PATH, else create it with `denote--path'."
+  (let* ((filename (or path (denote--path title keywords))))
     (with-current-buffer (find-file filename)
       (insert
        (denote--file-meta-header
@@ -259,7 +266,8 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 
 (defun denote--title-prompt ()
   "Read file title for `denote-new-note'."
-  (read-string "File title: " nil 'denote--title-history))
+  (setq denote--last-title
+        (read-string "File title: " nil 'denote--title-history)))
 
 ;;;###autoload
 (defun denote (title keywords)
@@ -286,20 +294,38 @@ alphabetically."
 
 ;;;###autoload
 (defun denote-org-capture ()
-  "Like `denote', but for integration with `org-capture'.
-WORK-IN-PROGRESS."
+  "Create new note through `org-capture-templates'.
+Use this as a function that returns the path to the new file.
+The file is populated with Denote's front matter.  It can then be
+expanded with the usual specifiers or strings that
+`org-capture-templates' supports.
+
+(Search the source code of this function for a comment with a
+sample template.  We will eventually have a manual.)"
   (let ((title (denote--title-prompt))
         (keywords (denote--keywords-prompt)))
-    (denote--prepare-note title keywords)
-    (denote--keywords-add-to-history keywords)))
+    (denote--path title keywords)
+    (denote--keywords-add-to-history denote--last-keywords)
+    (denote--prepare-note denote--last-title denote--last-keywords denote--last-path)
+    denote--last-path))
 
 ;; Sample of an `org-capture-templates' entry:
 ;;
-;; ("n" "Note" plain
-;;  (file ,(denote--directory))
-;;  (function denote-org-capture)
+;; ("n" "Note (with denote.el)" plain
+;;  (function denote-org-capture-path)
+;;  ,(concat "%i"
+;;           "\n"
+;;           "%a")
+;;  :unnarrowed t
 ;;  :no-save t
-;;  :immediate-finish t)
+;;  :immediate-finish nil
+;;  :kill-buffer t
+;;  :jump-to-captured t
+;;  :empty-lines-before 1)
+;;
+;; FIXME 2022-06-04: The :kill-buffer does not actually kill the buffer
+;; of the file if we use C-c C-k in the capture buffer...
+
 
 ;; TODO 2022-06-04: `denote-rename-file'
 
