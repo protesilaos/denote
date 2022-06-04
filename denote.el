@@ -231,11 +231,11 @@ string."
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
  provided by `denote-new-note'."
   (let ((kw (denote--keywords-capitalize keywords)))
-    (concat "#+title:     " title     "\n"
-            "#+date:      " date      "\n"
-            "#+keywords:  " kw        "\n"
-            "#+orig_name: " filename  "\n"
-            "#+orig_id:   " id        "\n\n")))
+    (concat "#+title:      " title     "\n"
+            "#+date:       " date      "\n"
+            "#+keywords:   " kw        "\n"
+            "#+filename:   " filename  "\n"
+            "#+identifier: " id        "\n\n")))
 
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS."
