@@ -105,7 +105,10 @@ If nil, show the keywords in their given order."
 
 (defun denote--directory ()
   "Valid name format for `denote-directory'."
-  (file-name-as-directory denote-directory))
+  (let ((path denote-directory))
+    (unless (file-directory-p path)
+      (make-directory path t))
+    (file-name-as-directory path)))
 
 (defun denote--extract (regexp str &optional group)
   "Extract REGEXP from STR, with optional regexp GROUP."
