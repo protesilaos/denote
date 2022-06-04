@@ -288,7 +288,6 @@ alphabetically."
 (defun denote-org-capture ()
   "Like `denote', but for integration with `org-capture'.
 WORK-IN-PROGRESS."
-  (interactive)
   (let ((title (denote--title-prompt))
         (keywords (denote--keywords-prompt)))
     (denote--prepare-note title keywords)
