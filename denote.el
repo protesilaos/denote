@@ -284,8 +284,22 @@ alphabetically."
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
 
-;; TODO 2022-06-04: Integrate with org-capture.  Is it possible without
-;; a lot of extra code?  How?
+(defun denote-org-capture ()
+  "Like `denote', but for integration with `org-capture'.
+WORK-IN-PROGRESS."
+  (interactive)
+  (let ((title (denote--title-prompt))
+        (keywords (denote--keywords-prompt)))
+    (denote--prepare-note title keywords)
+    (denote--keywords-add-to-history keywords)))
+
+;; Sample of an `org-capture-templates' entry:
+;;
+;; ("n" "Note" plain
+;;  (file ,(denote--directory))
+;;  (function denote-org-capture)
+;;  :no-save t
+;;  :immediate-finish t)
 
 ;; TODO 2022-06-04: `denote-rename-file'
 
