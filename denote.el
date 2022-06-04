@@ -1,4 +1,4 @@
-;;; denote.el --- Do Easy NOTES -*- lexical-binding: t -*-
+;;; denote.el --- Do Easy NOTE -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
