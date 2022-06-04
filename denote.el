@@ -95,6 +95,10 @@ If nil, show the keywords in their given order."
 (defconst denote-keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
   "Regular expression to match `denote-keywords'.")
 
+(defvar denote--last-path nil "Store last path.")
+(defvar denote--last-title nil "Store last title.")
+(defvar denote--last-keywords nil "Store last keywords.")
+
 ;;;; File name helpers
 
 (defun denote--directory ()
@@ -237,10 +241,6 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
             "#+filename:   " filename  "\n"
             "#+identifier: " id        "\n\n")))
 
-(defvar denote--last-path nil "Store last path.")
-(defvar denote--last-title nil "Store last title.")
-(defvar denote--last-keywords nil "Store last keywords.")
-
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS.
 Format current time, else use optional ID."
@@ -300,8 +300,8 @@ The file is populated with Denote's front matter.  It can then be
 expanded with the usual specifiers or strings that
 `org-capture-templates' supports.
 
-(Search the source code of this function for a comment with a
-sample template.  We will eventually have a manual.)"
+Search the source code of this function for a comment with a
+sample template.  We will eventually have a manual."
   (let ((title (denote--title-prompt))
         (keywords (denote--keywords-prompt)))
     (denote--path title keywords)
