@@ -287,5 +287,7 @@ alphabetically."
 ;; TODO 2022-06-04: Integrate with org-capture.  Is it possible without
 ;; a lot of extra code?  How?
 
+;; TODO 2022-06-04: `denote-rename-file'
+
 (provide 'denote)
 ;;; denote.el ends here
