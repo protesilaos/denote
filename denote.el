@@ -92,14 +92,6 @@ define."
   :type 'string
   :group 'denote)
 
-(defcustom denote-link-insert-functions
-  (list #'denote-write-backlink)
-  "Functions that run after `denote-link'.
-Each function accepts a TARGET-FILE and an ORIGIN-LINK argument.
-Both are supplied by `denote-link'."
-  :type 'hook
-  :group 'denote)
-
 ;;; Main variables
 
 ;; TODO 2022-06-04: Can we make the entire file name format a defcustom?
@@ -371,75 +363,6 @@ sample template.  We will eventually have a manual."
 ;;                  :jump-to-captured t)))
 
 ;; TODO 2022-06-04: `denote-rename-file'
-
-;;;; Link to note
-
-(defun denote--find-key-value-pair (regexp)
-  "Produce a cons cell from REGEXP by searching the file."
-  (goto-char (point-min))
-  (re-search-forward regexp)
-  (cons (match-string-no-properties 1)
-        (match-string-no-properties 2)))
-
-(defvar denote--title-regexp "^\\(#\\+title:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for title key and value.")
-
-(defvar denote--filename-regexp "^\\(#\\+filename:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for filename key and value.")
-
-(defvar denote--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for filename key and value.")
-
-;; TODO 2022-06-05: Maybe this should be a defcustom?
-(defvar denote--link-format "[[denote:%s][%s (%s)]]"
-  "Format of Org link to note.")
-
-(defvar denote--backlink-format "[[denote:%s][backlink: %s (%s)]]"
-  "Format of Org link to note.")
-
-(defun denote--retrieve-value (note regexp)
-  "Return REGEXP value from NOTE."
-  (let ((default-directory (denote--directory)))
-    (with-temp-buffer
-      (insert-file-contents-literally note)
-      (denote--find-key-value-pair regexp))))
-
-(defun denote--read-file-prompt ()
-  "Prompt for regular file in `denote-directory'."
-  (read-file-name "Select note: " (denote--directory)
-                  nil t nil #'file-regular-p))
-
-;;;###autoload
-(defun denote-link (target)
-  "Create Org link to TARGET note in `denote-directory'.
-Run `denote-link-insert-functions' afterwards."
-  (interactive (list (denote--read-file-prompt)))
-  (let* ((target-id (cdr (denote--retrieve-value target denote--identifier-regexp)))
-         (target-name (string-remove-prefix
-                    (denote--directory)
-                    (cdr (denote--retrieve-value target denote--filename-regexp))))
-         (target-title (cdr (denote--retrieve-value target denote--title-regexp)))
-         (target-link (format denote--link-format target-name target-title target-id))
-         (origin-note (buffer-file-name))
-         (origin-id (cdr (denote--retrieve-value origin-note denote--identifier-regexp)))
-         (origin-name (string-remove-prefix
-                    (denote--directory)
-                    (cdr (denote--retrieve-value origin-note denote--filename-regexp))))
-         (origin-title (cdr (denote--retrieve-value origin-note denote--title-regexp)))
-         (origin-link (format denote--backlink-format origin-name origin-title origin-id)))
-    (insert target-link)
-    (run-hook-with-args 'denote-link-insert-functions target origin-link)))
-
-;; NOTE 2022-06-05: A proof-of-concept.  We need to: (i) have a
-;; Backlinks heading, (ii) delete duplicates, (iii) ensure one backlink
-;; per line, (iv) have a `denote-unlink' command or a
-;; `denote-clean-backlinks' for invalid links.
-(defun denote-write-backlink (target-file origin-link)
-  "Insert ORIGIN-LINK to TARGET-FILE."
-  (let ((default-directory (denote--directory)))
-    (with-current-buffer (find-file-noselect target-file)
-      (goto-char (point-max))
-      (insert origin-link))))
 
 (provide 'denote)
 ;;; denote.el ends here
