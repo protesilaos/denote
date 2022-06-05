@@ -253,8 +253,11 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
     (concat "#+title:      " title     "\n"
             "#+date:       " date      "\n"
             "#+keywords:   " kw        "\n"
-            "#+filename:   " filename  "\n"
-            "#+identifier: " id        "\n\n")))
+            "#+identifier: " id        "\n"
+            "#+filename:   " (string-remove-prefix denote-directory filename)  "\n"
+            "#+path:       " filename  "\n"
+            "#+link:       " "denote /home/prot/Documents/notes/%s"
+            "\n\n")))
 
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS.
@@ -269,11 +272,11 @@ Format current time, else use optional ID."
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
 Use optional PATH, else create it with `denote--path'."
-  (let* ((filename (or path (denote--path title keywords)))
+  (let* ((path (or path (denote--path title keywords)))
          (default-directory denote-directory)
-         (buffer (unless path (find-file filename)))
+         (buffer (unless path (find-file path)))
          (header (denote--file-meta-header
-                  title (format-time-string "%F") keywords filename
+                  title (format-time-string "%F") keywords path
                   (format-time-string denote-id))))
     (unless path
       (with-current-buffer buffer (insert header))
