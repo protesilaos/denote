@@ -105,6 +105,9 @@ define."
 (defconst denote-keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
   "Regular expression to match `denote-keywords'.")
 
+(defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
+  "Regular expression of punctionation that should be removed.")
+
 (defvar denote-last-path nil "Store last path.")
 (defvar denote-last-title nil "Store last title.")
 (defvar denote-last-keywords nil "Store last keywords.")
@@ -129,9 +132,6 @@ define."
     (insert str)
     (when (re-search-forward regexp nil t -1)
       (match-string (or group 1)))))
-
-(defvar denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
-  "Regular expression of punctionation that should be removed.")
 
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
