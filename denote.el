@@ -364,5 +364,50 @@ sample template.  We will eventually have a manual."
 
 ;; TODO 2022-06-04: `denote-rename-file'
 
+;;;; Link to note
+
+(defun denote--find-key-value-pair (regexp)
+  "Produce a cons cell from REGEXP by searching the file."
+  (goto-char (point-min))
+  (re-search-forward regexp)
+  (cons (match-string-no-properties 1)
+        (match-string-no-properties 2)))
+
+(defvar denote--title-regexp "^\\(#\\+title:\\)[\s\t]+\\(.*\\)"
+  "Regular expression for title key and value.")
+
+(defvar denote--filename-regexp "^\\(#\\+filename:\\)[\s\t]+\\(.*\\)"
+  "Regular expression for filename key and value.")
+
+(defvar denote--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
+  "Regular expression for filename key and value.")
+
+;; TODO 2022-06-05: Maybe this should be a defcustom?
+(defvar denote--link-format "[[denote:%s][%s (%s)]]"
+  "Format of Org link to note.")
+
+(defun denote--retrieve-value (note regexp)
+  "Return REGEXP value from NOTE."
+  (let ((default-directory (denote--directory)))
+    (with-temp-buffer
+      (insert-file-contents-literally note)
+      (denote--find-key-value-pair regexp))))
+
+(defun denote--read-file-prompt ()
+  "Prompt for regular file in `denote-directory'."
+  (read-file-name "Select note: " (denote--directory)
+                  nil t nil #'file-regular-p))
+
+;;;###autoload
+(defun denote-link (note)
+  "Create Org link to NOTE in `denote-directory'."
+  (interactive (list (denote--read-file-prompt)))
+  (let ((identifier (cdr (denote--retrieve-value note denote--identifier-regexp)))
+        (filename (string-remove-prefix
+                   (denote--directory)
+                   (cdr (denote--retrieve-value note denote--filename-regexp))))
+        (title (cdr (denote--retrieve-value note denote--title-regexp))))
+    (insert (format denote--link-format filename title identifier))))
+
 (provide 'denote)
 ;;; denote.el ends here
