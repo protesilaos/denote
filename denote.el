@@ -295,7 +295,7 @@ Completion candidates are those of `denote-known-keywords'.  If
 file names are also provided as candidates.
 
 When `denote-sort-keywords' is non-nil, keywords are sorted
-alphabetically."
+alphabetically in both the file name and file contents."
   (declare (interactive-only t))
   (interactive
    (list
