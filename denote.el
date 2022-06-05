@@ -155,12 +155,12 @@ trailing hyphen."
 
 (defun denote--directory-files ()
   "List `denote-directory' files, assuming flat directory."
-  (seq-remove
-   (lambda (file)
-     ;; TODO: generalise this for more VC backends?  Which ones?
-     (or (string-match-p "\\.git" file)
-         (file-directory-p file)))
-   (directory-files (denote--directory) nil directory-files-no-dot-files-regexp t)))
+  (let* ((dir (denote--directory))
+        (default-directory dir))
+    (seq-remove
+     (lambda (file)
+       (file-directory-p file))
+     (directory-files dir nil directory-files-no-dot-files-regexp t))))
 
 (defun denote--keywords-in-files ()
   "Produce list of keywords in `denote--directory-files'."
