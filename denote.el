@@ -82,16 +82,6 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
-(defcustom denote-org-capture-specifiers "%l\n%i\n%?"
-  "String with format specifieirs for `org-capture-templates'.
-Check that variable's documentation for the details.
-
-This string is append to new notes in the `denote-org-capture'
-function.  Every new note has the standard front matter we
-define."
-  :type 'string
-  :group 'denote)
-
 ;;; Main variables
 
 ;; TODO 2022-06-04: Can we make the entire file name format a defcustom?
@@ -313,54 +303,6 @@ alphabetically."
     (denote--keywords-prompt)))
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
-
-;;;###autoload
-(defun denote-org-capture ()
-  "Create new note through `org-capture-templates'.
-Use this as a function that returns the path to the new file.
-The file is populated with Denote's front matter.  It can then be
-expanded with the usual specifiers or strings that
-`org-capture-templates' supports.
-
-Search the source code of this function for a comment with a
-sample template.  We will eventually have a manual."
-  (let ((title (denote--title-prompt))
-        (keywords (denote--keywords-prompt)))
-    (denote--path title keywords)
-    (denote--prepare-note denote-last-title denote-last-keywords denote-last-path)
-    (denote--keywords-add-to-history denote-last-keywords)
-    ;; TODO 2022-06-05: Is there a better way to set up this hook?
-    ;; Alternatively, can we prevent the creation of a file when the
-    ;; capture is aborted?
-    (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
-    (concat denote-last-front-matter denote-org-capture-specifiers)))
-
-(defun denote-org-capture-delete-empty-file ()
-  "Delete file if capture with `denote-org-capture' is aborted."
-  (when-let* ((file denote-last-path)
-              ((zerop (or (file-attribute-size (file-attributes file)) 0))))
-    (delete-file denote-last-path)))
-
-;; Samples of an `org-capture-templates' entry:
-;;
-;; (setq org-capture-templates
-;;       '(("n" "New note (with denote.el)" plain
-;;          (file denote-last-path)
-;;          #'denote-org-capture
-;;          :no-save t
-;;          :immediate-finish nil
-;;          :kill-buffer t
-;;          :jump-to-captured t)))
-;;
-;; (with-eval-after-load 'org-capture
-;;   (add-to-list 'org-capture-templates
-;;                '("n" "New note (with denote.el)" plain
-;;                  (file denote-last-path)
-;;                  #'denote-org-capture
-;;                  :no-save t
-;;                  :immediate-finish nil
-;;                  :kill-buffer t
-;;                  :jump-to-captured t)))
 
 ;; TODO 2022-06-04: `denote-rename-file'
 
