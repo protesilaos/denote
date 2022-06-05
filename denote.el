@@ -431,8 +431,8 @@ Run `denote-link-insert-functions' afterwards."
     (run-hook-with-args 'denote-link-insert-functions target origin-link)))
 
 ;; NOTE 2022-06-05: A proof-of-concept.  We need to: (i) have a
-;; Backlinks headeding, (ii) delete duplicates, (iii) ensure one
-;; backlink per line, (iv) have a `denote-unlink' command or a
+;; Backlinks heading, (ii) delete duplicates, (iii) ensure one backlink
+;; per line, (iv) have a `denote-unlink' command or a
 ;; `denote-clean-backlinks' for invalid links.
 (defun denote-write-backlink (target-file origin-link)
   "Insert ORIGIN-LINK to TARGET-FILE."
