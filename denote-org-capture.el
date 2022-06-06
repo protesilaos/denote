@@ -59,10 +59,6 @@ sample template.  We will eventually have a manual."
     (denote--path title keywords)
     (denote--prepare-note denote-last-title denote-last-keywords denote-last-path)
     (denote--keywords-add-to-history denote-last-keywords)
-    ;; TODO 2022-06-05: Is there a better way to set up this hook?
-    ;; Alternatively, can we prevent the creation of a file when the
-    ;; capture is aborted?
-    (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
     (concat denote-last-front-matter denote-org-capture-specifiers)))
 
 (defun denote-org-capture-delete-empty-file ()
@@ -70,6 +66,8 @@ sample template.  We will eventually have a manual."
   (when-let* ((file denote-last-path)
               ((denote--file-empty-p file)))
     (delete-file denote-last-path)))
+
+(add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
 ;; Samples of an `org-capture-templates' entry:
 ;;
