@@ -34,8 +34,6 @@
   "Simple tool for plain text notes."
   :group 'files)
 
-;;; User options
-
 (defcustom denote-org-capture-specifiers "%l\n%i\n%?"
   "String with format specifieirs for `org-capture-templates'.
 Check that variable's documentation for the details.
@@ -45,7 +43,6 @@ function.  Every new note has the standard front matter we
 define."
   :type 'string
   :group 'denote)
-
 
 ;;;###autoload
 (defun denote-org-capture ()
