@@ -139,6 +139,10 @@ trailing hyphen."
   "Make STR an appropriate file name slug."
   (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
 
+(defun denote--file-empty-p (file)
+  "Return non-nil if FILE is empty."
+  (zerop (or (file-attribute-size (file-attributes file)) 0)))
+
 ;;;; Keywords
 
 (defun denote--directory-files ()
