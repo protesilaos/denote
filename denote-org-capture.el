@@ -89,8 +89,5 @@ sample template.  We will eventually have a manual."
 ;;                  :immediate-finish nil
 ;;                  :kill-buffer t
 ;;                  :jump-to-captured t)))
-
-;; TODO 2022-06-04: `denote-rename-file'
-
 (provide 'denote-org-capture)
 ;;; denote-org-capture.el ends here
