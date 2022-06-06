@@ -68,7 +68,7 @@ sample template.  We will eventually have a manual."
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
   (when-let* ((file denote-last-path)
-              ((zerop (or (file-attribute-size (file-attributes file)) 0))))
+              ((denote--file-empty-p file)))
     (delete-file denote-last-path)))
 
 ;; Samples of an `org-capture-templates' entry:
