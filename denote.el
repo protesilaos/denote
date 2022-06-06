@@ -39,7 +39,7 @@
   "Simple tool for plain text notes."
   :group 'files)
 
-;;; User options
+;;;; User options
 
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes."
@@ -82,7 +82,7 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
-;;; Main variables
+;;;; Main variables
 
 (defconst denote-id "%Y%m%d_%H%M%S"
   "Format of ID prefix of a note's filename.")
@@ -102,7 +102,7 @@ If nil, show the keywords in their given order."
 (defvar denote-last-buffer nil "Store last buffer.")
 (defvar denote-last-front-matter nil "Store last front-matter.")
 
-;;;; File name helpers
+;;;; File helper functions
 
 (defun denote--directory ()
   "Valid name format for `denote-directory'."
