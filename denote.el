@@ -144,7 +144,7 @@ trailing hyphen."
 (defun denote--directory-files ()
   "List `denote-directory' files, assuming flat directory."
   (let* ((dir (denote--directory))
-        (default-directory dir))
+         (default-directory dir))
     ;; TODO 2022-06-06: Do this elegantly without seq-remove or
     ;; cl-remove-if?  Just curious...
     (seq-remove
