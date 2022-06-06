@@ -304,7 +304,5 @@ alphabetically in both the file name and file contents."
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
 
-;; TODO 2022-06-04: `denote-rename-file'
-
 (provide 'denote)
 ;;; denote.el ends here
