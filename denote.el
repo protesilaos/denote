@@ -84,8 +84,6 @@ If nil, show the keywords in their given order."
 
 ;;; Main variables
 
-;; TODO 2022-06-04: Can we make the entire file name format a defcustom?
-
 (defconst denote-id "%Y%m%d_%H%M%S"
   "Format of ID prefix of a note's filename.")
 
