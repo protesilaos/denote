@@ -25,6 +25,27 @@
 ;;; Commentary:
 ;;
 ;; Denote integration with org-capture.
+;;
+;; Samples of an `org-capture-templates' entry:
+;;
+;; (setq org-capture-templates
+;;       '(("n" "New note (with denote.el)" plain
+;;          (file denote-last-path)
+;;          #'denote-org-capture
+;;          :no-save t
+;;          :immediate-finish nil
+;;          :kill-buffer t
+;;          :jump-to-captured t)))
+;;
+;; (with-eval-after-load 'org-capture
+;;   (add-to-list 'org-capture-templates
+;;                '("n" "New note (with denote.el)" plain
+;;                  (file denote-last-path)
+;;                  #'denote-org-capture
+;;                  :no-save t
+;;                  :immediate-finish nil
+;;                  :kill-buffer t
+;;                  :jump-to-captured t)))
 
 ;;; Code:
 
@@ -69,25 +90,5 @@ sample template.  We will eventually have a manual."
 
 (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
-;; Samples of an `org-capture-templates' entry:
-;;
-;; (setq org-capture-templates
-;;       '(("n" "New note (with denote.el)" plain
-;;          (file denote-last-path)
-;;          #'denote-org-capture
-;;          :no-save t
-;;          :immediate-finish nil
-;;          :kill-buffer t
-;;          :jump-to-captured t)))
-;;
-;; (with-eval-after-load 'org-capture
-;;   (add-to-list 'org-capture-templates
-;;                '("n" "New note (with denote.el)" plain
-;;                  (file denote-last-path)
-;;                  #'denote-org-capture
-;;                  :no-save t
-;;                  :immediate-finish nil
-;;                  :kill-buffer t
-;;                  :jump-to-captured t)))
 (provide 'denote-org-capture)
 ;;; denote-org-capture.el ends here
