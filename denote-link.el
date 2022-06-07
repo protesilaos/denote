@@ -53,20 +53,19 @@ Both are supplied by `denote-link'."
   (cons (match-string-no-properties 1)
         (match-string-no-properties 2)))
 
-(defvar denote-link--title-regexp "^\\(#\\+title:\\)[\s\t]+\\(.*\\)"
+(defconst denote-link--title-regexp "^\\(#\\+title:\\)[\s\t]+\\(.*\\)"
   "Regular expression for title key and value.")
 
-(defvar denote-link--filename-regexp "^\\(#\\+filename:\\)[\s\t]+\\(.*\\)"
+(defconst denote-link--filename-regexp "^\\(#\\+filename:\\)[\s\t]+\\(.*\\)"
   "Regular expression for filename key and value.")
 
-(defvar denote-link--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
+(defconst denote-link--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
   "Regular expression for filename key and value.")
 
-;; TODO 2022-06-05: Maybe this should be a defcustom?
-(defvar denote-link--link-format "[[denote:%s][%s (%s)]]"
+(defconst denote-link--link-format "[[denote:%s][%s (%s)]]"
   "Format of Org link to note.")
 
-(defvar denote-link--backlink-format "[[denote:%s][backlink: %s (%s)]]"
+(defconst denote-link--backlink-format "[[denote:%s][backlink: %s (%s)]]"
   "Format of Org link to note.")
 
 (defun denote-link--retrieve-value (note regexp)
