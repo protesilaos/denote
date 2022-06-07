@@ -37,7 +37,7 @@ commit, is explicitly marked as such.
 Current development target is {{{development-version}}}.
 
 + Homepage: https://protesilaos.com/emacs/denote.
-+ Change log: https://protesilaos.com/emacs/denote-changelog.
+# + Change log: https://protesilaos.com/emacs/denote-changelog.
 + Git repository: https://git.sr.ht/~protesilaos/denote.
 + Mailing list: https://lists.sr.ht/~protesilaos/denote.
 
