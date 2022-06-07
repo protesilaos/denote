@@ -1,4 +1,4 @@
-# Denote
+# Denote (WORK-IN-PROGRESS)
 
 Take notes using a strict file-naming convention.  Denote does not do
 anything else:
@@ -18,12 +18,6 @@ anything else:
   k` will toggle the match so that it marks all files that do not match
   the regexp and `k` will remove them from the buffer (restore them by
   reverting the buffer).
-
-- Create links between notes?  Use Org's standard linking facility.
-
-You get the idea: Denote is a small part of an existing toolkit.  Think
-of it as an opinionated template for `org-capture` (it can be integrated
-in `org-capture-templates`, though it can work without that mechanism).
 
 * * *
 
