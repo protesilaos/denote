@@ -1,4 +1,4 @@
-;;; denote-link.el --- Link to file with denote -*- lexical-binding: t -*-
+;;; denote-link.el --- Link facility for denote -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 

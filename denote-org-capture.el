@@ -1,4 +1,4 @@
-;;; denote-org-capture.el --- Denote integration with org-capture -*- lexical-binding: t -*-
+;;; denote-org-capture.el --- Integration between denote and org-capture -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
