@@ -1,30 +1,849 @@
-# Denote (WORK-IN-PROGRESS)
+#+title: denote: Simple notes with a strict file-naming scheme
+#+author: Protesilaos Stavrou
+#+email: info@protesilaos.com
+#+language: en
+#+options: ':t toc:nil author:t email:t num:t
+#+startup: content
 
-Take notes using a strict file-naming convention.  Denote does not do
-anything else:
+#+macro: stable-version N/A
+#+macro: release-date N/A
+#+macro: development-version 0.1.0-dev
+#+macro: file @@texinfo:@file{@@$1@@texinfo:}@@
+#+macro: space @@texinfo:@: @@
+#+macro: kbd @@texinfo:@kbd{@@$1@@texinfo:}@@
 
-- Want to search your notes?  Use `M-x grep`, `M-x find-name-dired`,
-  `M-x consult-find`, `M-x consult-grep`, and so on.
+#+export_file_name: denote.texi
 
-- Want to quickly jump to the directory of your notes?  Visit it with
-  `M-x find-file RET path/to/notes` and then make a bookmark with `M-x
-  bookmark-set`.  Access bookmarks with `M-x bookmark-jump`, `M-x
-  consult-buffer`, and the like.  And/or treat your notes as a project
-  with the built-in project.el.
+#+texinfo_filename: denote.info
+#+texinfo_dir_category: Emacs misc features
+#+texinfo_dir_title: Denote: (denote)
+#+texinfo_dir_desc: Simple notes with a strict file-naming scheme
+#+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
+#+texinfo_header: @set MAINTAINER Protesilaos Stavrou
+#+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}
+#+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
-- Narrow the list of notes?  Do it from the completion UI and export the
-  results with `embark` (or equivalent).  To achieve the same in Dired,
-  do `M-x dired-mark-files-regexp RET type-regexp-here RET t k`.  The `t
-  k` will toggle the match so that it marks all files that do not match
-  the regexp and `k` will remove them from the buffer (restore them by
-  reverting the buffer).
+#+texinfo: @insertcopying
 
-* * *
+This manual, written by Protesilaos Stavrou, describes the customization
+options for the Emacs package called =denote= (or =denote.el=), and
+provides every other piece of information pertinent to it.
 
-This is successor to usls: <https://gitlab.com/protesilaos/usls>, which
-I had been using for more than a year.  Denote is intended for private
-use, until I eventually turn it into a package that others can use.  As
-such, there is no manual for the time being and the code may change
-considerably.
+The documentation furnished herein corresponds to stable version
+{{{stable-version}}}, released on {{{release-date}}}.  Any reference to
+a newer feature which does not yet form part of the latest tagged
+commit, is explicitly marked as such.
+
+Current development target is {{{development-version}}}.
+
++ Homepage: https://protesilaos.com/emacs/denote.
++ Change log: https://protesilaos.com/emacs/denote-changelog.
++ Git repository: https://git.sr.ht/~protesilaos/denote.
++ Mailing list: https://lists.sr.ht/~protesilaos/denote.
+
+#+toc: headlines 8 insert TOC here, with eight headline levels
+
+* COPYING
+:PROPERTIES:
+:COPYING: t
+:CUSTOM_ID: h:40b18bb2-4dc1-4202-bd0b-6fab535b2a0f
+:END:
+
+Copyright (C) 2022  Free Software Foundation, Inc.
+
+#+begin_quote
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover Texts being “A GNU Manual,” and
+with the Back-Cover Texts as in (a) below.  A copy of the license is
+included in the section entitled “GNU Free Documentation License.”
+
+(a) The FSF’s Back-Cover Text is: “You have the freedom to copy and
+modify this GNU manual.”
+#+end_quote
+
+* Overview
+:PROPERTIES:
+:CUSTOM_ID: h:a09b70a2-ae0b-4855-ac14-1dddfc8e3241
+:END:
+
+Denote is a simple note-taking tool.  It is based on the idea that notes
+should follow a predictable and descriptive file-naming scheme.  The
+file name must offer a clear indication of what the note is about,
+without reference to any other metadata.  Denote basically streamlines
+the creation of such files.
+
+* The file-naming scheme
+:PROPERTIES:
+:CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
+:END:
+
+Every note produced by Denote follows this pattern:
+
+: DATE--KEYWORDS--TITLE.org
+
+The =DATE= field represents the date in year-month-day format followed
+by an underscore and the current time in hour-minute-second notation.
+The presentation is compact, with an underscore separating the two
+components.  Like this: =20220531_091625=.  The =DATE= serves as the
+unique identifier of each note.
+
+The =KEYWORDS= field consists of one or more entries demarcated by a
+plus sign (the separator is inserted automatically).  Each keyword is a
+string provided by the user at the relevant prompt which broadly
+describes the contents of the entry.  Keywords that need to be more than
+one-word-long must be written with an underscore.  So when
+=emacs_library= appears in a file name, it is interpreted as a single
+keyword, whereas =emacs+library= are two distinct keywords.
+
+The =TITLE= field is the title of the note, as provided by the user,
+that automatically gets downcased and hyphenated.  An entry about
+"Economics in the Euro Area" produces an =economics-in-the-euro-area=
+string for the =TITLE= of the file name.
+
+Examples:
+
+: 20220107_124941--economics--plentiful-and-predictable-liquidity.org
+: 20220214_104945--emacs+git--git-patch-formatting.org
+: 20220420_113805--three_word_keyword--this-is-a-test.org
+
+While files end in the =.org= extension, the Denote code base does not
+actually depend on org.el and/or its accoutrements.
+
+#+vindex: denote-directory
+Notes are stored as a flat list in the ~denote-directory~ (i.e. no
+subdirectories).  The default path is =~/Documents/notes=.
+
+* Points of entry
+:PROPERTIES:
+:CUSTOM_ID: h:17896c8c-d97a-4faa-abf6-31df99746ca6
+:END:
+
+#+findex: denote
+#+findex: denote-org-capture
+There are two ways to write a note with Denote: invoke the ~denote~
+command or leverage the ~org-capture-templates~ by setting up a template
+which calls the function ~denote-org-capture~.
+
+In the first case, all that is needed is to run ~denote~.  It will first
+prompt for a title.  Once it is supplied, the command will ask for
+keywords.  The resulting note will have a file name as already explained
+([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]).
+
+#+vindex: denote-known-keywords
+#+vindex: denote-infer-keywords
+The keyword prompt supports minibuffer completion.  Available candidates
+are those defined in the user option ~denote-known-keywords~.  More
+candidates can be inferred from the names of existing notes, by setting
+~denote-infer-keywords~ to non-nil (which is the case by default).
+
+Multiple keywords can be inserted by separating them with a comma (or
+whatever the value of the ~crm-indicator~ is---which should be a comma).
+
+The ~denote~ command can also be called from Lisp, in which case it
+expects the =TITLE= and =KEYWORDS= arguments, both of which are strings.
+
+For integration with ~org-capture~, the user must first add the relevant
+template.  Such as:
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'org-capture
+  (require 'denote-org-capture)
+  (add-to-list 'org-capture-templates
+               '("n" "New note (with Denote)" plain
+                 (file denote-last-path)
+                 #'denote-org-capture
+                 :no-save t
+                 :immediate-finish nil
+                 :kill-buffer t
+                 :jump-to-captured t)))
+#+end_src
+
+[ In the future, we might develop Denote in ways which do not require such
+  manual intervation. ]
+
+Once the template is added, it is accessed from the specified key.  If,
+for instance, ~org-capture~ is bound to =C-c c=, then the note creation
+is initiated with =C-c c n=.  After that, the process is the same as
+with invoking ~denote~ directly, namely: a prompt for a title followed
+by a prompt for keywords.
+
+#+vindex: denote-org-capture-specifiers
+Users may prefer to leverage ~org-capture~ in order to extend file
+creation with the specifiers described in the ~org-capture-templates~
+documentation (such as to capture the active region and/or create a
+hyperlink pointing to the given context).  Due to the particular
+file-naming scheme of Denote, such specifiers cannot be written directly
+in the template.  Instead, they have to be assigned to the user option
+~denote-org-capture-specifiers~, which is interpreted by the function
+~denote-org-capture~.  Example with our default value:
+
+#+begin_src emacs-lisp
+(setq denote-org-capture-specifiers "%l\n%i\n%?")
+#+end_src
+
+* Linking notes
+:PROPERTIES:
+:CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
+:END:
+
+#+findex: denote-link
+Denote has a basic linking facility to quickly establish connections
+between notes.  The command ~denote-link~ prompts for a file name in the
+~denote-directory~ (only regular files are considered, not directories).
+It then retrieves the path of the given note, inserts it at point using
+the link notation of Org, and creates a backlink entry in the target
+file.
+
+Backlinks are recorded at the end of a note under the heading with the
+title =Denote backlinks=.  Users should not edit this part manually: it
+is controlled by Denote, such as to delete duplicate links (in the
+future it might also handle stuff like alphabetic sorting).
+
+#+vindex: denote-link-insert-functions
+#+findex: denote-link-backlink
+The special hook ~denote-link-insert-functions~ is called after a link
+is created.  It accepts two arguments for the target file and the origin
+of the current link.  The function ~denote-link-backlink~ provides an
+example for advanced users.
+
+#+findex: denote-link-clear-stale-backlinks
+Backlinks that no longer point to available notes can be removed from
+the current buffer with the command ~denote-link-clear-stale-backlinks~.
+
+* Fontification in Dired
+:PROPERTIES:
+:CUSTOM_ID: h:337f9cf0-9f66-45af-b73f-f6370472fb51
+:END:
+
+One of the upsides of Denote's file-naming scheme is the predictable
+pattern it establishes, which appears as a near-tabular presentation in
+a listing of notes (i.e. in Dired).  The ~denote-dired-mode~ can help
+enhance this impression, by fontifying the components of the file name
+to make the date (identifier) and keywords stand out.
+
+#+begin_src emacs-lisp
+(require 'denote-dired)
+(add-hook 'dired-mode-hook #'denote-dired-mode)
+#+end_src
+
+For the time being, the =diredfl= package is not compatible with this
+facility.
+
+* Extending Denote
+:PROPERTIES:
+:CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
+:END:
+
+Denote is a tool with a narrow scope: create notes and link between
+them, based on the aforementioned file-naming scheme.  For other common
+operations the user is advised to rely on standard Emacs facilities or
+specialised third-party packages.
+
+- To search through notes, use =M-x grep=, =M-x find-name-dired=, =M-x
+  consult-find=, =M-x consult-grep=, and so on (the latter two are
+  provided by the =consult= package).
+
+- To quickly jump to the ~denote-directory~, visit it with =M-x
+  find-file= and then make a bookmark with =M-x bookmark-set=.  Access
+  bookmarks with =M-x bookmark-jump=, =M-x consult-buffer= (from
+  =consult=), and the like.
+
+- Control the versioning of notes by turning the ~denote-directory~ into
+  a Git project.  Consider the built-in project.el or the =projectile=
+  package, as well as the built-in VC framework and/or the =magit=
+  package.
+
+- It is possible to narrow the list of notes in Dired using a regular
+  expression or literal string.  Do =M-x dired-mark-files-regexp RET
+  type-regexp-here RET t k=.  The =t= will toggle the match so that it
+  marks all files that do not match the regexp and =k= will remove them
+  from the buffer (restore them by reverting the buffer).
+
+- A narrowed list of files can also be produced through the minibuffer,
+  with the help of the =embark= package.  For example, =M-x find-file
+  RET path/to/denote-directory RET regexp embark-act embark-export=.
+  The final two commands, ~embark-act~ and ~embark-export~, are normally
+  bound to keys.  The whole sequence will thus look like =C-x C-f path
+  RET regexp C-. E=.
+
+* Installation
+:PROPERTIES:
+:CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
+:END:
+#+cindex: Installation instructions
+
+** COMMENT GNU ELPA package
+:PROPERTIES:
+:CUSTOM_ID: h:42953f87-82bd-43ec-ab99-22b1e22955e7
+:END:
+
+The package is available as =logos=.  Simply do:
+
+: M-x package-refresh-contents
+: M-x package-install
+
+And search for it.
+
+GNU ELPA provides the latest stable release.  Those who prefer to follow
+the development process in order to report bugs or suggest changes, can
+use the version of the package from the GNU-devel ELPA archive.  Read:
+https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/.
+
+** Manual installation
+:PROPERTIES:
+:CUSTOM_ID: h:d397712c-c8c0-4cfa-ad1a-ef28cf78d1f0
+:END:
+
+Assuming your Emacs files are found in =~/.emacs.d/=, execute the
+following commands in a shell prompt:
+
+#+begin_src sh
+cd ~/.emacs.d
+
+# Create a directory for manually-installed packages
+mkdir manual-packages
+
+# Go to the new directory
+cd manual-packages
+
+# Clone this repo, naming it "denote"
+git clone https://git.sr.ht/~protesilaos/denote denote
+#+end_src
+
+Finally, in your =init.el= (or equivalent) evaluate this:
+
+#+begin_src emacs-lisp
+;; Make Elisp files in that directory available to the user.
+(add-to-list 'load-path "~/.emacs.d/manual-packages/denote")
+#+end_src
+
+Everything is in place to set up the package.
+
+* Sample configuration
+:PROPERTIES:
+:CUSTOM_ID: h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
+:END:
+#+cindex: Package configuration
+
+#+begin_src emacs-lisp
+(require 'denote)
+
+(setq denote-directory (expand-file-name "~/Documents/notes/"))
+(setq denote-known-keywords
+      '("emacs" "philosophy" "politics" "economics"))
+(setq denote-infer-keywords t)
+(setq denote-sort-keywords t)
+
+(require 'denote-link)
+(require 'denote-dired)
+(add-hook 'dired-mode-hook #'denote-dired-mode)
+
+;; You can bind `denote' to a global key if you prefer not to use
+;; `org-capture'.  For example:
+(define-key global-map (kbd "C-c n") #'denote)
+
+(with-eval-after-load 'org-capture
+  (require 'denote-org-capture)
+  (setq denote-org-capture-specifiers "%l\n%i\n%?")
+  (add-to-list 'org-capture-templates
+               '("n" "New note (with denote.el)" plain
+                 (file denote-last-path)
+                 #'denote-org-capture
+                 :no-save t
+                 :immediate-finish nil
+                 :kill-buffer t
+                 :jump-to-captured t))))
+#+end_src
+
+* GNU Free Documentation License
+:PROPERTIES:
+:APPENDIX: t
+:CUSTOM_ID: h:2d84e73e-c143-43b5-b388-a6765da974ea
+:END:
+
+#+texinfo: @include doclicense.texi
+
+#+begin_export html
+<pre>
+
+                GNU Free Documentation License
+                 Version 1.3, 3 November 2008
 
 
+ Copyright (C) 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
+     <https://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+0. PREAMBLE
+
+The purpose of this License is to make a manual, textbook, or other
+functional and useful document "free" in the sense of freedom: to
+assure everyone the effective freedom to copy and redistribute it,
+with or without modifying it, either commercially or noncommercially.
+Secondarily, this License preserves for the author and publisher a way
+to get credit for their work, while not being considered responsible
+for modifications made by others.
+
+This License is a kind of "copyleft", which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft
+license designed for free software.
+
+We have designed this License in order to use it for manuals for free
+software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals;
+it can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.
+
+
+1. APPLICABILITY AND DEFINITIONS
+
+This License applies to any manual or other work, in any medium, that
+contains a notice placed by the copyright holder saying it can be
+distributed under the terms of this License.  Such a notice grants a
+world-wide, royalty-free license, unlimited in duration, to use that
+work under the conditions stated herein.  The "Document", below,
+refers to any such manual or work.  Any member of the public is a
+licensee, and is addressed as "you".  You accept the license if you
+copy, modify or distribute the work in a way requiring permission
+under copyright law.
+
+A "Modified Version" of the Document means any work containing the
+Document or a portion of it, either copied verbatim, or with
+modifications and/or translated into another language.
+
+A "Secondary Section" is a named appendix or a front-matter section of
+the Document that deals exclusively with the relationship of the
+publishers or authors of the Document to the Document's overall
+subject (or to related matters) and contains nothing that could fall
+directly within that overall subject.  (Thus, if the Document is in
+part a textbook of mathematics, a Secondary Section may not explain
+any mathematics.)  The relationship could be a matter of historical
+connection with the subject or with related matters, or of legal,
+commercial, philosophical, ethical or political position regarding
+them.
+
+The "Invariant Sections" are certain Secondary Sections whose titles
+are designated, as being those of Invariant Sections, in the notice
+that says that the Document is released under this License.  If a
+section does not fit the above definition of Secondary then it is not
+allowed to be designated as Invariant.  The Document may contain zero
+Invariant Sections.  If the Document does not identify any Invariant
+Sections then there are none.
+
+The "Cover Texts" are certain short passages of text that are listed,
+as Front-Cover Texts or Back-Cover Texts, in the notice that says that
+the Document is released under this License.  A Front-Cover Text may
+be at most 5 words, and a Back-Cover Text may be at most 25 words.
+
+A "Transparent" copy of the Document means a machine-readable copy,
+represented in a format whose specification is available to the
+general public, that is suitable for revising the document
+straightforwardly with generic text editors or (for images composed of
+pixels) generic paint programs or (for drawings) some widely available
+drawing editor, and that is suitable for input to text formatters or
+for automatic translation to a variety of formats suitable for input
+to text formatters.  A copy made in an otherwise Transparent file
+format whose markup, or absence of markup, has been arranged to thwart
+or discourage subsequent modification by readers is not Transparent.
+An image format is not Transparent if used for any substantial amount
+of text.  A copy that is not "Transparent" is called "Opaque".
+
+Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, LaTeX input format, SGML
+or XML using a publicly available DTD, and standard-conforming simple
+HTML, PostScript or PDF designed for human modification.  Examples of
+transparent image formats include PNG, XCF and JPG.  Opaque formats
+include proprietary formats that can be read and edited only by
+proprietary word processors, SGML or XML for which the DTD and/or
+processing tools are not generally available, and the
+machine-generated HTML, PostScript or PDF produced by some word
+processors for output purposes only.
+
+The "Title Page" means, for a printed book, the title page itself,
+plus such following pages as are needed to hold, legibly, the material
+this License requires to appear in the title page.  For works in
+formats which do not have any title page as such, "Title Page" means
+the text near the most prominent appearance of the work's title,
+preceding the beginning of the body of the text.
+
+The "publisher" means any person or entity that distributes copies of
+the Document to the public.
+
+A section "Entitled XYZ" means a named subunit of the Document whose
+title either is precisely XYZ or contains XYZ in parentheses following
+text that translates XYZ in another language.  (Here XYZ stands for a
+specific section name mentioned below, such as "Acknowledgements",
+"Dedications", "Endorsements", or "History".)  To "Preserve the Title"
+of such a section when you modify the Document means that it remains a
+section "Entitled XYZ" according to this definition.
+
+The Document may include Warranty Disclaimers next to the notice which
+states that this License applies to the Document.  These Warranty
+Disclaimers are considered to be included by reference in this
+License, but only as regards disclaiming warranties: any other
+implication that these Warranty Disclaimers may have is void and has
+no effect on the meaning of this License.
+
+2. VERBATIM COPYING
+
+You may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies
+to the Document are reproduced in all copies, and that you add no
+other conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further
+copying of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+
+You may also lend copies, under the same conditions stated above, and
+you may publicly display copies.
+
+
+3. COPYING IN QUANTITY
+
+If you publish printed copies (or copies in media that commonly have
+printed covers) of the Document, numbering more than 100, and the
+Document's license notice requires Cover Texts, you must enclose the
+copies in covers that carry, clearly and legibly, all these Cover
+Texts: Front-Cover Texts on the front cover, and Back-Cover Texts on
+the back cover.  Both covers must also clearly and legibly identify
+you as the publisher of these copies.  The front cover must present
+the full title with all words of the title equally prominent and
+visible.  You may add other material on the covers in addition.
+Copying with changes limited to the covers, as long as they preserve
+the title of the Document and satisfy these conditions, can be treated
+as verbatim copying in other respects.
+
+If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.
+
+If you publish or distribute Opaque copies of the Document numbering
+more than 100, you must either include a machine-readable Transparent
+copy along with each Opaque copy, or state in or with each Opaque copy
+a computer-network location from which the general network-using
+public has access to download using public-standard network protocols
+a complete Transparent copy of the Document, free of added material.
+If you use the latter option, you must take reasonably prudent steps,
+when you begin distribution of Opaque copies in quantity, to ensure
+that this Transparent copy will remain thus accessible at the stated
+location until at least one year after the last time you distribute an
+Opaque copy (directly or through your agents or retailers) of that
+edition to the public.
+
+It is requested, but not required, that you contact the authors of the
+Document well before redistributing any large number of copies, to
+give them a chance to provide you with an updated version of the
+Document.
+
+
+4. MODIFICATIONS
+
+You may copy and distribute a Modified Version of the Document under
+the conditions of sections 2 and 3 above, provided that you release
+the Modified Version under precisely this License, with the Modified
+Version filling the role of the Document, thus licensing distribution
+and modification of the Modified Version to whoever possesses a copy
+of it.  In addition, you must do these things in the Modified Version:
+
+A. Use in the Title Page (and on the covers, if any) a title distinct
+   from that of the Document, and from those of previous versions
+   (which should, if there were any, be listed in the History section
+   of the Document).  You may use the same title as a previous version
+   if the original publisher of that version gives permission.
+B. List on the Title Page, as authors, one or more persons or entities
+   responsible for authorship of the modifications in the Modified
+   Version, together with at least five of the principal authors of the
+   Document (all of its principal authors, if it has fewer than five),
+   unless they release you from this requirement.
+C. State on the Title page the name of the publisher of the
+   Modified Version, as the publisher.
+D. Preserve all the copyright notices of the Document.
+E. Add an appropriate copyright notice for your modifications
+   adjacent to the other copyright notices.
+F. Include, immediately after the copyright notices, a license notice
+   giving the public permission to use the Modified Version under the
+   terms of this License, in the form shown in the Addendum below.
+G. Preserve in that license notice the full lists of Invariant Sections
+   and required Cover Texts given in the Document's license notice.
+H. Include an unaltered copy of this License.
+I. Preserve the section Entitled "History", Preserve its Title, and add
+   to it an item stating at least the title, year, new authors, and
+   publisher of the Modified Version as given on the Title Page.  If
+   there is no section Entitled "History" in the Document, create one
+   stating the title, year, authors, and publisher of the Document as
+   given on its Title Page, then add an item describing the Modified
+   Version as stated in the previous sentence.
+J. Preserve the network location, if any, given in the Document for
+   public access to a Transparent copy of the Document, and likewise
+   the network locations given in the Document for previous versions
+   it was based on.  These may be placed in the "History" section.
+   You may omit a network location for a work that was published at
+   least four years before the Document itself, or if the original
+   publisher of the version it refers to gives permission.
+K. For any section Entitled "Acknowledgements" or "Dedications",
+   Preserve the Title of the section, and preserve in the section all
+   the substance and tone of each of the contributor acknowledgements
+   and/or dedications given therein.
+L. Preserve all the Invariant Sections of the Document,
+   unaltered in their text and in their titles.  Section numbers
+   or the equivalent are not considered part of the section titles.
+M. Delete any section Entitled "Endorsements".  Such a section
+   may not be included in the Modified Version.
+N. Do not retitle any existing section to be Entitled "Endorsements"
+   or to conflict in title with any Invariant Section.
+O. Preserve any Warranty Disclaimers.
+
+If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version's license notice.
+These titles must be distinct from any other section titles.
+
+You may add a section Entitled "Endorsements", provided it contains
+nothing but endorsements of your Modified Version by various
+parties--for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.
+
+You may add a passage of up to five words as a Front-Cover Text, and a
+passage of up to 25 words as a Back-Cover Text, to the end of the list
+of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or
+through arrangements made by) any one entity.  If the Document already
+includes a cover text for the same cover, previously added by you or
+by arrangement made by the same entity you are acting on behalf of,
+you may not add another; but you may replace the old one, on explicit
+permission from the previous publisher that added the old one.
+
+The author(s) and publisher(s) of the Document do not by this License
+give permission to use their names for publicity for or to assert or
+imply endorsement of any Modified Version.
+
+
+5. COMBINING DOCUMENTS
+
+You may combine the Document with other documents released under this
+License, under the terms defined in section 4 above for modified
+versions, provided that you include in the combination all of the
+Invariant Sections of all of the original documents, unmodified, and
+list them all as Invariant Sections of your combined work in its
+license notice, and that you preserve all their Warranty Disclaimers.
+
+The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by
+adding at the end of it, in parentheses, the name of the original
+author or publisher of that section if known, or else a unique number.
+Make the same adjustment to the section titles in the list of
+Invariant Sections in the license notice of the combined work.
+
+In the combination, you must combine any sections Entitled "History"
+in the various original documents, forming one section Entitled
+"History"; likewise combine any sections Entitled "Acknowledgements",
+and any sections Entitled "Dedications".  You must delete all sections
+Entitled "Endorsements".
+
+
+6. COLLECTIONS OF DOCUMENTS
+
+You may make a collection consisting of the Document and other
+documents released under this License, and replace the individual
+copies of this License in the various documents with a single copy
+that is included in the collection, provided that you follow the rules
+of this License for verbatim copying of each of the documents in all
+other respects.
+
+You may extract a single document from such a collection, and
+distribute it individually under this License, provided you insert a
+copy of this License into the extracted document, and follow this
+License in all other respects regarding verbatim copying of that
+document.
+
+
+7. AGGREGATION WITH INDEPENDENT WORKS
+
+A compilation of the Document or its derivatives with other separate
+and independent documents or works, in or on a volume of a storage or
+distribution medium, is called an "aggregate" if the copyright
+resulting from the compilation is not used to limit the legal rights
+of the compilation's users beyond what the individual works permit.
+When the Document is included in an aggregate, this License does not
+apply to the other works in the aggregate which are not themselves
+derivative works of the Document.
+
+If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one half of
+the entire aggregate, the Document's Cover Texts may be placed on
+covers that bracket the Document within the aggregate, or the
+electronic equivalent of covers if the Document is in electronic form.
+Otherwise they must appear on printed covers that bracket the whole
+aggregate.
+
+
+8. TRANSLATION
+
+Translation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License, and all the license notices in the
+Document, and any Warranty Disclaimers, provided that you also include
+the original English version of this License and the original versions
+of those notices and disclaimers.  In case of a disagreement between
+the translation and the original version of this License or a notice
+or disclaimer, the original version will prevail.
+
+If a section in the Document is Entitled "Acknowledgements",
+"Dedications", or "History", the requirement (section 4) to Preserve
+its Title (section 1) will typically require changing the actual
+title.
+
+
+9. TERMINATION
+
+You may not copy, modify, sublicense, or distribute the Document
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense, or distribute it is void, and
+will automatically terminate your rights under this License.
+
+However, if you cease all violation of this License, then your license
+from a particular copyright holder is reinstated (a) provisionally,
+unless and until the copyright holder explicitly and finally
+terminates your license, and (b) permanently, if the copyright holder
+fails to notify you of the violation by some reasonable means prior to
+60 days after the cessation.
+
+Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+
+Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, receipt of a copy of some or all of the same material does
+not give you any rights to use it.
+
+
+10. FUTURE REVISIONS OF THIS LICENSE
+
+The Free Software Foundation may publish new, revised versions of the
+GNU Free Documentation License from time to time.  Such new versions
+will be similar in spirit to the present version, but may differ in
+detail to address new problems or concerns.  See
+https://www.gnu.org/licenses/.
+
+Each version of the License is given a distinguishing version number.
+If the Document specifies that a particular numbered version of this
+License "or any later version" applies to it, you have the option of
+following the terms and conditions either of that specified version or
+of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.  If the Document
+specifies that a proxy can decide which future versions of this
+License can be used, that proxy's public statement of acceptance of a
+version permanently authorizes you to choose that version for the
+Document.
+
+11. RELICENSING
+
+"Massive Multiauthor Collaboration Site" (or "MMC Site") means any
+World Wide Web server that publishes copyrightable works and also
+provides prominent facilities for anybody to edit those works.  A
+public wiki that anybody can edit is an example of such a server.  A
+"Massive Multiauthor Collaboration" (or "MMC") contained in the site
+means any set of copyrightable works thus published on the MMC site.
+
+"CC-BY-SA" means the Creative Commons Attribution-Share Alike 3.0
+license published by Creative Commons Corporation, a not-for-profit
+corporation with a principal place of business in San Francisco,
+California, as well as future copyleft versions of that license
+published by that same organization.
+
+"Incorporate" means to publish or republish a Document, in whole or in
+part, as part of another Document.
+
+An MMC is "eligible for relicensing" if it is licensed under this
+License, and if all works that were first published under this License
+somewhere other than this MMC, and subsequently incorporated in whole or
+in part into the MMC, (1) had no cover texts or invariant sections, and
+(2) were thus incorporated prior to November 1, 2008.
+
+The operator of an MMC Site may republish an MMC contained in the site
+under CC-BY-SA on the same site at any time before August 1, 2009,
+provided the MMC is eligible for relicensing.
+
+
+ADDENDUM: How to use this License for your documents
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+
+    Copyright (c)  YEAR  YOUR NAME.
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the GNU Free Documentation License, Version 1.3
+    or any later version published by the Free Software Foundation;
+    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+    A copy of the license is included in the section entitled "GNU
+    Free Documentation License".
+
+If you have Invariant Sections, Front-Cover Texts and Back-Cover Texts,
+replace the "with...Texts." line with this:
+
+    with the Invariant Sections being LIST THEIR TITLES, with the
+    Front-Cover Texts being LIST, and with the Back-Cover Texts being LIST.
+
+If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.
+
+If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License,
+to permit their use in free software.
+</pre>
+#+end_export
+
+#+html: <!--
+
+* Indices
+:PROPERTIES:
+:CUSTOM_ID: h:dd530040-de9d-4f2b-8dfd-d8b8f14c058e
+:END:
+
+** Function index
+:PROPERTIES:
+:INDEX: fn
+:CUSTOM_ID: h:317b8c20-6dc1-4390-a20a-d01d75a48ccb
+:END:
+
+** Variable index
+:PROPERTIES:
+:INDEX: vr
+:CUSTOM_ID: h:2f69d4fe-0804-4f7f-aa57-4e03e7f20d98
+:END:
+
+** Concept index
+:PROPERTIES:
+:INDEX: cp
+:CUSTOM_ID: h:10365e44-2fc0-4b66-a613-682fea09ee68
+:END:
+
+#+html: -->
