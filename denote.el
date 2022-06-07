@@ -176,8 +176,6 @@ With optional N, search in the Nth line from point."
   "List `denote-directory' files, assuming flat directory."
   (let* ((dir (denote--directory))
          (default-directory dir))
-    ;; TODO 2022-06-06: Do this elegantly without seq-remove or
-    ;; cl-remove-if?  Just curious...
     (seq-remove
      (lambda (file)
        (file-directory-p file))
