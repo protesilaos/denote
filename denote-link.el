@@ -117,7 +117,8 @@ This heading is appended to a file when another links to it.")
       (unless (save-excursion (setq heading-point (re-search-backward heading nil t)))
         (unless (denote--line-regexp-p 'empty 0)
           (newline))
-        (insert (format "* %s\n\n" heading)))
+        (insert
+         (format "* %s\n%s\n\n" heading "# Do not edit; this is for denote.el and related")))
       (insert (format "- %s\n" origin-link))
       ;; delete duplicate links
       (unwind-protect
