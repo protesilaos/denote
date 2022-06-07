@@ -52,8 +52,8 @@
 (require 'denote)
 
 (defgroup denote-org-capture ()
-  "Simple tool for plain text notes."
-  :group 'files)
+  "Integration between denote and Org Capture."
+  :group 'denote)
 
 (defcustom denote-org-capture-specifiers "%l\n%i\n%?"
   "String with format specifiers for `org-capture-templates'.

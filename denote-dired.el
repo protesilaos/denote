@@ -1,4 +1,4 @@
-;;; denote-dired.el --- Integration of denote with Dired -*- lexical-binding: t -*-
+;;; denote-dired.el --- Integration between Denote and Dired -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
@@ -36,8 +36,8 @@
 (require 'denote)
 
 (defgroup denote-dired ()
-  "Simple tool for plain text notes."
-  :group 'files)
+  "Integration between Denote and Dired."
+  :group 'denote)
 
 (defvar dired-font-lock-keywords)
 

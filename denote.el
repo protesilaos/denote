@@ -1,4 +1,4 @@
-;;; denote.el --- Simple notes with a strict file name scheme -*- lexical-binding: t -*-
+;;; denote.el --- Simple notes with a strict file-naming scheme -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
@@ -36,7 +36,7 @@
 ;;; Code:
 
 (defgroup denote ()
-  "Simple tool for plain text notes."
+  "Simple notes with a strict file-naming scheme."
   :group 'files)
 
 ;;;; User options

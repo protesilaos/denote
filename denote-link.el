@@ -1,4 +1,4 @@
-;;; denote-link.el --- Link facility for denote -*- lexical-binding: t -*-
+;;; denote-link.el --- Link facility for Denote -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Protesilaos Stavrou
 
@@ -31,8 +31,8 @@
 (require 'denote)
 
 (defgroup denote-link ()
-  "Simple tool for plain text notes."
-  :group 'files)
+  "Link facility for Denote."
+  :group 'denote)
 
 ;;; User options
 
