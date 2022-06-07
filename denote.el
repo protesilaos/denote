@@ -93,6 +93,10 @@ If nil, show the keywords in their given order."
 (defconst denote--keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
   "Regular expression to match `denote-keywords'.")
 
+(defconst denote--file-regexp
+  (concat denote--id-regexp denote--keyword-regexp "\\(.*\\)\\.org")
+  "Regular expression to match file names from `denote-new-note'.")
+
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
   "Regular expression of punctionation that should be removed.")
 
