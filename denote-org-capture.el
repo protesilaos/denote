@@ -63,7 +63,7 @@ This string is append to new notes in the `denote-org-capture'
 function.  Every new note has the standard front matter we
 define."
   :type 'string
-  :group 'denote)
+  :group 'denote-org-capture)
 
 ;;;###autoload
 (defun denote-org-capture ()
