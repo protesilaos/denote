@@ -84,13 +84,13 @@ If nil, show the keywords in their given order."
 
 ;;;; Main variables
 
-(defconst denote-id "%Y%m%d_%H%M%S"
+(defconst denote--id "%Y%m%d_%H%M%S"
   "Format of ID prefix of a note's filename.")
 
-(defconst denote-id-regexp "\\([0-9_]+\\{15\\}\\)"
-  "Regular expression to match `denote-id'.")
+(defconst denote--id-regexp "\\([0-9_]+\\{15\\}\\)"
+  "Regular expression to match `denote--id'.")
 
-(defconst denote-keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
+(defconst denote--keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
   "Regular expression to match `denote-keywords'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
@@ -184,7 +184,7 @@ With optional N, search in the Nth line from point."
   (delq nil (mapcar
              (lambda (x)
                (denote--extract
-                (concat denote-id-regexp denote-keyword-regexp) x 3))
+                (concat denote--id-regexp denote--keyword-regexp) x 3))
              (denote--directory-files))))
 
 (defun denote--inferred-keywords ()
@@ -282,7 +282,7 @@ Format current time, else use optional ID."
   (setq denote-last-path
         (denote--format-file
          (file-name-as-directory denote-directory)
-         (format-time-string denote-id)
+         (format-time-string denote--id)
          keywords
          (denote--sluggify title))))
 
@@ -294,7 +294,7 @@ Use optional PATH, else create it with `denote--path'."
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
                   title (format-time-string "%F") keywords p
-                  (format-time-string denote-id))))
+                  (format-time-string denote--id))))
     (unless path
       (with-current-buffer buffer (insert header))
       (setq denote-last-buffer buffer))
