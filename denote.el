@@ -289,11 +289,11 @@ Format current time, else use optional ID."
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
 Use optional PATH, else create it with `denote--path'."
-  (let* ((path (or path (denote--path title keywords)))
+  (let* ((p (or path (denote--path title keywords)))
          (default-directory denote-directory)
-         (buffer (unless path (find-file path)))
+         (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
-                  title (format-time-string "%F") keywords path
+                  title (format-time-string "%F") keywords p
                   (format-time-string denote-id))))
     (unless path
       (with-current-buffer buffer (insert header))
