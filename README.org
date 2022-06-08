@@ -138,8 +138,12 @@ are those defined in the user option ~denote-known-keywords~.  More
 candidates can be inferred from the names of existing notes, by setting
 ~denote-infer-keywords~ to non-nil (which is the case by default).
 
+#+vindex: denote-sort-keywords
 Multiple keywords can be inserted by separating them with a comma (or
 whatever the value of the ~crm-indicator~ is---which should be a comma).
+When the user option ~denote-sort-keywords~ is non-nil (the default),
+keywords are sorted alphabetically (technically, the sorting is done
+with ~string-lessp~).
 
 The ~denote~ command can also be called from Lisp, in which case it
 expects the =TITLE= and =KEYWORDS= arguments.  The former is a string,
