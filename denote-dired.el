@@ -40,6 +40,15 @@
   "Integration between Denote and Dired."
   :group 'denote)
 
+(defcustom denote-dired-directories
+  ;; We use different ways to specify a path for demo purposes.
+  (list denote-directory
+        (thread-last denote-directory (expand-file-name "attachments"))
+        (expand-file-name "~/Documents/vlog"))
+  "List of directories where `denote-dired-mode' should apply to."
+  :type '(repeat directory)
+  :group 'denote-dired)
+
 ;;;; Commands
 
 ;;;###autoload
@@ -70,11 +79,6 @@ renaming attachments that the user adds to their notes."
 
 ;;;; Extra fontification
 
-(defvar dired-font-lock-keywords)
-
-(defvar denote-dired-original-keywords dired-font-lock-keywords
-  "Original Dired fontification keywords.")
-
 (defface denote-dired-dired-field-date
   '((((class color) (min-colors 88) (background light))
      :foreground "#00538b")
@@ -103,26 +107,13 @@ renaming attachments that the user adds to their notes."
   "Face for file name delimiters in `dired-mode' buffers."
   :group 'denote-dired)
 
-(defun denote-dired--fontify ()
-  "Append fontification rules to `dired-font-lock-keywords'."
-  (setq dired-font-lock-keywords
-        (append (list `(,denote--file-regexp
-                        (1 'denote-dired-dired-field-date)
-                        (2 'denote-dired-dired-field-delimiter)
-                        (3 'denote-dired-dired-field-keywords)
-                        (4 'denote-dired-dired-field-delimiter)))
-                dired-font-lock-keywords)))
-
-(defvar diredfl-mode)
-(declare-function diredfl-mode "diredfl")
-
-(defun denote-dired--setup (&optional reverse)
-  "Setup `denote-dired--fontify' local hook.
-If optional REVERSE is non-nil, remove the hook."
-  (if reverse
-      (setq dired-font-lock-keywords denote-dired-original-keywords)
-    (denote-dired--fontify))
-  (font-lock-refresh-defaults))
+(defconst denote-dired-font-lock-keywords
+  `((,denote--file-regexp
+     (1 'denote-dired-dired-field-date)
+     (2 'denote-dired-dired-field-delimiter)
+     (3 'denote-dired-dired-field-keywords)
+     (4 'denote-dired-dired-field-delimiter)))
+  "Keywords for fontification.")
 
 ;;;###autoload
 (define-minor-mode denote-dired-mode
@@ -130,8 +121,25 @@ If optional REVERSE is non-nil, remove the hook."
   :global nil
   :group 'denote-dired
   (if denote-dired-mode
-      (denote-dired--setup)
-    (denote-dired--setup :reverse)))
+      (font-lock-add-keywords nil denote-dired-font-lock-keywords t)
+    (font-lock-remove-keywords nil denote-dired-font-lock-keywords))
+  (font-lock-flush (point-min) (point-max)))
+
+(defun denote-dired--modes-dirs-as-dirs ()
+  "Return `denote-dired-directories' as directories.
+The intent is to basically make sure that however a path is
+written, it is always returned as a directory."
+  (mapcar
+   (lambda (dir)
+     (file-name-as-directory (file-truename dir)))
+   denote-dired-directories))
+
+;;;###autoload
+(defun denote-dired-mode-in-directories ()
+  "Enable `denote-dired-mode' in `denote-dired-directories'.
+Add this function to `dired-mode-hook'."
+  (when (member (file-truename default-directory) (denote-dired--modes-dirs-as-dirs))
+    (denote-dired-mode 1)))
 
 (provide 'denote-dired)
 ;;; denote-dired.el ends here
