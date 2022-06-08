@@ -272,14 +272,18 @@ output is sorted with `string-lessp'."
 
 ;;;; New note
 
-(defun denote--format-file (path id keywords slug)
+(defun denote--format-file (path id keywords slug &optional extension)
   "Format file name.
 PATH, ID, KEYWORDS, SLUG are expected to be supplied by `denote'
-or equivalent: they will all be converted into a single string."
+or equivalent: they will all be converted into a single string.
+
+Optional EXTENSION is the file type extension.  Use .org if none
+is specified."
   (let ((kws (if denote-infer-keywords
                  (denote--keywords-combine keywords)
-               keywords)))
-    (format "%s%s--%s--%s.org" path id kws slug)))
+               keywords))
+        (ext (or extension ".org")))
+    (format "%s%s--%s--%s%s" path id kws slug ext)))
 
 (defun denote--file-meta-header (title date keywords filename id)
   "Front matter for new notes.
