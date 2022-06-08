@@ -42,7 +42,10 @@
 ;;;; User options
 
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
-  "Directory for storing personal notes."
+  "Directory for storing personal notes.
+If you intend to reference this variable in Lisp, consider using
+the function `denote-directory' instead: it returns the path as a
+directory."
   :group 'denote
   :type 'directory)
 
