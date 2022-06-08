@@ -370,7 +370,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Author/maintainer :: Protesilaos Stavrou.
 
-+ Ideas and/or user feedback :: Kaushal Modi.
++ Ideas and/or user feedback :: Kaushal Modi, Ypot.
 
 * GNU Free Documentation License
 :PROPERTIES:

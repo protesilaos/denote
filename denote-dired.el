@@ -88,18 +88,14 @@
 (defun denote-dired--setup (&optional reverse)
   "Setup `denote-dired--fontify' local hook.
 If optional REVERSE is non-nil, remove the hook."
-  (cond
-   (reverse
-    (setq dired-font-lock-keywords denote-dired-original-keywords))
-   ((or (string-match-p (denote--directory) default-directory)
-        (string-match-p (abbreviate-file-name denote-directory) default-directory)
-        (string-match-p denote-directory default-directory))
-    (denote-dired--fontify)))
+  (if reverse
+      (setq dired-font-lock-keywords denote-dired-original-keywords)
+    (denote-dired--fontify))
   (font-lock-refresh-defaults))
 
 ;;;###autoload
 (define-minor-mode denote-dired-mode
-  "Integrate denote with Dired."
+  "Fontify all Denote-style file names in Dired."
   :global nil
   :group 'denote-dired
   (if denote-dired-mode
