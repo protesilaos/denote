@@ -188,6 +188,25 @@ in the template.  Instead, they have to be assigned to the user option
 (setq denote-org-capture-specifiers "%l\n%i\n%?")
 #+end_src
 
+Notes have their own "front matter".  This is a block of data at the top
+of the file, which is automatically generated once producing a new
+note. The front matter includes the title and keywords which the user
+specified at the relevant prompts, as well as the date, the unique
+identifier and the file path.  To ensure compatibility with the wider
+Org ecosystem, the keywords are recorded as the value of =#+filetags=.
+
+#+vindex: denote-front-matter-date-format
+The format of the date in the front matter is controlled by the user
+option ~denote-front-matter-date-format~:
+
+- When the value is nil (the default), the date uses a plain
+  =YEAR-MONTH-DAY= notation, like =2022-06-08=.
+- When the value is the =org-timestamp= symbol, the date is recorded as
+  an inactive Org timestamp, such as =[2022-06-08 Wed 06:19]=.
+- An arbitrary string value is interpreted as the argument for the
+  function ~format-time-string~.  This gives the user maximum control
+  over how time is represented in the front matter.
+
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
