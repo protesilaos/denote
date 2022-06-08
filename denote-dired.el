@@ -34,10 +34,41 @@
 ;;; Code:
 
 (require 'denote)
+(require 'dired)
 
 (defgroup denote-dired ()
   "Integration between Denote and Dired."
   :group 'denote)
+
+;;;; Commands
+
+;;;###autoload
+(defun denote-dired-rename-file (title keywords)
+  "Rename file at point to new file with TITLE and KEYWORDS.
+This command is intended to complement note-taking, such as by
+renaming attachments that the user adds to their notes."
+  (interactive
+   (list
+    (denote--title-prompt)
+    (denote--keywords-prompt)))
+  (let* ((file (dired-get-filename))
+         (dir (file-name-directory file))
+         (old-name (file-name-nondirectory file))
+         (extension (file-name-extension file t))
+         (new-name (denote--format-file
+                    dir
+                    (format-time-string denote--id)
+                    keywords
+                    (denote--sluggify title)
+                    extension)))
+    (when (y-or-n-p
+           (format "Rename %s to %s?"
+                   (propertize old-name 'face 'error)
+                   (propertize (file-name-nondirectory new-name) 'face 'success)))
+      (rename-file old-name new-name nil)
+      (revert-buffer))))
+
+;;;; Extra fontification
 
 (defvar dired-font-lock-keywords)
 
