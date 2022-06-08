@@ -79,13 +79,13 @@ Both are supplied by `denote-link'."
       (denote-link--find-key-value-pair regexp))))
 
 (defun denote-link--read-file-prompt ()
-  "Prompt for regular file in `denote-directory'."
+  "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory)
                   nil t nil #'file-regular-p)) ; Includes backup files.  Maybe we can remove them?
 
 ;;;###autoload
 (defun denote-link (target)
-  "Create Org link to TARGET note in `denote-directory'.
+  "Create Org link to TARGET note in variable `denote-directory'.
 Run `denote-link-insert-functions' afterwards."
   (interactive (list (denote-link--read-file-prompt)))
   (let* ((dir (denote-directory))
