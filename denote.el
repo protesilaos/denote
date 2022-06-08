@@ -127,7 +127,7 @@ specifiers."
 ;;;; File helper functions
 
 (defun denote-directory ()
-  "Valid name format for `denote-directory'."
+  "Return `denote-directory' as a proper directory path."
   (let ((path denote-directory))
     (unless (file-directory-p path)
       (make-directory path t))
