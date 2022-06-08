@@ -73,14 +73,14 @@ Both are supplied by `denote-link'."
 
 (defun denote-link--retrieve-value (note regexp)
   "Return REGEXP value from NOTE."
-  (let ((default-directory (denote--directory)))
+  (let ((default-directory (denote-directory)))
     (with-temp-buffer
       (insert-file-contents-literally note)
       (denote-link--find-key-value-pair regexp))))
 
 (defun denote-link--read-file-prompt ()
   "Prompt for regular file in `denote-directory'."
-  (read-file-name "Select note: " (denote--directory)
+  (read-file-name "Select note: " (denote-directory)
                   nil t nil #'file-regular-p)) ; Includes backup files.  Maybe we can remove them?
 
 ;;;###autoload
@@ -88,7 +88,7 @@ Both are supplied by `denote-link'."
   "Create Org link to TARGET note in `denote-directory'.
 Run `denote-link-insert-functions' afterwards."
   (interactive (list (denote-link--read-file-prompt)))
-  (let* ((dir (denote--directory))
+  (let* ((dir (denote-directory))
          (target-id (cdr (denote-link--retrieve-value target denote-link--identifier-regexp)))
          (target-name (string-remove-prefix
                        dir (cdr (denote-link--retrieve-value target denote-link--filename-regexp))))
@@ -109,7 +109,7 @@ This heading is appended to a file when another links to it.")
 
 (defun denote-link-backlink (target-file origin-link)
   "Insert ORIGIN-LINK to TARGET-FILE."
-  (let ((default-directory (denote--directory))
+  (let ((default-directory (denote-directory))
         (heading denote-link-backlink-heading)
         heading-point)
     (with-current-buffer (find-file-noselect target-file)
@@ -128,7 +128,7 @@ This heading is appended to a file when another links to it.")
 (defun denote-link-clear-stale-backlinks ()
   "Delete backlinks that no longer point to files."
   (interactive)
-  (let ((default-directory (denote--directory)))
+  (let ((default-directory (denote-directory)))
     (save-excursion
       (goto-char (point-min))
       (when (re-search-forward denote-link-backlink-heading nil t))

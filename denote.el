@@ -126,7 +126,7 @@ specifiers."
 
 ;;;; File helper functions
 
-(defun denote--directory ()
+(defun denote-directory ()
   "Valid name format for `denote-directory'."
   (let ((path denote-directory))
     (unless (file-directory-p path)
@@ -192,7 +192,7 @@ With optional N, search in the Nth line from point."
 
 (defun denote--directory-files ()
   "List `denote-directory' files, assuming flat directory."
-  (let* ((dir (denote--directory))
+  (let* ((dir (denote-directory))
          (default-directory dir))
     (seq-remove
      (lambda (file)
