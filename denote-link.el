@@ -130,10 +130,10 @@ This heading is appended to a file when another links to it.")
   (let ((default-directory (denote-directory)))
     (save-excursion
       (goto-char (point-min))
-      (when (re-search-forward denote-link-backlink-heading nil t))
-      (while (re-search-forward denote-link--backlink-regexp nil t)
-        (unless (file-exists-p (match-string-no-properties 1))
-          (delete-line))))))
+      (when (re-search-forward denote-link-backlink-heading nil t)
+        (while (re-search-forward denote-link--backlink-regexp nil t)
+          (unless (file-exists-p (match-string-no-properties 1))
+            (delete-region (point-at-bol) (point-at-bol 2))))))))
 
 (provide 'denote-link)
 ;;; denote-link.el ends here
