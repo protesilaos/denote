@@ -122,7 +122,7 @@ This heading is appended to a file when another links to it.")
       (insert (format "- %s\n" origin-link))
       ;; delete duplicate links
       (when heading-point
-          (delete-duplicate-lines heading-point (point-max) nil nil t)))))
+        (delete-duplicate-lines heading-point (point-max) nil nil t)))))
 
 (defun denote-link-clear-stale-backlinks ()
   "Delete backlinks that no longer point to files."
