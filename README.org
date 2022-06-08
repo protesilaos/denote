@@ -264,13 +264,13 @@ facility.
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
 :END:
 
-#+findex: denote-dired-rename-file
 Denote's file-naming scheme is not specific to notes or text files: it
 is useful for all sorts of files, such as multimedia and PDFs that form
 part of the user's longer-term storage ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  While
 Denote does not manage such files, it already has all the mechanisms to
 facilitate the task of renaming them.
 
+#+findex: denote-dired-rename-file
 To this end, invoke ~denote-dired-rename-file~ when point is over a file
 in Dired to rename it.  The commaand prompts for a =TITLE= and
 =KEYWORDS= the same way the ~denote~ command does it ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
