@@ -24,12 +24,41 @@
 
 ;;; Commentary:
 ;;
-;; Integration of denote with Dired.  NOTE: does not work if
-;; diredfl-mode is enabled.
+;; One of the upsides of Denote's file-naming scheme is the predictable
+;; pattern it establishes, which appears as a near-tabular presentation in
+;; a listing of notes (i.e. in Dired).  The `denote-dired-mode' can help
+;; enhance this impression, by fontifying the components of the file name
+;; to make the date (identifier) and keywords stand out.
 ;;
-;; Setup (only affects `denote-directory'):
+;; There are two ways to set the mode.  Either use it for all directories,
+;; which probably is not needed:
 ;;
+;;     (require 'denote-dired)
 ;;     (add-hook 'dired-mode-hook #'denote-dired-mode)
+;;
+;; Or configure the user option `denote-dired-directories' and then set up
+;; the function `denote-dired-mode-in-directories':
+;;
+;;     (require 'denote-dired)
+;;
+;;     ;; We use different ways to specify a path for demo purposes.
+;;     (setq denote-dired-directories
+;;           (list denote-directory
+;;                 (thread-last denote-directory (expand-file-name "attachments"))
+;;                 (expand-file-name "~/Documents/vlog")))
+;;
+;;     (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+;;
+;; The `denote-dired-mode' does not only fontify note files that were
+;; created by Denote: it covers every file name that follows our naming
+;; conventions (read about "The file-naming scheme" in the manual).
+;; This is particularly useful for scenaria where, say, one wants to
+;; organise their collection of PDFs and multimedia in a systematic way
+;; (and, perhaps, use them as attachments for the notes Denote
+;; produces).
+;;
+;; For the time being, the `diredfl' package is not compatible with this
+;; facility.
 
 ;;; Code:
 
