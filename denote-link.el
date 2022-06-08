@@ -121,9 +121,8 @@ This heading is appended to a file when another links to it.")
          (format "* %s\n%s\n\n" heading "# Do not edit; this is for denote.el and related")))
       (insert (format "- %s\n" origin-link))
       ;; delete duplicate links
-      (unwind-protect
-          (delete-duplicate-lines heading-point (point-max) nil nil t)
-        (widen)))))
+      (when heading-point
+          (delete-duplicate-lines heading-point (point-max) nil nil t)))))
 
 (defun denote-link-clear-stale-backlinks ()
   "Delete backlinks that no longer point to files."
