@@ -82,6 +82,24 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
+(defcustom denote-front-matter-date-format nil
+  "Date format in the front matter (file header) of new notes.
+
+If the value is nil, use a plain date in YEAR-MONTH-DAY notation,
+like 2022-06-08.
+
+If the value is the `org-timestamp' symbol, format the date as an
+inactive Org timestamp such as: [2022-06-08 Wed 06:19].
+
+If a string, use it as the argument of `format-time-string'.
+Read the documentation of that function for valid format
+specifiers."
+  :type '(choice
+          (const :tag "Just the date like 2022-06-08" nil)
+          (const :tag "An inactive Org timestamp like [2022-06-08 Wed 06:19]" org-timestamp)
+          (string :tag "Custom format for `format-time-string'"))
+  :group 'denote)
+
 ;;;; Main variables
 
 (defconst denote--id "%Y%m%d_%H%M%S"
@@ -288,6 +306,16 @@ Format current time, else use optional ID."
          keywords
          (denote--sluggify title))))
 
+(defun denote--date ()
+  "Expand the date for a new note's front matter."
+  (let ((format denote-front-matter-date-format))
+    (cond
+     ((eq format 'org-timestamp)
+      (format-time-string "[%F %a %R]"))
+     ((stringp format)
+      (format-time-string format))
+     (t (format-time-string "%F")))))
+
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
 Use optional PATH, else create it with `denote--path'."
@@ -295,7 +323,7 @@ Use optional PATH, else create it with `denote--path'."
          (default-directory denote-directory)
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
-                  title (format-time-string "%F") keywords p
+                  title (denote--date) keywords p
                   (format-time-string denote--id))))
     (unless path
       (with-current-buffer buffer (insert header))
