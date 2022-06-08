@@ -63,9 +63,9 @@ are assumed to demarcate distinct keywords."
 (defcustom denote-infer-keywords t
   "Whether to infer keywords.
 
-When non-nil, search the file names of existing notes in
-`denote-directory' for their keyword field and extract the
-entries as \"inferred keywords\".  These are combined with
+When non-nil, search the file names of existing notes in the
+variable `denote-directory' for their keyword field and extract
+the entries as \"inferred keywords\".  These are combined with
 `denote-known-keywords' and are presented as completion
 candidated while using `denote-new-note' interactively.
 
@@ -130,7 +130,7 @@ specifiers."
 ;;;; File helper functions
 
 (defun denote-directory ()
-  "Return `denote-directory' as a proper directory path."
+  "Return path of variable `denote-directory' as a proper directory."
   (let ((path denote-directory))
     (unless (file-directory-p path)
       (make-directory path t))
@@ -194,7 +194,7 @@ With optional N, search in the Nth line from point."
 ;;;; Keywords
 
 (defun denote--directory-files ()
-  "List `denote-directory' files, assuming flat directory."
+  "List note files, assuming flat directory."
   (let* ((dir (denote-directory))
          (default-directory dir))
     (seq-remove
