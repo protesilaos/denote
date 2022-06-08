@@ -224,10 +224,37 @@ a listing of notes (i.e. in Dired).  The ~denote-dired-mode~ can help
 enhance this impression, by fontifying the components of the file name
 to make the date (identifier) and keywords stand out.
 
+There are two ways to set the mode.  Either use it for all directories,
+which probably is not needed:
+
 #+begin_src emacs-lisp
 (require 'denote-dired)
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 #+end_src
+
+#+vindex: denote-dired-directories
+#+findex: denote-dired-mode-in-directories
+Or configure the user option ~denote-dired-directories~ and then set up
+the function ~denote-dired-mode-in-directories~:
+
+#+begin_src emacs-lisp
+(require 'denote-dired)
+
+;; We use different ways to specify a path for demo purposes.
+(setq denote-dired-directories
+      (list denote-directory
+            (thread-last denote-directory (expand-file-name "attachments"))
+            (expand-file-name "~/Documents/vlog")))
+
+(add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+#+end_src
+
+The ~denote-dired-mode~ does not only fontify note files that were
+created by Denote: it covers every file name that follows our naming
+conventions ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  This is particularly useful for
+scenaria where, say, one wants to organise their collection of PDFs and
+multimedia in a systematic way (and, perhaps, use them as attachments
+for the notes Denote produces).
 
 For the time being, the =diredfl= package is not compatible with this
 facility.
@@ -341,7 +368,18 @@ Everything is in place to set up the package.
 
 (require 'denote-link)
 (require 'denote-dired)
+
+;; We use different ways to specify a path for demo purposes.
+(setq denote-dired-directories
+      (list denote-directory
+            (thread-last denote-directory (expand-file-name "attachments"))
+            (expand-file-name "~/Documents/vlog")))
+
+;; Generic
 (add-hook 'dired-mode-hook #'denote-dired-mode)
+
+;; OR better:
+(add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
 ;; You can bind `denote' to a global key if you prefer not to use
 ;; `org-capture'.  For example:
