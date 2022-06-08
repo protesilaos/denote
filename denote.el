@@ -112,7 +112,7 @@ specifiers."
   "Regular expression to match `denote-keywords'.")
 
 (defconst denote--file-regexp
-  (concat denote--id-regexp denote--keyword-regexp "\\(.*\\)\\..*")
+  (concat denote--id-regexp denote--keyword-regexp "\\(.*\\)\\.?.*")
   "Regular expression to match file names from `denote-new-note'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
