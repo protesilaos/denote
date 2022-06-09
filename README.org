@@ -34,7 +34,9 @@ The documentation furnished herein corresponds to stable version
 a newer feature which does not yet form part of the latest tagged
 commit, is explicitly marked as such.
 
-Current development target is {{{development-version}}}.
+Current development target is {{{development-version}}}.  Note that the
+project is still in active development and THINGS MIGHT CHANGE IN
+BACKWARD-INCOMPATIBLE WAYS until we make the first stable release.
 
 + Homepage: https://protesilaos.com/emacs/denote.
 # + Change log: https://protesilaos.com/emacs/denote-changelog.
