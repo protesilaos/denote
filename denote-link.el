@@ -89,6 +89,9 @@ Both are supplied by `denote-link'."
 Run `denote-link-insert-functions' afterwards."
   (interactive (list (denote-link--read-file-prompt)))
   (let* ((dir (denote-directory))
+         ;; TODO 2022-06-09: This is probably the ugliest function in
+         ;; the whole project.  We need to make it more readable by
+         ;; extracting the parts that should go in helper functions.
          (target-id (cdr (denote-link--retrieve-value target denote-link--identifier-regexp)))
          (target-name (string-remove-prefix
                        dir (cdr (denote-link--retrieve-value target denote-link--filename-regexp))))
