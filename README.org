@@ -422,14 +422,14 @@ Everything is in place to set up the package.
             (thread-last denote-directory (expand-file-name "attachments"))
             (expand-file-name "~/Documents/vlog")))
 
-;; Generic
-(add-hook 'dired-mode-hook #'denote-dired-mode)
-
+;; Generic:
+;; (add-hook 'dired-mode-hook #'denote-dired-mode)
+;;
 ;; OR better:
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
 ;; You can bind `denote' to a global key if you prefer not to use
-;; `org-capture'.  For example:
+;; `org-capture' or want an alternative.  For example:
 (define-key global-map (kbd "C-c n") #'denote)
 
 (with-eval-after-load 'org-capture
