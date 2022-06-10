@@ -196,12 +196,49 @@ in the template.  Instead, they have to be assigned to the user option
 (setq denote-org-capture-specifiers "%l\n%i\n%?")
 #+end_src
 
+* Front matter
+:PROPERTIES:
+:CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
+:END:
+
 Notes have their own "front matter".  This is a block of data at the top
-of the file, which is automatically generated once producing a new
-note. The front matter includes the title and keywords which the user
-specified at the relevant prompts, as well as the date, the unique
-identifier and the file path.  To ensure compatibility with the wider
-Org ecosystem, the keywords are recorded as the value of =#+filetags=.
+of the file, which is automatically generated at the creation of a new
+note. The front matter includes the title and keywords (aka "tags" or
+"filetags", depending on the file type) which the user specified at the
+relevant prompt, as well as the date and unique identifier which are
+derived automatically.
+
+This is how it looks for Org mode (~denote-file-type~ is nil):
+
+#+begin_example
+#+title:      This is a sample note
+#+date:       2022-06-10
+#+filetags:   denote  testing
+#+identifier: 20220610T134640
+#+end_example
+
+For Markdown, it looks like this (~denote-file-type~ has the =markdown=
+value):
+
+#+begin_src emacs-lisp
+---
+title:      This is a sample note
+date:       2022-06-10
+tags:       denote  testing
+identifier: 20220610T134718
+---
+#+end_src
+
+And for plain text, we have the following (~denote-file-type~ has the
+=text= value):
+
+#+begin_example
+title:      This is a sample note
+date:       2022-06-10
+tags:       denote  testing
+identifier: 20220610T134829
+---------------------------
+#+end_example
 
 #+vindex: denote-front-matter-date-format
 The format of the date in the front matter is controlled by the user
