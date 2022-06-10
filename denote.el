@@ -288,18 +288,16 @@ is specified."
         (ext (or extension ".org")))
     (format "%s%s--%s--%s%s" path id kws slug ext)))
 
-(defun denote--file-meta-header (title date keywords filename id)
+(defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
 
-TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
- provided by `denote-new-note'."
+TITLE, DATE, KEYWORDS, and ID are all strings which are provided
+ by `denote-new-note'."
   (let ((kw (denote--keywords-capitalize keywords)))
     (concat "#+title:      " title     "\n"
             "#+date:       " date      "\n"
             "#+filetags:   " kw        "\n"
             "#+identifier: " id        "\n"
-            "#+filename:   " (string-remove-prefix denote-directory filename)  "\n"
-            "#+path:       " filename  "\n"
             "\n\n")))
 
 (defun denote--path (title keywords)
@@ -325,11 +323,11 @@ Format current time, else use optional ID."
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
 Use optional PATH, else create it with `denote--path'."
-  (let* ((p (or path (denote--path title keywords)))
-         (default-directory denote-directory)
+  (let* ((default-directory denote-directory)
+         (p (or path (denote--path title keywords)))
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
-                  title (denote--date) keywords p
+                  title (denote--date) keywords
                   (format-time-string denote--id))))
     (unless path
       (with-current-buffer buffer (insert header))
