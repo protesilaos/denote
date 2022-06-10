@@ -354,12 +354,21 @@ treatment)."
   (cond
    ((and (> (length keywords) 1) (not (stringp keywords)))
     (pcase type
-      ('toml (format "[ %s ]" (denote--map-quote-downcase keywords)))
+      ('toml (format "[%s]" (denote--map-quote-downcase keywords)))
       (_ (mapconcat #'downcase keywords "  "))))
    (t
     (pcase type
-      ('toml (format "['%s']" (downcase keywords)))
+      ('toml (format "[%S]" (downcase keywords)))
       (_ (downcase keywords))))))
+
+(defvar denote--tml-front-matter-format
+  "+++
+title      = %S
+date       = %s
+tags       = %s
+identifier = %s
++++\n\n"
+  "TOML front matter value for `format'.")
 
 (defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
@@ -369,13 +378,8 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase denote-file-type
-      ('markdown-toml (concat "+++" "\n"
-                              "title:      " title   "\n"
-                              "date:       " date    "\n"
-                              "tags:       " kw-toml "\n"
-                              "identifier: " id      "\n"
-                              "+++"                  "\n"
-                              "\n"))
+      ('markdown-toml
+       (format denote--tml-front-matter-format title date kw-toml id))
 
       ('markdown-yaml (concat "---" "\n"
                               "title:      " title    "\n"
