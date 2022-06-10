@@ -366,7 +366,7 @@ treatment)."
 title      = %S
 date       = %s
 tags       = %s
-identifier = %s
+identifier = %S
 +++\n\n"
   "TOML front matter value for `format'.")
 
