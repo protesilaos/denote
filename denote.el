@@ -85,6 +85,23 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
+(defcustom denote-file-type nil
+  "The file type extension for new notes.
+
+By default (a nil value), the file type is that of Org mode.
+
+When the value is the symbol `markdown', the file type is that of
+Markdown mode.
+
+When the value is `text', the file type is that of Text mode.
+
+Any other non-nil value is the same as the default."
+  :type '(choice
+          (const :tag "Org mode (default)" nil)
+          (const :tag "Markdown" markdown)
+          (const :tag "Plain text" text))
+  :group 'denote)
+
 (defcustom denote-front-matter-date-format nil
   "Date format in the front matter (file header) of new notes.
 
@@ -253,13 +270,6 @@ output is sorted with `string-lessp'."
       (mapconcat #'downcase keywords "+")
     keywords))
 
-(defun denote--keywords-capitalize (keywords)
-  "`capitalize' KEYWORDS output of `denote--keywords-prompt'."
-  (if (and (> (length keywords) 1)
-           (not (stringp keywords)))
-      (mapconcat #'capitalize keywords ", ")
-    (capitalize keywords)))
-
 (defun denote--keywords-add-to-history (keywords)
   "Append KEYWORDS to `denote--keyword-history'."
   (if-let ((listed (listp keywords))
@@ -275,30 +285,63 @@ output is sorted with `string-lessp'."
 
 ;;;; New note
 
-(defun denote--format-file (path id keywords slug &optional extension)
+(defun denote--file-extension ()
+  "Return file type extension based on `denote-file-type'."
+  (pcase denote-file-type
+    ('markdown ".md")
+    ('text ".txt")
+    (_ ".org")))
+
+(defun denote--format-file (path id keywords slug extension)
   "Format file name.
 PATH, ID, KEYWORDS, SLUG are expected to be supplied by `denote'
 or equivalent: they will all be converted into a single string.
-
-Optional EXTENSION is the file type extension.  Use .org if none
-is specified."
+EXTENSION is the file type extension, either a string which
+include the starting dot or the return value of
+`denote--file-extension'."
   (let ((kws (if denote-infer-keywords
                  (denote--keywords-combine keywords)
                keywords))
-        (ext (or extension ".org")))
+        (ext (or extension (denote--file-extension))))
     (format "%s%s--%s--%s%s" path id slug kws ext)))
+
+(defun denote--file-meta-keywords (keywords)
+  "Prepare KEYWORDS for inclusion in the file's front matter.
+Parse the output of `denote--keywords-prompt', using `downcase'
+on the keywords and separating them by two spaces.  A single
+keyword is just downcased."
+  (if (and (> (length keywords) 1)
+           (not (stringp keywords)))
+      (mapconcat #'downcase keywords "  ")
+    (downcase keywords)))
 
 (defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
  provided by `denote-new-note'."
-  (let ((kw (denote--keywords-capitalize keywords)))
-    (concat "#+title:      " title     "\n"
-            "#+date:       " date      "\n"
-            "#+filetags:   " kw        "\n"
-            "#+identifier: " id        "\n"
-            "\n")))
+  (let ((kw (denote--file-meta-keywords keywords)))
+    (pcase denote-file-type
+      ('markdown (concat "---" "\n"
+                         "title:      " title "\n"
+                         "date:       " date  "\n"
+                         "tags:       " kw    "\n"
+                         "identifier: " id    "\n"
+                         "---"                "\n"
+                         "\n"))
+
+      ('text (concat "title:      " title "\n"
+                     "date:       " date  "\n"
+                     "tags:       " kw    "\n"
+                     "identifier: " id    "\n"
+                     (make-string 27 ?-)  "\n"
+                     "\n"))
+
+      (_ (concat "#+title:      " title "\n"
+                 "#+date:       " date  "\n"
+                 "#+filetags:   " kw    "\n"
+                 "#+identifier: " id    "\n"
+                 "\n")))))
 
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS.
@@ -308,7 +351,8 @@ Format current time, else use optional ID."
          (file-name-as-directory denote-directory)
          (format-time-string denote--id)
          keywords
-         (denote--sluggify title))))
+         (denote--sluggify title)
+         (denote--file-extension))))
 
 (defun denote--date ()
   "Expand the date for a new note's front matter."

@@ -83,7 +83,7 @@ the creation of such files.
 
 Every note produced by Denote follows this pattern:
 
-: DATE--TITLE--KEYWORDS.org
+: DATE--TITLE--KEYWORDS.EXTENSION
 
 The =DATE= field represents the date in year-month-day format followed
 by the capital letter =T= (for "time") and the current time in
@@ -104,14 +104,20 @@ one-word-long must be written with an underscore.  So when
 =emacs_library= appears in a file name, it is interpreted as a single
 keyword, whereas =emacs+library= are two distinct keywords.
 
+#+vindex: denote-file-type
+The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
+though the user option ~denote-file-type~ provides support for Markdown
+(=.md= which runs ~markdown-mode~) and plain text (=.txt.= via
+~text-mode~).  Consult its doc string for the minutia.
+
 Examples:
 
 : 20220107T124941--plentiful-and-predictable-liquidity--economics.org
-: 20220214T104945--git-patch-formatting--emacs+git.org
-: 20220420T113805--this-is-a-test--three_word_keyword.org
+: 20220214T104945--git-patch-formatting--emacs+git.md
+: 20220420T113805--this-is-a-test--three_word_keyword.txt
 
-While files end in the =.org= extension, the Denote code base does not
-actually depend on org.el and/or its accoutrements.
+While files end in the =.org= extension by default, the Denote code base
+does not actually depend on org.el and/or its accoutrements.
 
 #+vindex: denote-directory
 Notes are stored as a flat list in the ~denote-directory~ (i.e. no
@@ -413,6 +419,8 @@ Everything is in place to set up the package.
       '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
+(setq denote-file-type nil) ; default is Org mode, else set `markdown' or `text'
+
 (setq denote-front-matter-date-format 'org-timestamp)
 
 (require 'denote-link)
