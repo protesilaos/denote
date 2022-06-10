@@ -86,10 +86,10 @@ Every note produced by Denote follows this pattern:
 : DATE--KEYWORDS--TITLE.org
 
 The =DATE= field represents the date in year-month-day format followed
-by an underscore and the current time in hour-minute-second notation.
-The presentation is compact, with an underscore separating the two
-components.  Like this: =20220531_091625=.  The =DATE= serves as the
-unique identifier of each note.
+by the capital letter =T= (for "time") and the current time in
+hour-minute-second notation.  The presentation is compact:
+=20220531T091625=.  The =DATE= serves as the unique identifier of each
+note.
 
 The =KEYWORDS= field consists of one or more entries demarcated by a
 plus sign (the separator is inserted automatically).  Each keyword is a
@@ -106,9 +106,9 @@ string for the =TITLE= of the file name.
 
 Examples:
 
-: 20220107_124941--economics--plentiful-and-predictable-liquidity.org
-: 20220214_104945--emacs+git--git-patch-formatting.org
-: 20220420_113805--three_word_keyword--this-is-a-test.org
+: 20220107T124941--economics--plentiful-and-predictable-liquidity.org
+: 20220214T104945--emacs+git--git-patch-formatting.org
+: 20220420T113805--three_word_keyword--this-is-a-test.org
 
 While files end in the =.org= extension, the Denote code base does not
 actually depend on org.el and/or its accoutrements.

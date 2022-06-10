@@ -117,6 +117,11 @@ renaming attachments that the user adds to their notes."
   "Face for file name date in `dired-mode' buffers."
   :group 'denote-dired)
 
+(defface denote-dired-dired-field-time
+  '((t :inherit denote-dired-dired-field-date))
+  "Face for file name time in `dired-mode' buffers."
+  :group 'denote-dired)
+
 (defface denote-dired-dired-field-keywords
   '((default :inherit bold)
     (((class color) (min-colors 88) (background light))
@@ -139,9 +144,10 @@ renaming attachments that the user adds to their notes."
 (defconst denote-dired-font-lock-keywords
   `((,denote--file-regexp
      (1 'denote-dired-dired-field-date)
-     (2 'denote-dired-dired-field-delimiter)
-     (3 'denote-dired-dired-field-keywords)
-     (4 'denote-dired-dired-field-delimiter)))
+     (2 'denote-dired-dired-field-time)
+     (3 'denote-dired-dired-field-delimiter)
+     (4 'denote-dired-dired-field-keywords)
+     (5 'denote-dired-dired-field-delimiter)))
   "Keywords for fontification.")
 
 ;;;###autoload

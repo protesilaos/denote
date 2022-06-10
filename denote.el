@@ -105,10 +105,10 @@ specifiers."
 
 ;;;; Main variables
 
-(defconst denote--id "%Y%m%d_%H%M%S"
+(defconst denote--id "%Y%m%dT%H%M%S"
   "Format of ID prefix of a note's filename.")
 
-(defconst denote--id-regexp "\\([0-9_]+\\{15\\}\\)"
+(defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id'.")
 
 (defconst denote--keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
