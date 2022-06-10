@@ -249,7 +249,7 @@ This is how it looks for Org mode (~denote-file-type~ is nil):
 #+title:      This is a sample note
 #+date:       2022-06-10
 #+filetags:   denote  testing
-#+identifier: 20220610T134640
+#+identifier: 20220610T202537
 #+end_example
 
 For Markdown with YAML, it looks like this (~denote-file-type~ has the
@@ -257,10 +257,10 @@ For Markdown with YAML, it looks like this (~denote-file-type~ has the
 
 #+begin_example
 ---
-title:      This is a sample note
+title:      "This is a sample note"
 date:       2022-06-10
 tags:       denote  testing
-identifier: 20220610T134718
+identifier: "20220610T202021"
 ---
 #+end_example
 
@@ -283,7 +283,7 @@ And for plain text, we have the following (~denote-file-type~ has the
 title:      This is a sample note
 date:       2022-06-10
 tags:       denote  testing
-identifier: 20220610T134829
+identifier: 20220610T202232
 ---------------------------
 #+end_example
 
