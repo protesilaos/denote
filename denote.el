@@ -24,13 +24,38 @@
 
 ;;; Commentary:
 ;;
-;; "Denote" is the familiar word, though it also is a play on to the
-;; "note" concept.  Plus, we can come up with acronyms like:
+;; Denote is a simple, yet effective note-taking tool for Emacs.  It is
+;; based on the principle that notes must follow a predictable and
+;; descriptive file-naming scheme.  The file name alone should offer a
+;; clear indication of what the note is about, without reference to any
+;; other metadata.  Denote basically streamlines the creation of such
+;; files.
 ;;
-;; * Don't Ever Note Only The Ephemeral
-;; * Denote Everything Neatly; Omit The Excesses
+;; What Denote prioritizes with the enforcement of a strict file-naming
+;; scheme is portability.  Notes can be accessed, filtered, and understood
+;; without Emacs or any other advanced tool for that matter (though Emacs,
+;; Org, and others are excellent programs).
 ;;
-;; But I'll let you get back to work.  Don't Escape or Neglect your
+;; Denote has no mechanism to test for adherence to a given note-taking
+;; method, such as that of Zettelkasten (i.e. the contemporary digital
+;; equivalent of Niklas Luhmann's methodology).  It is possible to employ
+;; such a method, though it is ultimately up to the user to apply the
+;; requisite rigor.  What matters for our purposes is that Denote is not a
+;; zettelkasten implementation per se.
+;;
+;; By default, Denote creates note files using the `.org' extension.
+;; However, Denote does not depend on org.el or any of its accoutrements
+;; and extensions.  Users are given the option to change from Org to either
+;; Markdown (`.md') or Plain Text (`.txt'), as explained further in the
+;; manual (search for `denote-file-type').
+;;
+;; "Denote" is the familiar word, though it also is a play on to the "note"
+;; concept.  Plus, we can come up with acronyms (of dubious utility) like:
+;;
+;; + Don't Ever Note Only The Ephemeral
+;; + Denote Everything Neatly; Omit The Excesses
+;;
+;; But we'll let you get back to work.  Don't Escape or Neglect your
 ;; Obligations, Tasks, Engagements...
 
 ;;; Code:
