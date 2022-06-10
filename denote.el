@@ -111,12 +111,13 @@ specifiers."
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id'.")
 
-(defconst denote--keyword-regexp "\\(--\\)\\([0-9A-Za-z_+]*\\)\\(--\\)"
-  "Regular expression to match `denote-keywords'.")
-
 (defconst denote--file-regexp
-  (concat denote--id-regexp denote--keyword-regexp "\\(.*\\)\\.?.*")
+  (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(--\\)")
   "Regular expression to match file names from `denote-new-note'.")
+
+(defconst denote--keyword-regexp
+  (concat denote--file-regexp "\\([0-9A-Za-z_+]*\\)\\(\\.?.*\\)")
+  "Regular expression to match `denote-keywords'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
   "Regular expression of punctionation that should be removed.")
@@ -206,8 +207,7 @@ With optional N, search in the Nth line from point."
   "Produce list of keywords in `denote--directory-files'."
   (delq nil (mapcar
              (lambda (x)
-               (denote--extract
-                (concat denote--id-regexp denote--keyword-regexp) x 3))
+               (denote--extract denote--keyword-regexp x 6))
              (denote--directory-files))))
 
 (defun denote--inferred-keywords ()
@@ -286,7 +286,7 @@ is specified."
                  (denote--keywords-combine keywords)
                keywords))
         (ext (or extension ".org")))
-    (format "%s%s--%s--%s%s" path id kws slug ext)))
+    (format "%s%s--%s--%s%s" path id slug kws ext)))
 
 (defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.

@@ -83,13 +83,18 @@ the creation of such files.
 
 Every note produced by Denote follows this pattern:
 
-: DATE--KEYWORDS--TITLE.org
+: DATE--TITLE--KEYWORDS.org
 
 The =DATE= field represents the date in year-month-day format followed
 by the capital letter =T= (for "time") and the current time in
 hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
 note.
+
+The =TITLE= field is the title of the note, as provided by the user,
+that automatically gets downcased and hyphenated.  An entry about
+"Economics in the Euro Area" produces an =economics-in-the-euro-area=
+string for the =TITLE= of the file name.
 
 The =KEYWORDS= field consists of one or more entries demarcated by a
 plus sign (the separator is inserted automatically).  Each keyword is a
@@ -99,16 +104,11 @@ one-word-long must be written with an underscore.  So when
 =emacs_library= appears in a file name, it is interpreted as a single
 keyword, whereas =emacs+library= are two distinct keywords.
 
-The =TITLE= field is the title of the note, as provided by the user,
-that automatically gets downcased and hyphenated.  An entry about
-"Economics in the Euro Area" produces an =economics-in-the-euro-area=
-string for the =TITLE= of the file name.
-
 Examples:
 
-: 20220107T124941--economics--plentiful-and-predictable-liquidity.org
-: 20220214T104945--emacs+git--git-patch-formatting.org
-: 20220420T113805--three_word_keyword--this-is-a-test.org
+: 20220107T124941--plentiful-and-predictable-liquidity--economics.org
+: 20220214T104945--git-patch-formatting--emacs+git.org
+: 20220420T113805--this-is-a-test--three_word_keyword.org
 
 While files end in the =.org= extension, the Denote code base does not
 actually depend on org.el and/or its accoutrements.
