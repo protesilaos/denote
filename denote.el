@@ -288,7 +288,7 @@ is specified."
         (ext (or extension ".org")))
     (format "%s%s--%s--%s%s" path id kws slug ext)))
 
-(defun denote--file-meta-header (title date keywords filename id)
+(defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
@@ -298,9 +298,7 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
             "#+date:       " date      "\n"
             "#+filetags:   " kw        "\n"
             "#+identifier: " id        "\n"
-            "#+filename:   " (string-remove-prefix denote-directory filename)  "\n"
-            "#+path:       " filename  "\n"
-            "\n\n")))
+            "\n")))
 
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS.
@@ -329,7 +327,7 @@ Use optional PATH, else create it with `denote--path'."
          (default-directory denote-directory)
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
-                  title (denote--date) keywords p
+                  title (denote--date) keywords
                   (format-time-string denote--id))))
     (unless path
       (with-current-buffer buffer (insert header))

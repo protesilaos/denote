@@ -56,9 +56,6 @@ Both are supplied by `denote-link'."
 (defconst denote-link--title-regexp "^\\(#\\+title:\\)[\s\t]+\\(.*\\)"
   "Regular expression for title key and value.")
 
-(defconst denote-link--filename-regexp "^\\(#\\+filename:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for filename key and value.")
-
 (defconst denote-link--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
   "Regular expression for filename key and value.")
 
@@ -83,26 +80,23 @@ Both are supplied by `denote-link'."
   (read-file-name "Select note: " (denote-directory)
                   nil t nil #'file-regular-p)) ; Includes backup files.  Maybe we can remove them?
 
+(defun denote-link--format-link (file &optional backlink)
+  "Format link to FILE.
+With optional BACKLINK, format it as a backlink."
+  (let* ((dir (denote-directory))
+         (file-id (cdr (denote-link--retrieve-value file denote-link--identifier-regexp)))
+         (file-path (file-name-completion file-id dir))
+         (file-title (cdr (denote-link--retrieve-value file denote-link--title-regexp)))
+         (pattern (if backlink denote-link--backlink-format denote-link--link-format)))
+    (format pattern file-path file-title file-id)))
+
 ;;;###autoload
 (defun denote-link (target)
   "Create Org link to TARGET note in variable `denote-directory'.
 Run `denote-link-insert-functions' afterwards."
   (interactive (list (denote-link--read-file-prompt)))
-  (let* ((dir (denote-directory))
-         ;; TODO 2022-06-09: This is probably the ugliest function in
-         ;; the whole project.  We need to make it more readable by
-         ;; extracting the parts that should go in helper functions.
-         (target-id (cdr (denote-link--retrieve-value target denote-link--identifier-regexp)))
-         (target-name (string-remove-prefix
-                       dir (cdr (denote-link--retrieve-value target denote-link--filename-regexp))))
-         (target-title (cdr (denote-link--retrieve-value target denote-link--title-regexp)))
-         (target-link (format denote-link--link-format target-name target-title target-id))
-         (origin-note (buffer-file-name))
-         (origin-id (cdr (denote-link--retrieve-value origin-note denote-link--identifier-regexp)))
-         (origin-name (string-remove-prefix
-                       dir (cdr (denote-link--retrieve-value origin-note denote-link--filename-regexp))))
-         (origin-title (cdr (denote-link--retrieve-value origin-note denote-link--title-regexp)))
-         (origin-link (format denote-link--backlink-format origin-name origin-title origin-id)))
+  (let* ((target-link (denote-link--format-link target))
+         (origin-link (denote-link--format-link (buffer-file-name) :backlink)))
     (insert target-link)
     (run-hook-with-args 'denote-link-insert-functions target origin-link)))
 
