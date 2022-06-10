@@ -117,15 +117,16 @@ If nil, show the keywords in their given order."
 
 By default (a nil value), the file type is that of Org mode.
 
-When the value is the symbol `markdown', the file type is that of
-Markdown mode.
+When the value is the symbol `markdown-yaml', the file type is
+that of Markdown mode and the front matter uses a YAML-compliant
+way to represent tags.
 
 When the value is `text', the file type is that of Text mode.
 
 Any other non-nil value is the same as the default."
   :type '(choice
           (const :tag "Org mode (default)" nil)
-          (const :tag "Markdown" markdown)
+          (const :tag "Markdown" markdown-yml)
           (const :tag "Plain text" text))
   :group 'denote)
 
@@ -315,7 +316,7 @@ output is sorted with `string-lessp'."
 (defun denote--file-extension ()
   "Return file type extension based on `denote-file-type'."
   (pcase denote-file-type
-    ('markdown ".md")
+    ('markdown-yaml ".md")
     ('text ".txt")
     (_ ".org")))
 
@@ -349,13 +350,13 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
  provided by `denote-new-note'."
   (let ((kw (denote--file-meta-keywords keywords)))
     (pcase denote-file-type
-      ('markdown (concat "---" "\n"
-                         "title:      " title "\n"
-                         "date:       " date  "\n"
-                         "tags:       " kw    "\n"
-                         "identifier: " id    "\n"
-                         "---"                "\n"
-                         "\n"))
+      ('markdown-yaml (concat "---" "\n"
+                              "title:      " title "\n"
+                              "date:       " date  "\n"
+                              "tags:       " kw    "\n"
+                              "identifier: " id    "\n"
+                              "---"                "\n"
+                              "\n"))
 
       ('text (concat "title:      " title "\n"
                      "date:       " date  "\n"

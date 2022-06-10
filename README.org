@@ -252,8 +252,8 @@ This is how it looks for Org mode (~denote-file-type~ is nil):
 #+identifier: 20220610T134640
 #+end_example
 
-For Markdown, it looks like this (~denote-file-type~ has the =markdown=
-value):
+For Markdown, it looks like this (~denote-file-type~ has the
+=markdown-yaml= value):
 
 #+begin_src emacs-lisp
 ---
@@ -511,7 +511,7 @@ Everything is in place to set up the package.
       '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
-(setq denote-file-type nil) ; default is Org mode, else set `markdown' or `text'
+(setq denote-file-type nil) ; default is Org mode, else set `markdown-yaml' or `text'
 
 (setq denote-front-matter-date-format 'org-timestamp)
 
