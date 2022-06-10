@@ -252,17 +252,29 @@ This is how it looks for Org mode (~denote-file-type~ is nil):
 #+identifier: 20220610T134640
 #+end_example
 
-For Markdown, it looks like this (~denote-file-type~ has the
+For Markdown with YAML, it looks like this (~denote-file-type~ has the
 =markdown-yaml= value):
 
-#+begin_src emacs-lisp
+#+begin_example
 ---
 title:      This is a sample note
 date:       2022-06-10
 tags:       denote  testing
 identifier: 20220610T134718
 ---
-#+end_src
+#+end_example
+
+For Markdown with TOML, it looks like this (~denote-file-type~ has the
+=markdown-toml= value):
+
+#+begin_example
++++
+title      = "This is a sample note"
+date       = 2022-06-10
+tags       = ["denote", "testing"]
+identifier = "20220610T201510"
++++
+#+end_example
 
 And for plain text, we have the following (~denote-file-type~ has the
 =text= value):
@@ -511,7 +523,7 @@ Everything is in place to set up the package.
       '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
-(setq denote-file-type nil) ; default is Org mode, else set `markdown-yaml' or `text'
+(setq denote-file-type nil)
 
 (setq denote-front-matter-date-format 'org-timestamp)
 
