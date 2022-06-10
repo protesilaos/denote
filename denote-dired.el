@@ -1,6 +1,6 @@
 ;;; denote-dired.el --- Integration between Denote and Dired -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022  Protesilaos Stavrou
+;; Copyright (C) 2022  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://git.sr.ht/~protesilaos/denote
