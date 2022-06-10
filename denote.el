@@ -118,8 +118,9 @@ If nil, show the keywords in their given order."
 By default (a nil value), the file type is that of Org mode.
 
 When the value is the symbol `markdown-yaml', the file type is
-that of Markdown mode and the front matter uses a YAML-compliant
-way to represent tags.
+that of Markdown mode and the front matter uses YAML.  Similarly,
+`markdown-toml' will use Markdown but apply TOML to the front
+matter.
 
 When the value is `text', the file type is that of Text mode.
 
@@ -127,6 +128,7 @@ Any other non-nil value is the same as the default."
   :type '(choice
           (const :tag "Org mode (default)" nil)
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
+          (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
   :group 'denote)
 
@@ -316,6 +318,7 @@ output is sorted with `string-lessp'."
 (defun denote--file-extension ()
   "Return file type extension based on `denote-file-type'."
   (pcase denote-file-type
+    ('markdown-toml ".md")
     ('markdown-yaml ".md")
     ('text ".txt")
     (_ ".org")))
@@ -333,42 +336,66 @@ include the starting dot or the return value of
         (ext (or extension (denote--file-extension))))
     (format "%s%s--%s--%s%s" path id slug kws ext)))
 
-(defun denote--file-meta-keywords (keywords)
+(defun denote--map-quote-downcase (seq)
+  "Quote and downcase elements in SEQ."
+  (mapconcat (lambda (k)
+               (format "'%s'" (downcase k)))
+             seq ", "))
+
+(defun denote--file-meta-keywords (keywords &optional type)
   "Prepare KEYWORDS for inclusion in the file's front matter.
 Parse the output of `denote--keywords-prompt', using `downcase'
 on the keywords and separating them by two spaces.  A single
-keyword is just downcased."
-  (if (and (> (length keywords) 1)
-           (not (stringp keywords)))
-      (mapconcat #'downcase keywords "  ")
-    (downcase keywords)))
+keyword is just downcased.
+
+With optional TYPE, format the keywords accordingly (this might
+be `toml' or, in the future, some other spec that needss special
+treatment)."
+  (cond
+   ((and (> (length keywords) 1) (not (stringp keywords)))
+    (pcase type
+      ('toml (format "[ %s ]" (denote--map-quote-downcase keywords)))
+      (_ (mapconcat #'downcase keywords "  "))))
+   (t
+    (pcase type
+      ('toml (format "['%s']" (downcase keywords)))
+      (_ (downcase keywords))))))
 
 (defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
  provided by `denote-new-note'."
-  (let ((kw (denote--file-meta-keywords keywords)))
+  (let ((kw-space (denote--file-meta-keywords keywords))
+        (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase denote-file-type
-      ('markdown-yaml (concat "---" "\n"
-                              "title:      " title "\n"
-                              "date:       " date  "\n"
-                              "tags:       " kw    "\n"
-                              "identifier: " id    "\n"
-                              "---"                "\n"
+      ('markdown-toml (concat "+++" "\n"
+                              "title:      " title   "\n"
+                              "date:       " date    "\n"
+                              "tags:       " kw-toml "\n"
+                              "identifier: " id      "\n"
+                              "+++"                  "\n"
                               "\n"))
 
-      ('text (concat "title:      " title "\n"
-                     "date:       " date  "\n"
-                     "tags:       " kw    "\n"
-                     "identifier: " id    "\n"
-                     (make-string 27 ?-)  "\n"
+      ('markdown-yaml (concat "---" "\n"
+                              "title:      " title    "\n"
+                              "date:       " date     "\n"
+                              "tags:       " kw-space "\n"
+                              "identifier: " id       "\n"
+                              "---"                   "\n"
+                              "\n"))
+
+      ('text (concat "title:      " title    "\n"
+                     "date:       " date     "\n"
+                     "tags:       " kw-space "\n"
+                     "identifier: " id       "\n"
+                     (make-string 27 ?-)     "\n"
                      "\n"))
 
-      (_ (concat "#+title:      " title "\n"
-                 "#+date:       " date  "\n"
-                 "#+filetags:   " kw    "\n"
-                 "#+identifier: " id    "\n"
+      (_ (concat "#+title:      " title    "\n"
+                 "#+date:       " date     "\n"
+                 "#+filetags:   " kw-space "\n"
+                 "#+identifier: " id       "\n"
                  "\n")))))
 
 (defun denote--path (title keywords)
