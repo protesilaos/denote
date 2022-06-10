@@ -80,14 +80,16 @@ files.
 What Denote prioritizes with the enforcement of a strict file-naming
 scheme is portability.  Notes can be accessed, filtered, and understood
 without Emacs or any other advanced tool for that matter (though Emacs,
-Org, and others are excellent programs).
+Org, and the like are excellent programs).
 
-Denote has no mechanism to test for adherence to a given note-taking
-method, such as that of Zettelkasten (i.e. the contemporary digital
-equivalent of Niklas Luhmann's methodology).  It is possible to employ
-such a method, though it is ultimately up to the user to apply the
-requisite rigor.  What matters for our purposes is that Denote is not a
-zettelkasten implementation per se.
+Denote only has a strong opinion about the file name.  It otherwise is
+flexible and poses no constraints on the desired workflow.  Denote has
+no mechanism to test for adherence to a given note-taking method, such
+as that of Zettelkasten (i.e. the contemporary digital equivalent of
+Niklas Luhmann's methodology).  It is possible to employ such a method,
+though it is ultimately up to the user to apply the requisite rigor.
+What matters for our purposes is that Denote is not a zettelkasten
+implementation per se.
 
 By default, Denote creates note files using the =.org= extension.
 However, Denote does not depend on org.el or any of its accoutrements
@@ -101,7 +103,7 @@ concept.  Plus, we can come up with acronyms (of dubious utility) like:
 + Don't Ever Note Only The Ephemeral
 + Denote Everything Neatly; Omit The Excesses
 
-But we'll let you get back to work.  Don't Escape or Neglect your
+But we'll let you get back to work.  Don't Eschew or Neglect your
 Obligations, Tasks, Engagements...
 
 * The file-naming scheme
