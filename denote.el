@@ -126,7 +126,7 @@ When the value is `text', the file type is that of Text mode.
 Any other non-nil value is the same as the default."
   :type '(choice
           (const :tag "Org mode (default)" nil)
-          (const :tag "Markdown" markdown-yml)
+          (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Plain text" text))
   :group 'denote)
 
