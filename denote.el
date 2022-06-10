@@ -339,7 +339,7 @@ include the starting dot or the return value of
 (defun denote--map-quote-downcase (seq)
   "Quote and downcase elements in SEQ."
   (mapconcat (lambda (k)
-               (format "'%s'" (downcase k)))
+               (format "%S" (downcase k)))
              seq ", "))
 
 (defun denote--file-meta-keywords (keywords &optional type)
