@@ -224,6 +224,11 @@ in the template.  Instead, they have to be assigned to the user option
 (setq denote-org-capture-specifiers "%l\n%i\n%?")
 #+end_src
 
+Note that ~denote-org-capture~ ignores the ~denote-file-type~: it always
+sets the Org file extension for the created note to ensure that the
+capture process works as intended, especially for the desired output of
+the ~denote-org-capture-specifiers~.
+
 * Front matter
 :PROPERTIES:
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261

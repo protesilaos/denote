@@ -46,6 +46,11 @@
 ;;                  :immediate-finish nil
 ;;                  :kill-buffer t
 ;;                  :jump-to-captured t)))
+;;
+;; Note that `denote-org-capture' ignores the `denote-file-type': it
+;; always sets the Org file extension for the created note to ensure
+;; that the capture process works as intended, especially for the
+;; desired output of the `denote-org-capture-specifiers'.
 
 ;;; Code:
 
@@ -73,10 +78,15 @@ The file is populated with Denote's front matter.  It can then be
 expanded with the usual specifiers or strings that
 `org-capture-templates' supports.
 
-Search the source code of this function for a comment with a
-sample template.  We will eventually have a manual."
+Note that this function ignores the `denote-file-type': it always
+sets the Org file extension for the created note to ensure that
+the capture process works as intended, especially for the desired
+output of the `denote-org-capture-specifiers'.
+
+Consult the manual for template samples."
   (let ((title (denote--title-prompt))
-        (keywords (denote--keywords-prompt)))
+        (keywords (denote--keywords-prompt))
+        (denote-file-type nil)) ; we enforce the .org extension for `org-capture'
     (denote--path title keywords)
     (denote--prepare-note denote-last-title denote-last-keywords denote-last-path)
     (denote--keywords-add-to-history denote-last-keywords)
