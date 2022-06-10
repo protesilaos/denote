@@ -107,7 +107,7 @@ keyword, whereas =emacs+library= are two distinct keywords.
 #+vindex: denote-file-type
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
 though the user option ~denote-file-type~ provides support for Markdown
-(=.md= which runs ~markdown-mode~) and plain text (=.txt.= via
+(=.md= which runs ~markdown-mode~) and plain text (=.txt= via
 ~text-mode~).  Consult its doc string for the minutia.
 
 Examples:
