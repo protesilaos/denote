@@ -62,13 +62,13 @@ Both are supplied by `denote-link'."
 (defconst denote-link--identifier-regexp "^\\(#\\+identifier:\\)[\s\t]+\\(.*\\)"
   "Regular expression for filename key and value.")
 
-(defconst denote-link--link-format "[[denote:%s][%s (%s)]]"
+(defconst denote-link--link-format "[[file:%s][%s (%s)]]"
   "Format of Org link to note.")
 
-(defconst denote-link--backlink-format "[[denote:%s][backlink: %s (%s)]]"
+(defconst denote-link--backlink-format "[[file:%s][backlink: %s (%s)]]"
   "Format of Org backlink to note.")
 
-(defconst denote-link--backlink-regexp "\\[\\[denote:\\(.*?\\)\\]\\[backlink: \\(.*?\\) (\\(.*?\\))\\]\\]"
+(defconst denote-link--backlink-regexp "\\[\\[file:\\(.*?\\)\\]\\[backlink: \\(.*?\\) (\\(.*?\\))\\]\\]"
   "Regexp of `denote-link--backlink-format'.")
 
 (defun denote-link--retrieve-value (note regexp)

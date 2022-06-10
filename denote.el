@@ -300,7 +300,6 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
             "#+identifier: " id        "\n"
             "#+filename:   " (string-remove-prefix denote-directory filename)  "\n"
             "#+path:       " filename  "\n"
-            "#+link:       " "denote " (denote-directory) "%s"
             "\n\n")))
 
 (defun denote--path (title keywords)
