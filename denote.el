@@ -78,7 +78,7 @@ directory."
 
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
-  "List of strings with predefined keywords for `denote-new-note'.
+  "List of strings with predefined keywords for `denote'.
 
 The implicit assumption is that a keyword is a single word.  If
 you need a keyword to be multiple words long, use underscores to
@@ -94,7 +94,7 @@ When non-nil, search the file names of existing notes in the
 variable `denote-directory' for their keyword field and extract
 the entries as \"inferred keywords\".  These are combined with
 `denote-known-keywords' and are presented as completion
-candidated while using `denote-new-note' interactively.
+candidated while using `denote' interactively.
 
 If nil, refrain from inferring keywords.  The aforementioned
 completion prompt only shows the `denote-known-keywords'."
@@ -104,7 +104,7 @@ completion prompt only shows the `denote-known-keywords'."
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
 
-When non-nil, the keywords of `denote-new-note' are sorted with
+When non-nil, the keywords of `denote' are sorted with
 `string-lessp' regardless of the order they were inserted at the
 minibuffer prompt.
 
@@ -160,7 +160,7 @@ specifiers."
 
 (defconst denote--file-regexp
   (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(--\\)")
-  "Regular expression to match file names from `denote-new-note'.")
+  "Regular expression to match file names from `denote'.")
 
 (defconst denote--keyword-regexp
   (concat denote--file-regexp "\\([0-9A-Za-z_+]*\\)\\(\\.?.*\\)")
@@ -399,7 +399,7 @@ identifier: %s
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
- provided by `denote-new-note'."
+ provided by `denote'."
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase denote-file-type
@@ -447,7 +447,7 @@ Use optional PATH, else create it with `denote--path'."
   "Minibuffer history of `denote--title-prompt'.")
 
 (defun denote--title-prompt ()
-  "Read file title for `denote-new-note'."
+  "Read file title for `denote'."
   (setq denote-last-title
         (read-string "File title: " nil 'denote--title-history)))
 
