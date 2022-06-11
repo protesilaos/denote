@@ -100,7 +100,7 @@ files."
 (defconst denote-link--title-regexp "^\\(#\\+\\)?\\(title:\\)[\s\t]+\\(.*\\)"
   "Regular expression for title key and value.")
 
-(defconst denote-link--identifier-regexp "^\\(#\\+\\)?\\(identifier:\\)[\s\t]+\\(.*\\)"
+(defconst denote-link--identifier-regexp "^.?.?\\b\\(identifier\\|ID\\)\\s-*[:=]\\s-*\"?\\([0-9T]+\\)"
   "Regular expression for filename key and value.")
 
 (defconst denote-link--link-format-org "[[file:%s][%s (%s)]]"
