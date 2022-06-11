@@ -166,11 +166,11 @@ is suspended: we use whatever the user wants."
   "Regular expression to match `denote--id'.")
 
 (defconst denote--file-regexp
-  (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(--\\)")
+  (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
   "Regular expression to match file names from `denote'.")
 
 (defconst denote--keyword-regexp
-  (concat denote--file-regexp "\\([0-9A-Za-z_+]*\\)\\(\\.?.*\\)")
+  (concat denote--file-regexp "\\([0-9A-Za-z_]*\\)\\(\\.?.*\\)")
   "Regular expression to match `denote-keywords'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
@@ -275,7 +275,7 @@ With optional N, search in the Nth line from point."
   "Extract keywords from `denote--directory-files'."
   (let ((sequence (denote--keywords-in-files)))
     (mapcan (lambda (s)
-              (split-string s "+" t))
+              (split-string s "_" t))
             sequence)))
 
 (defun denote-keywords ()
@@ -311,7 +311,7 @@ output is sorted with `string-lessp'."
   "Format KEYWORDS output of `denote--keywords-prompt'."
   (if (and (> (length keywords) 1)
            (not (stringp keywords)))
-      (mapconcat #'downcase keywords "+")
+      (mapconcat #'downcase keywords "_")
     keywords))
 
 (defun denote--keywords-add-to-history (keywords)
@@ -348,7 +348,7 @@ include the starting dot or the return value of
                  (denote--keywords-combine keywords)
                keywords))
         (ext (or extension (denote--file-extension))))
-    (format "%s%s--%s--%s%s" path id slug kws ext)))
+    (format "%s%s--%s__%s%s" path id slug kws ext)))
 
 (defun denote--map-quote-downcase (seq)
   "Quote and downcase elements in SEQ."
