@@ -159,7 +159,9 @@ renaming attachments that the user adds to their notes."
      (4 'denote-dired-dired-field-title)
      (5 'denote-dired-dired-field-delimiter)
      (6 'denote-dired-dired-field-keywords)
-     (7 'denote-dired-dired-field-extension)))
+     (7 'denote-dired-dired-field-extension))
+    ("_"
+     (0 'denote-dired-dired-field-delimiter t)))
   "Keywords for fontification.")
 
 ;;;###autoload
