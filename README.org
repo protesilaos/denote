@@ -550,15 +550,30 @@ the function ~denote-dired-mode-in-directories~:
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 #+end_src
 
+The faces we define are:
+
+#+vindex: denote-dired-field-date
+#+vindex: denote-dired-field-delimiter
+#+vindex: denote-dired-field-extension
+#+vindex: denote-dired-field-keywords
+#+vindex: denote-dired-field-time
+#+vindex: denote-dired-field-title
++ ~denote-dired-field-date~
++ ~denote-dired-field-delimiter~
++ ~denote-dired-field-extension~
++ ~denote-dired-field-keywords~
++ ~denote-dired-field-time~
++ ~denote-dired-field-title~
+
+For the time being, the =diredfl= package is not compatible with this
+facility.
+
 The ~denote-dired-mode~ does not only fontify note files that were
 created by Denote: it covers every file name that follows our naming
 conventions ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  This is particularly useful for
 scenaria where, say, one wants to organise their collection of PDFs and
 multimedia in a systematic way (and, perhaps, use them as attachments
 for the notes Denote produces).
-
-For the time being, the =diredfl= package is not compatible with this
-facility.
 
 * Renaming non-notes
 :PROPERTIES:
