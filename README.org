@@ -575,6 +575,89 @@ scenaria where, say, one wants to organise their collection of PDFs and
 multimedia in a systematic way (and, perhaps, use them as attachments
 for the notes Denote produces).
 
+* Notes in multiple file types
+:PROPERTIES:
+:CUSTOM_ID: h:f34b172b-3440-446c-aec1-bf818d0aabfe
+:END:
+
+As noted before, Denote does not have a particular preference on the
+workflow the user wishes to follow nor does it expect a specific file
+type.  It is entirely possible to store notes in a variety of formats
+across multiple directories and Denote will still be able to work with
+them, provided they follow the file-naming scheme and have an identifier
+in their front matter (where relevant).  Here we show how to create new
+notes that deviate from the default value of ~denote-file-type~, specify
+their own ~denote-directory~, and even tweak the file's front matter.
+
+Suppose you want to conform with the default of creating notes with the
+=.org= extension but, for whatever reason, wish to have a way to quickly
+produce a file with the =.md= extension and TOML-compliant front matter.
+
+#+begin_src emacs-lisp
+(setq denote-file-type nil)
+
+(defun my-denote-markdown-toml ()
+  (interactive)
+  (let ((denote-file-type 'markdown-toml))
+    (call-interactively #'denote)))
+#+end_src
+
+This principle can be taken a step further by ~let~ binding a second
+directory for those alternative notes.  Maybe your standard notes are
+located in =~/Documents/notes/= but you plan to store those alternative
+notes in =~/blog/= ([[#h:337f9cf0-9f66-45af-b73f-f6370472fb51][Fontification in Dired]]).
+
+#+begin_src emacs-lisp
+(setq denote-file-type nil)
+(setq denote-directory (expand-file-name "~/Documents/notes/"))
+
+(defun my-denote-markdown-toml ()
+  (interactive)
+  (let ((denote-file-type 'markdown-toml)
+        (denote-directory "~/blog/"))
+    (call-interactively #'denote)))
+#+end_src
+
+Given Denote's composable code, you can tweak the output however you
+like ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).  Consider the case where the
+alternative notes in the blog have no use for the identifier field
+inside the front matter.  Let's omit it!  (It will still be part of the
+file name.)
+
+#+begin_src emacs-lisp
+(setq denote-file-type nil)
+(setq denote-directory (expand-file-name "~/Documents/notes/"))
+
+;; Excerpt of the default:
+(defvar denote-toml-front-matter
+  "+++
+title      = %S
+date       = %s
+tags       = %s
+identifier = %S
++++\n\n")
+
+;; Adding the N$ to show the order they are provided internally
+;; (explained in `denote-org-front-matter'),
+(defvar my-denote-toml-front-matter
+        "+++
+title      = %1$S
+date       = %2$s
+tags       = %3$s
++++\n\n")
+
+(defun my-denote-markdown-toml ()
+  (interactive)
+  (let ((denote-file-type 'markdown-toml)
+        (denote-directory "~/blog/")
+        (denote-toml-front-matter my-denote-toml-front-matter))
+    (call-interactively #'denote)))
+#+end_src
+
+Have more ideas?  Something does not work quite right?  Areas you wish
+were more abstract in the code?  Please participate in the development
+process.
+
 * Renaming non-notes
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
