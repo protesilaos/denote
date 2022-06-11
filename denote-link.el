@@ -193,7 +193,7 @@ PROOF-OF-CONCEPT."
        (point)))
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward (format "%s" denote--keyword-regexp) (point-max) t)
+      (while (re-search-forward (format "%s" denote--file-regexp) (point-max) t)
         (make-button (match-beginning 0) (match-end 0) :type 'denote-link-find-file)))
     (denote-dired-mode 1)))
 

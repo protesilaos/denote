@@ -169,7 +169,7 @@ is suspended: we use whatever the user wants."
   (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
   "Regular expression to match file names from `denote'.")
 
-(defconst denote--keyword-regexp
+(defconst denote--file-regexp
   (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
   "Regular expression to match `denote-keywords'.")
 
@@ -268,7 +268,7 @@ With optional N, search in the Nth line from point."
   "Produce list of keywords in `denote--directory-files'."
   (delq nil (mapcar
              (lambda (x)
-               (denote--extract denote--keyword-regexp x 6))
+               (denote--extract denote--file-regexp x 6))
              (denote--directory-files))))
 
 (defun denote--inferred-keywords ()

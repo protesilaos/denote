@@ -152,7 +152,7 @@ renaming attachments that the user adds to their notes."
   :group 'denote-dired)
 
 (defconst denote-dired-font-lock-keywords
-  `((,denote--keyword-regexp
+  `((,denote--file-regexp
      (1 'denote-dired-dired-field-date)
      (2 'denote-dired-dired-field-time)
      (3 'denote-dired-dired-field-delimiter)
