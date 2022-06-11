@@ -174,7 +174,8 @@ is suspended: we use whatever the user wants."
   "Regular expression to match `denote-keywords'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
-  "Regular expression of punctionation that should be removed.")
+  "Regular expression of punctionation that should be removed.
+We consider those characters illigal for our purposes.")
 
 (defvar denote-last-path nil "Store last path.")
 (defvar denote-last-title nil "Store last title.")
@@ -216,8 +217,14 @@ trailing hyphen."
     (replace-regexp-in-string "--+\\|\s+" "-" str))))
 
 (defun denote--sluggify (str)
-  "Make STR an appropriate file name slug."
+  "Make STR an appropriate slug for file names and related."
   (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+
+(defun denote--sluggify-keywords (keywords)
+  "Sluggify KEYWORDS."
+  (if (listp keywords)
+      (mapcar #'denote--sluggify keywords)
+    (denote--sluggify keywords)))
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
@@ -358,15 +365,16 @@ keyword is just downcased.
 With optional TYPE, format the keywords accordingly (this might
 be `toml' or, in the future, some other spec that needss special
 treatment)."
-  (cond
-   ((and (> (length keywords) 1) (not (stringp keywords)))
-    (pcase type
-      ('toml (format "[%s]" (denote--map-quote-downcase keywords)))
-      (_ (mapconcat #'downcase keywords "  "))))
-   (t
-    (pcase type
-      ('toml (format "[%S]" (downcase keywords)))
-      (_ (downcase keywords))))))
+  (let ((kw (denote--sluggify-keywords keywords)))
+    (cond
+     ((and (> (length kw) 1) (not (stringp kw)))
+      (pcase type
+        ('toml (format "[%s]" (denote--map-quote-downcase kw)))
+        (_ (mapconcat #'downcase kw "  "))))
+     (t
+      (pcase type
+        ('toml (format "[%S]" (downcase kw)))
+        (_ (downcase kw)))))))
 
 (defvar denote-tml-front-matter
   "+++
@@ -435,7 +443,7 @@ Format current time, else use optional ID."
         (denote--format-file
          (file-name-as-directory denote-directory)
          (format-time-string denote--id)
-         keywords
+         (denote--sluggify-keywords keywords)
          (denote--sluggify title)
          (denote--file-extension))))
 
