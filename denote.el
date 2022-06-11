@@ -376,7 +376,7 @@ treatment)."
         ('toml (format "[%S]" (downcase kw)))
         (_ (downcase kw)))))))
 
-(defvar denote-tml-front-matter
+(defvar denote-toml-front-matter
   "+++
 title      = %S
 date       = %s
@@ -431,7 +431,7 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase denote-file-type
-      ('markdown-toml (format denote-tml-front-matter title date kw-toml id))
+      ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date kw-space id)))))
