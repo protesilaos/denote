@@ -144,9 +144,9 @@ renaming attachments that the user adds to their notes."
 
 (defface denote-dired-dired-field-delimiter
   '((((class color) (min-colors 88) (background light))
-     :foreground "gray65")
+     :foreground "gray70")
     (((class color) (min-colors 88) (background dark))
-     :foreground "gray35")
+     :foreground "gray30")
     (t :inherit shadow))
   "Face for file name delimiters in `dired-mode' buffers."
   :group 'denote-dired)
