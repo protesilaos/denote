@@ -136,14 +136,21 @@ Any other non-nil value is the same as the default."
   "Date format in the front matter (file header) of new notes.
 
 If the value is nil, use a plain date in YEAR-MONTH-DAY notation,
-like 2022-06-08.
+like 2022-06-08 (the ISO 8601 standard).
 
 If the value is the `org-timestamp' symbol, format the date as an
 inactive Org timestamp such as: [2022-06-08 Wed 06:19].
 
 If a string, use it as the argument of `format-time-string'.
 Read the documentation of that function for valid format
-specifiers."
+specifiers.
+
+When `denote-file-type' specifies one of the Markdown flavors, we
+ignore this user option in order to enforce the RFC3339
+specification (Markdown is typically employed in static site
+generators as source code for Web pages).  However, when
+`denote-front-matter-date-format' has a string value, this rule
+is suspended: we use whatever the user wants."
   :type '(choice
           (const :tag "Just the date like 2022-06-08" nil)
           (const :tag "An inactive Org timestamp like [2022-06-08 Wed 06:19]" org-timestamp)
@@ -419,15 +426,34 @@ Format current time, else use optional ID."
          (denote--sluggify title)
          (denote--file-extension))))
 
+;; Adapted from `org-hugo--org-date-time-to-rfc3339' in Kashual Modi's
+;; `ox-hugo' package: <https://github.com/kaushalmodi/ox-hugo>.
+(defun denote--date-rfc3339 ()
+  "Format date using the RFC3339 specification."
+  (replace-regexp-in-string
+   "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
+   (format-time-string "%FT%T%z")))
+
+(defun denote--date-org-timestamp ()
+  "Format date using the Org inactive timestamp notation."
+  (format-time-string "[%F %a %R]"))
+
+(defun denote--date-iso-8601 ()
+  "Format date according to ISO 8601 standard."
+  (format-time-string "%F"))
+
 (defun denote--date ()
   "Expand the date for a new note's front matter."
   (let ((format denote-front-matter-date-format))
     (cond
-     ((eq format 'org-timestamp)
-      (format-time-string "[%F %a %R]"))
      ((stringp format)
       (format-time-string format))
-     (t (format-time-string "%F")))))
+     ((or (eq denote-file-type 'markdown-toml)
+          (eq denote-file-type 'markdown-yaml))
+      (denote--date-rfc3339))
+     ((eq format 'org-timestamp)
+      (denote--date-org-timestamp))
+     (t (denote--date-iso-8601)))))
 
 (defun denote--prepare-note (title keywords &optional path)
   "Use TITLE and KEYWORDS to prepare new note file.
