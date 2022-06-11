@@ -75,13 +75,17 @@
 
 ;;; User options
 
-(defcustom denote-link-insert-functions
-  (list #'denote-link-backlink)
+(defcustom denote-link-insert-functions nil
   "Functions that run after `denote-link'.
 Each function accepts a TARGET file and a BACKLINK argument.
-Both are supplied by `denote-link'.  Advanced users are
-encouraged to study `denote-link-backlink' for how those
-arguments are used."
+Both are supplied by `denote-link'.
+
+Advanced users are encouraged to study `denote-link-backlink' for
+how those arguments are used.  Add that function to this hook if
+you want Denote to automatically insert backlinks in the
+applicable files.  Though you might prefer to use the command
+`denote-link-backlinks', which does not touch the underlying
+files."
   :type 'hook
   :group 'denote-link)
 
@@ -159,6 +163,61 @@ Run `denote-link-insert-functions' afterwards."
          (backlink (denote-link--format-link origin (denote-link--file-type-format target :backlink))))
     (insert link)
     (run-hook-with-args 'denote-link-insert-functions target backlink)))
+
+;;;; Backlinks' buffer (WORK-IN-PROGRESS)
+
+;; (require 'button)
+(define-button-type 'denote-link-find-file
+  'follow-link t
+  'action #'denote-link--find-file
+  'face 'unspecified)
+
+(defun denote-link--find-file (button)
+  "Action for BUTTON."
+  (find-file (buffer-substring (button-start button) (button-end button))))
+
+(declare-function denote-dired-mode "denote-dired")
+
+(defun denote-link--prettify-compilation (buffer _output)
+  "Narrow to grep matches in BUFFER.
+PROOF-OF-CONCEPT."
+  (with-current-buffer buffer
+    (narrow-to-region
+     (progn
+       (re-search-forward "find" nil t)
+       (forward-line 1)
+       (point))
+     (progn
+       (re-search-forward "Grep" nil t)
+       (forward-line -1)
+       (point)))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward (format "%s" denote--keyword-regexp) (point-max) t)
+        (make-button (match-beginning 0) (match-end 0) :type 'denote-link-find-file)))
+    (denote-dired-mode 1)))
+
+;;;###autoload
+(defun denote-link-backlinks ()
+  "PROOF-OF-CONCEPT."
+  (interactive)
+  (let* ((default-directory (denote-directory))
+         (file (file-name-nondirectory (buffer-file-name)))
+         (id (denote-link--retrieve-value file denote-link--identifier-regexp))
+         (buf (format "*denote-backlinks to %s*" id)))
+  (compilation-start
+   (format "find * -type f -exec %s --color=auto -l -m 1 -e %s- %s %s"
+           grep-program
+           id
+           (shell-quote-argument "{}")
+		   (shell-quote-argument ";"))
+   'grep-mode
+   (lambda (_) buf)
+   t)
+  (with-current-buffer buf
+    (add-hook 'compilation-finish-functions #'denote-link--prettify-compilation nil t))))
+
+;;;; Automatic backlink insertion
 
 (defconst denote-link-backlink-heading "Denote backlinks"
   "String of the backlink's heading.
