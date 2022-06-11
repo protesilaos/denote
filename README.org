@@ -737,7 +737,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Contributions to code or the manual :: Jack Baty, Kaushal Modi.
 
-+ Ideas and/or user feedback :: Kaushal Modi, Ypot.
++ Ideas and/or user feedback :: Kaushal Modi, Ypot, svnsbck.
 
 * GNU Free Documentation License
 :PROPERTIES:

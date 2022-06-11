@@ -170,7 +170,7 @@ is suspended: we use whatever the user wants."
   "Regular expression to match file names from `denote'.")
 
 (defconst denote--keyword-regexp
-  (concat denote--file-title-regexp "\\([0-9A-Za-z_]*\\)\\(\\.?.*\\)")
+  (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
   "Regular expression to match `denote-keywords'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”]*"
