@@ -94,7 +94,7 @@ files."
 (defun denote-link--find-value (regexp)
   "Return value from REGEXP by searching the file."
   (goto-char (point-min))
-  (re-search-forward regexp)
+  (re-search-forward regexp nil nil 1) ;Stop search after the first match
   (match-string-no-properties 1))
 
 (defconst denote-link--title-regexp "^\\(?:#\\+\\)?\\(?:title:\\)[\s\t]+\\(?1:.*\\)"
