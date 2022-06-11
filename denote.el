@@ -375,7 +375,8 @@ date       = %s
 tags       = %s
 identifier = %S
 +++\n\n"
-  "TOML front matter value for `format'.")
+  "TOML front matter value for `format'.
+Read `denote-org-front-matter' for the technicalities.")
 
 (defvar denote-yaml-front-matter
   "---
@@ -384,7 +385,8 @@ date:       %s
 tags:       %s
 identifier: %S
 ---\n\n"
-  "YAML front matter value for `format'.")
+  "YAML front matter value for `format'.
+Read `denote-org-front-matter' for the technicalities.")
 
 (defvar denote-text-front-matter
   "title:      %s
@@ -392,7 +394,8 @@ date:       %s
 tags:       %s
 identifier: %s
 %s\n\n"
-  "Plain text front matter value for `format'.")
+  "Plain text front matter value for `format'.
+Read `denote-org-front-matter' for the technicalities.")
 
 (defvar denote-org-front-matter
   "#+title:      %s
@@ -400,7 +403,11 @@ identifier: %s
 #+filetags:   %s
 #+identifier: %s
 \n"
-  "Org front matter value for `format'.")
+  "Org front matter value for `format'.
+The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
+are an avdanced user who wants to edit this variable to affect
+how front matter is produced, consider using something like %2$s
+to control where Nth argument is placed.")
 
 (defun denote--file-meta-header (title date keywords id)
   "Front matter for new notes.
