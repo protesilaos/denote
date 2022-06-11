@@ -307,6 +307,124 @@ is typically employed in static site generators as source code for Web
 pages).  However, when ~denote-front-matter-date-format~ has a string
 value, this rule is suspended: we use whatever the user wants.
 
+** Tweaking the front matter
+:PROPERTIES:
+:CUSTOM_ID: h:f69371d5-1843-493d-9ff5-c1ab3b43024e
+:END:
+
+What follows is for advanced users.  When in doubt, only configure
+variables we describe as a "user option": they are declared in the
+source code with the ~defcustom~ keyword.
+
+Denote's code base is designed in a composable way, which lets the user
+make precise interventions to affect the output of the relevant
+commands.  One such case is to configure the front matter, such as by
+changing the order the keys appear in, renaming them, or adding new
+elements.
+
+Some examples are in order, starting with the Org file type.  This is
+what we have in =denote.el=:
+
+#+begin_src emacs-lisp
+(defvar denote-org-front-matter
+  "#+title:      %s
+#+date:       %s
+#+filetags:   %s
+#+identifier: %s
+\n"
+  "Org front matter value for `format'.
+The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
+are an avdanced user who wants to edit this variable to affect
+how front matter is produced, consider using something like %2$s
+to control where Nth argument is placed.")
+#+end_src
+
+The default front matter is:
+
+#+begin_example
+#+title:      This is a sample note
+#+date:       2022-06-10
+#+filetags:   denote  testing
+#+identifier: 20220610T202537
+#+end_example
+
+We can add a =PROPERTIES= drawer to it, with something like this:
+
+#+begin_src emacs-lisp
+(setq denote-org-front-matter
+      ":PROPERTIES:
+:ID: %4$s
+:END:
+#+title:      %1$s
+#+date:       %2$s
+#+filetags:   %3$s
+#+identifier: %4$s
+\n")
+#+end_src
+
+The output is now formatted thus:
+
+#+begin_example
+:PROPERTIES:
+:ID: 20220611T092444
+:END:
+#+title:      This is a sample note
+#+date:       2022-06-11
+#+filetags:   denote  testing
+#+identifier: 20220611T092444
+#+end_example
+
+Notice how we can pass a number to the =%s= specifier.  This is what
+allows us to change the placement of the provided arguments.
+
+For another example, we will use the plain text variant, as it differs a
+bit from the above.  By default it is formatted this way:
+
+#+begin_example
+title:      This is a sample note
+date:       2022-06-10
+tags:       denote  testing
+identifier: 20220610T202232
+---------------------------
+#+end_example
+
+The line with the hyphens is documented in the product of the fifth
+format specifier, as documented in ~denote-text-front-matter~.  Its
+value is stored in ~denote-text-front-matter-delimiter~.  Say we want to
+have a delimiter both at the top and bottom:
+
+#+begin_src emacs-lisp
+(setq denote-text-front-matter
+      "%5$s
+title:      %1$s
+date:       %2$s
+tags:       %3$s
+identifier: %4$s
+%5$s\n\n")
+#+end_src
+
+Which gives us:
+
+#+begin_example
+---------------------------
+title:      This is a sample note
+date:       2022-06-11
+tags:       denote  testing
+identifier: 20220611T093252
+---------------------------
+#+end_example
+
+Or we would rather use another character instead of hyphens, such as the
+equals sign:
+
+#+begin_src emacs-lisp
+(setq denote-text-front-matter-delimiter (make-string 27 ?+))
+#+end_src
+
+Remember that this is for advanced users.  If you want to see changes
+done on this front, you are welcome to share your thoughts and/or
+participate in the development of Denote.
+
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
