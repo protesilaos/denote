@@ -95,7 +95,7 @@ between keyword subsets, and so on.
 
 Denote does not manage a database and does not try to be smart about how
 notes are handled.  It creates notes and otherwise delegates extra
-functionality to other tools.
+functionality to other tools ([[#h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece][Extending Denote]]).
 
 By default, Denote writes note files using the =.org= extension.
 However, Denote does not depend on org.el or any of its accoutrements
@@ -103,7 +103,7 @@ and extensions.  Users are given the option to change from Org to either
 Markdown (=.md=) or Plain Text (=.txt=), as explained further in the
 manual (search for ~denote-file-type~).
 
-"Denote" is the familiar word, though it also is a play on to the "note"
+"Denote" is the familiar word, though it also is a play on the "note"
 concept.  Plus, we can come up with acronyms of dubious utility like:
 
 + Don't Ever Note Only The Ephemeral
