@@ -164,15 +164,43 @@ Run `denote-link-insert-functions' afterwards."
   "String of the backlink's heading.
 This heading is appended to a file when another links to it.")
 
+(defvar denote-link-backlink-warning
+  "Do not edit past this line; this is for denote.el and related."
+  "String that warns about not editing the backlinks' section.")
+
+(defvar denote-link--markdown-comment "<!-- %s -->"
+  "Specifier for Markdown comments passed to `format'.")
+
+(defvar denote-link--org-comment "# %s"
+  "Specifier for Markdown comments passed to `format'.")
+
+(defun denote-link--format-comment (comment filetype)
+  "Use appropriate COMMENT for FILETYPE."
+  (pcase filetype
+    ("md" (format denote-link--markdown-comment comment))
+    (_ (format denote-link--org-comment comment))))
+
+(defvar denote-link--markdown-heading "%s\n# %s\n\n"
+  "Specifier for Markdown heading passed to `format'.")
+
+(defvar denote-link--org-heading "%s\n* %s\n\n"
+  "Specifier for Org heading passed to `format'.")
+
+(defvar denote-link--text-heading "%s\n%s\n%s\n\n"
+  "Specifier for plain text heading passed to `format'.")
+
+(defun denote-link--format-heading (heading filetype comment)
+  "Use appropriate HEADING for FILETYPE, while prepending COMMENT."
+  (pcase filetype
+    ("md" (format denote-link--markdown-heading comment heading))
+    ("org" (format denote-link--org-heading comment heading))
+    (_ (format denote-link--text-heading comment heading (make-string 16 ?=)))))
+
 (defun denote-link--format-backlinks-heading (heading)
   "Format HEADING for backlinks."
   (let* ((ext (file-name-extension (buffer-file-name)))
-         (markup (if (string= ext "org") "*" "#"))
-         (warning "Do not edit past this line; this is for denote.el and related.")
-         (comment (if (string= ext "org")
-                      (format "# %s" warning)
-                    (format "<!-- %s -->" warning))))
-    (format "%s\n%s %s\n\n" comment markup heading)))
+         (comment (denote-link--format-comment denote-link-backlink-warning ext)))
+    (denote-link--format-heading heading ext comment)))
 
 (defun denote-link-backlink (target backlink)
   "Insert BACKLINK to TARGET file."
