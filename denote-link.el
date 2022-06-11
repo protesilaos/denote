@@ -94,14 +94,20 @@ files."
 (defun denote-link--find-value (regexp)
   "Return value from REGEXP by searching the file."
   (goto-char (point-min))
-  (re-search-forward regexp)
-  (match-string-no-properties 3))
+  (re-search-forward regexp nil nil 1) ;Stop search after the first match
+  (match-string-no-properties 1))
 
-(defconst denote-link--title-regexp "^\\(#\\+\\)?\\(title:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for title key and value.")
+(defconst denote-link--title-regexp "^\\(?:#\\+\\)?\\(?:title:\\)[\s\t]+\\(?1:.*\\)"
+  "Regular expression for title key and value.
 
-(defconst denote-link--identifier-regexp "^\\(#\\+\\)?\\(identifier:\\)[\s\t]+\\(.*\\)"
-  "Regular expression for filename key and value.")
+The match that needs to be extracted is explicityly marked as
+group 1.  `denote-link--find-value' uses the group 1 sting.")
+
+(defconst denote-link--identifier-regexp "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*\"?\\(?1:[0-9T]+\\)"
+  "Regular expression for filename key and value.
+
+The match that needs to be extracted is explicityly marked as
+group 1.  `denote-link--find-value' uses the group 1 sting.")
 
 (defconst denote-link--link-format-org "[[file:%s][%s (%s)]]"
   "Format of Org link to note.")
