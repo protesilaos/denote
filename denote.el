@@ -395,7 +395,13 @@ tags:       %s
 identifier: %s
 %s\n\n"
   "Plain text front matter value for `format'.
-Read `denote-org-front-matter' for the technicalities.")
+Read `denote-org-front-matter' for the technicalities of the
+first four specifiers this variable accepts.  The fifth specifier
+this specific to this variable: it expect a delimiter:
+`denote-text-front-matter-delimiter'.")
+
+(defvar denote-text-front-matter-delimiter (make-string 27 ?-)
+  "Final delimiter for plain text front matter.")
 
 (defvar denote-org-front-matter
   "#+title:      %s
@@ -419,7 +425,7 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
     (pcase denote-file-type
       ('markdown-toml (format denote-tml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
-      ('text (format denote-text-front-matter title date kw-space id (make-string 27 ?-)))
+      ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date kw-space id)))))
 
 (defun denote--path (title keywords)
