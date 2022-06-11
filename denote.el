@@ -447,8 +447,8 @@ Format current time, else use optional ID."
          (denote--sluggify title)
          (denote--file-extension))))
 
-;; Adapted from `org-hugo--org-date-time-to-rfc3339' in Kashual Modi's
-;; `ox-hugo' package: <https://github.com/kaushalmodi/ox-hugo>.
+;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
+;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote--date-rfc3339 ()
   "Format date using the RFC3339 specification."
   (replace-regexp-in-string
