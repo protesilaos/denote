@@ -368,7 +368,7 @@ treatment)."
       ('toml (format "[%S]" (downcase keywords)))
       (_ (downcase keywords))))))
 
-(defvar denote--tml-front-matter
+(defvar denote-tml-front-matter
   "+++
 title      = %S
 date       = %s
@@ -377,7 +377,7 @@ identifier = %S
 +++\n\n"
   "TOML front matter value for `format'.")
 
-(defvar denote--yaml-front-matter
+(defvar denote-yaml-front-matter
   "---
 title:      %S
 date:       %s
@@ -386,7 +386,7 @@ identifier: %S
 ---\n\n"
   "YAML front matter value for `format'.")
 
-(defvar denote--text-front-matter
+(defvar denote-text-front-matter
   "title:      %s
 date:       %s
 tags:       %s
@@ -394,7 +394,7 @@ identifier: %s
 %s\n\n"
   "Plain text front matter value for `format'.")
 
-(defvar denote--org-front-matter
+(defvar denote-org-front-matter
   "#+title:      %s
 #+date:       %s
 #+filetags:   %s
@@ -410,10 +410,10 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase denote-file-type
-      ('markdown-toml (format denote--tml-front-matter title date kw-toml id))
-      ('markdown-yaml (format denote--yaml-front-matter title date kw-space id))
-      ('text (format denote--text-front-matter title date kw-space id (make-string 27 ?-)))
-      (_ (format denote--org-front-matter title date kw-space id)))))
+      ('markdown-toml (format denote-tml-front-matter title date kw-toml id))
+      ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
+      ('text (format denote-text-front-matter title date kw-space id (make-string 27 ?-)))
+      (_ (format denote-org-front-matter title date kw-space id)))))
 
 (defun denote--path (title keywords)
   "Return path to new file with TITLE and KEYWORDS.
