@@ -494,21 +494,22 @@ point over the =TARGET=, =M-x find-file= followed by =M-n= will fill the
 path to that file (this also works with point over just the identifier
 of a note).
 
-Backlinks are recorded at the end of a note under the heading with the
-title =Denote backlinks=.  Users should not edit the note below this
-part manually: it is controlled by Denote, such as to delete duplicate
-links (in the future it might also handle stuff like alphabetic
-sorting).
+#+vindex: denote-link-insert-functions
+#+findex: denote-link-backlink
+Backlinks are optionally recorded at the end of a note under the heading
+with the title =Denote backlinks=.  This is an opt-in feature that has
+to be set up by adding ~denote-link-backlinks~ to the special hook
+~denote-link-insert-functions~.
+
+The reason backlinks are off by default is because we might still make
+breaking changes on how they are implemented.  For the time being,
+Denote expects that users do not edit the section with the backlinks: it
+is controlled by Denote, such as to delete duplicate links (in the
+future it might also handle stuff like alphabetic sorting).  Suggestions
+to improve backlinking are most welcome!
 
 The section with the backlinks is formatted according to the note's file
 type.
-
-#+vindex: denote-link-insert-functions
-#+findex: denote-link-backlink
-The special hook ~denote-link-insert-functions~ is called after a link
-is created.  It accepts two arguments for the target file and the
-formatted backlink to the original file.  The function
-~denote-link-backlink~ provides an example for advanced users.
 
 #+findex: denote-link-clear-stale-backlinks
 Backlinks that no longer point to available notes can be removed from
