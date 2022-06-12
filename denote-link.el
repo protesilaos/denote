@@ -124,9 +124,9 @@ With optional BACKLINK, return a backlink pattern"
   "Prepare link to FILE using PATTERN.
 With optional BACKLINK, format it as a backlink."
   (let* ((dir (denote-directory))
-         (file-id (denote-retrieve--retrieve-value file denote-retrieve--identifier-regexp))
+         (file-id (denote-retrieve--value file denote-retrieve--identifier-regexp))
          (file-path (file-name-completion file-id dir))
-         (file-title (denote-retrieve--retrieve-value file denote-retrieve--title-regexp)))
+         (file-title (denote-retrieve--value file denote-retrieve--title-regexp)))
     (format pattern file-path file-title file-id)))
 
 ;;;###autoload
@@ -179,7 +179,7 @@ PROOF-OF-CONCEPT."
   (interactive)
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
-         (id (denote-retrieve--retrieve-value file denote-retrieve--identifier-regexp))
+         (id (denote-retrieve--value file denote-retrieve--identifier-regexp))
          (buf (format "*denote-backlinks to %s*" id)))
   (compilation-start
    (format "find * -type f -exec %s --color=auto -l -m 1 -e %s- %s %s"
