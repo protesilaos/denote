@@ -35,14 +35,14 @@
   "Regular expression for title key and value.
 
 The match that needs to be extracted is explicityly marked as
-group 1.  `denote-retrieve--find-value' uses the group 1 sting.")
+group 1.")
 
 (defconst denote-retrieve--identifier-regexp
   "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*\"?\\(?1:[0-9T]+\\)"
   "Regular expression for filename key and value.
 
 The match that needs to be extracted is explicityly marked as
-group 1.  `denote-retrieve--find-value' uses the group 1 sting.")
+group 1.")
 
 (defun denote-retrieve--search (regexp)
   "Search for REGEXP in the current buffer."
@@ -53,18 +53,14 @@ group 1.  `denote-retrieve--find-value' uses the group 1 sting.")
       (re-search-forward regexp nil t 1)
       (match-string-no-properties 1))))
 
-(defun denote-retrieve--find-value (regexp)
-  "Return value from REGEXP by searching the file."
-  (or (denote-retrieve--search regexp)
-      (user-error "Cannot retrieve %s" regexp)))
-
-(defun denote-retrieve--retrieve-value (file regexp)
+(defun denote-retrieve--value (file regexp)
   "Return REGEXP value from FILE.
 FILE is a note in the variable `denote-directory'."
   (let ((default-directory (denote-directory)))
     (with-temp-buffer
       (insert-file-contents-literally file)
-      (denote-retrieve--find-value regexp))))
+      (or (denote-retrieve--search regexp)
+          (user-error "Cannot retrieve %s in %s" regexp file)))))
 
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
