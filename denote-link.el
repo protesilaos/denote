@@ -67,7 +67,7 @@
 
 ;;; Code:
 
-(require 'denote)
+(require 'denote-retrieve)
 
 (defgroup denote-link ()
   "Link facility for Denote."
@@ -90,24 +90,6 @@ files."
   :group 'denote-link)
 
 ;;;; Link to note
-
-(defun denote-link--find-value (regexp)
-  "Return value from REGEXP by searching the file."
-  (goto-char (point-min))
-  (re-search-forward regexp nil nil 1) ;Stop search after the first match
-  (match-string-no-properties 1))
-
-(defconst denote-link--title-regexp "^\\(?:#\\+\\)?\\(?:title:\\)[\s\t]+\\(?1:.*\\)"
-  "Regular expression for title key and value.
-
-The match that needs to be extracted is explicityly marked as
-group 1.  `denote-link--find-value' uses the group 1 sting.")
-
-(defconst denote-link--identifier-regexp "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*\"?\\(?1:[0-9T]+\\)"
-  "Regular expression for filename key and value.
-
-The match that needs to be extracted is explicityly marked as
-group 1.  `denote-link--find-value' uses the group 1 sting.")
 
 (defconst denote-link--link-format-org "[[file:%s][%s (%s)]]"
   "Format of Org link to note.")
@@ -135,7 +117,7 @@ group 1.  `denote-link--find-value' uses the group 1 sting.")
   (let ((default-directory (denote-directory)))
     (with-temp-buffer
       (insert-file-contents-literally note)
-      (denote-link--find-value regexp))))
+      (denote-retrieve--find-value regexp))))
 
 (defun denote-link--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
@@ -154,9 +136,9 @@ With optional BACKLINK, return a backlink pattern"
   "Prepare link to FILE using PATTERN.
 With optional BACKLINK, format it as a backlink."
   (let* ((dir (denote-directory))
-         (file-id (denote-link--retrieve-value file denote-link--identifier-regexp))
+         (file-id (denote-link--retrieve-value file denote-retrieve--identifier-regexp))
          (file-path (file-name-completion file-id dir))
-         (file-title (denote-link--retrieve-value file denote-link--title-regexp)))
+         (file-title (denote-link--retrieve-value file denote-retrieve--title-regexp)))
     (format pattern file-path file-title file-id)))
 
 ;;;###autoload
@@ -209,7 +191,7 @@ PROOF-OF-CONCEPT."
   (interactive)
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
-         (id (denote-link--retrieve-value file denote-link--identifier-regexp))
+         (id (denote-link--retrieve-value file denote-retrieve--identifier-regexp))
          (buf (format "*denote-backlinks to %s*" id)))
   (compilation-start
    (format "find * -type f -exec %s --color=auto -l -m 1 -e %s- %s %s"
