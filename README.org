@@ -619,40 +619,7 @@ notes in =~/blog/= ([[#h:337f9cf0-9f66-45af-b73f-f6370472fb51][Fontification in 
 #+end_src
 
 Given Denote's composable code, you can tweak the output however you
-like ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).  Consider the case where the
-alternative notes in the blog have no use for the identifier field
-inside the front matter.  Let's omit it!  (It will still be part of the
-file name.)
-
-#+begin_src emacs-lisp
-(setq denote-file-type nil)
-(setq denote-directory (expand-file-name "~/Documents/notes/"))
-
-;; Excerpt of the default:
-(defvar denote-toml-front-matter
-  "+++
-title      = %S
-date       = %s
-tags       = %s
-identifier = %S
-+++\n\n")
-
-;; Adding the N$ to show the order they are provided internally
-;; (explained in `denote-org-front-matter'),
-(defvar my-denote-toml-front-matter
-        "+++
-title      = %1$S
-date       = %2$s
-tags       = %3$s
-+++\n\n")
-
-(defun my-denote-markdown-toml ()
-  (interactive)
-  (let ((denote-file-type 'markdown-toml)
-        (denote-directory "~/blog/")
-        (denote-toml-front-matter my-denote-toml-front-matter))
-    (call-interactively #'denote)))
-#+end_src
+like ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).
 
 Have more ideas?  Something does not work quite right?  Areas you wish
 were more abstract in the code?  Please participate in the development
