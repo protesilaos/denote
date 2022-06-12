@@ -691,6 +691,23 @@ notes in =~/blog/= ([[#h:337f9cf0-9f66-45af-b73f-f6370472fb51][Fontification in 
 Given Denote's composable code, you can tweak the output however you
 like ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).
 
+If you do place different types of notes in their own directories,
+consider introducing directory-local variables to keep things working
+seamlessly.  An obvious candidate for such a local variable is the
+~denote-directory~: you want notes in =~/blog/= to treat their directory
+as the canonical one; while those in =~/Documents/notes/= to do the same
+for that path.  Write a =.dir-locals.el= file with the following
+contents and place it in each of those directories:
+
+#+begin_src emacs-lisp
+;;; Directory Local Variables
+;;; For more information see (info "(emacs) Directory Variables")
+
+((nil . ((denote-directory . (expand-file-name default-directory)))))
+#+end_src
+
+This will allow things to work smoothly (e.g. ~denote-infer-keywords~).
+
 Have more ideas?  Something does not work quite right?  Areas you wish
 were more abstract in the code?  Please participate in the development
 process.
