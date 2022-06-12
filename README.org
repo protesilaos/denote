@@ -297,7 +297,7 @@ does it ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  As a fi
 before renaming the file at point, showing a message like:
 
 #+begin_example
-Rename denote-link.el to 20220612T052900--what-the-thing__testing.el? (y or n)
+Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
 #+end_example
 
 The file type extension (e.g. =.pdf=) is read from the underlying file
