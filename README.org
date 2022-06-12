@@ -817,6 +817,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Kaushal Modi, Ypot, svnsbck.
 
+Special thanks to Peter Povinec who helped refine the file-naming
+scheme, which is the cornerstone of this project.
+
 * GNU Free Documentation License
 :PROPERTIES:
 :APPENDIX: t
