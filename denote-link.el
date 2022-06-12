@@ -112,18 +112,6 @@ files."
 (defconst denote-link--backlink-regexp "\\[\\[file:\\(.*?\\)\\]\\[backlink: \\(.*?\\) (\\(.*?\\))\\]\\]"
   "Regexp of `denote-link--backlink-format-org'.")
 
-(defun denote-link--retrieve-value (note regexp)
-  "Return REGEXP value from NOTE."
-  (let ((default-directory (denote-directory)))
-    (with-temp-buffer
-      (insert-file-contents-literally note)
-      (denote-retrieve--find-value regexp))))
-
-(defun denote-link--read-file-prompt ()
-  "Prompt for regular file in variable `denote-directory'."
-  (read-file-name "Select note: " (denote-directory)
-                  nil t nil #'file-regular-p))
-
 (defun denote-link--file-type-format (file &optional backlink)
   "Return link pattern based on FILE format.
 With optional BACKLINK, return a backlink pattern"
@@ -136,16 +124,16 @@ With optional BACKLINK, return a backlink pattern"
   "Prepare link to FILE using PATTERN.
 With optional BACKLINK, format it as a backlink."
   (let* ((dir (denote-directory))
-         (file-id (denote-link--retrieve-value file denote-retrieve--identifier-regexp))
+         (file-id (denote-retrieve--retrieve-value file denote-retrieve--identifier-regexp))
          (file-path (file-name-completion file-id dir))
-         (file-title (denote-link--retrieve-value file denote-retrieve--title-regexp)))
+         (file-title (denote-retrieve--retrieve-value file denote-retrieve--title-regexp)))
     (format pattern file-path file-title file-id)))
 
 ;;;###autoload
 (defun denote-link (target)
   "Create Org link to TARGET note in variable `denote-directory'.
 Run `denote-link-insert-functions' afterwards."
-  (interactive (list (denote-link--read-file-prompt)))
+  (interactive (list (denote-retrieve--read-file-prompt)))
   (let* ((origin (buffer-file-name))
          (link (denote-link--format-link target (denote-link--file-type-format origin)))
          (backlink (denote-link--format-link origin (denote-link--file-type-format target :backlink))))
@@ -191,7 +179,7 @@ PROOF-OF-CONCEPT."
   (interactive)
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
-         (id (denote-link--retrieve-value file denote-retrieve--identifier-regexp))
+         (id (denote-retrieve--retrieve-value file denote-retrieve--identifier-regexp))
          (buf (format "*denote-backlinks to %s*" id)))
   (compilation-start
    (format "find * -type f -exec %s --color=auto -l -m 1 -e %s- %s %s"
