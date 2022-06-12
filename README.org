@@ -300,6 +300,10 @@ before renaming the file at point, showing a message like:
 Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
 #+end_example
 
+#+vindex: denote-dired-rename-expert
+However, if the user option ~denote-dired-rename-expert~ is non-nil,
+conduct the renaming operation outright---no questions asked.
+
 When operating on a file that has no identifier, such as =sample.pdf=,
 Denote reads the file properties to retrieve its last modification time.
 If the file was from a past date like 2000-11-31 it will get an
@@ -802,6 +806,7 @@ Everything is in place to set up the package.
 
 (require 'denote-link)
 (require 'denote-dired)
+(setq denote-dired-rename-expert nil)
 
 ;; We use different ways to specify a path for demo purposes.
 (setq denote-dired-directories

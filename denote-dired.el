@@ -78,6 +78,13 @@
   :type '(repeat directory)
   :group 'denote-dired)
 
+(defcustom denote-dired-rename-expert nil
+  "If t, `denote-dired-rename-file' doesn't ask for confirmation.
+The confiration is asked via a `y-or-n-p' prompt which shows the
+old name followed by the new one."
+  :type 'boolean
+  :group 'denote-dired)
+
 ;;;; Commands
 
 (defun denote-dired--file-attributes-time (file)
@@ -97,16 +104,24 @@
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
   "Rename FILE to include TITLE and KEYWORDS.
-If in Dired consider FILE the one at point, else prompt with
-completion.
 
-If FILE has a Denote-style identifier, retain it while updating
-the TITLE and KEYWORDS fields.  Else create an identifier,
-replacing the whole name.
+If in Dired, consider FILE to be the one at point, else prompt
+with completion.
+
+If FILE has a Denote-compliant identifier, retain it while
+updating the TITLE and KEYWORDS fields of the file name.  Else
+create an identifier based on the file's attribute of last
+modification time.  If such attribute cannot be found, the
+identifier falls back to the current time.
+
+As a final step, prompt for confirmation, showing the difference
+between old and new file names.  If `denote-dired-rename-expert'
+is non-nil, conduct the renaming operation outright---no
+questions asked!
 
 The file type extension (e.g. .pdf) is read from the underlying
-file and is preserved in the renaming process.  Files that have
-no extension are simply left without one.
+file and is preserved through the renaming process.  Files that
+have no extension are simply left without one.
 
 Renaming only occurs relative to the current directory.  Files
 are not moved between directories.
