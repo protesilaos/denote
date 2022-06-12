@@ -612,6 +612,29 @@ scenaria where, say, one wants to organise their collection of PDFs and
 multimedia in a systematic way (and, perhaps, use them as attachments
 for the notes Denote produces).
 
+* Minibuffer histories
+:PROPERTIES:
+:CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651
+:END:
+
+Denote has a dedicated minibuffer history for each one of its prompts.
+This practically means that using =M-p= (~previous-history-element~) and
+=M-n= (~next-history-element~) will only cycle through the relevant
+record of inputs, such as your latest titles in the =TITLE= prompt, and
+keywords in the =KEYWORDS= prompt.
+
+The built-in =savehist= library saves minibuffer histories.  Sample
+configuration:
+
+#+begin_src emacs-lisp
+(require 'savehist)
+(setq savehist-file (locate-user-emacs-file "savehist"))
+(setq history-length 10000)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history t)
+(add-hook 'after-init-hook #'savehist-mode)
+#+end_src
+
 * Notes in multiple file types
 :PROPERTIES:
 :CUSTOM_ID: h:f34b172b-3440-446c-aec1-bf818d0aabfe
