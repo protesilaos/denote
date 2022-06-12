@@ -284,25 +284,31 @@ facilitate the task of renaming them.
 
 #+findex: denote-dired-rename-file
 To this end, we provide the ~denote-dired-rename-file~ command.  It has
-a two-fold purpose: (i) to change the file name of an existing note
-while retaining its identifier and (ii) to write a Denote-style file
-name for an item that was not created by ~denote~ or related commands
-(such as an image or PDF).
+a two-fold purpose: (i) to change the name of an existing file while
+retaining its identifier and (ii) to write a Denote-compliant file name
+for an item that was not created by ~denote~ or related commands (such
+as an image or PDF).
 
 The ~denote-dired-rename-file~ command will target the file at point if
 it finds one in the current Dired buffer.  Otherwise it prompts with
 minibuffer completion for a file name.  It then uses the familiar
 prompts for a =TITLE= and =KEYWORDS= the same way the ~denote~ command
-does it ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  As a final step it asks for confirmation
+does ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  As a final step, it asks for confirmation
 before renaming the file at point, showing a message like:
 
 #+begin_example
 Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
 #+end_example
 
+When operating on a file that has no identifier, such as =sample.pdf=,
+Denote reads the file properties to retrieve its last modification time.
+If the file was from a past date like 2000-11-31 it will get an
+identifier starting with =20001131= followed by the time component (per
+our file-naming scheme).
+
 The file type extension (e.g. =.pdf=) is read from the underlying file
-and is preserved in the renaming process.  Files that have no extension
-are simply left without one.
+and is preserved through the renaming process.  Files that have no
+extension are simply left without one.
 
 Renaming only occurs relative to the current directory.  Files are not
 moved between directories.

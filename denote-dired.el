@@ -80,11 +80,19 @@
 
 ;;;; Commands
 
+(defun denote-dired--file-attributes-time (file)
+  "Return `file-attribute-modification-time' of FILE as identifier."
+  (format-time-string
+   denote--id
+   (file-attribute-modification-time (file-attributes file))))
+
 (defun denote-dired--file-name-id (file)
-  "Return FILE identifier, else provide one."
-  (if (string-match denote--id-regexp file)
-      (substring file (match-beginning 0) (match-end 0))
-    (format-time-string denote--id)))
+  "Return FILE identifier, else generate one."
+  (cond
+   ((string-match denote--id-regexp file)
+    (substring file (match-beginning 0) (match-end 0)))
+   ((denote-dired--file-attributes-time file))
+   (t (format-time-string denote--id))))
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
