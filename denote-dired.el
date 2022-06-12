@@ -80,22 +80,43 @@
 
 ;;;; Commands
 
+(defun denote-dired--file-name-id (file)
+  "Return FILE identifier, else provide one."
+  (if (string-match denote--id-regexp file)
+      (substring file (match-beginning 0) (match-end 0))
+    (format-time-string denote--id)))
+
 ;;;###autoload
-(defun denote-dired-rename-file (title keywords)
-  "Rename file at point to new file with TITLE and KEYWORDS.
-This command is intended to complement note-taking, such as by
-renaming attachments that the user adds to their notes."
+(defun denote-dired-rename-file (file title keywords)
+  "Rename FILE to include TITLE and KEYWORDS.
+If in Dired consider FILE the one at point, else prompt with
+completion.
+
+If FILE has a Denote-style identifier, retain it while updating
+the TITLE and KEYWORDS fields.  Else create an identifier,
+replacing the whole name.
+
+The file type extension (e.g. .pdf) is read from the underlying
+file and is preserved in the renaming process.  Files that have
+no extension are simply left without one.
+
+Renaming only occurs relative to the current directory.  Files
+are not moved between directories.
+
+This command is intended to (i) rename existing Denote
+notes, (ii) complement note-taking, such as by renaming
+attachments that the user adds to their notes."
   (interactive
    (list
+    (or (dired-get-filename nil t) (read-file-name "Rename file Denote-style: "))
     (denote--title-prompt)
     (denote--keywords-prompt)))
-  (let* ((file (dired-get-filename))
-         (dir (file-name-directory file))
+  (let* ((dir (file-name-directory file))
          (old-name (file-name-nondirectory file))
          (extension (file-name-extension file t))
          (new-name (denote--format-file
                     dir
-                    (format-time-string denote--id)
+                    (denote-dired--file-name-id file)
                     keywords
                     (denote--sluggify title)
                     extension)))
@@ -104,7 +125,8 @@ renaming attachments that the user adds to their notes."
                    (propertize old-name 'face 'error)
                    (propertize (file-name-nondirectory new-name) 'face 'success)))
       (rename-file old-name new-name nil)
-      (revert-buffer))))
+      (when (eq major-mode 'dired-mode)
+        (revert-buffer)))))
 
 ;;;; Extra fontification
 

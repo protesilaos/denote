@@ -436,13 +436,14 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date kw-space id)))))
 
-(defun denote--path (title keywords)
+(defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.
-Format current time, else use optional ID."
+With optional DIR, use it instead of variable `denote-directory'.
+With optional ID, use it else format the current time."
   (setq denote-last-path
         (denote--format-file
-         (file-name-as-directory denote-directory)
-         (format-time-string denote--id)
+         (or dir (file-name-as-directory denote-directory))
+         (or id (format-time-string denote--id))
          (denote--sluggify-keywords keywords)
          (denote--sluggify title)
          (denote--file-extension))))
