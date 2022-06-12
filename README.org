@@ -271,6 +271,42 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+* Renaming files
+:PROPERTIES:
+:CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
+:END:
+
+Denote's file-naming scheme is not specific to notes or text files: it
+is useful for all sorts of files, such as multimedia and PDFs that form
+part of the user's longer-term storage ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  While
+Denote does not manage such files, it already has all the mechanisms to
+facilitate the task of renaming them.
+
+#+findex: denote-dired-rename-file
+To this end, we provide the ~denote-dired-rename-file~ command.  It has
+a two-fold purpose: (i) to change the file name of an existing note
+while retaining its identifier and (ii) to write a Denote-style file
+name for an item that was not created by ~denote~ or related commands
+(such as an image or PDF).
+
+The ~denote-dired-rename-file~ command will target the file at point if
+it finds one in the current Dired buffer.  Otherwise it prompts with
+minibuffer completion for a file name.  It then uses the familiar
+prompts for a =TITLE= and =KEYWORDS= the same way the ~denote~ command
+does it ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  As a final step it asks for confirmation
+before renaming the file at point, showing a message like:
+
+#+begin_example
+Rename denote-link.el to 20220612T052900--what-the-thing__testing.el? (y or n)
+#+end_example
+
+The file type extension (e.g. =.pdf=) is read from the underlying file
+and is preserved in the renaming process.  Files that have no extension
+are simply left without one.
+
+Renaming only occurs relative to the current directory.  Files are not
+moved between directories.
+
 * Front matter
 :PROPERTIES:
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
@@ -625,42 +661,6 @@ like ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).
 Have more ideas?  Something does not work quite right?  Areas you wish
 were more abstract in the code?  Please participate in the development
 process.
-
-* Renaming files
-:PROPERTIES:
-:CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
-:END:
-
-Denote's file-naming scheme is not specific to notes or text files: it
-is useful for all sorts of files, such as multimedia and PDFs that form
-part of the user's longer-term storage ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  While
-Denote does not manage such files, it already has all the mechanisms to
-facilitate the task of renaming them.
-
-#+findex: denote-dired-rename-file
-To this end, we provide the ~denote-dired-rename-file~ command.  It has
-a two-fold purpose: (i) to change the file name of an existing note
-while retaining its identifier and (ii) to write a Denote-style file
-name for an item that was not created by ~denote~ or related commands
-(such as an image or PDF).
-
-The ~denote-dired-rename-file~ command will target the file at point if
-it finds one in the current Dired buffer.  Otherwise it prompts with
-minibuffer completion for a file name.  It then uses the familiar
-prompts for a =TITLE= and =KEYWORDS= the same way the ~denote~ command
-does it ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  As a final step it asks for confirmation
-before renaming the file at point, showing a message like:
-
-#+begin_example
-Rename denote-link.el to 20220612T052900--what-the-thing__testing.el? (y or n)
-#+end_example
-
-The file type extension (e.g. =.pdf=) is read from the underlying file
-and is preserved in the renaming process.  Files that have no extension
-are simply left without one.
-
-Renaming only occurs relative to the current directory.  Files are not
-moved between directories.
 
 * Extending Denote
 :PROPERTIES:
