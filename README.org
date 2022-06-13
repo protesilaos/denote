@@ -872,8 +872,11 @@ Everything is in place to set up the package.
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
 ;; You can bind `denote' to a global key if you prefer not to use
-;; `org-capture' or want an alternative.  For example:
-(define-key global-map (kbd "C-c n") #'denote)
+;; `org-capture' or want an alternative.  Denote does not define any key
+;; bindings though: this is for the user to decide.  For example:
+(let ((map global-map))
+  (define-key map (kbd "C-c n") #'denote)
+  (define-key map (kbd "C-c N") #'denote-type))
 
 (with-eval-after-load 'org-capture
   (require 'denote-org-capture)
