@@ -217,12 +217,13 @@ holds the relevant value.  In simple terms:
 :END:
 
 #+findex: denote
+#+findex: denote-type
 #+findex: denote-org-capture
-There are two ways to write a note with Denote: invoke the ~denote~
-command or leverage the ~org-capture-templates~ by setting up a template
-which calls the function ~denote-org-capture~.
+There are three ways to write a note with Denote: invoke the ~denote~,
+or ~denote-type~ commands, or leverage the ~org-capture-templates~ by
+setting up a template which calls the function ~denote-org-capture~.
 
-In the first case, all that is needed is to run ~denote~.  It will first
+In the first case, all that is needed is to run ~denote~.  It will
 prompt for a title.  Once it is supplied, the command will ask for
 keywords.  The resulting note will have a file name as already explained
 ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]).
@@ -244,6 +245,11 @@ with ~string-lessp~).
 The ~denote~ command can also be called from Lisp, in which case it
 expects the =TITLE= and =KEYWORDS= arguments.  The former is a string,
 the latter a list of strings.
+
+The ~denote-type~ command is like ~denote~ except it also prompts for a
+file type to use as a local value for ~denote-file-type~.  In practical
+terms, this lets you produce, say, a note in Markdown even though you
+normally write in Org ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).
 
 For integration with ~org-capture~, the user must first add the relevant
 template.  Such as:

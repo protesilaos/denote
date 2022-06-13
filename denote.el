@@ -562,5 +562,37 @@ alphabetically in both the file name and file contents."
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
 
+(defvar denote--file-type-history nil
+  "Minibuffer history of `denote--file-type-prompt'.")
+
+(defun denote--file-type-prompt ()
+  "Prompt for `denote-file-type'.
+Note that a non-nil value other than `text', `markdown-yaml', and
+`markdown-toml' falls back to an Org file type.  We use `org'
+here for clarity."
+  (completing-read
+   "Select file type: " '(org markdown-yaml markdown-toml text) nil t
+   nil 'denote--file-type-history))
+
+(defun denote--file-type-symbol (filetype)
+  "Return FILETYPE as a symbol."
+  (cond
+   ((stringp filetype)
+    (intern filetype))
+   ((symbolp filetype)
+    filetype)
+   (t (user-error "`%s' is not a symbol or string" filetype))))
+
+;;;###autoload
+(defun denote-type (filetype)
+  "Like `denote' but with FILETYPE for `denote-file-type'.
+In practice, this command lets you create, say, a Markdown file
+even when your default is Org.
+
+When called from Lisp the FILETYPE must be a symbol."
+  (interactive (list (denote--file-type-prompt)))
+  (let ((denote-file-type (denote--file-type-symbol filetype)))
+    (call-interactively #'denote)))
+
 (provide 'denote)
 ;;; denote.el ends here
