@@ -70,47 +70,60 @@ modify this GNU manual.”
 :CUSTOM_ID: h:a09b70a2-ae0b-4855-ac14-1dddfc8e3241
 :END:
 
-Denote is a simple, yet effective note-taking tool for Emacs.  It is
-based on the principle that notes must follow a predictable and
-descriptive naming convention ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  The file name
-alone should offer a clear indication of what the note is about, without
-reference to any other metadata.  Denote basically streamlines the
-creation of such files.
+NOTE THAT WE ARE ACTIVELY WORKING TOWARDS VERSION =0.1.0= AND MIGHT
+STILL INTRODUCE BREAKING, BACKWARD-INCOMPATIBLE CHANGES.  This is
+particularly true for the linking facility.  Everything else is in a
+stable state.
 
-What Denote prioritizes with the enforcement of a strict file-naming
-scheme is portability.  Notes can be accessed, filtered, and understood
-without Emacs or any other advanced tool for that matter (though Emacs,
-Org, and the like are excellent programs).
+Denote aims to be a simple-to-use, focused-in-scope, and effective
+note-taking tool for Emacs.  It is based on the following core design
+principles:
 
-Denote only has a strong opinion about the file name.  It otherwise is
-flexible and poses no constraints on the desired workflow.  Denote has
-no mechanism to test for adherence with a given note-taking method, such
-as that of Zettelkasten (i.e. the contemporary digital equivalent of
-Niklas Luhmann's methodology).  It is possible to employ such a method,
-though it is ultimately up to the user to apply the requisite rigor.
-What matters for our purposes is that Denote is not a zettelkasten
-implementation per se, does not compel the user to manage a restricted
-vocabulary for tagging purposes, will not insist on mutual exclusivity
-between keyword subsets, and so on.
++ Predictability :: File names must follow a consistent and descriptive
+  naming convention ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  The file name alone
+  should offer a clear indication of what the contents are, without
+  reference to any other metadatum.  This convention is not specific to
+  note-taking, as it is pertinent to any form of file that is part of
+  the user's long-term storage ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
 
-Denote does not manage a database and does not try to be smart about how
-notes are handled.  It creates notes and otherwise delegates extra
-functionality to other tools ([[#h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece][Extending Denote]]).
++ Composability :: Be a good Emacs citizen, by integrating with other
+  packages or built-in functionality instead of re-inventing functions
+  such as for filtering or greping.  Do not introduce dependencies on
+  specific libraries.  While Org is a killer app for Emacs and the
+  default file type for new notes, Denote does not depend on org.el nor
+  its extensions and does allow notes to be created in a variety of
+  formats ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  The author of Denote
+  (Protesilaos, aka "Prot") writes ordinary notes in plain text
+  (=.txt=), switching to an Org file only when its expanded set of
+  functionality is required for the task at hand ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
-By default, Denote writes note files using the =.org= extension.
-However, Denote does not depend on org.el or any of its accoutrements
-and extensions.  Users are given the option to change from Org to either
-Markdown (=.md=) or Plain Text (=.txt=), as explained further in the
-manual (search for ~denote-file-type~).
++ Portability :: Notes are plain text and should remain portable.  The
+  way Denote writes file names, the front matter it include in the
+  note's header, and the links it establishes must all be adequately
+  usable with standard Unix tools.  No need for a databse or some
+  specialised software.  As Denote develops and this manual is fully
+  fleshed out, there will be concrete examples on how to do the
+  Denote-equivalent on the command-line.
 
-"Denote" is the familiar word, though it also is a play on the "note"
-concept.  Plus, we can come up with acronyms of dubious utility like:
++ Flexibility :: Do not assume the user's preference for a note-taking
+  methodology.  Denote is conceptually similar to the Zettelkasten
+  Method, which you can learn more about in this detailed introduction:
+  <https://zettelkasten.de/introduction/>.  Notes are atomic (one file
+  per note) and have a unique identifier.  However, Denote does not
+  enforce a particular methodology for knowledge management, such as a
+  restricted vocabulary or mutually exclusive sets of keywords.  It is
+  up to the user to apply the requisite rigor in pursuit of their
+  preferred workflow.
 
-+ Don't Ever Note Only The Ephemeral
+Now the important part...  "Denote" is the familiar word, though it also
+is a play on the "note" concept.  Plus, we can come up with acronyms,
+recursive or otherwise, of increasingly dubious utility like:
+
++ Don't Ever Note Only The Epiphenomenal
 + Denote Everything Neatly; Omit The Excesses
 
 But we'll let you get back to work.  Don't Eschew or Neglect your
-Obligations, Tasks, Engagements...
+Obligations, Tasks, and Engagements.
 
 * The file-naming scheme
 :PROPERTIES:
