@@ -492,10 +492,10 @@ identifier: 20220610T202232
 ---------------------------
 #+end_example
 
-The line with the hyphens is documented in the product of the fifth
-format specifier, as documented in ~denote-text-front-matter~.  Its
-value is stored in ~denote-text-front-matter-delimiter~.  Say we want to
-have a delimiter both at the top and bottom:
+The line with the hyphens is the product of the fifth format specifier,
+as documented in ~denote-text-front-matter~.  Its value is stored in
+~denote-text-front-matter-delimiter~.  Say we want to have a delimiter
+both at the top and bottom:
 
 #+begin_src emacs-lisp
 (setq denote-text-front-matter
