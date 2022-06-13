@@ -522,7 +522,7 @@ Or we would rather use another character instead of hyphens, such as the
 equals sign:
 
 #+begin_src emacs-lisp
-(setq denote-text-front-matter-delimiter (make-string 27 ?+))
+(setq denote-text-front-matter-delimiter (make-string 27 ?=))
 #+end_src
 
 Remember that this is for advanced users.  If you want to see changes
