@@ -888,7 +888,7 @@ Everything is in place to set up the package.
                  :no-save t
                  :immediate-finish nil
                  :kill-buffer t
-                 :jump-to-captured t))))
+                 :jump-to-captured t)))
 #+end_src
 
 * Acknowledgements
