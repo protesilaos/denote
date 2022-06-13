@@ -112,6 +112,20 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
+(defcustom denote-allow-multi-word-keywords t
+  "If non-nil keywords can consist of multiple words.
+Words are automatically separated by a hyphen when using the
+`denote' command or related.  The hyphen is the only legal
+character---no spaces, no other characters.  If, for example, the
+user types <word1+word2> or <word1 word2>, it is converted to
+<word1-word2>.
+
+When nil, do not allow keywords to consist of multiple words.
+Reduce them to a single word, such as by turning <word1+word2> or
+<word1 word2> into <word1word2>."
+  :group 'denote
+  :type 'boolean)
+
 (defcustom denote-file-type nil
   "The file type extension for new notes.
 
@@ -218,7 +232,12 @@ trailing hyphen."
 
 (defun denote--sluggify (str)
   "Make STR an appropriate slug for file names and related."
-  (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+  (downcase
+   (if denote-allow-multi-word-keywords
+       (denote--slug-hyphenate (denote--slug-no-punct str))
+     (replace-regexp-in-string
+      "-" ""
+      (denote--slug-hyphenate (denote--slug-no-punct str))))))
 
 (defun denote--sluggify-keywords (keywords)
   "Sluggify KEYWORDS."

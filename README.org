@@ -136,15 +136,20 @@ automatically gets downcased and hyphenated.  An entry about "Economics
 in the Euro Area" produces an =economics-in-the-euro-area= string for
 the =TITLE= of the file name.
 
+#+vindex: denote-allow-multi-word-keywords
 The =KEYWORDS= field consists of one or more entries demarcated by an
 underscore (the separator is inserted automatically).  Each keyword is a
 string provided by the user at the relevant prompt which broadly
 describes the contents of the entry.  Keywords that need to be more than
 one-word-long must be written with hyphens: any other character, such as
-spaces or the plus sign is converted into a hyphen.  So when
-=emacs_library= appears in a file name, it is interpreted as two
+spaces or the plus sign is automatically converted into a hyphen.  So
+when =emacs_library= appears in a file name, it is interpreted as two
 distinct keywords, whereas =emacs-library= is one keyword.  This is
 reflected in how the keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+While Denote supports multi-word keywords by default, the user option
+~denote-allow-multi-word-keywords~ can be set to nil to forcibly join
+all words into one, meaning that an input of =word1 word2= will be
+written as =word1word2=.
 
 #+vindex: denote-file-type
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
