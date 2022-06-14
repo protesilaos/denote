@@ -190,7 +190,7 @@ PROOF-OF-CONCEPT."
   (interactive)
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
-         (id (denote-retrieve--value file denote-retrieve--identifier-regexp))
+         (id (denote-retrieve--filename-identifier file))
          (buf (format "*denote-backlinks to %s*" id)))
   (compilation-start
    (format "find * -type f -exec %s --color=auto -l -m 1 -e %s %s %s"
