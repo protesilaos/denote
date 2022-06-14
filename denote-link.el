@@ -24,46 +24,9 @@
 
 ;;; Commentary:
 ;;
-;; Denote has a basic linking facility to quickly establish connections
-;; between notes.  The command `denote-link' prompts for a file name in the
-;; `denote-directory' (only regular files are considered, not directories).
-;; It then retrieves the path of the given note, inserts it at point using
-;; the appropriate link notation, and creates a backlink entry in the
-;; target file (again using the appropriate notation).
-;;
-;; What constitutes "appropriate link notation" depends on the file type
-;; of the given entry per `denote-file-type' (see "The file naming
-;; scheme" in the manual).  For example when linking from an Org file to
-;; a Markdown file, the link in the former will follow Org syntax while
-;; the backlink in the latter will use that of Markdown.  Org links use
-;; `[[file:TARGET][DESCRIPTION]]', those of Markdown are
-;; `[DESCRIPTION](file:TARGET)', while for plain text we implement our
-;; own scheme of `<TYPE: TARGET> [DESCRIPTION]', where `TYPE' is either
-;; `LINK' or `BACKLINK' (capitalization in the latter two is literal,
-;; because plain text lacks other means of emphasis).
-;;
-;; Plain text links can benefit from Emacs' notion of "future history",
-;; else its ability to read the thing at point for relevant commands.  With
-;; point over the `TARGET', `M-x find-file' followed by `M-n' will fill the
-;; path to that file (this also works with point over just the identifier
-;; of a note).
-;;
-;; Backlinks are recorded at the end of a note under the heading with the
-;; title `Denote backlinks'.  Users should not edit the note below this
-;; part manually: it is controlled by Denote, such as to delete duplicate
-;; links (in the future it might also handle stuff like alphabetic
-;; sorting).
-;;
-;; The section with the backlinks is formatted according to the note's file
-;; type.
-;;
-;; The special hook `denote-link-insert-functions' is called after a link
-;; is created.  It accepts two arguments for the target file and the
-;; formatted backlink to the original file.  The function
-;; `denote-link-backlink' provides an example for advanced users.
-;;
-;; Backlinks that no longer point to available notes can be removed from
-;; the current buffer with the command `denote-link-clear-stale-backlinks'.
+;; The linking facility is subject to review and there will likely be
+;; breaking changes.  This is the only area that needs to be fixed
+;; before we release the first stable version of the package.
 
 ;;; Code:
 

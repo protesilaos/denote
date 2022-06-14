@@ -540,6 +540,11 @@ participate in the development of Denote.
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
 
+The linking facility is subject to review and there will likely be
+breaking changes.  This is the only area that needs to be fixed before
+we release the first stable version of the package.  WHAT FOLLOWS IS NOT
+DEFINITIVE.
+
 #+findex: denote-link
 Denote has a basic linking facility to quickly establish connections
 between notes.  The command ~denote-link~ prompts for a file name in the
