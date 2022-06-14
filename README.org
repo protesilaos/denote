@@ -817,6 +817,28 @@ Sources for =tmr=:
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
 
+Finally, recall what we discussed elsewhere in the manual about changing
+the file type and target directory ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You
+basically ~let~ bind the relevant variables.  Such bindings are specific
+to the function: they do not affect anything outside of it, so you can
+keep the defaults for your regular notes and use something different for
+your journaling.  For example, the following snippet is like the
+previous sample of writing a journal entry and setting a timer, but it
+also uses a plain text file type and adds the new note to the
+=~/Documents/journal/= directory:
+
+#+begin_src emacs-lisp
+(defun my-denote-journal-with-tmr-and-custom-type-and-dir ()
+  "Like `my-denote-journal-with-tmr' with custom type and directory."
+  (interactive)
+  (let ((denote-file-type 'text) ; it supports other file types as well: read its doc string
+        (denote-directory "~/Documents/journal/"))
+    (denote
+     (format-time-string "%A %e %B %Y")
+     "journal")
+    (tmr 10 "Practice writing in my journal")))
+#+end_src
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
