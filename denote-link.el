@@ -50,8 +50,8 @@
 (defun denote-link--file-type-format (file)
   "Return link pattern based on FILE format."
   (pcase (file-name-extension file)
-    ("markdown" denote-link--link-format-markdown)
-    ("text" denote-link--link-format-text)
+    ("md" denote-link--link-format-markdown)
+    ("txt" denote-link--link-format-text)
     (_ denote-link--link-format-org))) ; Includes backup files.  Maybe we can remove them?
 
 (defun denote-link--format-link (file pattern)
