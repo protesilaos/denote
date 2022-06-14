@@ -742,9 +742,80 @@ This will allow things to work smoothly (e.g. ~denote-infer-keywords~).
 Your default ~denote-directory~ does not need this, as it already is the
 normal target that Denote uses.
 
+Want to automate aspects of note creation ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]])?
 Have more ideas?  Something does not work quite right?  Areas you wish
 were more abstract in the code?  Please participate in the development
 process.
+
+** Keep a journal or diary
+:PROPERTIES:
+:CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
+:END:
+
+While there are subtle technical differences between a journal and a
+diary, we will consider those equivalent in the interest of brevity:
+they both describe a personal space that holds a record of your thoughts
+about your experiences and/or view of events in the world.
+
+Suppose you are committed to writing an entry every day.  Unlike what we
+demonstrated before, your writing will follow a regular naming pattern
+([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You know that the title of the new note
+must always look like =Tuesday 14 June 2022= and the keyword has to be
+=journal= or =diary=.  As such, you want to automate the task instead of
+being prompted each time, as is the norm with ~denote~ and the relevant
+commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  This is easy to accomplish because ~denote~
+can be called from Lisp and given the required arguments of =TITLE= and
+=KEYWORDS= directly.  All you need is a simple wrapper function:
+
+#+begin_src emacs-lisp
+(defun my-denote-journal ()
+  "Create an entry tagged 'journal' with the date as its title."
+  (interactive)
+  (denote
+   (format-time-string "%A %e %B %Y") ; format like Tuesday 14 June 2022
+   "journal")) ; multiple keywords are a list of strings: '("one" "two")
+#+end_src
+
+By invoking ~my-denote-journal~ you will go straight into the newly
+created note and commit to your writing outright.
+
+Sometimes journaling is done with the intent to hone one's writing
+skills.  Perhaps you are learning a new language or wish to communicate
+your ideas with greater clarity and precision.  As with everything that
+requires a degree of sophistication, you have to work for it---write,
+write, write!
+
+One way to test your progress is to set a timer.  It helps you gauge
+your output and its quality.  To use a timer with Emacs, consider the
+=tmr= package:
+
+#+begin_src emacs-lisp
+(defun my-denote-journal-with-tmr ()
+  "Like `my-denote-journal', but also set a 10-minute timer.
+The `tmr' command is part of the `tmr' package."
+  (interactive)
+  (denote
+   (format-time-string "%A %e %B %Y")
+   "journal")
+  (tmr 10 "Practice writing in my journal")) ; set 10 minute timer with a description
+#+end_src
+
+Once the timer elapses, stop writing and review your performance.
+Practice makes perfect!
+
+[ As Denote matures, we may add hooks to control what happens before or
+  after the creation of a new note.  We shall also document more
+  examples of tasks that can be accomplished with this package. ]
+
+Sources for =tmr=:
+
++ Package name (GNU ELPA): =tmr=
++ Official manual: <https://protesilaos.com/emacs/tmr>
++ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
+  - Mirrors:
+    + GitHub: <https://github.com/protesilaos/tmr>
+    + GitLab: <https://gitlab.com/protesilaos/tmr>
++ Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
 
 * Extending Denote
 :PROPERTIES:
