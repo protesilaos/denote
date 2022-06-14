@@ -68,7 +68,7 @@
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
-(defconst denote-link--format-text "[[%$2s] [%$1s]]"
+(defconst denote-link--format-text "[[%2$s] [%1$s]]"
   "Format of plain text link to note.")
 
 (defconst denote-link--regexp-org
