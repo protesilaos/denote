@@ -542,8 +542,8 @@ participate in the development of Denote.
 
 The linking facility is subject to review and there will likely be
 breaking changes.  This is the only area that needs to be fixed before
-we release the first stable version of the package.  WHAT FOLLOWS IS NOT
-DEFINITIVE.
+we release the first stable version of the package.  *What follows is
+not up-to-date as of 2022-06-14 17:01 +0300.*
 
 #+findex: denote-link
 Denote has a basic linking facility to quickly establish connections
