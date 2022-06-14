@@ -30,7 +30,7 @@
 
 (require 'denote)
 
-(defconst denote-retrieve--title-regexp
+(defconst denote-retrieve--title-front-matter-regexp
   "^\\(?:#\\+\\)?\\(?:title:\\)[\s\t]+\\(?1:.*\\)"
   "Regular expression for title key and value.
 

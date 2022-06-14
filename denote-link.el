@@ -57,7 +57,7 @@
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
   (let* ((file-id (denote-retrieve--value file denote-retrieve--identifier-regexp))
-         (file-title (denote-retrieve--value file denote-retrieve--title-regexp)))
+         (file-title (denote-retrieve--value file denote-retrieve--title-front-matter-regexp)))
     (format pattern file-id file-title)))
 
 ;;;###autoload
