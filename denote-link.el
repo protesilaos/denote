@@ -104,7 +104,6 @@ Run `denote-link-insert-functions' afterwards."
 
 ;;;; Backlinks' buffer (WORK-IN-PROGRESS)
 
-;; (require 'button)
 (define-button-type 'denote-link-find-file
   'follow-link t
   'action #'denote-link--find-file
