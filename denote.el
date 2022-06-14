@@ -221,6 +221,13 @@ We consider those characters illigal for our purposes.")
 
 ;;;; File helper functions
 
+(defun denote--completion-table (category candidates)
+  "Pass appropriate metadata CATEGORY to completion CANDIDATES."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        `(metadata (category . ,category))
+      (complete-with-action action candidates string pred))))
+
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
   (let ((path denote-directory))
