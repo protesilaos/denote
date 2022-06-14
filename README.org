@@ -779,6 +779,18 @@ can be called from Lisp and given the required arguments of =TITLE= and
 By invoking ~my-denote-journal~ you will go straight into the newly
 created note and commit to your writing outright.
 
+Of course, you can always set up the function so that it asks for a
+=TITLE= but still automatically applies the =journal= tag:
+
+#+begin_src emacs-lisp
+(defun denote-journal-with-title ()
+  "Create an entry tagged 'journal', while prompting for a title."
+  (interactive)
+  (denote
+   (denote--title-prompt) ; ask for title, instead of using human-readable date
+   "journal"))
+#+end_src
+
 Sometimes journaling is done with the intent to hone one's writing
 skills.  Perhaps you are learning a new language or wish to communicate
 your ideas with greater clarity and precision.  As with everything that
