@@ -155,7 +155,7 @@ PROOF-OF-CONCEPT."
   (with-current-buffer buf
     (add-hook 'compilation-finish-functions #'denote-link--prettify-compilation nil t))))
 
-;;;; Automatic backlink insertion
+;;;; Automatic backlink insertion (SUBJECT TO REMOVAL)
 
 (defconst denote-link-backlink-heading "Denote backlinks"
   "String of the backlink's heading.
