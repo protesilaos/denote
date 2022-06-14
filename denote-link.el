@@ -84,8 +84,7 @@ With optional BACKLINK, return a backlink pattern"
     (_ (if backlink denote-link--backlink-format-org denote-link--link-format-org)))) ; Includes backup files.  Maybe we can remove them?
 
 (defun denote-link--format-link (file pattern)
-  "Prepare link to FILE using PATTERN.
-With optional BACKLINK, format it as a backlink."
+  "Prepare link to FILE using PATTERN."
   (let* ((dir (denote-directory))
          (file-id (denote-retrieve--value file denote-retrieve--identifier-regexp))
          (file-path (file-name-completion file-id dir))
