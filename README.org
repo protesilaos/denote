@@ -557,7 +557,7 @@ the given entry, per ~denote-file-type~ ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e
 
 + Org: =[[denote:IDENTIFIER][TITLE]]=
 + Markdown: =[TITLE](denote:IDENTIFIER)=
-+ Plain text: =[[IDENTIFIER] [TITLE]]=
++ Plain text: =[[TITLE] [IDENTIFIER]]=
 
 The special specifier =denote:= is experimental.  The idea is to reserve
 for possible integration with Org/Markdown, though we might switch to

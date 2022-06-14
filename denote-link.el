@@ -68,7 +68,7 @@
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
-(defconst denote-link--format-text "[[%s] [%s]]"
+(defconst denote-link--format-text "[[%$2s] [%$1s]]"
   "Format of plain text link to note.")
 
 (defconst denote-link--regexp-org
@@ -78,7 +78,7 @@
   (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
 
 (defconst denote-link--regexp-text
-  (concat "\\[\\[" "\\(?1:" denote--id-regexp "\\)" "]" "\s?" "\\[.*?]]"))
+  (concat "\\[\\["  ".*?]" "\s?" "\\[" "\\(?1:" denote--id-regexp "\\)" "]]"))
 
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
