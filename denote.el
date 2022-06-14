@@ -195,11 +195,11 @@ is suspended: we use whatever the user wants."
 
 ;;;; Main variables
 
-(defconst denote--id "%Y%m%dT%H%M%S"
+(defconst denote--id-format "%Y%m%dT%H%M%S"
   "Format of ID prefix of a note's filename.")
 
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
-  "Regular expression to match `denote--id'.")
+  "Regular expression to match `denote--id-format'.")
 
 (defconst denote--file-title-regexp
   (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
@@ -491,7 +491,7 @@ With optional ID, use it else format the current time."
   (setq denote-last-path
         (denote--format-file
          (or dir (file-name-as-directory denote-directory))
-         (or id (format-time-string denote--id))
+         (or id (format-time-string denote--id-format))
          (denote--sluggify-keywords keywords)
          (denote--sluggify title)
          (denote--file-extension))))
@@ -533,7 +533,7 @@ Use optional PATH, else create it with `denote--path'."
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
                   title (denote--date) keywords
-                  (format-time-string denote--id))))
+                  (format-time-string denote--id-format))))
     (unless path
       (with-current-buffer buffer (insert header))
       (setq denote-last-buffer buffer))

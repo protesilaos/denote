@@ -90,7 +90,7 @@ old name followed by the new one."
 (defun denote-dired--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
   (format-time-string
-   denote--id
+   denote--id-format
    (file-attribute-modification-time (file-attributes file))))
 
 (defun denote-dired--file-name-id (file)
@@ -99,7 +99,7 @@ old name followed by the new one."
    ((string-match denote--id-regexp file)
     (substring file (match-beginning 0) (match-end 0)))
    ((denote-dired--file-attributes-time file))
-   (t (format-time-string denote--id))))
+   (t (format-time-string denote--id-format))))
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
