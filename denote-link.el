@@ -193,7 +193,8 @@ PROOF-OF-CONCEPT."
          (id (denote-retrieve--filename-identifier file))
          (buf (format "*denote-backlinks to %s*" id)))
   (compilation-start
-   (format "find * -type f -exec %s --color=auto -l -m 1 -e %s %s %s"
+   (format "find * -type f ! -name '%s' -exec %s --color=auto -l -m 1 -e %s %s %s"
+           file
            grep-program
            id
            (shell-quote-argument "{}")
