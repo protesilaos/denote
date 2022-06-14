@@ -38,25 +38,65 @@
 
 ;;;; Link to note
 
-(defconst denote-link--link-format-org "[[file:%s][%s (%s)]]"
+;; FIXME 2022-06-14 16:58:24 +0300: Plain text links will use the
+;; identifier only.  But for Org we need to figure out a better way of
+;; integrating with Org/Markdown in a standard way.  Relying on
+;; org-id.el may be the right course of action for Org.  What does
+;; markdown-mode require?
+;;
+;; Whatever we do, we need to consider the implications very carefully.
+;; This is not something we can undo once the package gets its first
+;; stable release.
+;;
+;; My principle is to avoid dependencies as much as possible.  The
+;; `denote-link-find-file' exemplifies this idea.
+;;
+;; Discussions on the GitHub mirror:
+;;
+;; * https://github.com/protesilaos/denote/issues/8
+;; * https://github.com/protesilaos/denote/issues/13
+;;
+;; And on the mailing list:
+;;
+;; * https://lists.sr.ht/~protesilaos/denote/%3C9ac1913b-7e8f-7d38-b547-771861a8d641%40eh-is.de%3E
+;; * https://lists.sr.ht/~protesilaos/denote/%3C87edzvd5oz.fsf%40cassou.me%3E
+
+;; Arguments are: FILE-ID FILE-TITLE
+(defconst denote-link--format-org "[[denote:%s][%s]]"
   "Format of Org link to note.")
 
-(defconst denote-link--link-format-markdown "[%2$s (%3$s)](file:%1$s)"
+(defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
-(defconst denote-link--link-format-text "<LINK: %s> [NAME %s (%s)]"
+(defconst denote-link--format-text "[[%s] [%s]]"
   "Format of plain text link to note.")
 
+(defconst denote-link--regexp-org
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
+
+(defconst denote-link--regexp-markdown
+  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
+
+(defconst denote-link--regexp-text
+  (concat "\\[\\[" "\\(?1:" denote--id-regexp "\\)" "]" "\s?" "\\[.*?]]"))
+
 (defun denote-link--file-type-format (file)
-  "Return link pattern based on FILE format."
+  "Return link format based on FILE format."
   (pcase (file-name-extension file)
-    ("md" denote-link--link-format-markdown)
-    ("txt" denote-link--link-format-text)
-    (_ denote-link--link-format-org))) ; Includes backup files.  Maybe we can remove them?
+    ("md" denote-link--format-markdown)
+    ("txt" denote-link--format-text)
+    (_ denote-link--format-org))) ; Includes backup files.  Maybe we can remove them?
+
+(defun denote-link--file-type-regexp (file)
+  "Return link regexp based on FILE format."
+  (pcase (file-name-extension file)
+    ("md" denote-link--regexp-markdown)
+    ("txt" denote-link--regexp-text)
+    (_ denote-link--regexp-org)))
 
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
-  (let* ((file-id (denote-retrieve--value file denote-retrieve--identifier-regexp))
+  (let* ((file-id (denote-retrieve--filename-identifier file))
          (file-title (denote-retrieve--value file denote-retrieve--title-front-matter-regexp)))
     (format pattern file-id file-title)))
 
@@ -65,14 +105,52 @@
   "Create Org link to TARGET note in variable `denote-directory'.
 Run `denote-link-insert-functions' afterwards."
   (interactive (list (denote-retrieve--read-file-prompt)))
-  (let* ((origin (buffer-file-name))
-         (link (denote-link--format-link target (denote-link--file-type-format origin))))
-    (insert link)))
+  (insert
+   (denote-link--format-link
+    target
+    (denote-link--file-type-format (buffer-file-name)))))
 
-;; TODO 2022-06-14: Write `denote-link-find-file' command.  It should be
-;; able to enhance this core idea:
-;;
-;; (file-name-completion file-id dir)
+(defun denote-link--collect-identifiers (regexp)
+  "Return collection of identifiers in buffer matching REGEXP."
+  (let (matches)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward regexp nil t)
+        (push (match-string-no-properties 1) matches)))
+    matches))
+
+(defun denote-link--expand-identifiers (regexp)
+  "Expend identifiers matching REGEXP into file paths."
+  (delq nil (mapcar (lambda (i)
+                      (file-name-completion i (denote-directory)))
+                    (denote-link--collect-identifiers regexp))))
+
+(defvar denote-link--find-file-history nil
+  "History for `denote-link-find-file'.")
+
+(defun denote-link--find-file-prompt (files)
+  "Prompt for linked file among FILES."
+  (completing-read "Find linked file "
+                   (denote--completion-table 'file files)
+                   nil t
+                   nil 'denote-link--find-file-history))
+
+;; TODO 2022-06-14: We should document the use of Embark for
+;; `denote-link-find-file'.  Users are gonna love it!
+
+;; TODO 2022-06-14: Do we need to add any sort of extension to better
+;; integrate with Embark?  For the minibuffer interaction it is not
+;; necessary, but maybe it can be done to immediately recognise the
+;; identifiers are links to files?
+
+;;;###autoload
+(defun denote-link-find-file ()
+  "Use minibuffer completion to visit linked file."
+  (interactive)
+  (if-let* ((regexp (denote-link--file-type-regexp (buffer-file-name)))
+            (files (denote-link--expand-identifiers regexp)))
+      (find-file (denote-link--find-file-prompt files))
+    (user-error "No links found in the current buffer")))
 
 ;;;; Backlinks' buffer (WORK-IN-PROGRESS)
 
