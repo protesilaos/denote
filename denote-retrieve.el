@@ -44,6 +44,14 @@ group 1.")
 The match that needs to be extracted is explicityly marked as
 group 1.")
 
+(defun denote-retrieve--filename-identifier (file)
+  "Extract identifier from FILE name."
+  (if (file-exists-p file)
+      (progn
+        (string-match denote--id-regexp file)
+        (match-string 0 file))
+    (error "Cannot find `%s' as a file" file)))
+
 (defun denote-retrieve--search (regexp)
   "Search for REGEXP in the current buffer."
   (save-excursion
