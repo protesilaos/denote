@@ -60,16 +60,16 @@ files."
 (defconst denote-link--backlink-format-org "[[file:%s][backlink: %s (%s)]]"
   "Format of Org backlink to note.")
 
-(defconst denote-link--link-format-md "[%2$s (%3$s)](file:%1$s)"
+(defconst denote-link--link-format-markdown "[%2$s (%3$s)](file:%1$s)"
   "Format of Markdown link to note.")
 
-(defconst denote-link--backlink-format-md "[backlink: %2$s (%3$s)](file:%1$s)"
+(defconst denote-link--backlink-format-markdown "[backlink: %2$s (%3$s)](file:%1$s)"
   "Format of Markdown backlink to note.")
 
-(defconst denote-link--link-format-txt "<LINK: %s> [NAME %s (%s)]"
+(defconst denote-link--link-format-text "<LINK: %s> [NAME %s (%s)]"
   "Format of plain text link to note.")
 
-(defconst denote-link--backlink-format-txt "BACKLINK: <%s> [NAME %s (%s)]"
+(defconst denote-link--backlink-format-text "BACKLINK: <%s> [NAME %s (%s)]"
   "Format of plain text backlink to note.")
 
 (defconst denote-link--backlink-regexp "\\[\\[file:\\(.*?\\)\\]\\[backlink: \\(.*?\\) (\\(.*?\\))\\]\\]"
@@ -79,8 +79,8 @@ files."
   "Return link pattern based on FILE format.
 With optional BACKLINK, return a backlink pattern"
   (pcase (file-name-extension file)
-    ("md" (if backlink denote-link--backlink-format-md denote-link--link-format-md))
-    ("txt" (if backlink denote-link--backlink-format-txt denote-link--link-format-txt))
+    ("markdown" (if backlink denote-link--backlink-format-markdown denote-link--link-format-markdown))
+    ("text" (if backlink denote-link--backlink-format-text denote-link--link-format-text))
     (_ (if backlink denote-link--backlink-format-org denote-link--link-format-org)))) ; Includes backup files.  Maybe we can remove them?
 
 (defun denote-link--format-link (file pattern)
