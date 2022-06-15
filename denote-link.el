@@ -136,8 +136,7 @@ and/or the documentation string of `display-buffer'."
 
 ;;;###autoload
 (defun denote-link (target)
-  "Create Org link to TARGET note in variable `denote-directory'.
-Run `denote-link-insert-functions' afterwards."
+  "Create link to TARGET note in variable `denote-directory'."
   (interactive (list (denote-retrieve--read-file-prompt)))
   (insert
    (denote-link--format-link
