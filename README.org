@@ -88,14 +88,11 @@ principles:
 
 + Composability :: Be a good Emacs citizen, by integrating with other
   packages or built-in functionality instead of re-inventing functions
-  such as for filtering or greping.  Do not introduce dependencies on
-  specific libraries.  While Org is a killer app for Emacs and the
-  default file type for new notes, Denote does not depend on org.el nor
-  its extensions and does allow notes to be created in a variety of
-  formats ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  The author of Denote
-  (Protesilaos, aka "Prot") writes ordinary notes in plain text
-  (=.txt=), switching to an Org file only when its expanded set of
-  functionality is required for the task at hand ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+  such as for filtering or greping.  Do not introduce strong
+  dependencies on specific libraries. The author of Denote (Protesilaos,
+  aka "Prot") writes ordinary notes in plain text (=.txt=), switching to
+  an Org file only when its expanded set of functionality is required
+  for the task at hand ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
 + Portability :: Notes are plain text and should remain portable.  The
   way Denote writes file names, the front matter it include in the
@@ -540,73 +537,118 @@ participate in the development of Denote.
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
 
-*The linking facility is the area that needs refinements before
-releasing the first stable version of Denote.*
+*The linking facility is only major area that needs to be reviewed
+before releasing the first stable version of Denote.*
 
-Denote aims to have a simple-yet-effective linking facility to quickly
-establish connections between notes.
+The ~denote-link~ command inserts a link at point to an entry specified
+at the minibuffer prompt.  Links are formatted depending on the file
+type of current note.  In Org and plain text buffers, links are
+formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown they
+are expressed as =[TITLE](denote:IDENTIFIER)=.
 
-#+findex: denote-link
-The command ~denote-link~ prompts for a file in the ~denote-directory~
-(only regular files are considered, not directories).  It then retrieves
-the identifier of the given note and inserts it at point using the
-appropriate link notation.
+How those links behave will depend on the user's preference.  Denote
+provides a simple-minded implementation for such link, which either
+works competently with point-and-click kind of interaction or, at the
+user's discretion, is more rudimentary and depends on Denote commands
+and/or Emacs' standard "future history" heuristics.
 
-What constitutes "appropriate link notation" depends on the file type of
-the given entry, per ~denote-file-type~ ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]):
+  #+vindex: denote-link-register-ol-hyperlink
++ The "just works" approach depends on Org's ability to open links it
+  recognizes regardless of the current major-mode.  The command for that
+  is ~org-open-at-point-global~.  User may want to bind it to a key of
+  their choosing, with =C-c o= looking like a decent choice.  Denote
+  defines a custom Org hyperlink and Org handles the rest.  The user
+  option ~denote-link-register-ol-hyperlink~ determines whether Denote
+  will register such a hyperlink type.  Users who do not want to load
+  Org, must set the variable to nil before loading denote-link.el.
 
-+ Org: =[[denote:IDENTIFIER][TITLE]]=
-+ Markdown: =[TITLE](denote:IDENTIFIER)=
-+ Plain text: =[[TITLE] [IDENTIFIER]]=
+  The special prefix =denote:= lets us define links with only the
+  identifier.  They are robust and will work even if the file is renamed
+  (~denote-dired-rename-file~ never modifies the identifier).  Otherwise
+  they are familiar Org-style links in ~org-mode~ buffers.  They can be
+  followed with a mouse click or the ~org-open-at-point~ command, and
+  they may be insterted with completion via the ~org-insert-link~
+  command after selecting the =denote:= link type.
 
-The special specifier =denote:= is experimental.  The idea is to reserve
-for possible integration with Org/Markdown, though we might switch to
-another method.
++ The "rudimentary" method does not depend on Org's hyperlink
+  infrastructure.  As a general feature of Emacs, any identifier that
+  appears in a note, can be expanded into the corresponding file name at
+  the same directory by leveraging Emacs' notion of "future history"
+  (predicting what the user wants).  With point over the identifier,
+  =M-x find-file= followed by =M-n= will fill the path to that file.
 
-As a general feature of Emacs, any identifier that appears in a note,
-can be expanded into the corresponding file name at the same directory
-by leveraging Emacs' notion of "future history" (predicting what the
-user wants).  With point over the identifier, =M-x find-file= followed
-by =M-n= will fill the path to that file.
+Whatever the user's preference, Denote establishes links using the
+note's identifier which is always unique and will yield the expected
+results whether the user prefers Org, plain text, or even command-line
+utilities.
+
+Everything that follows is independent of the user's preference on
+whether to use the Org hyperlink infrastructure (besides, the
+Org-specific code is less than 30 lines as of 2022-06-15 11:50 +0300).
 
 #+findex: denote-link-find-file
-Based on this principle, Denote has a major-mode-agnostic mechanism to
-collects all linked file references in the current buffer and return
-them as an appropriately formatted list.  This list can then be used in
-interactive commands.  The ~denote-link-find-file~ is one such command.
-It uses minibuffer completion to visit a file that is linked to from the
-current note.  The candidates have the correct metadata, meaning that a
-package such as =marginalia= will display the correct annotations.
+Denote has a major-mode-agnostic mechanism to collect all linked file
+references in the current buffer and return them as an appropriately
+formatted list.  This list can then be used in interactive commands.
+The ~denote-link-find-file~ is such a command.  It uses minibuffer
+completion to visit a file that is linked to from the current note.  The
+candidates have the correct metadata, meaning that a package such as
+=marginalia= will display accurate annotations, while the =embark=
+package will be able to work its magic such as in exporting the list
+into a filtered Dired buffer (i.e. a familiar Dired listing with only
+the files of the current minibuffer session).
 
 #+findex: denote-link-backlinks
 The command ~denote-link-backlinks~ produces a bespoke buffer which
 displays the file name of all notes linking to the current one.  Each
 file name appears on its own line and is buttonized so that it performs
-the action of visiting the referenced file.
+the action of visiting the referenced file.  [Development note:
+currently this depends on the =find= executable.  Maybe we can make it
+work with Emacs' ~xref~ facility to work everywhere.]  The backlinks'
+buffer looks like this:
+
+#+begin_example
+Backlinks to "On being honest" (20220614T130812)
+------------------------------------------------
+
+20220614T145606--let-this-glance-become-a-stare__journal.txt
+#+end_example
 
 #+vindex: denote-link-fontify-backlinks
-The backlinks' buffer is fontified by default, though the user has the
-~denote-link-fontify-backlinks~ to disable this effect, by setting the
-variable to nil.
+The backlinks' buffer is fontified by default, though the user has
+access to the ~denote-link-fontify-backlinks~ option to disable this
+effect by setting its value to nil.
 
 #+vindex: denote-link-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
 ~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
-underlying ~display-buffer~ infrastructure, this is an advanced feature.
-By default, the backlinks' buffer is displayed below the current window.
-The doc string of our user option includes a configuration that places
-the buffer in a left side window instead.
+underlying ~display-buffer~ mechanism, this inevitably is an advanced
+feature.  By default, the backlinks' buffer is displayed below the
+current window.  The doc string of our user option includes a
+configuration that places the buffer in a left side window instead.
+Reproducing it here for your convenience:
+
+#+begin_src emacs-lisp
+(setq denote-link-backlinks-display-buffer-action
+      '((display-buffer-reuse-window
+         display-buffer-in-side-window)
+        (side . left)
+        (slot . 99)
+        (window-width . 0.3)))
+#+end_src
 
 #+findex: denote-link-add-links
-The command ~denote-link-add-links~ adds links matching a regular
-expression or plain string.  The links are added at point as a
+The command ~denote-link-add-links~ adds links at point matching a
+regular expression or plain string.  The links are inserted as a
 typographic list, such as:
 
 #+begin_example
 - link1
 - link2
+- link3
 #+end_example
 
+Each link is formatted according to the file type of the current note.
 The current note is excluded from the matching entries (adding a link to
 itself is pointless).
 
@@ -635,9 +677,9 @@ keywords in alphabetic order:
 - =\(.*denote.*package.*\)\|\(.*package.*denote.*\)= is the same as
   above, but out-of-order.
 
-Remember that in Emacs regexp input only needs to be quoted once when
-done interactively but twice when called from Lisp.  What we show above
-is for interactive usage.
+Remember that regexp constructs only need to be escaped once (like =\|=)
+when done interactively but twice when called from Lisp.  What we show
+above is for interactive usage.
 
 ** Writing metanotes
 :PROPERTIES:
@@ -666,12 +708,6 @@ about it.
 
 Your future self will appreciate metanotes for the function they serve
 in encapsulating knowledge.
-
-** TODO Finalise first version of denote-link.el [2/4]
-*** DONE Add generic linking mechanism
-*** DONE Flesh out the ~denote-link-backlinks~ prototype
-*** TODO Check if denote: is the right link type for Org/Markdown
-*** TODO Document use of Embark with ~denote-link-find-file~
 
 * Fontification in Dired
 :PROPERTIES:
