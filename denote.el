@@ -581,6 +581,8 @@ alphabetically in both the file name and file contents."
   (denote--prepare-note title keywords)
   (denote--keywords-add-to-history keywords))
 
+(defalias 'denote-create-note (symbol-function 'denote))
+
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote--file-type-prompt'.")
 
@@ -612,6 +614,8 @@ When called from Lisp the FILETYPE must be a symbol."
   (interactive (list (denote--file-type-prompt)))
   (let ((denote-file-type (denote--file-type-symbol filetype)))
     (call-interactively #'denote)))
+
+(defalias 'denote-create-note-using-type (symbol-function 'denote-type))
 
 (provide 'denote)
 ;;; denote.el ends here

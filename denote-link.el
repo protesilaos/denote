@@ -130,6 +130,8 @@ and/or the documentation string of `display-buffer'."
     target
     (denote-link--file-type-format (buffer-file-name)))))
 
+(defalias 'denote-link-insert-link (symbol-function 'denote-link))
+
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
   (let (matches)
@@ -242,6 +244,8 @@ default, it will show up below the current window."
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
 
+(defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
+
 (defvar denote-link--links-to-files nil
   "String of `denote-link-add-links-matching-keyword'.")
 
@@ -277,6 +281,8 @@ manual for more on the matter)."
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (insert (denote-link--prepare-links files ext))
       (user-error "No links matching `%s'" regexp))))
+
+(defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
 
 ;;;; Register `denote:' custom Org hyperlink
 

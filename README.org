@@ -292,6 +292,13 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+#+findex: denote-create-note
+#+findex: denote-create-note-using-type
+For convencience, the ~denote~ command has a ~denote-create-note~ alias.
+Same for ~denote-type~: ~denote-create-note-using-type~.  The purpose of
+these aliases is to provide alternative, more descriptive names of select
+commands to aid with discoverability.
+
 * Renaming files
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
@@ -680,6 +687,16 @@ keywords in alphabetic order:
 Remember that regexp constructs only need to be escaped once (like =\|=)
 when done interactively but twice when called from Lisp.  What we show
 above is for interactive usage.
+
+#+findex: denote-link-insert-link
+#+findex: denote-link-show-backlinks-buffer
+#+findex: denote-link-insert-links-matching-regexp
+For convenience, the ~denote-link~ command has an alias called
+~denote-link-insert-link~.  The ~denote-link-backlinks~ can also be used
+as ~denote-link-show-backlinks-buffer~.  While ~denote-link-add-links~
+is aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
+these aliases is to offer alternative, more descriptive names of select
+commands.
 
 ** Writing metanotes
 :PROPERTIES:
