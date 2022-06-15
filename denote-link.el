@@ -43,6 +43,24 @@
   :type 'boolean
   :group 'denote-link)
 
+(defcustom denote-link-register-ol-hyperlink t
+  "When non-nil, register the `denote:' custom Org hyperlink type.
+This practically means that the links Denote creates will behave
+link ordinary links in Org files.  They can be followed with a
+mouse click or the `org-open-at-point' command, and they can be
+insterted with completion via the `org-insert-link' command after
+selecting the `denote:' hyperlink type.
+
+When this option is nil, Denote links will not work properly in
+Org files.  All commands that Denote defines, such as
+`denote-link-backlinks' and `denote-link-find-file' will work as
+intended.
+
+Note that if you do not want to `require' ol.el, you must set
+this option to nil BEFORE loading denote-link.el."
+  :type 'boolean
+  :group 'denote-link)
+
 (defcustom denote-link-backlinks-display-buffer-action
   '((display-buffer-reuse-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer))
@@ -71,29 +89,6 @@ and/or the documentation string of `display-buffer'."
   :group 'denote-link)
 
 ;;;; Link to note
-
-;; FIXME 2022-06-14 16:58:24 +0300: Plain text links will use the
-;; identifier only.  But for Org we need to figure out a better way of
-;; integrating with Org/Markdown in a standard way.  Relying on
-;; org-id.el may be the right course of action for Org.  What does
-;; markdown-mode require?
-;;
-;; Whatever we do, we need to consider the implications very carefully.
-;; This is not something we can undo once the package gets its first
-;; stable release.
-;;
-;; My principle is to avoid dependencies as much as possible.  The
-;; `denote-link-find-file' exemplifies this idea.
-;;
-;; Discussions on the GitHub mirror:
-;;
-;; * https://github.com/protesilaos/denote/issues/8
-;; * https://github.com/protesilaos/denote/issues/13
-;;
-;; And on the mailing list:
-;;
-;; * https://lists.sr.ht/~protesilaos/denote/%3C9ac1913b-7e8f-7d38-b547-771861a8d641%40eh-is.de%3E
-;; * https://lists.sr.ht/~protesilaos/denote/%3C87edzvd5oz.fsf%40cassou.me%3E
 
 ;; Arguments are: FILE-ID FILE-TITLE
 (defconst denote-link--format-org "[[denote:%s][%s]]"
@@ -275,6 +270,38 @@ manual for more on the matter)."
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (insert (denote-link--prepare-links files ext))
       (user-error "No links matching `%s'" regexp))))
+
+
+;;;; Register `denote:' custom Org hyperlink
+
+(declare-function org-link-set-parameters "ol.el" (type &rest parameters))
+
+;; REVIEW 2022-06-15: Maybe there is a better way to make this optional.
+(when denote-link-register-ol-hyperlink
+  (require 'ol)
+  (org-link-set-parameters
+   "denote"
+   :follow #'denote-link-ol
+   :complete #'denote-link-ol-complete))
+
+(defun denote-link--ol-find-file (identifier)
+  "Visit file with IDENTIFIER.
+Uses the function `denote-directory' to establish the path to the
+file."
+  (find-file (file-name-completion identifier (denote-directory))))
+
+(defun denote-link-ol (identifier _)
+  "Find file of type `denote:' matching IDENTIFIER."
+  (funcall #'denote-link--ol-find-file identifier))
+
+(defun denote-link-ol-complete ()
+  "Like `denote-link' but for Org integration.
+This lets the user complete a link through the `org-insert-link'
+interface by first selecting the `denote:' hyperlink type."
+  (insert
+   (denote-link--format-link
+    (denote-retrieve--read-file-prompt)
+    (denote-link--file-type-format (buffer-file-name)))))
 
 (provide 'denote-link)
 ;;; denote-link.el ends here
