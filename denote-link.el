@@ -245,13 +245,17 @@ default, it will show up below the current window."
 (defvar denote-link--links-to-files nil
   "String of `denote-link-add-links-matching-keyword'.")
 
+(defvar denote-link--prepare-links-format "- %s\n"
+  "Format specifiers for `denote-link-add-links'.")
+
 (defun denote-link--prepare-links (files ext)
   "Prepare links to FILES using format of EXT."
   (setq denote-link--links-to-files
         (with-temp-buffer
           (mapc (lambda (f)
-                  (insert (concat "- " (denote-link--format-link f ext)))
-                  (newline))
+                  (insert
+                   (format denote-link--prepare-links-format
+                           (denote-link--format-link f ext))))
                 files)
           (let ((min (point-min))
                 (max (point-max)))
