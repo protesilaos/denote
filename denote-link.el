@@ -38,7 +38,7 @@
 
 ;;;; User options
 
-(defcustom denote-link-fontify-backlinks nil
+(defcustom denote-link-fontify-backlinks t
   "When non-nil, apply faces to files in the backlinks' buffer."
   :type 'boolean
   :group 'denote-link)
