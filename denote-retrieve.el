@@ -80,6 +80,10 @@ FILE is a note in the variable `denote-directory'."
                       (when (file-regular-p f) f))
                     files)))
 
+;; TODO 2022-06-15: Maybe we can do the same in a more standard way?
+;; Perhaps with `xref-matches-in-files'?
+;;
+;; (xref-matches-in-files IDENTIFIER (denote--directory-files :absolute))
 (defun denote-retrieve--proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (let* ((default-directory (denote-directory))
