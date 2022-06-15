@@ -312,6 +312,16 @@ With optional N, search in the Nth line from point."
        (file-directory-p file))
      (directory-files dir nil directory-files-no-dot-files-regexp t))))
 
+(defun denote--directory-files-matching-regexp (regexp)
+  "Return list of files matching REGEXP."
+  (delq
+   nil
+   (mapcar (lambda (f)
+             (when (and (string-match-p regexp f)
+                        (not (string= (file-name-nondirectory (buffer-file-name)) f)))
+               f))
+           (denote--directory-files))))
+
 (defun denote--keywords-in-files ()
   "Produce list of keywords in `denote--directory-files'."
   (delq nil (mapcar
