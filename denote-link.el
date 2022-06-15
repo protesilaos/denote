@@ -102,30 +102,22 @@ and/or the documentation string of `display-buffer'."
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
-(defconst denote-link--format-text "[[%2$s] [%1$s]]"
-  "Format of plain text link to note.")
-
 (defconst denote-link--regexp-org
   (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
 
 (defconst denote-link--regexp-markdown
   (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
 
-(defconst denote-link--regexp-text
-  (concat "\\[\\["  ".*?]" "\s?" "\\[" "\\(?1:" denote--id-regexp "\\)" "]]"))
-
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
   (pcase (file-name-extension file)
     ("md" denote-link--format-markdown)
-    ("txt" denote-link--format-text)
     (_ denote-link--format-org))) ; Includes backup files.  Maybe we can remove them?
 
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
   (pcase (file-name-extension file)
     ("md" denote-link--regexp-markdown)
-    ("txt" denote-link--regexp-text)
     (_ denote-link--regexp-org)))
 
 (defun denote-link--format-link (file pattern)
