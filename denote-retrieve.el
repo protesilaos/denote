@@ -88,9 +88,9 @@ FILE is a note in the variable `denote-directory'."
      (process-lines
       "find"
       default-directory
+      "-maxdepth" "1"
       "-type" "f"
       "!" "-name" file
-      "-maxdepth" "1"
       "-exec"
       grep-program
       "--color=never"
