@@ -257,6 +257,9 @@ default, it will show up below the current window."
                 (max (point-max)))
             (buffer-substring-no-properties min max)))))
 
+(defvar denote-link--add-links-history nil
+  "Minibuffer history for `denote-link-add-links'.")
+
 ;;;###autoload
 (defun denote-link-add-links (regexp)
   "Insert links to all notes matching REGEXP.
@@ -264,13 +267,12 @@ Use this command to reference multiple files at once.
 Particularly useful for the creation of metanotes (read the
 manual for more on the matter)."
   (interactive
-   (list (read-regexp "Insert links matching REGEX: ")))
+   (list (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)))
   (let* ((default-directory (denote-directory))
          (ext (denote-link--file-type-format (buffer-file-name))))
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (insert (denote-link--prepare-links files ext))
       (user-error "No links matching `%s'" regexp))))
-
 
 ;;;; Register `denote:' custom Org hyperlink
 
