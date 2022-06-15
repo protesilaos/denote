@@ -621,6 +621,10 @@ command:
 - =^2022.*_journal= match all file names starting with =2022= and
   including the keyword =journal=.
 
+- =\.txt= match all files including =.txt=.  In practical terms, this
+  only applies to the file extension, as Denote automatically removes
+  dots (and other characters) from the base file name.
+
 If files are created with ~denote-sort-keywords~ as non-nil (the
 default), then it is easy to write a regexp that includes multiple
 keywords in alphabetic order:
