@@ -635,6 +635,34 @@ Remember that in Emacs regexp input only needs to be quoted once when
 done interactively but twice when called from Lisp.  What we show above
 is for interactive usage.
 
+** Writing metanotes
+:PROPERTIES:
+:CUSTOM_ID: h:6060a7e6-f179-4d42-a9de-a9968aaebecc
+:END:
+
+A "metanote" is an entry that describes other entries who have something
+in common.  Writing metanotes can be part of a workflow where the user
+periodically reviews their work in search of patterns and deeper
+insights.  For example, you might want to read your journal entries from
+the past year to reflect on your experiences, evolution as a person, and
+the like.
+
+The command ~denote-link-add-links~, which we covered extensively in the
+previous section, is suited for this task ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).  You will
+create your metanote the way you use Denote ordinarily (metanotes may
+have the =metanote= keyword), write an introduction or however you want
+to go about it, invoke ~denote-link-add-links~ to cite the notes that
+match the given regexp, and continue writing.
+
+Metanotes can serve as entry points to groupings of individual notes.
+They are not the same as a filtered list of files, i.e. what you would
+do in Dired or the minibuffer where you narrow the list of notes to a
+given query.  Metanotes contain the filtered list plus your thoughts
+about it.
+
+Your future self will appreciate metanotes for the function they serve
+in encapsulating knowledge.
+
 ** TODO Finalise first version of denote-link.el [2/4]
 *** DONE Add generic linking mechanism
 *** DONE Flesh out the ~denote-link-backlinks~ prototype
