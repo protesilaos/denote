@@ -36,6 +36,40 @@
   "Link facility for Denote."
   :group 'denote)
 
+;;;; User options
+
+(defcustom denote-link-fontify-backlinks nil
+  "When non-nil, apply faces to files in the backlinks' buffer."
+  :type 'boolean
+  :group 'denote-link)
+
+(defcustom denote-link-backlinks-display-buffer-action
+  '((display-buffer-reuse-window display-buffer-below-selected)
+    (window-height . fit-window-to-buffer))
+  "The action used to display the current file's backlinks buffer.
+
+The value has the form (FUNCTION . ALIST), where FUNCTION is
+either an \"action function\", a list thereof, or a possibly
+empty list.  ALIST is a list of \"action alist\" which may be
+omitted (or be empty).
+
+Sample configuration to display the buffer in a side window on
+the left of the Emacs frame:
+
+    (setq denote-link-backlinks-display-buffer-action
+          (quote ((display-buffer-reuse-window
+                   display-buffer-in-side-window)
+                  (side . left)
+                  (slot . 99)
+                  (window-width . 0.3))))
+
+See Info node `(elisp) Displaying Buffers' for more details
+and/or the documentation string of `display-buffer'."
+  :type '(cons (choice (function :tag "Display Function")
+                       (repeat :tag "Display Functions" function))
+               alist)
+  :group 'denote-link)
+
 ;;;; Link to note
 
 ;; FIXME 2022-06-14 16:58:24 +0300: Plain text links will use the
@@ -159,51 +193,68 @@ Run `denote-link-insert-functions' afterwards."
   'action #'denote-link--find-file
   'face 'unspecified)
 
+;; NOTE 2022-06-15: I add this as a variable for advanced users who may
+;; prefer something else.  If there is demand for it, we can make it a
+;; defcustom, but I think it would be premature at this stage.
+(defvar denote-link-buton-action #'find-file-other-window
+  "Action for `denote-link--find-file'.")
+
 (defun denote-link--find-file (button)
-  "Action for BUTTON."
-  (find-file (buffer-substring (button-start button) (button-end button))))
+  "Action for BUTTON to `find-file'."
+  (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
 
 (declare-function denote-dired-mode "denote-dired")
 
-(defun denote-link--prettify-compilation (buffer _output)
-  "Narrow to grep matches in BUFFER.
-PROOF-OF-CONCEPT."
-  (with-current-buffer buffer
-    (narrow-to-region
-     (progn
-       (re-search-forward "find" nil t)
-       (forward-line 1)
-       (point))
-     (progn
-       (re-search-forward "Grep" nil t)
-       (forward-line -1)
-       (point)))
-    (save-excursion
+(defun denote-link--display-buffer (buf)
+  "Run `display-buffer' on BUF."
+  (display-buffer
+   buf
+   `(,@denote-link-backlinks-display-buffer-action)))
+
+(defun denote-link--prepare-backlinks (id files &optional title)
+  "Create backlinks' buffer for ID including FILES.
+Use optional TITLE for a prettier heading."
+  (let ((inhibit-read-only t)
+        (buf (format "*denote-backlinks to %s*" id)))
+    (with-current-buffer (get-buffer-create buf)
+      (erase-buffer)
+      (special-mode)
       (goto-char (point-min))
-      (while (re-search-forward (format "%s" denote--file-regexp) (point-max) t)
-        (make-button (match-beginning 0) (match-end 0) :type 'denote-link-find-file)))
-    (denote-dired-mode 1)))
+      (when-let* ((title)
+                  (heading (format "Backlinks to %S (%s)" title id))
+                  (l (length heading)))
+        (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
+      (mapc (lambda (f)
+              (insert (file-name-nondirectory f))
+              (make-button (point-at-bol) (point-at-eol) :type 'denote-link-find-file)
+              (newline))
+            files)
+      (goto-char (point-min))
+      ;; NOTE 2022-06-15: Technically this is not Dired.  Maybe we
+      ;; should abstract the fontification into a general purpose
+      ;; minor-mode.
+      (when denote-link-fontify-backlinks
+        (denote-dired-mode 1)))
+    (denote-link--display-buffer buf)))
 
 ;;;###autoload
 (defun denote-link-backlinks ()
-  "PROOF-OF-CONCEPT."
+  "Produce a buffer with files linking to current note.
+Each file is a clickable/actionable button that visits the
+referenced entry.  Files are fontified if the user option
+`denote-link-fontify-backlinks' is non-nil.
+
+The placement of the backlinks' buffer is controlled by the user
+option `denote-link-backlinks-display-buffer-action'.  By
+default, it will show up below the current window."
   (interactive)
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
          (id (denote-retrieve--filename-identifier file))
-         (buf (format "*denote-backlinks to %s*" id)))
-  (compilation-start
-   (format "find * -type f ! -name '%s' -exec %s --color=auto -l -m 1 -e %s %s %s"
-           file
-           grep-program
-           id
-           (shell-quote-argument "{}")
-		   (shell-quote-argument ";"))
-   'grep-mode
-   (lambda (_) buf)
-   t)
-  (with-current-buffer buf
-    (add-hook 'compilation-finish-functions #'denote-link--prettify-compilation nil t))))
+         (title (denote-retrieve--value file denote-retrieve--title-front-matter-regexp)))
+    (if-let ((files (denote-retrieve--proces-grep id)))
+        (denote-link--prepare-backlinks id files title)
+      (user-error "No links to the current note"))))
 
 (provide 'denote-link)
 ;;; denote-link.el ends here

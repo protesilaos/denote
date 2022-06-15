@@ -578,10 +578,29 @@ It uses minibuffer completion to visit a file that is linked to from the
 current note.  The candidates have the correct metadata, meaning that a
 package such as =marginalia= will display the correct annotations.
 
-** TODO Finalise first version of denote-link.el [1/4]
+#+findex: denote-link-backlinks
+The command ~denote-link-backlinks~ produces a bespoke buffer which
+displays the file name of all notes linking to the current one.  Each
+file name appears on its own line and is buttonized so that it performs
+the action of visiting the referenced file.
+
+#+vindex: denote-link-fontify-backlinks
+The backlinks' buffer is fontified by default, though the user has the
+~denote-link-fontify-backlinks~ to disable this effect, by setting the
+variable to nil.
+
+#+vindex: denote-link-backlinks-display-buffer-action
+The placement of the backlinks' buffer is subject to the user option
+~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
+underlying ~display-buffer~ infrastructure, this is an advanced feature.
+By default, the backlinks' buffer is displayed below the current window.
+The doc string of our user option includes a configuration that places
+the buffer in a left side window instead.
+
+** TODO Finalise first version of denote-link.el [2/4]
 *** DONE Add generic linking mechanism
+*** DONE Flesh out the ~denote-link-backlinks~ prototype
 *** TODO Check if denote: is the right link type for Org/Markdown
-*** TODO Flesh out the ~denote-link-backlinks~ prototype
 *** TODO Document use of Embark with ~denote-link-find-file~
 
 * Fontification in Dired
