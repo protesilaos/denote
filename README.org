@@ -537,7 +537,7 @@ participate in the development of Denote.
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
 
-*The linking facility is only major area that needs to be reviewed
+*The linking facility is the only major area that needs to be reviewed
 before releasing the first stable version of Denote.*
 
 The ~denote-link~ command inserts a link at point to an entry specified
