@@ -74,5 +74,33 @@ FILE is a note in the variable `denote-directory'."
   "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil t nil #'file-regular-p))
 
+(defun denote-retrieve--files-in-output (files)
+  "Return list of FILES from `find' output."
+  (delq nil (mapcar (lambda (f)
+                      (when (file-regular-p f) f))
+                    files)))
+
+(defun denote-retrieve--proces-grep (identifier)
+  "Process lines matching IDENTIFIER and return list of files."
+  (let* ((default-directory (denote-directory))
+         (file (file-name-nondirectory (buffer-file-name))))
+    (denote-retrieve--files-in-output
+     (process-lines
+      "find"
+      default-directory
+      "-type" "f"
+      "!" "-name" file
+      "-maxdepth" "1"
+      "-exec"
+      grep-program
+      "--color=never"
+      "-m"
+      "1"
+      "-e"
+      identifier
+      "{}"
+      ";"
+      "-print"))))
+
 (provide 'denote-retrieve)
 ;;; denote-retrieve.el ends here
