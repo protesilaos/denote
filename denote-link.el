@@ -256,5 +256,34 @@ default, it will show up below the current window."
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
 
+(defvar denote-link--links-to-files nil
+  "String of `denote-link-add-links-matching-keyword'.")
+
+(defun denote-link--prepare-links (files ext)
+  "Prepare links to FILES using format of EXT."
+  (setq denote-link--links-to-files
+        (with-temp-buffer
+          (mapc (lambda (f)
+                  (insert (concat "- " (denote-link--format-link f ext)))
+                  (newline))
+                files)
+          (let ((min (point-min))
+                (max (point-max)))
+            (buffer-substring-no-properties min max)))))
+
+;;;###autoload
+(defun denote-link-add-links (regexp)
+  "Insert links to all notes matching REGEXP.
+Use this command to reference multiple files at once.
+Particularly useful for the creation of metanotes (read the
+manual for more on the matter)."
+  (interactive
+   (list (read-regexp "Insert links matching REGEX: ")))
+  (let* ((default-directory (denote-directory))
+         (ext (denote-link--file-type-format (buffer-file-name))))
+    (if-let ((files (denote--directory-files-matching-regexp regexp)))
+        (insert (denote-link--prepare-links files ext))
+      (user-error "No links matching `%s'" regexp))))
+
 (provide 'denote-link)
 ;;; denote-link.el ends here

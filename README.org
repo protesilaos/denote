@@ -597,6 +597,44 @@ By default, the backlinks' buffer is displayed below the current window.
 The doc string of our user option includes a configuration that places
 the buffer in a left side window instead.
 
+#+findex: denote-link-add-links
+The command ~denote-link-add-links~ adds links matching a regular
+expression or plain string.  The links are added at point as a
+typographic list, such as:
+
+#+begin_example
+- link1
+- link2
+#+end_example
+
+The current note is excluded from the matching entries (adding a link to
+itself is pointless).
+
+Same examples of a regular expression that can be used with this
+command:
+
+- =journal= match all files which include =journal= anywhere in their
+  name.
+
+- =_journal= match all files which include =journal= as a keyword.
+
+- =^2022.*_journal= match all file names starting with =2022= and
+  including the keyword =journal=.
+
+If files are created with ~denote-sort-keywords~ as non-nil (the
+default), then it is easy to write a regexp that includes multiple
+keywords in alphabetic order:
+
+- =_denote.*_package= match all files that include both the =denote= and
+  =package= keywords, in this order.
+
+- =\(.*denote.*package.*\)\|\(.*package.*denote.*\)= is the same as
+  above, but out-of-order.
+
+Remember that in Emacs regexp input only needs to be quoted once when
+done interactively but twice when called from Lisp.  What we show above
+is for interactive usage.
+
 ** TODO Finalise first version of denote-link.el [2/4]
 *** DONE Add generic linking mechanism
 *** DONE Flesh out the ~denote-link-backlinks~ prototype
