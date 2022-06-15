@@ -303,14 +303,16 @@ With optional N, search in the Nth line from point."
 
 ;;;; Keywords
 
-(defun denote--directory-files ()
-  "List note files, assuming flat directory."
+(defun denote--directory-files (&optional absolute)
+  "List note files, assuming flat directory.
+If optional ABSOLUTE, show full paths, else only show base file
+names that are relative to the variable `denote-directory'."
   (let* ((dir (denote-directory))
          (default-directory dir))
     (seq-remove
      (lambda (file)
        (file-directory-p file))
-     (directory-files dir nil directory-files-no-dot-files-regexp t))))
+     (directory-files dir absolute directory-files-no-dot-files-regexp t))))
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP."
