@@ -49,7 +49,7 @@
   "The action used to display the current file's backlinks buffer.
 
 The value has the form (FUNCTION . ALIST), where FUNCTION is
-either an \"action function\", a list thereof, or a possibly
+either an \"action function\", a list thereof, or possibly an
 empty list.  ALIST is a list of \"action alist\" which may be
 omitted (or be empty).
 
