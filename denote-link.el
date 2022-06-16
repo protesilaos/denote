@@ -118,7 +118,7 @@ and/or the documentation string of `display-buffer'."
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
   (let* ((file-id (denote-retrieve--filename-identifier file))
-         (file-title (denote-retrieve--value file denote-retrieve--title-front-matter-regexp)))
+         (file-title (denote-retrieve--value-title file)))
     (format pattern file-id file-title)))
 
 ;;;###autoload
@@ -239,7 +239,7 @@ default, it will show up below the current window."
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name)))
          (id (denote-retrieve--filename-identifier file))
-         (title (denote-retrieve--value file denote-retrieve--title-front-matter-regexp)))
+         (title (denote-retrieve--value-title file)))
     (if-let ((files (denote-retrieve--proces-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
