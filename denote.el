@@ -1,4 +1,4 @@
-;;; denote.el --- Simple notes with a strict file-naming scheme -*- lexical-binding: t -*-
+;;; denote.el --- Simple notes with an efficient file-naming scheme -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Free Software Foundation, Inc.
 

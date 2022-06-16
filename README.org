@@ -1,4 +1,4 @@
-#+title: denote: Simple notes with a strict file-naming scheme
+#+title: denote: Simple notes with an efficient file-naming scheme
 #+author: Protesilaos Stavrou
 #+email: info@protesilaos.com
 #+language: en
@@ -17,7 +17,7 @@
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
 #+texinfo_dir_title: Denote: (denote)
-#+texinfo_dir_desc: Simple notes with a strict file-naming scheme
+#+texinfo_dir_desc: Simple notes with an efficient file-naming scheme
 #+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
 #+texinfo_header: @set MAINTAINER Protesilaos Stavrou
 #+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}

@@ -1,4 +1,4 @@
-;;; denote-retrieve.el --- Link facility for Denote -*- lexical-binding: t -*-
+;;; denote-retrieve.el --- Internal search functions for Denote -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Free Software Foundation, Inc.
 
