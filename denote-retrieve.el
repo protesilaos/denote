@@ -56,14 +56,15 @@ group 1.")
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
-(defun denote-retrieve--search (regexp)
-  "Search for REGEXP in the current buffer."
+(defun denote-retrieve--search (regexp &optional group)
+  "Search for REGEXP in the current buffer.
+With optional GROUP match it, else match group 1."
   (save-excursion
     (save-restriction
       (widen)
       (goto-char (point-min))
       (re-search-forward regexp nil t 1)
-      (match-string-no-properties 1))))
+      (match-string-no-properties (or group 1)))))
 
 (defun denote-retrieve--value (file regexp)
   "Return REGEXP value from FILE.
