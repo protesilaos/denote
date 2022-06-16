@@ -75,7 +75,7 @@ Optional GROUP is a regexp construct for
 `denote-retrieve--search'."
   (let ((default-directory (denote-directory)))
     (with-temp-buffer
-      (insert-file-contents-literally file)
+      (insert-file-contents file)
       (or (denote-retrieve--search regexp group)
           nil))))
 
