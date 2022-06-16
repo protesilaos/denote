@@ -1089,7 +1089,7 @@ specialised third-party packages.
 :CUSTOM_ID: h:42953f87-82bd-43ec-ab99-22b1e22955e7
 :END:
 
-The package is available as =logos=.  Simply do:
+The package is available as =denote=.  Simply do:
 
 : M-x package-refresh-contents
 : M-x package-install
