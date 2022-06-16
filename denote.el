@@ -470,13 +470,17 @@ and do not use any empty line before it.
 These help ensure consistency and might prove useful if we need
 to operate on the front matter as a whole.")
 
+(defun denote--file-meta-header (title date keywords id &optional filetype)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
- provided by `denote'."
+ provided by `denote'.
+
+Optional FILETYPE is one of the values of `denote-file-type',
+else that variable is used."
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
-    (pcase denote-file-type
+    (pcase (or filetype denote-file-type)
       ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
