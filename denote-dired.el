@@ -62,7 +62,7 @@
 
 ;;; Code:
 
-(require 'denote)
+(require 'denote-retrieve)
 (require 'dired)
 
 (defgroup denote-dired ()
@@ -100,6 +100,26 @@ old name followed by the new one."
     (substring file (match-beginning 0) (match-end 0)))
    ((denote-dired--file-attributes-time file))
    (t (format-time-string denote--id-format))))
+
+(defcustom denote-dired-post-rename-functions
+  (list #'denote-dired-rewrite-front-matter)
+  "List of functions called after `denote-dired-rename-file'.
+The function must accept three arguments: FILE, TITLE, and
+KEYWORDS.  The first is the full path to the file provided as a
+string, the second is the human-readable file name (not what
+Denote sluggifies) also as a string, and the third are the
+keywords.  If there is only one keyword, it is a string, else a
+list of strings.
+
+DEVELOPMENT NOTE: the `denote-dired-rewrite-front-matter' needs
+to be tested thoroughly.  It rewrites file contents so we have to
+be sure it does the right thing.  To avoid any trouble, it always
+asks for confirmation before performing the replacement.  This
+confirmation ignores `denote-dired-rename-expert' for the time
+being, though we might want to lift that restriction once
+everything works as intended."
+  :type 'hook
+  :group 'denote-dired)
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
@@ -143,13 +163,88 @@ attachments that the user adds to their notes."
                     keywords
                     (denote--sluggify title)
                     extension)))
-    (when (y-or-n-p
-           (format "Rename %s to %s?"
-                   (propertize old-name 'face 'error)
-                   (propertize (file-name-nondirectory new-name) 'face 'success)))
-      (rename-file old-name new-name nil)
-      (when (eq major-mode 'dired-mode)
-        (revert-buffer)))))
+    (unless (string= old-name (file-name-nondirectory new-name))
+      (when (y-or-n-p
+             (format "Rename %s to %s?"
+                     (propertize old-name 'face 'error)
+                     (propertize (file-name-nondirectory new-name) 'face 'success)))
+        (rename-file old-name new-name nil)
+        (when (derived-mode-p 'dired-mode)
+          (revert-buffer))
+        (run-hook-with-args 'denote-dired-post-rename-functions new-name title keywords)))))
+
+(defun denote-dired--file-meta-header (title date keywords id filetype)
+  "Front matter for renamed notes.
+
+TITLE, DATE, KEYWORDS, FILENAME, ID, and FILETYPE are all strings
+ which are provided by `denote-dired-rewrite-front-matter'."
+  (let ((kw-space (denote--file-meta-keywords keywords))
+        (kw-toml (denote--file-meta-keywords keywords 'toml)))
+    (pcase filetype
+      ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
+      ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
+      ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
+      (_ (format denote-org-front-matter title date kw-space id)))))
+
+(defun denote-dired--filetype-heuristics (file)
+  "Return likely file type of FILE.
+The return value is for `denote--file-meta-header'."
+  (pcase (file-name-extension file)
+    ("md" (if (string-match-p "title\\s-*=" (denote-retrieve--value-title file 0))
+              'markdown-toml
+            'markdown-yaml))
+    ("txt" 'text)
+    (_ 'org)))
+
+(defun denote-dired--front-matter-search-delimiter (filetype)
+  "Return likely front matter delimiter search for FILETYPE."
+  (pcase filetype
+    ('markdown-toml (re-search-forward "^\\+\\+\\+$" nil t 2))
+    ('markdown-yaml (re-search-forward "^---$" nil t 2))
+    ;; 2 at most, as the user might prepend it to the block as well.
+    ;; Though this might give us false positives, it ultimately is the
+    ;; user's fault.
+    ('text (or (re-search-forward denote-text-front-matter-delimiter nil t 2)
+               (re-search-forward denote-text-front-matter-delimiter nil t 1)
+               (re-search-forward "^[\s\t]*$" nil t 1)))
+    ;; Org does not have a real delimiter.  This is the trickiest one.
+    (_ (re-search-forward "^[\s\t]*$" nil t 1))))
+
+(defun denote-dired-rewrite-front-matter (file title keywords)
+  "Rewrite front matter of note after `denote-dired-rename-file'.
+The FILE, TITLE, and KEYWORDS are passed from the renaming
+ command and are used to construct a new front matter block."
+  (when (and (file-regular-p file)
+             (file-writable-p file)
+             ;; Heuristic to check if this is one of our notes
+             (string= default-directory (abbreviate-file-name (denote-directory))))
+    (let* ((id (denote-retrieve--filename-identifier file))
+           (date (denote-retrieve--value-date file))
+           (filetype (denote-dired--filetype-heuristics file))
+           (new-front-matter (denote--file-meta-header title date keywords id filetype))
+           old-front-matter
+           front-matter-delimiter)
+      (with-current-buffer (find-file-noselect file)
+        (save-excursion
+          (goto-char (point-min))
+          (setq old-front-matter
+                (buffer-substring-no-properties
+                 (point)
+                 (progn
+                   (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
+                   (point)))))
+        (when (and old-front-matter
+                   (y-or-n-p
+                    (format "%s\n%s\nReplace front matter?"
+                            (propertize old-front-matter 'face 'error)
+                            (propertize new-front-matter 'face 'success))))
+          (delete-region (point-min) front-matter-delimiter)
+          (goto-char (point-min))
+          (insert new-front-matter)
+          ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
+          ;; should check if we added any new lines and delete only
+          ;; those.
+          (delete-blank-lines))))))
 
 ;;;; Extra fontification
 
