@@ -291,15 +291,19 @@ names that are relative to the variable `denote-directory'."
        (file-directory-p file))
      (directory-files dir absolute directory-files-no-dot-files-regexp t))))
 
-(defun denote--directory-files-matching-regexp (regexp)
-  "Return list of files matching REGEXP."
+(defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
+  "Return list of files matching REGEXP.
+With optional NO-CHECK-CURRENT do not test if the current file is
+part of the list."
   (delq
    nil
-   (mapcar (lambda (f)
-             (when (and (string-match-p regexp f)
-                        (not (string= (file-name-nondirectory (buffer-file-name)) f)))
-               f))
-           (denote--directory-files))))
+   (mapcar
+    (lambda (f)
+      (when (and (string-match-p regexp f)
+                 (or no-check-current
+                     (not (string= (file-name-nondirectory (buffer-file-name)) f))))
+        f))
+    (denote--directory-files))))
 
 (defun denote--keywords-in-files ()
   "Produce list of keywords in `denote--directory-files'."
