@@ -31,16 +31,20 @@
 (require 'denote)
 
 (defconst denote-retrieve--title-front-matter-regexp
-  "^\\(?:#\\+\\)?\\(?:title:\\)[\s\t]+\\(?1:.*\\)"
+  "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b\\)[\"']?"
   "Regular expression for title key and value.
-
 The match that needs to be extracted is explicityly marked as
 group 1.")
 
 (defconst denote-retrieve--identifier-regexp
-  "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*\"?\\(?1:[0-9T]+\\)"
-  "Regular expression for filename key and value.
+  "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*[\"']?\\(?1:[0-9T]+\\)[\"']?"
+  "Regular expression for identifier key and value.
+The match that needs to be extracted is explicityly marked as
+group 1.")
 
+(defconst denote-retrieve--date-front-matter-regexp
+  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b\\)[\"']?"
+  "Regular expression for date key and value.
 The match that needs to be extracted is explicityly marked as
 group 1.")
 
