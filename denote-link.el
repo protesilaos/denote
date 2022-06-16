@@ -294,9 +294,27 @@ manual for more on the matter)."
   (org-link-set-parameters
    "denote"
    :follow #'denote-link-ol-follow
-   :complete #'denote-link-ol-complete))
+   :complete #'denote-link-ol-complete
+   :export #'denote-link-ol-export))
 
 (declare-function org-link-open-as-file "ol" (path arg))
+
+(defun denote-link--ol-resolve-link-to-target (link &optional path-id)
+  "Resolve LINK into the appropriate target.
+With optional PATH-ID return a cons cell consisting of the path
+and the identifier."
+  (let* ((search (and (string-match "::\\(.*\\)\\'" link)
+		              (match-string 1 link)))
+	     (id (if (and (stringp search) (not (string-empty-p search)))
+                 (substring link 0 (match-beginning 0))
+               link))
+         (path (expand-file-name (file-name-completion id (denote-directory)))))
+    (cond
+     (path-id
+      (cons (format "%s" path) (format "%s" id)))
+     ((and (stringp search) (not (string-empty-p search)))
+      (concat path "::" search))
+     (path))))
 
 (defun denote-link-ol-follow (link)
   "Find file of type `denote:' matching LINK.
@@ -306,16 +324,9 @@ Read Info node `(org) Search Options'.
 
 Uses the function `denote-directory' to establish the path to the
 file."
-  (let* ((search (and (string-match "::\\(.*\\)\\'" link)
-		              (match-string 1 link)))
-	     (id (if (and (stringp search) (not (string-empty-p search)))
-                 (substring link 0 (match-beginning 0))
-               link))
-         (path (expand-file-name (file-name-completion id (denote-directory))))
-         (target (if (and (stringp search) (not (string-empty-p search)))
-                     (concat path "::" search)
-                   path)))
-    (org-link-open-as-file target nil)))
+  (org-link-open-as-file
+   (denote-link--ol-resolve-link-to-target link)
+   nil))
 
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
@@ -325,6 +336,23 @@ interface by first selecting the `denote:' hyperlink type."
    (denote-link--format-link
     (denote-retrieve--read-file-prompt)
     (denote-link--file-type-format (buffer-file-name)))))
+
+(defun denote-link-ol-export (link description format)
+  "Export a `denote:' link from Org files.
+The LINK, DESCRIPTION, and FORMAT are handled by the export
+backend."
+  (let* ((path-id (denote-link--ol-resolve-link-to-target link :path-id))
+         (path (file-name-nondirectory (car path-id)))
+         (p (file-name-sans-extension path))
+         (id (cdr path-id))
+	     (desc (or description (concat "denote:" id))))
+    (cond
+     ((eq format 'html) (format "<a target=\"_blank\" href=\"%s.html\">%s</a>" p desc))
+     ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
+     ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
+     ((eq format 'ascii) (format "[%s] <denote:%s>" desc path)) ; NOTE 2022-06-16: May be tweaked further
+     ((eq format 'md) (format "[%s](%s.md)" desc p))
+     (t path))))
 
 (provide 'denote-link)
 ;;; denote-link.el ends here
