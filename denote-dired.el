@@ -24,6 +24,62 @@
 
 ;;; Commentary:
 ;;
+;; Denote's file-naming scheme is not specific to notes or text files:
+;; it is useful for all sorts of files, such as multimedia and PDFs that
+;; form part of the user's longer-term storage (read manual's "The
+;; file-naming scheme").  While Denote does not manage such files, it
+;; already has all the mechanisms to facilitate the task of renaming
+;; them.
+;;
+;; To this end, we provide the `denote-dired-rename-file' command.  It
+;; has a two-fold purpose: (i) to change the name of an existing file
+;; while retaining its identifier and (ii) to write a Denote-compliant
+;; file name for an item that was not created by `denote' or related
+;; commands (such as an image or PDF).
+;;
+;; The `denote-dired-rename-file' command will target the file at point
+;; if it finds one in the current Dired buffer.  Otherwise it prompts
+;; with minibuffer completion for a file name.  It then uses the
+;; familiar prompts for a `TITLE' and `KEYWORDS' the same way the
+;; `denote' command does (read manual's "Points of entry).  As a final
+;; step, it asks for confirmation before renaming the file at point,
+;; showing a message like:
+;;
+;;     Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
+;;
+;; However, if the user option `denote-dired-rename-expert' is non-nil,
+;; conduct the renaming operation outright---no questions asked.
+;;
+;; When operating on a file that has no identifier, such as
+;; `sample.pdf', Denote reads the file properties to retrieve its last
+;; modification time.  If the file was from a past date like 2000-11-31
+;; it will get an identifier starting with `20001131' followed by the
+;; time component (per our file-naming scheme).
+;;
+;; The file type extension (e.g. `.pdf') is read from the underlying
+;; file and is preserved through the renaming process.  Files that have
+;; no extension are simply left without one.
+;;
+;; Renaming only occurs relative to the current directory.  Files are not
+;; moved between directories.
+;;
+;; The final step of the `denote-dired-rename-file' command is to call
+;; the special hook `denote-dired-post-rename-functions'.  Functions
+;; added to that hook must accept three arguments, as explained in its
+;; doc string.  For the time being, the only function we define is the
+;; one which updates the underlying note's front matter to match the new
+;; file name: `denote-dired-rewrite-front-matter'.  The function takes
+;; care to only operate on an actual note, instead of arbitrary files.
+;;
+;; DEVELOPMENT NOTE: the `denote-dired-rewrite-front-matter' needs to be
+;; tested thoroughly.  It rewrites file contents so we have to be sure
+;; it does the right thing.  To avoid any trouble, it always asks for
+;; confirmation before performing the replacement.  This confirmation
+;; ignores `denote-dired-rename-expert' for the time being, though we
+;; might want to lift that restriction once everything works as
+;; intended.
+;;
+;;
 ;; One of the upsides of Denote's file-naming scheme is the predictable
 ;; pattern it establishes, which appears as a near-tabular presentation in
 ;; a listing of notes (i.e. in Dired).  The `denote-dired-mode' can help
