@@ -442,7 +442,7 @@ identifier: %s
   "Plain text front matter value for `format'.
 Read `denote-org-front-matter' for the technicalities of the
 first four specifiers this variable accepts.  The fifth specifier
-this specific to this variable: it expect a delimiter:
+is specific to this variable: it expect a delimiter such as
 `denote-text-front-matter-delimiter'.")
 
 (defvar denote-text-front-matter-delimiter (make-string 27 ?-)
