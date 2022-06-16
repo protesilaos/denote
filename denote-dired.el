@@ -214,10 +214,12 @@ The return value is for `denote--file-meta-header'."
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
  command and are used to construct a new front matter block."
-  (when (and (file-regular-p file)
-             (file-writable-p file)
-             ;; Heuristic to check if this is one of our notes
-             (string= default-directory (abbreviate-file-name (denote-directory))))
+  (when-let ((ext (file-name-extension file))
+             ((and (file-regular-p file)
+                   (file-writable-p file)
+                   (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
+                   ;; Heuristic to check if this is one of our notes
+                   (string= default-directory (abbreviate-file-name (denote-directory))))))
     (let* ((id (denote-retrieve--filename-identifier file))
            (date (denote-retrieve--value-date file))
            (filetype (denote-dired--filetype-heuristics file))
