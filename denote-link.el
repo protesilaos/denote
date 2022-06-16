@@ -97,6 +97,9 @@ and/or the documentation string of `display-buffer'."
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
+(defconst denote-link--format-id-only "[[denote:%s]]"
+  "Format of identifier-only link to note.")
+
 (defconst denote-link--regexp-org
   (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
 
@@ -118,17 +121,30 @@ and/or the documentation string of `display-buffer'."
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
   (let* ((file-id (denote-retrieve--filename-identifier file))
-         (file-title (denote-retrieve--value-title file)))
+         (file-title (unless (string= pattern denote-link--format-id-only)
+                       (denote-retrieve--value-title file))))
     (format pattern file-id file-title)))
 
+(defun denote-link--extension-format-or-id (id-only)
+  "Determine format for link.
+If ID-ONLY is non-nil, use `denote-link--format-id-only', else
+delegate to `denote-link--file-type-format'."
+  (if id-only
+      denote-link--format-id-only
+    (denote-link--file-type-format (buffer-file-name))))
+
 ;;;###autoload
-(defun denote-link (target)
-  "Create link to TARGET note in variable `denote-directory'."
-  (interactive (list (denote-retrieve--read-file-prompt)))
+(defun denote-link (target &optional id-only)
+  "Create link to TARGET note in variable `denote-directory'.
+With optional ID-ONLY, such as a universal prefix
+argument (\\[universal-argument]), insert links with just the
+identifier and no further description.  In this case, the link
+format is always [[denote:IDENTIFIER]]."
+  (interactive (list (denote-retrieve--read-file-prompt) current-prefix-arg))
   (insert
    (denote-link--format-link
     target
-    (denote-link--file-type-format (buffer-file-name)))))
+   (denote-link--extension-format-or-id id-only))))
 
 (defalias 'denote-link-insert-link (symbol-function 'denote-link))
 
@@ -269,15 +285,20 @@ default, it will show up below the current window."
   "Minibuffer history for `denote-link-add-links'.")
 
 ;;;###autoload
-(defun denote-link-add-links (regexp)
+(defun denote-link-add-links (regexp &optional id-only)
   "Insert links to all notes matching REGEXP.
 Use this command to reference multiple files at once.
 Particularly useful for the creation of metanotes (read the
-manual for more on the matter)."
+manual for more on the matter).
+
+Optional ID-ONLY has the same meaning as in `denote-link': it
+inserts links with just the identifier."
   (interactive
-   (list (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)))
+   (list
+    (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
+    current-prefix-arg))
   (let* ((default-directory (denote-directory))
-         (ext (denote-link--file-type-format (buffer-file-name))))
+         (ext (denote-link--extension-format-or-id id-only)))
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (insert (denote-link--prepare-links files ext))
       (user-error "No links matching `%s'" regexp))))

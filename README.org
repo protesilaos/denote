@@ -581,11 +581,16 @@ participate in the development of Denote.
 *The linking facility is the only major area that needs to be reviewed
 before releasing the first stable version of Denote.*
 
+#+findex: denote-link
 The ~denote-link~ command inserts a link at point to an entry specified
 at the minibuffer prompt.  Links are formatted depending on the file
 type of current note.  In Org and plain text buffers, links are
 formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown they
 are expressed as =[TITLE](denote:IDENTIFIER)=.
+
+When ~denote-link~ is called with a prefix argument (=C-u= by default)
+it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
+its simplicity.
 
 How those links behave will depend on the user's preference.  Denote
 provides a simple-minded implementation for such link, which either
@@ -689,9 +694,19 @@ typographic list, such as:
 - link3
 #+end_example
 
-Each link is formatted according to the file type of the current note.
-The current note is excluded from the matching entries (adding a link to
-itself is pointless).
+Each link is formatted according to the file type of the current note,
+as explained further above about the ~denote-link~ command.  The current
+note is excluded from the matching entries (adding a link to itself is
+pointless).
+
+When called with a prefix argument (=C-u=) ~denote-link-add-links~ will
+format all links as =[[denote:IDENTIFIER]]=, hence a typographic list:
+
+#+begin_example
+- [[denote:IDENTIFIER-1]]
+- [[denote:IDENTIFIER-2]]
+- [[denote:IDENTIFIER-3]]
+#+end_example
 
 Same examples of a regular expression that can be used with this
 command:
