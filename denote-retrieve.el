@@ -78,6 +78,14 @@ Optional GROUP is a regexp construct for
       (or (denote-retrieve--search regexp group)
           (user-error "Cannot retrieve %s in %s" regexp file)))))
 
+(defun denote-retrieve--value-title (file &optional group)
+  "Return title from FILE, optionally matching regexp GROUP."
+  (denote-retrieve--value file denote-retrieve--title-front-matter-regexp group))
+
+(defun denote-retrieve--value-date (file &optional group)
+  "Return date from FILE, optionally matching regexp GROUP."
+  (denote-retrieve--value file denote-retrieve--date-front-matter-regexp group))
+
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil t nil #'file-regular-p))
