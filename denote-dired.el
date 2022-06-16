@@ -88,7 +88,7 @@ old name followed by the new one."
 (defcustom denote-dired-post-rename-functions
   (list #'denote-dired-rewrite-front-matter)
   "List of functions called after `denote-dired-rename-file'.
-The function must accept three arguments: FILE, TITLE, and
+Each function must accept three arguments: FILE, TITLE, and
 KEYWORDS.  The first is the full path to the file provided as a
 string, the second is the human-readable file name (not what
 Denote sluggifies) also as a string, and the third are the
@@ -144,7 +144,8 @@ file and is preserved through the renaming process.  Files that
 have no extension are simply left without one.
 
 Renaming only occurs relative to the current directory.  Files
-are not moved between directories.
+are not moved between directories.  As a final step, call the
+`denote-dired-post-rename-functions'.
 
 This command is intended to (i) rename existing Denote
 notes, (ii) complement note-taking, such as by renaming
