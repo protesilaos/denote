@@ -66,13 +66,16 @@ With optional GROUP match it, else match group 1."
       (re-search-forward regexp nil t 1)
       (match-string-no-properties (or group 1)))))
 
-(defun denote-retrieve--value (file regexp)
+(defun denote-retrieve--value (file regexp &optional group)
   "Return REGEXP value from FILE.
-FILE is a note in the variable `denote-directory'."
+FILE is a note in the variable `denote-directory'.
+
+Optional GROUP is a regexp construct for
+`denote-retrieve--search'."
   (let ((default-directory (denote-directory)))
     (with-temp-buffer
       (insert-file-contents-literally file)
-      (or (denote-retrieve--search regexp)
+      (or (denote-retrieve--search regexp group)
           (user-error "Cannot retrieve %s in %s" regexp file)))))
 
 (defun denote-retrieve--read-file-prompt ()
