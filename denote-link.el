@@ -174,7 +174,7 @@ and/or the documentation string of `display-buffer'."
       (find-file (denote-link--find-file-prompt files))
     (user-error "No links found in the current buffer")))
 
-;;;; Backlinks' buffer (WORK-IN-PROGRESS)
+;;;; Backlinks' buffer
 
 (define-button-type 'denote-link-find-file
   'follow-link t
