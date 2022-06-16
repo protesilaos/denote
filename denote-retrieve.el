@@ -64,7 +64,8 @@ With optional GROUP match it, else match group 1."
       (widen)
       (goto-char (point-min))
       (re-search-forward regexp nil t 1)
-      (match-string-no-properties (or group 1)))))
+      (unless (eq (point) (point-min))
+        (match-string-no-properties (or group 1))))))
 
 (defun denote-retrieve--value (file regexp &optional group)
   "Return REGEXP value from FILE.
@@ -76,7 +77,7 @@ Optional GROUP is a regexp construct for
     (with-temp-buffer
       (insert-file-contents-literally file)
       (or (denote-retrieve--search regexp group)
-          (user-error "Cannot retrieve %s in %s" regexp file)))))
+          nil))))
 
 (defun denote-retrieve--value-title (file &optional group)
   "Return title from FILE, optionally matching regexp GROUP."
