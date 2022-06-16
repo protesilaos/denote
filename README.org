@@ -216,9 +216,11 @@ holds the relevant value.  In simple terms:
 #+findex: denote
 #+findex: denote-type
 #+findex: denote-org-capture
-There are three ways to write a note with Denote: invoke the ~denote~,
-or ~denote-type~ commands, or leverage the ~org-capture-templates~ by
-setting up a template which calls the function ~denote-org-capture~.
+#+findex: denote-date
+There are four ways to write a note with Denote: invoke the ~denote~,
+~denote-type~, ~denote-date~ commands, or leverage the
+~org-capture-templates~ by setting up a template which calls the
+function ~denote-org-capture~.
 
 In the first case, all that is needed is to run ~denote~.  It will
 prompt for a title.  Once it is supplied, the command will ask for
@@ -247,6 +249,19 @@ The ~denote-type~ command is like ~denote~ except it also prompts for a
 file type to use as a local value for ~denote-file-type~.  In practical
 terms, this lets you produce, say, a note in Markdown even though you
 normally write in Org ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).
+
+Similarly, the ~denote-date~ command accepts the same =TITLE= and
+=KEYWORDS= arguments, though it starts by asking for a date.  Normally,
+Denote use the current date and time to construct an identifier, but
+~denote-date~ allows the user to specify any date+time combination.  The
+input for the =DATE= argument is like =2022-06-16= or =2022-06-16
+14:30=.  When the time is omitted, it is interpreted as =00:00=.
+
+Since the ability to insert a date may result in duplicate identifiers,
+Denote takes care to abort the operation if such an identity is
+established (e.g. when you use ~denote-date~ with =2022-06-16= twice, it
+will generate the same identifier of =20220616T000000=).  The user must
+thus call the ~denote-date~ command again and provide a unique value.
 
 For integration with ~org-capture~, the user must first add the relevant
 template.  Such as:
@@ -294,10 +309,12 @@ the ~denote-org-capture-specifiers~.
 
 #+findex: denote-create-note
 #+findex: denote-create-note-using-type
+#+findex: denote-create-note-using-date
 For convencience, the ~denote~ command has a ~denote-create-note~ alias.
-Same for ~denote-type~: ~denote-create-note-using-type~.  The purpose of
-these aliases is to provide alternative, more descriptive names of select
-commands to aid with discoverability.
+Same for ~denote-type~ which is ~denote-create-note-using-type~ and
+~denote-date~ that has ~denote-create-note-using-date~.  The purpose of
+these aliases is to provide alternative, more descriptive names of
+select commands to aid with discoverability.
 
 * Renaming files
 :PROPERTIES:
@@ -1137,6 +1154,7 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n j") #'my-denote-journal) ; our custom command
   (define-key map (kbd "C-c n n") #'denote)
   (define-key map (kbd "C-c n N") #'denote-type)
+  (define-key map (kbd "C-c n d") #'denote-date)
   ;; If you intend to use Denote with a variety of file types, it is
   ;; easier to bind the link-related commands to the `global-map', as
   ;; shown here.  Otherwise follow the same pattern for `org-mode-map',

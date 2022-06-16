@@ -504,42 +504,51 @@ With optional ID, use it else format the current time."
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
-(defun denote--date-rfc3339 ()
-  "Format date using the RFC3339 specification."
+(defun denote--date-rfc3339 (&optional date)
+  "Format date using the RFC3339 specification.
+With optional DATE, use it else use the current one."
   (replace-regexp-in-string
    "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
-   (format-time-string "%FT%T%z")))
+   (format-time-string "%FT%T%z" date)))
 
-(defun denote--date-org-timestamp ()
-  "Format date using the Org inactive timestamp notation."
-  (format-time-string "[%F %a %R]"))
+(defun denote--date-org-timestamp (&optional date)
+  "Format date using the Org inactive timestamp notation.
+With optional DATE, use it else use the current one."
+  (format-time-string "[%F %a %R]" date))
 
-(defun denote--date-iso-8601 ()
-  "Format date according to ISO 8601 standard."
-  (format-time-string "%F"))
+(defun denote--date-iso-8601 (&optional date)
+  "Format date according to ISO 8601 standard.
+With optional DATE, use it else use the current one."
+  (format-time-string "%F" date))
 
-(defun denote--date ()
-  "Expand the date for a new note's front matter."
+(defun denote--date (&optional date)
+  "Expand the date for a new note's front matter.
+With optional DATE, use it else use the current one."
   (let ((format denote-front-matter-date-format))
     (cond
      ((stringp format)
-      (format-time-string format))
+      (format-time-string format date))
      ((or (eq denote-file-type 'markdown-toml)
           (eq denote-file-type 'markdown-yaml))
-      (denote--date-rfc3339))
+      (denote--date-rfc3339 date))
      ((eq format 'org-timestamp)
-      (denote--date-org-timestamp))
-     (t (denote--date-iso-8601)))))
+      (denote--date-org-timestamp date))
+     (t (denote--date-iso-8601 date)))))
 
-(defun denote--prepare-note (title keywords &optional path)
+(defun denote--prepare-note (title keywords &optional path date id)
   "Use TITLE and KEYWORDS to prepare new note file.
-Use optional PATH, else create it with `denote--path'."
-  (let* ((p (or path (denote--path title keywords)))
-         (default-directory denote-directory)
+Use optional PATH, else create it with `denote--path'.  When PATH
+is provided, refrain from writing to a buffer (useful for org
+capture).
+
+Optional DATE is passed to `denote--date', while optional ID is
+used to construct the path's identifier."
+  (let* ((default-directory denote-directory)
+         (p (or path (denote--path title keywords default-directory id)))
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
-                  title (denote--date) keywords
-                  (format-time-string denote--id-format))))
+                  title (denote--date date) keywords
+                  (format-time-string denote--id-format date))))
     (unless path
       (with-current-buffer buffer (insert header))
       (setq denote-last-buffer buffer))
@@ -610,6 +619,62 @@ When called from Lisp the FILETYPE must be a symbol."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-type (symbol-function 'denote-type))
+
+(defvar denote--date-history nil
+  "Minibuffer history of `denote--date-prompt'.")
+
+(defun denote--date-prompt ()
+  "Prompt for date."
+  (read-string
+   "DATE and TIME for note (e.g. 2022-06-16 14:30): "
+   nil 'denote--date-history))
+
+(defun denote--valid-date (date)
+  "Return DATE if parsed by `date-to-time', else signal error."
+  (date-to-time date))
+
+;; This should only be relevant for `denote-date', otherwise the
+;; identifier is always unique (we trust that no-one writes multiple
+;; notes within fractions of a second).
+(defun denote--id-exists-p (identifier no-check-current)
+  "Return non-nil if IDENTIFIER already exists.
+NO-CHECK-CURRENT passes the appropriate flag to
+`denote--directory-files-matching-regexp'."
+  (denote--directory-files-matching-regexp identifier no-check-current))
+
+(defun denote--barf-duplicate-id (identifier)
+  "Throw a user-error if IDENTIFIER already exists else return t."
+  (if (denote--id-exists-p identifier :no-check-current)
+      (user-error "`%s' already exists; aborting new note creation" identifier)
+    t))
+
+;;;###autoload
+(defun denote-date (date title keywords)
+  "Like `denote', but create new note for given DATE.
+
+DATE can either be something like 2022-06-16 or that plus time:
+2022-06-16 14:30.
+
+The hour can be omitted, in which case it is interpreted as
+00:00.  Beware that you might create files with non-unique
+identifiers if they both have the same date and time.  In such a
+case, Denote will refrain from creating the new note.  Try with
+another DATE value where, for instance, a different time is
+specified.
+
+The TITLE and KEYWORDS arguments are the same as with `denote'."
+  (interactive
+   (list
+    (denote--date-prompt)
+    (denote--title-prompt)
+    (denote--keywords-prompt)))
+  (when-let ((d (denote--valid-date date))
+             (id (format-time-string denote--id-format d))
+             ((denote--barf-duplicate-id id)))
+    (denote--prepare-note title keywords nil d id)
+    (denote--keywords-add-to-history keywords)))
+
+(defalias 'denote-create-note-using-date (symbol-function 'denote-date))
 
 (provide 'denote)
 ;;; denote.el ends here
