@@ -85,22 +85,6 @@ old name followed by the new one."
   :type 'boolean
   :group 'denote-dired)
 
-;;;; Commands
-
-(defun denote-dired--file-attributes-time (file)
-  "Return `file-attribute-modification-time' of FILE as identifier."
-  (format-time-string
-   denote--id-format
-   (file-attribute-modification-time (file-attributes file))))
-
-(defun denote-dired--file-name-id (file)
-  "Return FILE identifier, else generate one."
-  (cond
-   ((string-match denote--id-regexp file)
-    (substring file (match-beginning 0) (match-end 0)))
-   ((denote-dired--file-attributes-time file))
-   (t (format-time-string denote--id-format))))
-
 (defcustom denote-dired-post-rename-functions
   (list #'denote-dired-rewrite-front-matter)
   "List of functions called after `denote-dired-rename-file'.
@@ -120,6 +104,22 @@ being, though we might want to lift that restriction once
 everything works as intended."
   :type 'hook
   :group 'denote-dired)
+
+;;;; Commands
+
+(defun denote-dired--file-attributes-time (file)
+  "Return `file-attribute-modification-time' of FILE as identifier."
+  (format-time-string
+   denote--id-format
+   (file-attribute-modification-time (file-attributes file))))
+
+(defun denote-dired--file-name-id (file)
+  "Return FILE identifier, else generate one."
+  (cond
+   ((string-match denote--id-regexp file)
+    (substring file (match-beginning 0) (match-end 0)))
+   ((denote-dired--file-attributes-time file))
+   (t (format-time-string denote--id-format))))
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
