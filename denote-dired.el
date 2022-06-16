@@ -210,43 +210,49 @@ The return value is for `denote--file-meta-header'."
     ;; Org does not have a real delimiter.  This is the trickiest one.
     (_ (re-search-forward "^[\s\t]*$" nil t 1))))
 
+(defun denote-dired--edit-front-matter-p (file)
+  "Test if FILE should be subject to front matter rewrite."
+  (when-let ((ext (file-name-extension file)))
+    (and (file-regular-p file)
+         (file-writable-p file)
+         (not (denote--file-empty-p file))
+         (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
+         ;; Heuristic to check if this is one of our notes
+         (string= default-directory (abbreviate-file-name (denote-directory))))))
+
 (defun denote-dired-rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
  command and are used to construct a new front matter block."
-  (when-let ((ext (file-name-extension file))
-             ((and (file-regular-p file)
-                   (file-writable-p file)
-                   (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
-                   ;; Heuristic to check if this is one of our notes
-                   (string= default-directory (abbreviate-file-name (denote-directory))))))
-    (let* ((id (denote-retrieve--filename-identifier file))
-           (date (denote-retrieve--value-date file))
-           (filetype (denote-dired--filetype-heuristics file))
-           (new-front-matter (denote--file-meta-header title date keywords id filetype))
-           old-front-matter
-           front-matter-delimiter)
-      (with-current-buffer (find-file-noselect file)
-        (save-excursion
-          (goto-char (point-min))
-          (setq old-front-matter
-                (buffer-substring-no-properties
-                 (point)
-                 (progn
-                   (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
-                   (point)))))
-        (when (and old-front-matter
-                   (y-or-n-p
-                    (format "%s\n%s\nReplace front matter?"
-                            (propertize old-front-matter 'face 'error)
-                            (propertize new-front-matter 'face 'success))))
-          (delete-region (point-min) front-matter-delimiter)
-          (goto-char (point-min))
-          (insert new-front-matter)
-          ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
-          ;; should check if we added any new lines and delete only
-          ;; those.
-          (delete-blank-lines))))))
+  (when (denote-dired--edit-front-matter-p file)
+    (when-let* ((id (denote-retrieve--filename-identifier file))
+                (date (denote-retrieve--value-date file))
+                (filetype (denote-dired--filetype-heuristics file))
+                (new-front-matter (denote--file-meta-header title date keywords id filetype)))
+      (let (old-front-matter front-matter-delimiter)
+        (with-current-buffer (find-file-noselect file)
+          (save-excursion
+            (save-restriction
+              (widen)
+              (goto-char (point-min))
+              (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
+              (when front-matter-delimiter
+                (setq old-front-matter
+                      (buffer-substring-no-properties
+                       (point-min)
+                       (progn front-matter-delimiter (point)))))))
+          (when (and old-front-matter
+                     (y-or-n-p
+                      (format "%s\n%s\nReplace front matter?"
+                              (propertize old-front-matter 'face 'error)
+                              (propertize new-front-matter 'face 'success))))
+            (delete-region (point-min) front-matter-delimiter)
+            (goto-char (point-min))
+            (insert new-front-matter)
+            ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
+            ;; should check if we added any new lines and delete only
+            ;; those.
+            (delete-blank-lines)))))))
 
 ;;;; Extra fontification
 
