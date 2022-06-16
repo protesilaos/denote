@@ -268,6 +268,11 @@ default, it will show up below the current window."
 (defvar denote-link--prepare-links-format "- %s\n"
   "Format specifiers for `denote-link-add-links'.")
 
+;; NOTE 2022-06-16: There is no need to overwhelm the user with options,
+;; though I expect someone to want to change the sort order.
+(defvar denote-link-add-links-sort nil
+  "Add REVERSE to `sort-lines' of `denote-link-add-links' when t.")
+
 (defun denote-link--prepare-links (files ext)
   "Prepare links to FILES using format of EXT."
   (setq denote-link--links-to-files
@@ -277,6 +282,7 @@ default, it will show up below the current window."
                    (format denote-link--prepare-links-format
                            (denote-link--format-link f ext))))
                 files)
+          (sort-lines denote-link-add-links-sort (point-min) (point-max))
           (let ((min (point-min))
                 (max (point-max)))
             (buffer-substring-no-properties min max)))))
