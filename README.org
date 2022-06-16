@@ -362,6 +362,23 @@ extension are simply left without one.
 Renaming only occurs relative to the current directory.  Files are not
 moved between directories.
 
+#+vindex: denote-dired-post-rename-functions
+#+findex: denote-dired-rewrite-front-matter
+The final step of the ~denote-dired-rename-file~ command is to call the
+special hook ~denote-dired-post-rename-functions~.  Functions added to
+that hook must accept three arguments, as explained in its doc string.
+For the time being, the only function we define is the one which updates
+the underlying note's front matter to match the new file name:
+~denote-dired-rewrite-front-matter~.  The function takes care to only
+operate on an actual note, instead of arbitrary files.
+
+DEVELOPMENT NOTE: the ~denote-dired-rewrite-front-matter~ needs to be
+tested thoroughly.  It rewrites file contents so we have to be sure it
+does the right thing.  To avoid any trouble, it always asks for
+confirmation before performing the replacement.  This confirmation
+ignores ~denote-dired-rename-expert~ for the time being, though we might
+want to lift that restriction once everything works as intended.
+
 * Front matter
 :PROPERTIES:
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
