@@ -458,9 +458,18 @@ is specific to this variable: it expect a delimiter such as
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
 are an avdanced user who wants to edit this variable to affect
 how front matter is produced, consider using something like %2$s
-to control where Nth argument is placed.")
+to control where Nth argument is placed.
 
-(defun denote--file-meta-header (title date keywords id)
+Make sure to
+
+1. Not use empty lines inside the front matter block.
+
+2. Insert at least one empty line after the front matter block
+and do not use any empty line before it.
+
+These help ensure consistency and might prove useful if we need
+to operate on the front matter as a whole.")
+
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
