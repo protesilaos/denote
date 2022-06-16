@@ -293,18 +293,29 @@ manual for more on the matter)."
   (require 'ol)
   (org-link-set-parameters
    "denote"
-   :follow #'denote-link-ol
+   :follow #'denote-link-ol-follow
    :complete #'denote-link-ol-complete))
 
-(defun denote-link--ol-find-file (identifier)
-  "Visit file with IDENTIFIER.
+(declare-function org-link-open-as-file "ol" (path arg))
+
+(defun denote-link-ol-follow (link)
+  "Find file of type `denote:' matching LINK.
+LINK is the identifier of the note, optionally followed by a
+search option akin to that of standard Org `file:' link types.
+Read Info node `(org) Search Options'.
+
 Uses the function `denote-directory' to establish the path to the
 file."
-  (find-file (file-name-completion identifier (denote-directory))))
-
-(defun denote-link-ol (identifier _)
-  "Find file of type `denote:' matching IDENTIFIER."
-  (funcall #'denote-link--ol-find-file identifier))
+  (let* ((search (and (string-match "::\\(.*\\)\\'" link)
+		              (match-string 1 link)))
+	     (id (if (and (stringp search) (not (string-empty-p search)))
+                 (substring link 0 (match-beginning 0))
+               link))
+         (path (expand-file-name (file-name-completion id (denote-directory))))
+         (target (if (and (stringp search) (not (string-empty-p search)))
+                     (concat path "::" search)
+                   path)))
+    (org-link-open-as-file target nil)))
 
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
