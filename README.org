@@ -1301,6 +1301,88 @@ Everything is in place to set up the package.
                  :jump-to-captured t)))
 #+end_src
 
+* Contributing
+:PROPERTIES:
+:CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
+:END:
+
+Denote is a GNU ELPA package (relevant once {{{development-version}}} is
+released).  As such, any significant change to the code requires
+copyright assignment to the Free Software Foundation (more below).
+
+You do not need to be a programmer to contribute to this package.
+Sharing an idea or describing a workflow is equally helpful, as it
+teaches us something we may not know and might be able to cover either
+by extending Denote or expanding this manual.  If you prefer to write a
+blog post, make sure you share it with us: we can add a section herein
+referencing all such articles.  Everyone gets acknowledged
+([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]).  There is no such thing as an "insignificant
+contribution"---they all matter.
+
++ Package name (GNU ELPA): =denote= (once {{{development-version}}} is out)
++ Official manual: <https://protesilaos.com/emacs/denote>
++ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
+  - Mirrors:
+    + GitHub: <https://github.com/protesilaos/denote>
+    + GitLab: <https://gitlab.com/protesilaos/denote>
++ Mailing list: <https://lists.sr.ht/~protesilaos/denote>
+
+If our public media are not suitable, you are welcome to contact me
+(Protesilaos) in private: <https://protesilaos.com/contact>.
+
+Copyright assignment is a prerequisite to sharing code.  It is a simple
+process.  Check the request form below (please adapt it accordingly).
+You must write an email to the address mentioned in the form and then
+wait for the FSF to send you a legal agreement.  Sign the document and
+file it back to them.  This could all happen via email and take about a
+week.  You are encouraged to go through this process.  You only need to
+do it once.  It will allow you to make contributions to Emacs in
+general.
+
+#+begin_example text
+Please email the following information to assign@gnu.org, and we
+will send you the assignment form for your past and future changes.
+
+Please use your full legal name (in ASCII characters) as the subject
+line of the message.
+
+REQUEST: SEND FORM FOR PAST AND FUTURE CHANGES
+
+[What is the name of the program or package you're contributing to?]
+
+GNU Emacs
+
+[Did you copy any files or text written by someone else in these changes?
+Even if that material is free software, we need to know about it.]
+
+Copied a few snippets from the same files I edited.  Their author,
+Protesilaos Stavrou, has already assigned copyright to the Free Software
+Foundation.
+
+[Do you have an employer who might have a basis to claim to own
+your changes?  Do you attend a school which might make such a claim?]
+
+
+[For the copyright registration, what country are you a citizen of?]
+
+
+[What year were you born?]
+
+
+[Please write your email address here.]
+
+
+[Please write your postal address here.]
+
+
+
+
+
+[Which files have you changed so far, and which new files have you written
+so far?]
+
+#+end_example
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
