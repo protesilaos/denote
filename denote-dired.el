@@ -313,35 +313,35 @@ replace what isn't there."
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct a new front matter block if
 appropriate."
-  (when (denote-dired--edit-front-matter-p file)
-    (when-let* ((id (denote-retrieve--filename-identifier file))
-                (date (denote-retrieve--value-date file))
-                (filetype (denote-dired--filetype-heuristics file))
-                (new-front-matter (denote--file-meta-header title date keywords id filetype)))
-      (let (old-front-matter front-matter-delimiter)
-        (with-current-buffer (find-file-noselect file)
-          (save-excursion
-            (save-restriction
-              (widen)
-              (goto-char (point-min))
-              (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
-              (when front-matter-delimiter
-                (setq old-front-matter
-                      (buffer-substring-no-properties
-                       (point-min)
-                       (progn front-matter-delimiter (point)))))))
-          (when (and old-front-matter
-                     (y-or-n-p
-                      (format "%s\n%s\nReplace front matter?"
-                              (propertize old-front-matter 'face 'error)
-                              (propertize new-front-matter 'face 'success))))
-            (delete-region (point-min) front-matter-delimiter)
+  (when-let* ((denote-dired--edit-front-matter-p file)
+              (id (denote-retrieve--filename-identifier file))
+              (date (denote-retrieve--value-date file))
+              (filetype (denote-dired--filetype-heuristics file))
+              (new-front-matter (denote--file-meta-header title date keywords id filetype)))
+    (let (old-front-matter front-matter-delimiter)
+      (with-current-buffer (find-file-noselect file)
+        (save-excursion
+          (save-restriction
+            (widen)
             (goto-char (point-min))
-            (insert new-front-matter)
-            ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
-            ;; should check if we added any new lines and delete only
-            ;; those.
-            (delete-blank-lines)))))))
+            (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
+            (when front-matter-delimiter
+              (setq old-front-matter
+                    (buffer-substring-no-properties
+                     (point-min)
+                     (progn front-matter-delimiter (point)))))))
+        (when (and old-front-matter
+                   (y-or-n-p
+                    (format "%s\n%s\nReplace front matter?"
+                            (propertize old-front-matter 'face 'error)
+                            (propertize new-front-matter 'face 'success))))
+          (delete-region (point-min) front-matter-delimiter)
+          (goto-char (point-min))
+          (insert new-front-matter)
+          ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
+          ;; should check if we added any new lines and delete only
+          ;; those.
+          (delete-blank-lines))))))
 
 ;;;; Extra fontification
 
