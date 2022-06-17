@@ -34,14 +34,16 @@ The documentation furnished herein corresponds to stable version
 a newer feature which does not yet form part of the latest tagged
 commit, is explicitly marked as such.
 
-Current development target is {{{development-version}}}.  Note that the
-project is still in active development and THINGS MIGHT CHANGE IN
-BACKWARD-INCOMPATIBLE WAYS until we make the first stable release.
+Current development target is {{{development-version}}}.
 
 + Homepage: https://protesilaos.com/emacs/denote.
 # + Change log: https://protesilaos.com/emacs/denote-changelog.
 + Git repository: https://git.sr.ht/~protesilaos/denote.
 + Mailing list: https://lists.sr.ht/~protesilaos/denote.
+
+If you are viewing the README.org version of this file, please note that
+the GNU ELPA machinery automatically generates an Info manual out of it
+(relevant once {{{development-version}}} is released).
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
@@ -69,11 +71,6 @@ modify this GNU manual.”
 :PROPERTIES:
 :CUSTOM_ID: h:a09b70a2-ae0b-4855-ac14-1dddfc8e3241
 :END:
-
-NOTE THAT WE ARE ACTIVELY WORKING TOWARDS VERSION =0.1.0= AND MIGHT
-STILL INTRODUCE BREAKING, BACKWARD-INCOMPATIBLE CHANGES.  This is
-particularly true for the linking facility.  Everything else is in a
-stable state.
 
 Denote aims to be a simple-to-use, focused-in-scope, and effective
 note-taking tool for Emacs.  It is based on the following core design
@@ -577,9 +574,6 @@ participate in the development of Denote.
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
-
-*The linking facility is the only major area that needs to be reviewed
-before releasing the first stable version of Denote.*
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to an entry specified
