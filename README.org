@@ -1019,14 +1019,14 @@ Sources for =tmr=:
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
 
-Finally, recall what we discussed elsewhere in the manual about changing
-the file type and target directory ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You
-basically ~let~ bind the relevant variables.  Such bindings are specific
-to the function: they do not affect anything outside of it, so you can
-keep the defaults for your regular notes and use something different for
-your journaling.  For example, the following snippet is like the
-previous sample of writing a journal entry and setting a timer, but it
-also uses a plain text file type and adds the new note to the
+Recall what we discussed elsewhere in the manual about changing the file
+type and target directory ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You basically
+~let~ bind the relevant variables.  Such bindings are specific to the
+function: they do not affect anything outside of it, so you can keep the
+defaults for your regular notes and use something different for your
+journaling.  For example, the following snippet is like the previous
+sample of writing a journal entry and setting a timer, but it also uses
+a plain text file type and adds the new note to the
 =~/Documents/journal/= directory:
 
 #+begin_src emacs-lisp
@@ -1038,6 +1038,87 @@ also uses a plain text file type and adds the new note to the
     (denote
      (format-time-string "%A %e %B %Y")
      "journal")
+    (tmr 10 "Practice writing in my journal")))
+#+end_src
+
+Finally, we can incorporate the idea of the ~denote-date~ command into
+our journaling workflow.  Unlike regular ~denote~, this command has a
+slightly different structure.  Below are variants of the aforementioned
+ideas.  If you pick more than one, just give them a unique name (the
+text right after ~defun~):
+
+#+begin_src emacs-lisp
+(defun my-denote-journal-with-date (date title)
+  "Ask for DATE and TITLE to write a journal entry.
+
+Read the doc string of `denote-date' on what a valid DATE is."
+  (interactive
+   (list
+    (denote--date-prompt)
+    (denote--title-prompt)))
+  (when-let ((d (denote--valid-date date))
+             (id (format-time-string denote--id-format d))
+             ((denote--barf-duplicate-id id)))
+    (denote--prepare-note title "journal" nil d id)))
+
+(defun my-denote-journal-with-date (date)
+  "Ask for DATE to write a journal entry.
+
+Read the doc string of `denote-date' on what a valid DATE input is.
+
+The title of the note is something like Tuesday 17 June 2020,
+though you can modify the `format-time-string' specifiers as
+described in its doc string."
+  (interactive (list (denote--date-prompt)))
+  (when-let ((d (denote--valid-date date))
+             (id (format-time-string denote--id-format d))
+             ((denote--barf-duplicate-id id)))
+    (denote--prepare-note
+     (format-time-string "%A %e %B %Y" d)
+     "journal" nil d id)))
+
+(defun my-denote-journal-with-date (date)
+  "Ask for DATE to write a journal entry.
+
+Journal entries are stored in ~/Documents/journal/ and use plain
+text for their `denote-file-type'.
+
+Read the doc string of `denote-date' on what a valid DATE input is.
+
+The title of the note is something like Tuesday 17 June 2020,
+though you can modify the `format-time-string' specifiers as
+described in its doc string."
+  (interactive (list (denote--date-prompt)))
+  (when-let ((d (denote--valid-date date))
+             (id (format-time-string denote--id-format d))
+             ((denote--barf-duplicate-id id))
+             (denote-file-type 'text) ; it supports other file types as well: read its doc string
+             (denote-directory "~/Documents/journal/"))
+    (denote--prepare-note
+     (format-time-string "%A %e %B %Y" d)
+     "journal" nil d id)))
+
+(defun my-denote-journal-with-date (date)
+  "Ask for DATE to write a journal entry and start a 10-minute tmr.
+
+Journal entries are stored in ~/Documents/journal/ and use plain
+text for their `denote-file-type'.  The `tmr' command comes from
+the package of the same name (same dev as Denote's).
+
+Read the doc string of `denote-date' on what a valid DATE input is.
+
+The title of the note is something like Tuesday 17 June 2020,
+though you can modify the `format-time-string' specifiers as
+described in its doc string."
+  (interactive (list (denote--date-prompt)))
+  (when-let ((d (denote--valid-date date))
+             (id (format-time-string denote--id-format d))
+             ((denote--barf-duplicate-id id))
+             (denote-file-type 'text) ; it supports other file types as well: read its doc string
+             (denote-directory "~/Documents/journal/"))
+    (denote--prepare-note
+     (format-time-string "%A %e %B %Y" d)
+     "journal" nil d id)
     (tmr 10 "Practice writing in my journal")))
 #+end_src
 
