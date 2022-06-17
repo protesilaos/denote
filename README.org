@@ -1242,6 +1242,9 @@ Everything is in place to set up the package.
 
 (setq denote-front-matter-date-format nil) ; change this to `org-timestamp' or custom string
 
+;; You will not need to `require' all those individually once the
+;; package is available.
+(require 'denote-retrieve)
 (require 'denote-link)
 (require 'denote-dired)
 (setq denote-dired-rename-expert nil)
