@@ -95,7 +95,7 @@ principles:
   for the task at hand ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
 + Portability :: Notes are plain text and should remain portable.  The
-  way Denote writes file names, the front matter it include in the
+  way Denote writes file names, the front matter it included in the
   note's header, and the links it establishes must all be adequately
   usable with standard Unix tools.  No need for a databse or some
   specialised software.  As Denote develops and this manual is fully
@@ -650,14 +650,15 @@ displays the file name of all notes linking to the current one.  Each
 file name appears on its own line and is buttonized so that it performs
 the action of visiting the referenced file.  [Development note:
 currently this depends on the =find= executable.  Maybe we can make it
-work with Emacs' ~xref~ facility to work everywhere.]  The backlinks'
-buffer looks like this:
+work with Emacs' ~xref~ facility to work everywhere without losing the
+bespoke buffer?]  The backlinks' buffer looks like this:
 
 #+begin_example
 Backlinks to "On being honest" (20220614T130812)
 ------------------------------------------------
 
 20220614T145606--let-this-glance-become-a-stare__journal.txt
+20220616T182958--not-feeling-butterflies-in-your-stomach__journal.txt
 #+end_example
 
 #+vindex: denote-link-fontify-backlinks
