@@ -142,7 +142,8 @@ old name followed by the new one."
   :group 'denote-dired)
 
 (defcustom denote-dired-post-rename-functions
-  (list #'denote-dired-rewrite-front-matter)
+  (list #'denote-dired-update-dired-buffers
+        #'denote-dired-rewrite-front-matter)
   "List of functions called after `denote-dired-rename-file'.
 Each function must accept three arguments: FILE, TITLE, and
 KEYWORDS.  The first is the full path to the file provided as a
@@ -227,9 +228,19 @@ attachments that the user adds to their notes."
                      (propertize old-name 'face 'error)
                      (propertize (file-name-nondirectory new-name) 'face 'success)))
         (rename-file old-name new-name nil)
-        (when (derived-mode-p 'dired-mode)
-          (revert-buffer))
         (run-hook-with-args 'denote-dired-post-rename-functions new-name title keywords)))))
+
+(defun denote-dired-update-dired-buffers (&rest _)
+  "Update Dired buffers of variable `denote-directory'.
+Can run after `denote-dired-post-rename-functions', though it
+ignores all its arguments."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (and (eq major-mode 'dired-mode)
+                  (string-match-p (expand-file-name default-directory) (denote-directory)))
+         (revert-buffer))))
+   (buffer-list)))
 
 (defun denote-dired--file-meta-header (title date keywords id filetype)
   "Front matter for renamed notes.
