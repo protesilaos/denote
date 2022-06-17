@@ -215,11 +215,17 @@ format is always [[denote:IDENTIFIER]]."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
+;; NOTE 2022-06-17: This is a `defvar' on purpose, like
+;; `denote-link-add-links'.  Read its comment.
+(defvar denote-link-backlinks-sort nil
+  "Add REVERSE to `sort-lines' of `denote-link-backlinks' when t.")
+
 (defun denote-link--prepare-backlinks (id files &optional title)
   "Create backlinks' buffer for ID including FILES.
 Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
-        (buf (format "*denote-backlinks to %s*" id)))
+        (buf (format "*denote-backlinks to %s*" id))
+        start)
     (with-current-buffer (get-buffer-create buf)
       (erase-buffer)
       (special-mode)
@@ -228,11 +234,13 @@ Use optional TITLE for a prettier heading."
                   (heading (format "Backlinks to %S (%s)" title id))
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
+      (setq start (point))
       (mapc (lambda (f)
               (insert (file-name-nondirectory f))
               (make-button (point-at-bol) (point-at-eol) :type 'denote-link-find-file)
               (newline))
             files)
+      (sort-lines denote-link-backlinks-sort start (point))
       (goto-char (point-min))
       ;; NOTE 2022-06-15: Technically this is not Dired.  Maybe we
       ;; should abstract the fontification into a general purpose
