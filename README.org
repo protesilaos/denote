@@ -772,10 +772,12 @@ Metanotes can serve as entry points to groupings of individual notes.
 They are not the same as a filtered list of files, i.e. what you would
 do in Dired or the minibuffer where you narrow the list of notes to a
 given query.  Metanotes contain the filtered list plus your thoughts
-about it.
+about it.  The act of purposefully grouping notes together and
+contemplating on their shared patterns is what adds value.
 
 Your future self will appreciate metanotes for the function they serve
-in encapsulating knowledge.
+in encapsulating knowledge, while current you will be equipped with the
+knowledge derived from the deliberate self-reflection.
 
 * Fontification in Dired
 :PROPERTIES:
