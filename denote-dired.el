@@ -219,7 +219,8 @@ attachments that the user adds to their notes."
                     (denote-dired--file-name-id file)
                     keywords
                     (denote--sluggify title)
-                    extension)))
+                    extension))
+         (max-mini-window-height 0.25)) ; allow minibuffer to be resized
     (unless (string= old-name (file-name-nondirectory new-name))
       (when (y-or-n-p
              (format "Rename %s to %s?"
