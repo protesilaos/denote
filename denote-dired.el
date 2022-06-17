@@ -178,6 +178,21 @@ everything works as intended."
    ((denote-dired--file-attributes-time file))
    (t (format-time-string denote--id-format))))
 
+(defun denote-dired--rename-buffer (old-name new-name)
+  "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
+  (when-let ((old-buf (find-buffer-visiting old-name)))
+    (with-current-buffer old-buf
+      ;; We get the window to replace the buffer without affecting the
+      ;; window layout.
+      (let ((win (get-buffer-window old-buf)))
+        (rename-buffer (file-name-nondirectory new-name))
+        ;; TODO 2022-06-17: Is there a better way to avoid duplication
+        ;; between old and new?  It seems wrong to kill-buffer and then
+        ;; find-file.
+        (kill-buffer (find-buffer-visiting old-name))
+        (with-selected-window win
+          (find-file new-name))))))
+
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
   "Rename FILE to include TITLE and KEYWORDS.
@@ -228,6 +243,7 @@ attachments that the user adds to their notes."
                      (propertize old-name 'face 'error)
                      (propertize (file-name-nondirectory new-name) 'face 'success)))
         (rename-file old-name new-name nil)
+        (denote-dired--rename-buffer old-name new-name)
         (run-hook-with-args 'denote-dired-post-rename-functions new-name title keywords)))))
 
 (defun denote-dired-update-dired-buffers (&rest _)
