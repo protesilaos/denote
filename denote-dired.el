@@ -303,7 +303,7 @@ The return value is for `denote--file-meta-header'."
          (not (denote--file-empty-p file))
          (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
          ;; Heuristic to check if this is one of our notes
-         (string= default-directory (abbreviate-file-name (denote-directory))))))
+         (string= (expand-file-name default-directory) (denote-directory)))))
 
 (defun denote-dired-rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
