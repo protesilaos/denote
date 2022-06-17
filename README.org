@@ -931,7 +931,7 @@ following contents and place it in each of those directories:
 ;;; Directory Local Variables
 ;;; For more information see (info "(emacs) Directory Variables")
 
-((nil . ((denote-directory . (expand-file-name default-directory)))))
+((nil . ((denote-directory . default-directory))))
 #+end_src
 
 This will allow things to work smoothly (e.g. ~denote-infer-keywords~).
