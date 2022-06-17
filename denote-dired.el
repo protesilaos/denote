@@ -190,8 +190,9 @@ everything works as intended."
         ;; between old and new?  It seems wrong to kill-buffer and then
         ;; find-file.
         (kill-buffer (find-buffer-visiting old-name))
-        (with-selected-window win
-          (find-file new-name))))))
+        (when win
+          (with-selected-window win
+            (find-file new-name)))))))
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
