@@ -96,6 +96,8 @@ If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead: it returns the path as a
 directory."
   :group 'denote
+  :safe (lambda (val)
+          (and (symbolp val) (eq val 'default-directory)))
   :type 'directory)
 
 (defcustom denote-known-keywords
@@ -230,7 +232,10 @@ We consider those characters illigal for our purposes.")
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
-  (let ((path denote-directory))
+  (let ((path (or (buffer-local-value 'denote-directory (current-buffer))
+                  denote-directory)))
+    (when (and (symbolp path) (eq path 'default-directory))
+      (setq path (buffer-local-value 'default-directory (current-buffer))))
     (unless (file-directory-p path)
       (make-directory path t))
     (file-name-as-directory path)))
