@@ -296,7 +296,10 @@ The return value is for `denote--file-meta-header'."
     (_ (re-search-forward "^[\s\t]*$" nil t 1))))
 
 (defun denote-dired--edit-front-matter-p (file)
-  "Test if FILE should be subject to front matter rewrite."
+  "Test if FILE should be subject to front matter rewrite.
+This is relevant for `denote-dired-rewrite-front-matter': if FILE
+has no front matter, then we abort early instead of trying to
+replace what isn't there."
   (when-let ((ext (file-name-extension file)))
     (and (file-regular-p file)
          (file-writable-p file)
