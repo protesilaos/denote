@@ -496,7 +496,7 @@ With optional DIR, use it instead of variable `denote-directory'.
 With optional ID, use it else format the current time."
   (setq denote-last-path
         (denote--format-file
-         (or dir (file-name-as-directory denote-directory))
+         (or dir (file-name-as-directory (denote-directory)))
          (or id (format-time-string denote--id-format))
          (denote--sluggify-keywords keywords)
          (denote--sluggify title)
@@ -543,7 +543,7 @@ capture).
 
 Optional DATE is passed to `denote--date', while optional ID is
 used to construct the path's identifier."
-  (let* ((default-directory denote-directory)
+  (let* ((default-directory (denote-directory))
          (p (or path (denote--path title keywords default-directory id)))
          (buffer (unless path (find-file p)))
          (header (denote--file-meta-header
