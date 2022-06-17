@@ -1396,7 +1396,7 @@ What follows is a list of Emacs packages for note-taking.  I
 file-naming scheme beforehand and by the time those packages were
 available I was already hacking on the predecessor of Denote as a means
 of learning Emacs Lisp (a package which I called "Unassuming Sidenotes
-of Little Significance", aka "USLS" which is pronounced "U-S-L-S" or
+of Little Significance", aka "USLS" which is pronounced as "U-S-L-S" or
 "useless").  As such, I cannot comment at length on the differences
 between Denote and each of those packages, beside what I gather from
 their documentation.
@@ -1409,33 +1409,39 @@ their documentation.
   probably means that it performs certain tasks with greater efficiency,
   though a database is inherently not as accessible as plain text and
   regular directories/folders---you depend on some specialised program.
+  If you ask me, I have no idea how to use a database, let alone debug
+  it or retrieve data from it if something goes awry (I could learn, but
+  that is beside the point).
 
 + [[https://github.com/localauthor/zk][zk (or zk.el)]] :: Reading its documentation makes me think that this is
-  Denote's sibling or cousin---we have a lot of things in common,
+  Denote's sibling or cousin---they have a lot of things in common,
   including the preference to rely on plain files and standard tools.
   One general difference is that Denote is trying to not replicate
-  existing functionality, such as by not offering its own "file index"
-  as a substitute for Dired or the minibuffer.  Another potential
+  existing functionality, such as by not offering its own file index as
+  a substitute for Dired or the minibuffer.  Another potential
   difference is that Denote is not a zettelkasten implementation per se,
   though I am not sure how ZK interprets or enforces that methodology.
+  In our case, Denote does not do zettelkasten: it merely creates files
+  with a unique identifier.
 
 + [[https://github.com/ymherklotz/emacs-zettelkasten][zettelkasten]] :: This is another one of Denote's relatives, at least
   insofar as the goal of simplicity is concerned.  The major difference
   is that according to its documentation "the name of the file that is
-  created is just a unique ID".  That is not consistent with our
+  created is just a unique ID".  This is not consistent with our
   file-naming scheme which is all about making sense of your files by
   their name alone and being able to visually parse a listing of them
   without any kind of specialised tool (e.g. =ls -l= on the command-line
-  from inside the ~denote-directory~ gives you a human-readable listing
-  of files, while =find * -maxdepth 0 -type f= is even cleaner).
+  from inside the ~denote-directory~ gives you a human-readable set of
+  files names, while =find * -maxdepth 0 -type f= is even cleaner in
+  that regard).
 
 + [[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][zetteldeft]] :: This is a zettelkasten note-taking system built on top
   of the =deft= package.  Deft provides a search interface to a
-  directory, in this case the one holding the user's notes.  Denote has
-  no such dependency and is not opinionated about how the user prefers
-  to search their notes: use Dired, Grep, the =consult= package, or
-  whatever else you already have set up for all things Emacs, not just
-  your notes.
+  directory, in this case the one holding the user's =zetteldeft= notes.
+  Denote has no such dependency and is not opinionated about how the
+  user prefers to search/access their notes: use Dired, Grep, the
+  =consult= package, or whatever else you already have set up for all
+  things Emacs, not just your notes.
 
 Searching through =M-x list-packages= for "zettel" brings up more
 matches.  =zetteldesk= is an extension to Org Roam and, as such, I
@@ -1443,13 +1449,13 @@ cannot possibly know what Org Roam truly misses and what the added-value
 of this package is.  =neuron-mode= builds on top of an external program
 called =neuron=, which I have never used.
 
-Searching for "note" gives us some more results.  =notes-mode= has
+Searching for "note" gives us a few more results.  =notes-mode= has
 precious little documentation and I cannot tell what it actually does
 (as I said in my presentation for LibrePlanet 2022, inadequate docs are
 a bug).  =side-notes= differs from what we try to do with Denote, as it
 basically gives you the means to record your thoughts about some other
-project you are working on, which means that it and Denote are not
-mutually exclusive.
+project you are working on and keep them on the side, which means that
+it and Denote should not be mutually exclusive.
 
 If I missed something, please let me know.
 
