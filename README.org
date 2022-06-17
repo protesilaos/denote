@@ -1450,6 +1450,87 @@ mutually exclusive.
 
 If I missed something, please let me know.
 
+* Frequently Asked Questions
+:PROPERTIES:
+:CUSTOM_ID: h:da2944c6-cde6-4c65-8f2d-579305a159bb
+:END:
+
+I (Protesilaos) answer some questions I have received or might get.  It
+is assumed that you have read the rest of this manual: I will not go
+into the specifics of how Denote works.
+
+/Why develop Denote when PACKAGE already exists?/
+
+I wrote Denote because I was using a variant of Denote's file-naming
+scheme before I was even an Emacs user.  Note-taking is something I take
+very seriously, as I am a prolific writer (just check my website, which
+only reveals the tip of the iceberg).  As such, I need a program that
+does exactly what I want and which I know how to extend.
+
+The existence of PACKAGE is never a good reason for me not to conduct my
+own experiments for recreational, educational, or practical purposes.
+Whether you should use Denote or not is another matter altogether:
+choose whatever you want.
+
+/Why not rely exclusively on Org?/
+
+I think Org is one of Emacs' killer apps.  I also believe it is not the
+right tool for every job.  When I write notes, I want to focus on
+writing.  Nothing more.  I thus have no need for stuff like org-babel,
+scheduling to-do items, clocking time, and so on.  The more "mental
+dependencies" you add to your workflow, the heavier the burden you carry
+and the less focused you are on the task at hand.
+
+In technical terms, I also am not fond of Org's code base (I understand
+why it is the way it is---just commenting on the fact).  Ever tried to
+read it?  You will routinely find functions that are hundreds of lines
+long and have all sorts of special casing.  As I am not a programmer and
+only learnt to write Elisp through trial and error, I have no confidence
+in my ability to make Org do what I want at that level.
+
+Perhaps the master programmer is one who can deal with complexity and
+keep adding to it.  I am of the opposite view as language---code
+included---is at its communicative best when it is clear and accessible.
+
+Make no mistake: I use Org for the agenda and also to write technical
+documentation that needs to be exported to various formats, including
+this very manual.
+
+/Why care about Unix tools when you use Emacs?/
+
+My notes form part of my longer-term storage.  I do not want to have to
+rely on a special program to be able to read them or filter them.  Unix
+is universal, at least as far as I am concerned.  Denote streamlines
+some tasks and makes things easier in general, which is consistent with
+how Emacs provides a layer of interactivity on top of Unix.  Still,
+Denote's utilities can, in principle, be implemented as POSIX shell
+scripts.
+
+Portability matters.  For example, in the future I might own a
+smartphone, so I prefer not to require Emacs, Org, or some other
+executable to access my files on the go.
+
+Furthermore, I might want to share those files with someone.  If I make
+Emacs a requirement, I am limiting my circle to a handful of relatively
+advanced users.
+
+Please don't misinterpret this: I am using Emacs full-time for my
+computing and maintain a growing list of packages for it.
+
+/Why many small files instead of few large ones?/
+
+I have read that Org favours the latter method.  If true, I strongly
+disagree with it because of the implicit dependency it introduces and
+the way it favours machine-friendliness over human-readability in terms
+of accessing information.  You already get what I mean, based on the
+aforementioned.
+
+Good luck using =less= on a generic TTY to read a file with a zillion
+words, headings, sub-headings, sub-sub-headings, property drawers, and
+other constructs!  My point is that notes should be atomic to help the
+user make sense of them.  The more program-agnostic your file is, the
+better for you and/or everyone else you might share your writings with.
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
