@@ -194,6 +194,22 @@ everything works as intended."
           (with-selected-window win
             (find-file new-name)))))))
 
+(defun denote-dired--rename-dired-file-or-prompt ()
+  "Return Dired file at point, else prompt for one."
+  (or (dired-get-filename nil t)
+      (let* ((file (buffer-file-name))
+             (format (if file
+                         (format "Rename file Denote-style [%s]: " file)
+                       "Rename file Denote-style: ")))
+        (read-file-name format nil file t nil))))
+
+(defun denote-dired--rename-file-is-regular (file)
+  "Throw error is FILE is not regular, else return FILE."
+  (if (or (file-directory-p file)
+          (not (file-regular-p file)))
+      (user-error "Only rename regular files")
+    file))
+
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
   "Rename FILE to include TITLE and KEYWORDS.
@@ -225,7 +241,7 @@ notes, (ii) complement note-taking, such as by renaming
 attachments that the user adds to their notes."
   (interactive
    (list
-    (or (dired-get-filename nil t) (read-file-name "Rename file Denote-style: "))
+    (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))
     (denote--title-prompt)
     (denote--keywords-prompt)))
   (let* ((dir (file-name-directory file))
