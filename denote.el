@@ -305,12 +305,11 @@ FILE is relative to the variable `denote-directory'."
   "List note files, assuming flat directory.
 If optional ABSOLUTE, show full paths, else only show base file
 names that are relative to the variable `denote-directory'."
-  (let* ((dir (denote-directory))
-         (default-directory dir))
+  (let ((default-directory (denote-directory)))
     (seq-remove
      (lambda (f)
        (not (denote--only-note-p f)))
-     (directory-files dir absolute directory-files-no-dot-files-regexp t))))
+     (directory-files default-directory absolute directory-files-no-dot-files-regexp t))))
 
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
   "Return list of files matching REGEXP.
