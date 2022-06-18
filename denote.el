@@ -296,8 +296,8 @@ trailing hyphen."
 FILE is relative to the variable `denote-directory'."
   (and (not (file-directory-p file))
        (file-regular-p file)
-       (string-match-p (concat "^" denote--id-regexp) file)
-       (not (string-match-p "~\\'" file))))
+       (string-match-p (concat "\\b" denote--id-regexp) file)
+       (not (string-match-p "[#~]\\'" file))))
 
 ;;;; Keywords
 
