@@ -293,7 +293,8 @@ names that are relative to the variable `denote-directory'."
          (default-directory dir))
     (seq-remove
      (lambda (file)
-       (file-directory-p file))
+       (or (not (string-match-p denote--id-regexp file))
+           (file-directory-p file)))
      (directory-files dir absolute directory-files-no-dot-files-regexp t))))
 
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
