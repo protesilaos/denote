@@ -1458,7 +1458,7 @@ their documentation.
   files names, while =find * -maxdepth 0 -type f= is even cleaner in
   that regard).
 
-+ [[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][zetteldeft]] :: This is a zettelkasten note-taking system built on top
++ [[https://github.com/EFLS/zetteldeft][zetteldeft]] :: This is a zettelkasten note-taking system built on top
   of the =deft= package.  Deft provides a search interface to a
   directory, in this case the one holding the user's =zetteldeft= notes.
   Denote has no such dependency and is not opinionated about how the
