@@ -357,10 +357,9 @@ file."
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
-  (insert
-   (denote-link--format-link
-    (denote-retrieve--read-file-prompt)
-    (denote-link--file-type-format (buffer-file-name)))))
+  (concat
+   "denote:"
+   (denote-retrieve--filename-identifier (denote-retrieve--read-file-prompt))))
 
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
