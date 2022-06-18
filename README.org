@@ -1427,14 +1427,17 @@ their documentation.
 + [[https://github.com/org-roam/org-roam][org-roam]] :: The de facto standard in the Emacs milieu---and rightly
   so!  It has a massive community, is featureful, and should be an
   excellent companion to anyone who is invested in the Org ecosystem
-  and/or knows what "Roam" is (I don't).  My understanding is that Org
-  Roam relies on a database to provide some of its features.  This
-  probably means that it performs certain tasks with greater efficiency,
-  though a database is inherently not as accessible as plain text and
-  regular directories/folders---you depend on some specialised program.
-  If you ask me, I have no idea how to use a database, let alone debug
-  it or retrieve data from it if something goes awry (I could learn, but
-  that is beside the point).
+  and/or knows what "Roam" is (I don't).  It has been explained to me
+  that Org Roam uses a database to store a cache about your notes.  It
+  otherwise uses standard Org files.  The cache helps refer to the same
+  node through aliases which can provide lots of options.  Personally, I
+  follow a single-topic-per-note approach, so anything beyond that is
+  overkill.  If the database is only for a cache, then maybe that has no
+  downside, though I am careful with any kind of specialised program as
+  it creates a dependency.  If you ask me about database software in
+  particular, I have no idea how to use one, let alone debug it or
+  retrieve data from it if something goes awry (I could learn, but that
+  is beside the point).
 
 + [[https://github.com/localauthor/zk][zk (or zk.el)]] :: Reading its documentation makes me think that this is
   Denote's sibling or cousin---they have a lot of things in common,
