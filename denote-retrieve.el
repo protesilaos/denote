@@ -106,22 +106,24 @@ Optional GROUP is a regexp construct for
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name))))
     (denote-retrieve--files-in-output
-     (process-lines
-      "find"
-      default-directory
-      "-maxdepth" "1"
-      "-type" "f"
-      "!" "-name" file
-      "-exec"
-      grep-program
-      "--color=never"
-      "-m"
-      "1"
-      "-e"
-      identifier
-      "{}"
-      ";"
-      "-print"))))
+     (sort
+      (process-lines
+       "find"
+       default-directory
+       "-maxdepth" "1"
+       "-type" "f"
+       "!" "-name" file
+       "-exec"
+       grep-program
+       "--color=never"
+       "-m"
+       "1"
+       "-e"
+       identifier
+       "{}"
+       ";"
+       "-print")
+      #'string-lessp))))
 
 (provide 'denote-retrieve)
 ;;; denote-retrieve.el ends here
