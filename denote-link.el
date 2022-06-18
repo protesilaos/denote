@@ -120,9 +120,9 @@ and/or the documentation string of `display-buffer'."
 
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
-  (let* ((file-id (denote-retrieve--filename-identifier file))
-         (file-title (unless (string= pattern denote-link--format-id-only)
-                       (denote-retrieve--value-title file))))
+  (let ((file-id (denote-retrieve--filename-identifier file))
+        (file-title (unless (string= pattern denote-link--format-id-only)
+                      (denote-retrieve--value-title file))))
     (format pattern file-id file-title)))
 
 (defun denote-link--extension-format-or-id (id-only)
