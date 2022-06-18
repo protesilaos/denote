@@ -1317,11 +1317,11 @@ copyright assignment to the Free Software Foundation (more below).
 You do not need to be a programmer to contribute to this package.
 Sharing an idea or describing a workflow is equally helpful, as it
 teaches us something we may not know and might be able to cover either
-by extending Denote or expanding this manual.  If you prefer to write a
-blog post, make sure you share it with us: we can add a section herein
-referencing all such articles.  Everyone gets acknowledged
-([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]).  There is no such thing as an "insignificant
-contribution"---they all matter.
+by extending Denote or expanding this manual ([[#h:044a6a0f-e382-4013-8279-8bf4e64e73c0][Things to do]]).  If you
+prefer to write a blog post, make sure you share it with us: we can add
+a section herein referencing all such articles.  Everyone gets
+acknowledged ([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]).  There is no such thing as an
+"insignificant contribution"---they all matter.
 
 + Package name (GNU ELPA): =denote= (once {{{development-version}}} is out)
 + Official manual: <https://protesilaos.com/emacs/denote>
@@ -1386,6 +1386,28 @@ your changes?  Do you attend a school which might make such a claim?]
 so far?]
 
 #+end_example
+
+* Things to do
+:PROPERTIES:
+:CUSTOM_ID: h:044a6a0f-e382-4013-8279-8bf4e64e73c0
+:END:
+
+Denote should work well for what is described in this manual.  Though we
+can always do better.  These are some of the tasks that are planned for
+the future and which you might want to help with ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+
+This is a non-exhaustive list and you are always welcome to either
+report or work on something else.
+
+- [ ] Buttonize =denote:= links in Markdown and plain text, but not Org.
+- [ ] Ensure integration between =denote:= links and Embark.
+- [ ] Add command that expands the identifier in links to a full name.
+- [ ] Add command that rewrites full names in links, if they are invalid.
+- [ ] Consider completion-at-point after =denote:= links.
+- [ ] Support mutually-exclusive sets of tags.
+
+These are just ideas.  We need to consider the pros and cons in each
+case and act accordingly.
 
 * Alternatives to Denote
 :PROPERTIES:
