@@ -73,11 +73,10 @@ FILE is a note in the variable `denote-directory'.
 
 Optional GROUP is a regexp construct for
 `denote-retrieve--search'."
-  (let ((default-directory (denote-directory)))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (or (denote-retrieve--search regexp group)
-          nil))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (or (denote-retrieve--search regexp group)
+        nil)))
 
 (defun denote-retrieve--value-title (file &optional group)
   "Return title from FILE, optionally matching regexp GROUP."
