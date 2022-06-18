@@ -90,14 +90,23 @@
 
 ;;;; User options
 
+;; About the autoload: (info "(elisp) File Local Variables")
+
+;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
+
+A safe local value of either `default-directory' or `local' can
+be added as a value in a .dir-local.el file.  Do this if you
+intend to use multiple directories for your notes while still
+relying on a global value (which is the value of this variable).
+The Denote manual has a sample (search for '.dir-locals.el').
+
 If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead: it returns the path as a
-directory."
+directory and also checks if a safe local value should be used."
   :group 'denote
-  :safe (lambda (val)
-          (and (symbolp val) (eq val 'default-directory)))
+  :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
   :type 'directory)
 
 (defcustom denote-known-keywords
@@ -232,10 +241,9 @@ We consider those characters illigal for our purposes.")
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
-  (let ((path (or (buffer-local-value 'denote-directory (current-buffer))
-                  denote-directory)))
-    (when (and (symbolp path) (eq path 'default-directory))
-      (setq path (buffer-local-value 'default-directory (current-buffer))))
+  (let* ((val (or (buffer-local-value 'denote-directory (current-buffer))
+                  denote-directory))
+         (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
     (unless (file-directory-p path)
       (make-directory path t))
     (file-name-as-directory path)))

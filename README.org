@@ -919,13 +919,14 @@ default used by regular ~denote~.
 Given Denote's composable code, you can tweak the output however you
 like, including the contents of the file ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).
 
-If you do place different types of notes in their own directories,
-consider introducing directory-local variables to keep things working
-seamlessly.  An obvious candidate for such a local variable is the
-~denote-directory~: you want notes in =~/Documents/blog/= to treat their
-directory as the canonical one; while those in =~/Documents/random/= to
-do the same for that path.  Write a =.dir-locals.el= file with the
-following contents and place it in each of those directories:
+If you do place different types of notes in their own directories, you
+must introduce directory-local variables to keep things working
+seamlessly.  Otherwise you cannot create notes, retrieve backlinks, and
+so on.  To that end, the ~denote-directory~ variable considers the
+symbols =default-directory= or =local= as safe local variables.  Write a
+=.dir-locals.el= file in each of your non-default notes directories with
+the following contents (replacing =default-directory= with =local=, if
+you prefer):
 
 #+begin_src emacs-lisp
 ;;; Directory Local Variables
