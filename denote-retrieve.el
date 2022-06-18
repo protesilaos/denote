@@ -89,7 +89,7 @@ Optional GROUP is a regexp construct for
 
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
-  (read-file-name "Select note: " (denote-directory) nil t nil #'file-regular-p))
+  (read-file-name "Select note: " (denote-directory) nil t nil #'denote--only-note-p))
 
 (defun denote-retrieve--files-in-output (files)
   "Return list of FILES from `find' output."
