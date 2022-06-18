@@ -112,11 +112,8 @@ directory and also checks if a safe local value should be used."
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
   "List of strings with predefined keywords for `denote'.
-
-The implicit assumption is that a keyword is a single word.  If
-you need a keyword to be multiple words long, use underscores to
-separate them.  Do not use hyphens or other characters, as those
-are assumed to demarcate distinct keywords."
+Also see user options: `denote-allow-multi-word-keywords',
+`denote-infer-keywords', `denote-sort-keywords'."
   :group 'denote
   :type '(repeat string))
 
