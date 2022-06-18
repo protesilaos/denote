@@ -93,7 +93,7 @@ Optional GROUP is a regexp construct for
 (defun denote-retrieve--files-in-output (files)
   "Return list of FILES from `find' output."
   (delq nil (mapcar (lambda (f)
-                      (when (file-regular-p f) f))
+                      (when (denote--only-note-p f) f))
                     files)))
 
 ;; TODO 2022-06-15: Maybe we can do the same in a more standard way?
