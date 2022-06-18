@@ -305,7 +305,8 @@ part of the list."
    nil
    (mapcar
     (lambda (f)
-      (when (and (string-match-p regexp f)
+      (when (and (string-match-p (concat "^" denote--id-regexp) f)
+                 (string-match-p regexp f)
                  (or no-check-current
                      (not (string= (file-name-nondirectory (buffer-file-name)) f))))
         f))
