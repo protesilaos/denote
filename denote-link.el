@@ -283,9 +283,7 @@ default, it will show up below the current window."
                            (denote-link--format-link f ext))))
                 files)
           (sort-lines denote-link-add-links-sort (point-min) (point-max))
-          (let ((min (point-min))
-                (max (point-max)))
-            (buffer-substring-no-properties min max)))))
+          (buffer-string))))
 
 (defvar denote-link--add-links-history nil
   "Minibuffer history for `denote-link-add-links'.")
