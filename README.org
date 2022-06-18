@@ -1447,8 +1447,9 @@ their documentation.
   a substitute for Dired or the minibuffer.  Another potential
   difference is that Denote is not a zettelkasten implementation per se,
   though I am not sure how ZK interprets or enforces that methodology.
-  In our case, Denote does not do zettelkasten: it merely creates files
-  with a unique identifier.
+  In our case, Denote does not do zettelkasten (the user does it, if
+  they want to); Denote primarily creates files with a unique
+  identifier.
 
 + [[https://github.com/ymherklotz/emacs-zettelkasten][zettelkasten]] :: This is another one of Denote's relatives, at least
   insofar as the goal of simplicity is concerned.  The major difference
