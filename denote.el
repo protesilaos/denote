@@ -283,6 +283,14 @@ trailing hyphen."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
+(defun denote--only-note-p (file)
+  "Make sure FILE is an actual Denote note.
+FILE is relative to the variable `denote-directory'."
+  (and (not (file-directory-p file))
+       (file-regular-p file)
+       (string-match-p (concat "^" denote--id-regexp) file)
+       (not (string-match-p "~\\'" file))))
+
 ;;;; Keywords
 
 (defun denote--directory-files (&optional absolute)
@@ -292,9 +300,8 @@ names that are relative to the variable `denote-directory'."
   (let* ((dir (denote-directory))
          (default-directory dir))
     (seq-remove
-     (lambda (file)
-       (or (not (string-match-p denote--id-regexp file))
-           (file-directory-p file)))
+     (lambda (f)
+       (not (denote--only-note-p f)))
      (directory-files dir absolute directory-files-no-dot-files-regexp t))))
 
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
@@ -305,7 +312,7 @@ part of the list."
    nil
    (mapcar
     (lambda (f)
-      (when (and (string-match-p (concat "^" denote--id-regexp) f)
+      (when (and (denote--only-note-p f)
                  (string-match-p regexp f)
                  (or no-check-current
                      (not (string= (file-name-nondirectory (buffer-file-name)) f))))
