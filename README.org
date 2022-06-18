@@ -1481,8 +1481,8 @@ precious little documentation and I cannot tell what it actually does
 (as I said in my presentation for LibrePlanet 2022, inadequate docs are
 a bug).  =side-notes= differs from what we try to do with Denote, as it
 basically gives you the means to record your thoughts about some other
-project you are working on and keep them on the side, which means that
-it and Denote should not be mutually exclusive.
+project you are working on and keep them on the side: so it and Denote
+should not be mutually exclusive.
 
 If I missed something, please let me know.
 
