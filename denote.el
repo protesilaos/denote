@@ -296,6 +296,12 @@ FILE is relative to the variable `denote-directory'."
        (string-match-p (concat "\\b" denote--id-regexp) file)
        (not (string-match-p "[#~]\\'" file))))
 
+(defun denote--current-file-is-note-p ()
+  "Return non-nil if current file likely is a Denote note."
+  (and (or (string-match-p denote--id-regexp (buffer-file-name))
+           (string-match-p denote--id-regexp (buffer-name)))
+       (string= (expand-file-name default-directory) (denote-directory))))
+
 ;;;; Keywords
 
 (defun denote--directory-files (&optional absolute)

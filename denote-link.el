@@ -254,10 +254,7 @@ Add this to `find-file-hook' (it will not do anything in
 DEVELOPMENT NOTE: This is experimental and subject to review
 before the release of version 0.1.0.  Please test it and/or share
 your thoughts about it."
-  (when (and (not (derived-mode-p 'org-mode))
-             ;; A crude check to test if this is a note
-             (or (string-match-p denote--id-regexp (buffer-file-name))
-                 (string= (expand-file-name default-directory) (denote-directory))))
+  (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward denote--id-regexp nil t)
