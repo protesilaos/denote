@@ -144,7 +144,7 @@ format is always [[denote:IDENTIFIER]]."
   (insert
    (denote-link--format-link
     target
-   (denote-link--extension-format-or-id id-only))))
+    (denote-link--extension-format-or-id id-only))))
 
 (defalias 'denote-link-insert-link (symbol-function 'denote-link))
 
