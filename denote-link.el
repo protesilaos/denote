@@ -277,7 +277,8 @@ your thoughts about it."
 (declare-function denote-dired-mode "denote-dired")
 
 (defun denote-link--display-buffer (buf)
-  "Run `display-buffer' on BUF."
+  "Run `display-buffer' on BUF.
+Expand `denote-link-backlinks-display-buffer-action'."
   (display-buffer
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
