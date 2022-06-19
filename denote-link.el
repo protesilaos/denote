@@ -192,7 +192,7 @@ format is always [[denote:IDENTIFIER]]."
 
 ;;;; Backlinks' buffer
 
-(define-button-type 'denote-link-find-file
+(define-button-type 'denote-link-backlink-button
   'follow-link t
   'action #'denote-link--find-file
   'face 'unspecified)
@@ -230,7 +230,7 @@ Use optional TITLE for a prettier heading."
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
               (insert (file-name-nondirectory f))
-              (make-button (point-at-bol) (point-at-eol) :type 'denote-link-find-file)
+              (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
               (newline))
             files)
       (goto-char (point-min))
