@@ -106,6 +106,9 @@ and/or the documentation string of `display-buffer'."
 (defconst denote-link--regexp-markdown
   (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
 
+(defconst denote-link--regexp-plain
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]]"))
+
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
   (pcase (file-name-extension file)
