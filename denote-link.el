@@ -144,10 +144,13 @@ argument (\\[universal-argument]), insert links with just the
 identifier and no further description.  In this case, the link
 format is always [[denote:IDENTIFIER]]."
   (interactive (list (denote-retrieve--read-file-prompt) current-prefix-arg))
-  (insert
-   (denote-link--format-link
-    target
-    (denote-link--extension-format-or-id id-only))))
+  (let ((beg (point)))
+    (insert
+     (denote-link--format-link
+      target
+      (denote-link--extension-format-or-id id-only)))
+    (unless (derived-mode-p 'org-mode)
+      (make-button beg (point) 'type 'denote-link-button))))
 
 (defalias 'denote-link-insert-link (symbol-function 'denote-link))
 
@@ -193,20 +196,84 @@ format is always [[denote:IDENTIFIER]]."
       (find-file (denote-link--find-file-prompt files))
     (user-error "No links found in the current buffer")))
 
-;;;; Backlinks' buffer
+;;;; Link buttons
 
-(define-button-type 'denote-link-backlink-button
+;; TODO 2022-06-19: Review link and backlins buttons.  Consolidate what
+;; is needed.
+
+;; Evaluate: (info "(elisp) Button Properties")
+;;
+;; Button can provide a help-echo function as well, but I think we might
+;; not need it.
+(define-button-type 'denote-link-button
   'follow-link t
-  'action #'denote-link--find-file
-  'face 'unspecified)
+  'action #'denote-link--find-file-at-button)
+
+(autoload 'thing-at-point-looking-at "thingatpt")
+
+(defun denote-link--link-at-point-string ()
+  "Return identifier at point."
+  (when (or (thing-at-point-looking-at denote-link--regexp-plain)
+            (thing-at-point-looking-at denote-link--regexp-markdown)
+            (thing-at-point-looking-at denote-link--regexp-org)
+            ;; REVIEW 2022-06-19: This is crude.  It is meant to handles
+            ;; the case where a link is broken by `fill-paragraph' into
+            ;; two lines, in which case it buttonizes only the
+            ;; "denote:ID" part.  Example:
+            ;;
+            ;; [[denote:20220619T175212][This is a
+            ;; test]]
+            (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
+    (match-string-no-properties 0)))
+
+(defun denote-link--id-from-string (string)
+  "Extract identifier from STRING."
+  (replace-regexp-in-string
+   (concat ".*denote:" "\\(" denote--id-regexp "\\)" ".*")
+   "\\1" string))
 
 ;; NOTE 2022-06-15: I add this as a variable for advanced users who may
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
 (defvar denote-link-buton-action #'find-file-other-window
-  "Action for `denote-link--find-file'.")
+  "Action for Denote buttons.")
 
-(defun denote-link--find-file (button)
+(defun denote-link--find-file-at-button (button)
+  "Visit file referenced by BUTTON."
+  (let ((id (denote-link--id-from-string
+             (buffer-substring-no-properties
+              (button-start button)
+              (button-end button)))))
+    (funcall denote-link-buton-action (file-name-completion id (denote-directory)))))
+
+(defun denote-link-buttonize-buffer ()
+  "Make denote: links actionable buttons in the current buffer.
+Add this to `find-file-hook' (it will not do anything in
+`org-mode' buffers, as buttons already work there).
+
+DEVELOPMENT NOTE: This is experimental and subject to review
+before the release of version 0.1.0.  Please test it and/or share
+your thoughts about it."
+  (when (and (not (derived-mode-p 'org-mode))
+             ;; A crude check to test if this is a note
+             (or (string-match-p denote--id-regexp (buffer-file-name))
+                 (string= (expand-file-name default-directory) (denote-directory))))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward denote--id-regexp nil t)
+        (when-let ((string (denote-link--link-at-point-string))
+                   (beg (match-beginning 0))
+                   (end (match-end 0)))
+          (make-button beg end 'type 'denote-link-button))))))
+
+;;;; Backlinks' buffer
+
+(define-button-type 'denote-link-backlink-button
+  'follow-link t
+  'action #'denote-link--backlink-find-file
+  'face 'unspecified)
+
+(defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
   (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
 
