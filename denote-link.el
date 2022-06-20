@@ -246,18 +246,21 @@ format is always [[denote:IDENTIFIER]]."
               (button-end button)))))
     (funcall denote-link-buton-action (file-name-completion id (denote-directory)))))
 
-(defun denote-link-buttonize-buffer ()
+(defun denote-link-buttonize-buffer (&optional beg end)
   "Make denote: links actionable buttons in the current buffer.
 Add this to `find-file-hook' (it will not do anything in
 `org-mode' buffers, as buttons already work there).
+
+With optional BEG and END as buffer positions, limit the process
+to the region in-between.
 
 DEVELOPMENT NOTE: This is experimental and subject to review
 before the release of version 0.1.0.  Please test it and/or share
 your thoughts about it."
   (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
     (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward denote--id-regexp nil t)
+      (goto-char (or beg (point-min)))
+      (while (re-search-forward denote--id-regexp end t)
         (when-let ((string (denote-link--link-at-point-string))
                    (beg (match-beginning 0))
                    (end (match-end 0)))
