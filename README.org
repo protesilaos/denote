@@ -1601,10 +1601,11 @@ and the less focused you are on the task at hand.
 
 In technical terms, I also am not fond of Org's code base (I understand
 why it is the way it is---just commenting on the fact).  Ever tried to
-read it?  You will routinely find functions that are hundreds of lines
-long and have all sorts of special casing.  As I am not a programmer and
-only learnt to write Elisp through trial and error, I have no confidence
-in my ability to make Org do what I want at that level.
+read it?  You will routinely find functions that are tens-to-hundreds of
+lines long and have all sorts of special casing.  As I am not a
+programmer and only learnt to write Elisp through trial and error, I
+have no confidence in my ability to make Org do what I want at that
+level.
 
 Perhaps the master programmer is one who can deal with complexity and
 keep adding to it.  I am of the opposite view as language---code
@@ -1621,11 +1622,13 @@ this very manual.
 
 My notes form part of my longer-term storage.  I do not want to have to
 rely on a special program to be able to read them or filter them.  Unix
-is universal, at least as far as I am concerned.  Denote streamlines
-some tasks and makes things easier in general, which is consistent with
-how Emacs provides a layer of interactivity on top of Unix.  Still,
-Denote's utilities can, in principle, be implemented as POSIX shell
-scripts.
+is universal, at least as far as I am concerned.
+
+Denote streamlines some tasks and makes things easier in general, which
+is consistent with how Emacs provides a layer of interactivity on top of
+Unix.  Still, Denote's utilities can, in principle, be implemented as
+POSIX shell scripts (minus the Emacs-specific parts like fontification
+in Dired or the buttonization of links).
 
 Portability matters.  For example, in the future I might own a
 smartphone, so I prefer not to require Emacs, Org, or some other
@@ -1648,8 +1651,8 @@ I have read that Org favours the latter method.  If true, I strongly
 disagree with it because of the implicit dependency it introduces and
 the way it favours machine-friendliness over human-readability in terms
 of accessing information.  Notes are long-term storage.  I might want to
-access them on (i) some device with few features, (ii) print on paper,
-(iii) share with another person who is not a tech wizard.
+access them on (i) some device with limited features, (ii) print on
+paper, (iii) share with another person who is not a tech wizard.
 
 There are good arguments for few large files, but all either prioritize
 machine-friendliness or presuppose the use of sophisticated tools like
@@ -1659,13 +1662,16 @@ Good luck using =less= on a generic TTY to read a file with a zillion
 words, headings, sub-headings, sub-sub-headings, property drawers, and
 other constructs!  You will not get the otherwise wonderful folding of
 headings the way you do in Emacs---do not take such features for
-granted.  My point is that notes should be atomic to help the user make
-sense of them in a wide range of scenaria.  The more program-agnostic
-your file is, the better for you and/or everyone else you might share
-your writings with.
+granted.
+
+My point is that notes should be atomic to help the user---and
+potentially the user's family, friends, acquaintances---make sense of
+them in a wide range of scenaria.  The more program-agnostic your file
+is, the better for you and/or everyone else you might share your
+writings with.
 
 Human-readability means that we optimize for what matters to us.  If (a)
-you are the only one who will ever access your notes, (b) always have
+you are the only one who will ever read your notes, (b) always have
 access to good software like Emacs+Org, (c) do not care about printing
 on paper, then Denote's model is not for you.  Maybe you need to tweak
 some ~org-capture~ template to append a new entry to one mega file (I do
@@ -1682,9 +1688,9 @@ agenda.  Consider looking into one of Denote's alternatives, with
 =org-roam= being the obvious choice ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).
 
 Or, if you want my opinion, decouple your longer-term storage from your
-to-do list: Denote (and others) can be used for the former, while you
-let standard Org work splendidly for the latter---that is what I do,
-anyway.
+ephemeral to-do list: Denote (and others) can be used for the former,
+while you let standard Org work splendidly for the latter---that is what
+I do, anyway.
 
 ** I want to sort by last modified, why won't Denote let me?
 :PROPERTIES:
@@ -1692,14 +1698,15 @@ anyway.
 :END:
 
 Denote does not sort files and will not reinvent tools that handle such
-functionality.  That is the job of the file manager or command-line
-executable that lists files.  I encourage you to read the manpage of the
-=ls= executable.  It will help you in general, while it applies to Emacs
-as well via Dired.  The gist is that you can update on-the-fly the =ls=
-flags that Dired uses: do =C-u M-x dired-sort-toggle-or-edit= (=C-u s=
-by default) and then append =--sort=time=.  To reverse the order, add
-the =-r= flag as well.  The user option ~dired-listing-switches~ sets
-your default preference.
+functionality.  This is the job of the file manager or command-line
+executable that lists files.
+
+I encourage you to read the manpage of the =ls= executable.  It will
+help you in general, while it applies to Emacs as well via Dired.  The
+gist is that you can update on-the-fly the =ls= flags that Dired uses:
+do =C-u M-x dired-sort-toggle-or-edit= (=C-u s= by default) and append
+=--sort=time=.  To reverse the order, add the =-r= flag as well.  The
+user option ~dired-listing-switches~ sets your default preference.
 
 * Acknowledgements
 :PROPERTIES:
