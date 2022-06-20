@@ -268,7 +268,7 @@ your thoughts about it."
 (define-button-type 'denote-link-backlink-button
   'follow-link t
   'action #'denote-link--backlink-find-file
-  'face 'unspecified)
+  'face 'unspecified)     ; we use this face attribute to style it later
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
