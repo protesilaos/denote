@@ -24,9 +24,128 @@
 
 ;;; Commentary:
 ;;
-;; The linking facility is subject to review and there will likely be
-;; breaking changes.  This is the only area that needs to be fixed
-;; before we release the first stable version of the package.
+;; The `denote-link' command inserts a link at point to an entry specified
+;; at the minibuffer prompt.  Links are formatted depending on the file
+;; type of current note.  In Org and plain text buffers, links are
+;; formatted thus: `[[denote:IDENTIFIER][TITLE]]'.  While in Markdown they
+;; are expressed as `[TITLE](denote:IDENTIFIER)'.
+;;
+;; When `denote-link' is called with a prefix argument (`C-u' by default)
+;; it formats links like `[[denote:IDENTIFIER]]'.  The user might prefer
+;; its simplicity.
+;;
+;; Inserted links are automatically buttonized and remain active for as
+;; long as the buffer is available.  In Org this is handled automatically
+;; as Denote creates its own custom hyperlink: the `denote:' type which
+;; works exactly like the `file:'.  In Markdown and plain text, Denote
+;; handles the buttonization of those links.
+;;
+;; To buttonize links in existing files while visiting them, the user must
+;; add this snippet to their setup:
+;;
+;;     (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+;;
+;; Denote has a major-mode-agnostic mechanism to collect all linked file
+;; references in the current buffer and return them as an appropriately
+;; formatted list.  This list can then be used in interactive commands.
+;; The `denote-link-find-file' is such a command.  It uses minibuffer
+;; completion to visit a file that is linked to from the current note.
+;; The candidates have the correct metadata, which is ideal for
+;; integration with other standards-compliant tools (see "Extending
+;; Denote" in the manual).  For instance, a package such as `marginalia'
+;; will display accurate annotations, while the `embark' package will be
+;; able to work its magic such as in exporting the list into a filtered
+;; Dired buffer (i.e. a familiar Dired listing with only the files of
+;; the current minibuffer session).
+;;
+;; The command `denote-link-backlinks' produces a bespoke buffer which
+;; displays the file name of all notes linking to the current one.  Each
+;; file name appears on its own line and is buttonized so that it performs
+;; the action of visiting the referenced file.  [Development note:
+;; currently this depends on the `find' executable.  Maybe we can make it
+;; work with Emacs' `xref' facility to work everywhere without losing the
+;; bespoke buffer?]  The backlinks' buffer looks like this:
+;;
+;;     Backlinks to "On being honest" (20220614T130812)
+;;     ------------------------------------------------
+;;
+;;     20220614T145606--let-this-glance-become-a-stare__journal.txt
+;;     20220616T182958--not-feeling-butterflies-in-your-stomach__journal.txt
+;;
+;; The backlinks' buffer is fontified by default, though the user has
+;; access to the `denote-link-fontify-backlinks' option to disable this
+;; effect by setting its value to nil.
+;;
+;; The placement of the backlinks' buffer is subject to the user option
+;; `denote-link-backlinks-display-buffer-action'.  Due to the nature of the
+;; underlying `display-buffer' mechanism, this inevitably is an advanced
+;; feature.  By default, the backlinks' buffer is displayed below the
+;; current window.  The doc string of our user option includes a
+;; configuration that places the buffer in a left side window instead.
+;; Reproducing it here for your convenience:
+;;
+;;     (setq denote-link-backlinks-display-buffer-action
+;;           '((display-buffer-reuse-window
+;;              display-buffer-in-side-window)
+;;             (side . left)
+;;             (slot . 99)
+;;             (window-width . 0.3)))
+;;
+;; The command `denote-link-add-links' adds links at point matching a
+;; regular expression or plain string.  The links are inserted as a
+;; typographic list, such as:
+;;
+;;     - link1
+;;     - link2
+;;     - link3
+;;
+;; Each link is formatted according to the file type of the current note,
+;; as explained further above about the `denote-link' command.  The current
+;; note is excluded from the matching entries (adding a link to itself is
+;; pointless).
+;;
+;; When called with a prefix argument (`C-u') `denote-link-add-links' will
+;; format all links as `[[denote:IDENTIFIER]]', hence a typographic list:
+;;
+;;     - [[denote:IDENTIFIER-1]]
+;;     - [[denote:IDENTIFIER-2]]
+;;     - [[denote:IDENTIFIER-3]]
+;;
+;; Same examples of a regular expression that can be used with this
+;; command:
+;;
+;; - `journal' match all files which include `journal' anywhere in their
+;;   name.
+;;
+;; - `_journal' match all files which include `journal' as a keyword.
+;;
+;; - `^2022.*_journal' match all file names starting with `2022' and
+;;   including the keyword `journal'.
+;;
+;; - `\.txt' match all files including `.txt'.  In practical terms, this
+;;   only applies to the file extension, as Denote automatically removes
+;;   dots (and other characters) from the base file name.
+;;
+;; If files are created with `denote-sort-keywords' as non-nil (the
+;; default), then it is easy to write a regexp that includes multiple
+;; keywords in alphabetic order:
+;;
+;; - `_denote.*_package' match all files that include both the `denote' and
+;;   `package' keywords, in this order.
+;;
+;; - `\(.*denote.*package.*\)\|\(.*package.*denote.*\)' is the same as
+;;   above, but out-of-order.
+;;
+;; Remember that regexp constructs only need to be escaped once (like `\|')
+;; when done interactively but twice when called from Lisp.  What we show
+;; above is for interactive usage.
+;;
+;; For convenience, the `denote-link' command has an alias called
+;; `denote-link-insert-link'.  The `denote-link-backlinks' can also be used
+;; as `denote-link-show-backlinks-buffer'.  While `denote-link-add-links'
+;; is aliased `denote-link-insert-links-matching-regexp'.  The purpose of
+;; these aliases is to offer alternative, more descriptive names of select
+;; commands.
 
 ;;; Code:
 
