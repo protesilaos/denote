@@ -43,24 +43,6 @@
   :type 'boolean
   :group 'denote-link)
 
-(defcustom denote-link-register-ol-hyperlink t
-  "When non-nil, register the `denote:' custom Org hyperlink type.
-This practically means that the links Denote creates will behave
-link ordinary links in Org files.  They can be followed with a
-mouse click or the `org-open-at-point' command, and they can be
-insterted with completion via the `org-insert-link' command after
-selecting the `denote:' hyperlink type.
-
-When this option is nil, Denote links will not work properly in
-Org files.  All commands that Denote defines, such as
-`denote-link-backlinks' and `denote-link-find-file' will work as
-intended.
-
-Note that if you do not want to `require' ol.el, you must set
-this option to nil BEFORE loading denote-link.el."
-  :type 'boolean
-  :group 'denote-link)
-
 (defcustom denote-link-backlinks-display-buffer-action
   '((display-buffer-reuse-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer))
@@ -387,14 +369,11 @@ inserts links with just the identifier."
 
 (declare-function org-link-set-parameters "ol.el" (type &rest parameters))
 
-;; REVIEW 2022-06-15: Maybe there is a better way to make this optional.
-(when denote-link-register-ol-hyperlink
-  (require 'ol)
-  (org-link-set-parameters
-   "denote"
-   :follow #'denote-link-ol-follow
-   :complete #'denote-link-ol-complete
-   :export #'denote-link-ol-export))
+(org-link-set-parameters
+ "denote"
+ :follow #'denote-link-ol-follow
+ :complete #'denote-link-ol-complete
+ :export #'denote-link-ol-export)
 
 (declare-function org-link-open-as-file "ol" (path arg))
 
