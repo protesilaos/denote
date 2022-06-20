@@ -1702,10 +1702,10 @@ executable that lists files.
 
 I encourage you to read the manpage of the =ls= executable.  It will
 help you in general, while it applies to Emacs as well via Dired.  The
-gist is that you can update on-the-fly the =ls= flags that Dired uses:
-do =C-u M-x dired-sort-toggle-or-edit= (=C-u s= by default) and append
-=--sort=time=.  To reverse the order, add the =-r= flag as well.  The
-user option ~dired-listing-switches~ sets your default preference.
+gist is that you can update the =ls= flags that Dired uses on-the-fly:
+type =C-u M-x dired-sort-toggle-or-edit= (=C-u s= by default) and append
+=--sort=time= at the prompt.  To reverse the order, add the =-r= flag.
+The user option ~dired-listing-switches~ sets your default preference.
 
 ** How do you handle the last modified case?
 :PROPERTIES:
