@@ -378,7 +378,8 @@ inserts links with just the identifier."
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (let ((beg (point)))
           (insert (denote-link--prepare-links files ext))
-          (denote-link-buttonize-buffer beg (point)))
+          (unless (derived-mode-p 'org-mode)
+            (denote-link-buttonize-buffer beg (point))))
       (user-error "No links matching `%s'" regexp))))
 
 (defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
