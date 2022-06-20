@@ -1637,6 +1637,18 @@ to-do list: Denote (and others) can be used for the former, while you
 let standard Org work splendidly for the latter---that is what I do,
 anyway.
 
+/I want to sort by last modified, why won't Denote let me?/
+
+Denote does not sort files and will not reinvent tools that handle such
+functionality.  That is the job of the file manager or command-line
+executable that lists files.  I encourage you to read the manpage of the
+=ls= executable.  It will help you in general, while it applies to Emacs
+as well via Dired.  The gist is that you can update on-the-fly the =ls=
+flags that Dired uses: do =C-u M-x dired-sort-toggle-or-edit= (=C-u s=
+by default) and then append =--sort=time=.  To reverse the order, add
+the =-r= flag as well.  The user option ~dired-listing-switches~ sets
+your default preference.
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
