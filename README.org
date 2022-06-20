@@ -586,8 +586,9 @@ participate in the development of Denote.
 :END:
 
 DEVELOPMENT NOTE 2022-06-19 22:48 +0300: This is the final part that
-remains to be finalised before the release of the first stable version.
-There still are some updates to be made.
+remains to be finalised before the release of the first stable version
+(planned for 2022-06-22--2022-06-24).  There still are some updates to
+be made.
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to an entry specified
@@ -600,45 +601,19 @@ When ~denote-link~ is called with a prefix argument (=C-u= by default)
 it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
 its simplicity.
 
-How those links behave will depend on the user's preference.  Denote
-provides a simple-minded implementation for such link, which either
-works competently with point-and-click kind of interaction or, at the
-user's discretion, is more rudimentary and depends on Denote commands
-and/or Emacs' standard "future history" heuristics.
+Inserted links are automatically buttonized and remain active for as
+long as the buffer is available.  In Org this is handled automatically
+as Denote creates its own custom hyperlink: the =denote:= type which
+works exactly like the =file:=.  In Markdown and plain text, Denote
+handles the buttonization of those links.
 
-  #+vindex: denote-link-register-ol-hyperlink
-+ The "just works" approach depends on Org's ability to open links it
-  recognizes regardless of the current major-mode.  The command for that
-  is ~org-open-at-point-global~.  User may want to bind it to a key of
-  their choosing, with =C-c o= looking like a decent choice.  Denote
-  defines a custom Org hyperlink and Org handles the rest.  The user
-  option ~denote-link-register-ol-hyperlink~ determines whether Denote
-  will register such a hyperlink type.  Users who do not want to load
-  Org, must set the variable to nil before loading denote-link.el.
+To buttonize links in existing files while visiting them, the user must
+add this snippet to their setup:
 
-  The special prefix =denote:= lets us define links with only the
-  identifier.  They are robust and will work even if the file is renamed
-  (~denote-dired-rename-file~ never modifies the identifier).  Otherwise
-  they are familiar Org-style links in ~org-mode~ buffers.  They can be
-  followed with a mouse click or the ~org-open-at-point~ command, and
-  they may be insterted with completion via the ~org-insert-link~
-  command after selecting the =denote:= link type.
-
-+ The "rudimentary" method does not depend on Org's hyperlink
-  infrastructure.  As a general feature of Emacs, any identifier that
-  appears in a note, can be expanded into the corresponding file name at
-  the same directory by leveraging Emacs' notion of "future history"
-  (predicting what the user wants).  With point over the identifier,
-  =M-x find-file= followed by =M-n= will fill the path to that file.
-
-Whatever the user's preference, Denote establishes links using the
-note's identifier which is always unique and will yield the expected
-results whether the user prefers Org, plain text, or even command-line
-utilities.
-
-Everything that follows is independent of the user's preference on
-whether to use the Org hyperlink infrastructure (besides, the
-Org-specific code is less than 30 lines as of 2022-06-15 11:50 +0300).
+#+findex: denote-link-buttonize-buffer
+#+begin_src emacs-lisp
+(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+#+end_src
 
 #+findex: denote-link-find-file
 Denote has a major-mode-agnostic mechanism to collect all linked file
@@ -646,11 +621,12 @@ references in the current buffer and return them as an appropriately
 formatted list.  This list can then be used in interactive commands.
 The ~denote-link-find-file~ is such a command.  It uses minibuffer
 completion to visit a file that is linked to from the current note.  The
-candidates have the correct metadata, meaning that a package such as
-=marginalia= will display accurate annotations, while the =embark=
-package will be able to work its magic such as in exporting the list
-into a filtered Dired buffer (i.e. a familiar Dired listing with only
-the files of the current minibuffer session).
+candidates have the correct metadata, which is ideal for integration
+with other standards-compliant tools ([[#h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece][Extending Denote]]).  For instance,
+a package such as =marginalia= will display accurate annotations, while
+the =embark= package will be able to work its magic such as in exporting
+the list into a filtered Dired buffer (i.e. a familiar Dired listing
+with only the files of the current minibuffer session).
 
 #+findex: denote-link-backlinks
 The command ~denote-link-backlinks~ produces a bespoke buffer which
@@ -1251,6 +1227,11 @@ Everything is in place to set up the package.
 ;; package is available.
 (require 'denote-retrieve)
 (require 'denote-link)
+
+;; If you use Markdown or plain text files (Org renders links as buttons
+;; right away)
+(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+
 (require 'denote-dired)
 (setq denote-dired-rename-expert nil)
 
