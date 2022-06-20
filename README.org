@@ -1564,10 +1564,23 @@ into the specifics of how Denote works.
 :END:
 
 I wrote Denote because I was using a variant of Denote's file-naming
-scheme before I was even an Emacs user.  Note-taking is something I take
-very seriously, as I am a prolific writer (just check my website, which
-only reveals the tip of the iceberg).  As such, I need a program that
-does exactly what I want and which I know how to extend.
+scheme before I was even an Emacs user (I switched to Emacs from
+Tmux+Vim+CLI in the summer of 2019).  I was originally inspired by
+Jekyll, the static site generator, which I started using for my website
+in 2016 (was on WordPress before).  Jekyll's files follow the
+=YYYY-MM-DD-TITLE.md= pattern.  I liked its efficiency relative to the
+unstructured mess I had before.  Eventually, I started using that scheme
+outside the confines of my website's source code.  Over time I refined
+it and here we are.
+
+Note-taking is something I take very seriously, as I am a prolific
+writer (just check my website, which only reveals the tip of the
+iceberg).  As such, I need a program that does exactly what I want and
+which I know how to extend.  I originally tried to use Org capture
+templates to create new files with a Denote-style file-naming scheme but
+never managed to achieve it.  Maybe because ~org-capture~ has some
+hard-coded assumptions or I simply am not competent enough to hack on
+core Org facilities.  Whatever the case, an alternative was in order.
 
 The existence of PACKAGE is never a good reason for me not to conduct my
 own experiments for recreational, educational, or practical purposes.
