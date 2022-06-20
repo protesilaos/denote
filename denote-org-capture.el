@@ -28,24 +28,24 @@
 ;;
 ;; Samples of an `org-capture-templates' entry:
 ;;
-;; (setq org-capture-templates
-;;       '(("n" "New note (with denote.el)" plain
-;;          (file denote-last-path)
-;;          #'denote-org-capture
-;;          :no-save t
-;;          :immediate-finish nil
-;;          :kill-buffer t
-;;          :jump-to-captured t)))
+;;     (setq org-capture-templates
+;;           '(("n" "New note (with denote.el)" plain
+;;              (file denote-last-path)
+;;              #'denote-org-capture
+;;              :no-save t
+;;              :immediate-finish nil
+;;              :kill-buffer t
+;;              :jump-to-captured t)))
 ;;
-;; (with-eval-after-load 'org-capture
-;;   (add-to-list 'org-capture-templates
-;;                '("n" "New note (with denote.el)" plain
-;;                  (file denote-last-path)
-;;                  #'denote-org-capture
-;;                  :no-save t
-;;                  :immediate-finish nil
-;;                  :kill-buffer t
-;;                  :jump-to-captured t)))
+;;     (with-eval-after-load 'org-capture
+;;       (add-to-list 'org-capture-templates
+;;                    '("n" "New note (with denote.el)" plain
+;;                      (file denote-last-path)
+;;                      #'denote-org-capture
+;;                      :no-save t
+;;                      :immediate-finish nil
+;;                      :kill-buffer t
+;;                      :jump-to-captured t)))
 ;;
 ;; Note that `denote-org-capture' ignores the `denote-file-type': it
 ;; always sets the Org file extension for the created note to ensure
