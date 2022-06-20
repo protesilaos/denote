@@ -375,7 +375,9 @@ inserts links with just the identifier."
   (let* ((default-directory (denote-directory))
          (ext (denote-link--extension-format-or-id id-only)))
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
-        (insert (denote-link--prepare-links files ext))
+        (let ((beg (point)))
+          (insert (denote-link--prepare-links files ext))
+          (denote-link-buttonize-buffer beg (point)))
       (user-error "No links matching `%s'" regexp))))
 
 (defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
