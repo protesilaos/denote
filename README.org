@@ -767,6 +767,7 @@ knowledge derived from the deliberate self-reflection.
 :CUSTOM_ID: h:337f9cf0-9f66-45af-b73f-f6370472fb51
 :END:
 
+#+findex: denote-dired-mode
 One of the upsides of Denote's file-naming scheme is the predictable
 pattern it establishes, which appears as a near-tabular presentation in
 a listing of notes (i.e. in Dired).  The ~denote-dired-mode~ can help
