@@ -1558,7 +1558,10 @@ I (Protesilaos) answer some questions I have received or might get.  It
 is assumed that you have read the rest of this manual: I will not go
 into the specifics of how Denote works.
 
-/Why develop Denote when PACKAGE already exists?/
+** Why develop Denote when PACKAGE already exists?
+:PROPERTIES:
+:CUSTOM_ID: h:b875450a-ae22-4899-ac23-c10fa9c279bb
+:END:
 
 I wrote Denote because I was using a variant of Denote's file-naming
 scheme before I was even an Emacs user.  Note-taking is something I take
@@ -1571,7 +1574,10 @@ own experiments for recreational, educational, or practical purposes.
 Whether you should use Denote or not is another matter altogether:
 choose whatever you want.
 
-/Why not rely exclusively on Org?/
+** Why not rely exclusively on Org?
+:PROPERTIES:
+:CUSTOM_ID: h:b9831849-5c71-484e-b444-bac19cc13151
+:END:
 
 I think Org is one of Emacs' killer apps.  I also believe it is not the
 right tool for every job.  When I write notes, I want to focus on
@@ -1595,7 +1601,10 @@ Make no mistake: I use Org for the agenda and also to write technical
 documentation that needs to be exported to various formats, including
 this very manual.
 
-/Why care about Unix tools when you use Emacs?/
+** Why care about Unix tools when you use Emacs?
+:PROPERTIES:
+:CUSTOM_ID: h:da1e2469-8f04-450b-a379-a854efa80a36
+:END:
 
 My notes form part of my longer-term storage.  I do not want to have to
 rely on a special program to be able to read them or filter them.  Unix
@@ -1617,7 +1626,10 @@ Please don't misinterpret this: I am using Emacs full-time for my
 computing and maintain a growing list of packages for it.  This is just
 me thinking long-term.
 
-/Why many small files instead of few large ones?/
+** Why many small files instead of few large ones?
+:PROPERTIES:
+:CUSTOM_ID: h:7d2e7b8a-d484-4c1d-8688-17f70f242ad7
+:END:
 
 I have read that Org favours the latter method.  If true, I strongly
 disagree with it because of the implicit dependency it introduces and
@@ -1647,7 +1659,10 @@ some ~org-capture~ template to append a new entry to one mega file (I do
 that for my Org agenda, by the way, as I explained before about using
 the right tool for the job).
 
-/I add TODOs to my files; will the many files slow down the Org agenda?/
+** I add TODOs to my files; will the many files slow down the Org agenda?
+:PROPERTIES:
+:CUSTOM_ID: h:63c2f8d4-79ed-4c55-b3ef-e048a05802c0
+:END:
 
 I have not tested it, but assume that yes, many files will slow down the
 agenda.  Consider looking into one of Denote's alternatives, with
@@ -1658,7 +1673,10 @@ to-do list: Denote (and others) can be used for the former, while you
 let standard Org work splendidly for the latter---that is what I do,
 anyway.
 
-/I want to sort by last modified, why won't Denote let me?/
+** I want to sort by last modified, why won't Denote let me?
+:PROPERTIES:
+:CUSTOM_ID: h:a7fd5e0a-78f7-434e-aa2e-e150479c16e2
+:END:
 
 Denote does not sort files and will not reinvent tools that handle such
 functionality.  That is the job of the file manager or command-line
