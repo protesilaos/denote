@@ -249,15 +249,14 @@ format is always [[denote:IDENTIFIER]]."
 ;;;###autoload
 (defun denote-link-buttonize-buffer (&optional beg end)
   "Make denote: links actionable buttons in the current buffer.
-Add this to `find-file-hook' (it will not do anything in
-`org-mode' buffers, as buttons already work there).
 
-With optional BEG and END as buffer positions, limit the process
-to the region in-between.
+Add this to `find-file-hook'.  It will only work with Denote
+notes and will not do anything in `org-mode' buffers, as buttons
+already work there.  If you do not use Markdown or plain text,
+then you do not need this.
 
-DEVELOPMENT NOTE: This is experimental and subject to review
-before the release of version 0.1.0.  Please test it and/or share
-your thoughts about it."
+When called from Lisp, with optional BEG and END as buffer
+positions, limit the process to the region in-between."
   (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
     (save-excursion
       (goto-char (or beg (point-min)))
