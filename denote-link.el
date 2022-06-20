@@ -246,6 +246,7 @@ format is always [[denote:IDENTIFIER]]."
               (button-end button)))))
     (funcall denote-link-buton-action (file-name-completion id (denote-directory)))))
 
+;;;###autoload
 (defun denote-link-buttonize-buffer (&optional beg end)
   "Make denote: links actionable buttons in the current buffer.
 Add this to `find-file-hook' (it will not do anything in
