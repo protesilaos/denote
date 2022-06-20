@@ -1540,11 +1540,10 @@ The list is unsorted.
 
 + José Antonio Ortega Ruiz (aka "jao") explains a note-taking method
   that is simple like Denote but differs in other ways.  An interesting
-  approach overall:
-  https://jao.io/blog/2022-06-19-simple-note-taking.html.
+  approach overall: https://jao.io/blog/2022-06-19-simple-note-taking.html.
 
 + Jethro Kuan (the main =org-roam= developer) explains their note-taking
-  techniques: https://jethrokuan.github.io/org-roam-guide/.  Good idea
+  techniques: https://jethrokuan.github.io/org-roam-guide/.  Good ideas
   all round, regardless of the package/code you choose to use.
 
 [ Development note: help expand this list. ]
