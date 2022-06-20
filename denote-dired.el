@@ -180,19 +180,9 @@ everything works as intended."
 
 (defun denote-dired--rename-buffer (old-name new-name)
   "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
-  (when-let ((old-buf (find-buffer-visiting old-name)))
-    (with-current-buffer old-buf
-      ;; We get the window to replace the buffer without affecting the
-      ;; window layout.
-      (let ((win (get-buffer-window old-buf)))
-        (rename-buffer (file-name-nondirectory new-name))
-        ;; TODO 2022-06-17: Is there a better way to avoid duplication
-        ;; between old and new?  It seems wrong to kill-buffer and then
-        ;; find-file.
-        (kill-buffer (find-buffer-visiting old-name))
-        (when win
-          (with-selected-window win
-            (find-file new-name)))))))
+  (when-let* ((buffer (find-buffer-visiting old-name)))
+    (with-current-buffer buffer
+      (set-visited-file-name new-name nil t))))
 
 (defun denote-dired--rename-dired-file-or-prompt ()
   "Return Dired file at point, else prompt for one."
