@@ -1499,10 +1499,10 @@ their documentation.
   created is just a unique ID".  This is not consistent with our
   file-naming scheme which is all about making sense of your files by
   their name alone and being able to visually parse a listing of them
-  without any kind of specialised tool (e.g. =ls -l= on the command-line
-  from inside the ~denote-directory~ gives you a human-readable set of
-  files names, while =find * -maxdepth 0 -type f= is even cleaner in
-  that regard).
+  without any kind of specialised tool (e.g. =ls -l= or =ls -C= on the
+  command-line from inside the ~denote-directory~ give you a
+  human-readable set of files names, while =find * -maxdepth 0 -type f=
+  is another approach).
 
 + [[https://github.com/EFLS/zetteldeft][zetteldeft]] :: This is a zettelkasten note-taking system built on top
   of the =deft= package.  Deft provides a search interface to a
