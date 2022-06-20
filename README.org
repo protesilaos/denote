@@ -1555,21 +1555,49 @@ Emacs a requirement, I am limiting my circle to a handful of relatively
 advanced users.
 
 Please don't misinterpret this: I am using Emacs full-time for my
-computing and maintain a growing list of packages for it.
+computing and maintain a growing list of packages for it.  This is just
+me thinking long-term.
 
 /Why many small files instead of few large ones?/
 
 I have read that Org favours the latter method.  If true, I strongly
 disagree with it because of the implicit dependency it introduces and
 the way it favours machine-friendliness over human-readability in terms
-of accessing information.  You already get what I mean, based on the
-aforementioned.
+of accessing information.  Notes are long-term storage.  I might want to
+access them on (i) some device with few features, (ii) print on paper,
+(iii) share with another person who is not a tech wizard.
+
+There are good arguments for few large files, but all either prioritize
+machine-friendliness or presuppose the use of sophisticated tools like
+Emacs+Org.
 
 Good luck using =less= on a generic TTY to read a file with a zillion
 words, headings, sub-headings, sub-sub-headings, property drawers, and
-other constructs!  My point is that notes should be atomic to help the
-user make sense of them.  The more program-agnostic your file is, the
-better for you and/or everyone else you might share your writings with.
+other constructs!  You will not get the otherwise wonderful folding of
+headings the way you do in Emacs---do not take such features for
+granted.  My point is that notes should be atomic to help the user make
+sense of them in a wide range of scenaria.  The more program-agnostic
+your file is, the better for you and/or everyone else you might share
+your writings with.
+
+Human-readability means that we optimize for what matters to us.  If (a)
+you are the only one who will ever access your notes, (b) always have
+access to good software like Emacs+Org, (c) do not care about printing
+on paper, then Denote's model is not for you.  Maybe you need to tweak
+some ~org-capture~ template to append a new entry to one mega file (I do
+that for my Org agenda, by the way, as I explained before about using
+the right tool for the job).
+
+/I add TODOs to my files; will the many files slow down the Org agenda?/
+
+I have not tested it, but assume that yes, many files will slow down the
+agenda.  Consider looking into one of Denote's alternatives, with
+=org-roam= being the obvious choice ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).
+
+Or, if you want my opinion, decouple your longer-term storage from your
+to-do list: Denote (and others) can be used for the former, while you
+let standard Org work splendidly for the latter---that is what I do,
+anyway.
 
 * Acknowledgements
 :PROPERTIES:
