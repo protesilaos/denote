@@ -1528,6 +1528,27 @@ should not be mutually exclusive.
 
 If I missed something, please let me know.
 
+** Alternative ideas wih Emacs and further reading
+:PROPERTIES:
+:CUSTOM_ID: h:188c0986-f2fa-444f-b493-5429356e75cf
+:END:
+
+This section covers blog posts from the Emacs community on the matter of
+note-taking.  They may reference some of the packages covered in the
+previous section or provide their custom code ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).
+The list is unsorted.
+
++ José Antonio Ortega Ruiz (aka "jao") explains a note-taking method
+  that is simple like Denote but differs in other ways.  An interesting
+  approach overall:
+  https://jao.io/blog/2022-06-19-simple-note-taking.html.
+
++ Jethro Kuan (the main =org-roam= developer) explains their note-taking
+  techniques: https://jethrokuan.github.io/org-roam-guide/.  Good idea
+  all round, regardless of the package/code you choose to use.
+
+[ Development note: help expand this list. ]
+
 * Frequently Asked Questions
 :PROPERTIES:
 :CUSTOM_ID: h:da2944c6-cde6-4c65-8f2d-579305a159bb
