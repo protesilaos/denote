@@ -1295,12 +1295,12 @@ Everything is in place to set up the package.
 (setq denote-dired-directories
       (list denote-directory
             (thread-last denote-directory (expand-file-name "attachments"))
-            (expand-file-name "~/Documents/vlog")))
+            (expand-file-name "~/Documents/books")))
 
-;; Generic:
+;; Generic (great if you rename files Denote-style in lots of places):
 ;; (add-hook 'dired-mode-hook #'denote-dired-mode)
 ;;
-;; OR better:
+;; OR if only want it in `denote-dired-directories':
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
 ;; Here is a custom, user-level command from one of the examples we
