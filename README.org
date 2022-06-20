@@ -1708,6 +1708,32 @@ do =C-u M-x dired-sort-toggle-or-edit= (=C-u s= by default) and append
 =--sort=time=.  To reverse the order, add the =-r= flag as well.  The
 user option ~dired-listing-switches~ sets your default preference.
 
+** How do you handle the last modified case?
+:PROPERTIES:
+:CUSTOM_ID: h:764b5e87-cd22-4937-b5fc-af3892d6b3d8
+:END:
+
+Denote does not insert any meta data or heading pertaining to edits in
+the file.  I am of the view that these either do not scale well or are
+not descriptive enough.  Suppose you use a "lastmod" heading with a
+timestamp: which lines where edited and what did the change amount to?
+
+This is where an external program can be helpful.  Use a Version Control
+System, such as Git, to keep track of all your notes.  Every time you
+add a new file, record the addition.  Same for post-creation edits.
+Your VCS will let you review the history of those changes.  For
+instance, Emacs' built-in version control framework has a command that
+produces a log of changes for the current file: =M-x vc-print-log=,
+bound to =C-x v l= by default.  From there one can access the
+corresponding diff output (use =M-x describe-mode= (=C-h m=) in an
+unfamiliar buffer to learn more about it).  With Git in particular,
+Emacs users have the option of the all-round excellent =magit= package.
+
+In short: let Denote (or equivalent) create notes and link between them,
+the file manager organise and provide access to files, search programs
+deal with searching and narrowing, and version control software handle
+the tracking of changes.
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
