@@ -24,37 +24,37 @@
 
 ;;; Commentary:
 ;;
-;; NOTE THAT WE ARE ACTIVELY WORKING TOWARDS VERSION `0.1.0' AND MIGHT
-;; STILL INTRODUCE BREAKING, BACKWARD-INCOMPATIBLE CHANGES.  This is
-;; particularly true for the linking facility.  Everything else is in a
-;; stable state.
-;;
 ;; Denote aims to be a simple-to-use, focused-in-scope, and effective
-;; note-taking tool for Emacs.  It is based on the following core design
+;; note-taking tool for Emacs.  The manual describes all the
+;; technicalities about the file-naming scheme, points of entry to
+;; creating new notes, commands to check links between notes, and more:
+;; <https://protesilaos.com/emacs/denote>.  If you have the info manual
+;; available, evaluate:
+;;
+;;    (info "(denote) Top")
+;;
+;; What follows is a general overview of its core core design
 ;; principles:
 ;;
 ;; * Predictability :: File names must follow a consistent and
-;;   descriptive naming convention (read the manual's "The file-naming
+;;   descriptive naming convention (see the manual's "The file-naming
 ;;   scheme").  The file name alone should offer a clear indication of
 ;;   what the contents are, without reference to any other metadatum.
 ;;   This convention is not specific to note-taking, as it is pertinent
 ;;   to any form of file that is part of the user's long-term storage
-;;   (read the manual's "Renaming files").
+;;   (see the manual's "Renaming files").
 ;;
 ;; * Composability :: Be a good Emacs citizen, by integrating with other
 ;;   packages or built-in functionality instead of re-inventing
 ;;   functions such as for filtering or greping.  Do not introduce
-;;   dependencies on specific libraries.  While Org is a killer app for
-;;   Emacs and the default file type for new notes, Denote does not
-;;   depend on org.el nor its extensions and does allow notes to be
-;;   created in a variety of formats ((read the manual's "Notes in
-;;   multiple file types").  The author of Denote (Protesilaos, aka
-;;   "Prot") writes ordinary notes in plain text (`.txt'), switching to
-;;   an Org file only when its expanded set of functionality is required
-;;   for the task at hand (read the manual's "Points of entry").
+;;   strong dependencies on specific libraries.  The author of Denote
+;;   (Protesilaos, aka "Prot") writes ordinary notes in plain text
+;;   (=.txt=), switching to an Org file only when its expanded set of
+;;   functionality is required for the task at hand (see the manual's
+;;   "Points of entry").
 ;;
 ;; * Portability :: Notes are plain text and should remain portable.
-;;   The way Denote writes file names, the front matter it include in
+;;   The way Denote writes file names, the front matter it included in
 ;;   the note's header, and the links it establishes must all be
 ;;   adequately usable with standard Unix tools.  No need for a databse
 ;;   or some specialised software.  As Denote develops and this manual
@@ -69,15 +69,24 @@
 ;;   However, Denote does not enforce a particular methodology for
 ;;   knowledge management, such as a restricted vocabulary or mutually
 ;;   exclusive sets of keywords.  It is up to the user to apply the
-;;   requisite rigor in pursuit of their preferred workflow.
+;;   requisite rigor and/or creativity in pursuit of their preferred
+;;   workflow (see the manual's "Writing metanotes").
+;;
+;; * Hackability :: Denote's code base consists of small and reusable
+;;   functions.  They all have documentation strings.  The idea is to
+;;   make it easier for users of varying levels of expertise to
+;;   understand what is going on and make surgical interventions where
+;;   necessary (e.g. to tweak some formatting).  In this manual, we
+;;   provide concrete examples on such user-level configurations (see
+;;   the manual's "Keep a journal or diary").
 ;;
 ;; Now the important part...  "Denote" is the familiar word, though it
 ;; also is a play on the "note" concept.  Plus, we can come up with
 ;; acronyms, recursive or otherwise, of increasingly dubious utility
 ;; like:
 ;;
-;; * Don't Ever Note Only The Epiphenomenal
-;; * Denote Everything Neatly; Omit The Excesses
+;; + Don't Ever Note Only The Epiphenomenal
+;; + Denote Everything Neatly; Omit The Excesses
 ;;
 ;; But we'll let you get back to work.  Don't Eschew or Neglect your
 ;; Obligations, Tasks, and Engagements.
