@@ -265,7 +265,7 @@ holds the relevant value.  In simple terms:
 + What we count as "illegal characters" are converted into hyphens.
 
 + Input for a file title is hyphenated and downcased.  The original
-  value is preserved only in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+  value is preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
 + Keywords should not have spaces or other delimiters.  If they do, they
   are converted into hyphens.  Keywords are always downcased.
