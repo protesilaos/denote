@@ -261,7 +261,8 @@ ignores all its arguments."
    (lambda (buf)
      (with-current-buffer buf
        (when (and (eq major-mode 'dired-mode)
-                  (string-match-p (expand-file-name default-directory) (denote-directory)))
+                  (string-match-p (expand-file-name default-directory)
+                                  (expand-file-name (denote-directory))))
          (revert-buffer))))
    (buffer-list)))
 
