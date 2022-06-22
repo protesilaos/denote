@@ -43,7 +43,7 @@ The match that needs to be extracted is explicityly marked as
 group 1.")
 
 (defconst denote-retrieve--date-front-matter-regexp
-  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b\\)[\"']?"
+  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b]?\\)[\"']?"
   "Regular expression for date key and value.
 The match that needs to be extracted is explicityly marked as
 group 1.")
