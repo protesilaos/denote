@@ -717,10 +717,8 @@ with only the files of the current minibuffer session).
 The command ~denote-link-backlinks~ produces a bespoke buffer which
 displays the file name of all notes linking to the current one.  Each
 file name appears on its own line and is buttonized so that it performs
-the action of visiting the referenced file.  [Development note:
-currently this depends on the =find= executable.  Maybe we can make it
-work with Emacs' ~xref~ facility to work everywhere without losing the
-bespoke buffer?]  The backlinks' buffer looks like this:
+the action of visiting the referenced file.  The backlinks' buffer looks
+like this:
 
 #+begin_example
 Backlinks to "On being honest" (20220614T130812)
