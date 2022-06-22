@@ -96,33 +96,30 @@ Optional GROUP is a regexp construct for
                       (when (denote--only-note-p f) f))
                     files)))
 
-;; TODO 2022-06-15: Maybe we can do the same in a more standard way?
-;; Perhaps with `xref-matches-in-files'?
-;;
-;; (xref-matches-in-files IDENTIFIER (denote--directory-files :absolute))
+(autoload 'xref--analyze "xref")
+
+(defun denote-retrieve--xrefs (identifier)
+  "Return xrefs of IDENTIFIER in variable `denote-directory'."
+  (xref--analyze
+   (xref-matches-in-files identifier (denote--directory-files :absolute))))
+
+(defun denote-retrieve--files-in-xrefs (xrefs)
+  "Return sorted file names sans directory from XREFS.
+Parse `denote-retrieve--xrefs'."
+  (sort
+   (mapcar (lambda (x)
+             (file-name-nondirectory (car x)))
+           xrefs)
+   #'string-lessp))
+
 (defun denote-retrieve--proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name))))
     (denote-retrieve--files-in-output
-     (sort
-      (process-lines
-       "find"
-       default-directory
-       "-maxdepth" "1"
-       "-type" "f"
-       "!" "-name" file
-       "-exec"
-       grep-program
-       "--color=never"
-       "-m"
-       "1"
-       "-e"
-       identifier
-       "{}"
-       ";"
-       "-print")
-      #'string-lessp))))
+     (delete file
+             (denote-retrieve--files-in-xrefs
+              (denote-retrieve--xrefs identifier))))))
 
 (provide 'denote-retrieve)
 ;;; denote-retrieve.el ends here
