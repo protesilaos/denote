@@ -1952,8 +1952,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Contributions to code or the manual :: Damien Cassou, Jack Baty,
   Kaushal Modi.
 
-+ Ideas and/or user feedback :: Damien Cassou, Frank Ehmsen, Jack Baty,
-  Kaushal Modi, Sven Seebeck, Ypot.
++ Ideas and/or user feedback :: Colin McLear, Damien Cassou, Frank
+  Ehmsen, Jack Baty, Kaushal Modi, Sven Seebeck, Ypot.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
