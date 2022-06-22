@@ -117,9 +117,8 @@ Parse `denote-retrieve--xrefs'."
   (let* ((default-directory (denote-directory))
          (file (file-name-nondirectory (buffer-file-name))))
     (denote-retrieve--files-in-output
-     (delete file
-             (denote-retrieve--files-in-xrefs
-              (denote-retrieve--xrefs identifier))))))
+     (delete file (denote-retrieve--files-in-xrefs
+                   (denote-retrieve--xrefs identifier))))))
 
 (provide 'denote-retrieve)
 ;;; denote-retrieve.el ends here
