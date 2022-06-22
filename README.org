@@ -1204,34 +1204,210 @@ described in its doc string."
 Denote is a tool with a narrow scope: create notes and link between
 them, based on the aforementioned file-naming scheme.  For other common
 operations the user is advised to rely on standard Emacs facilities or
-specialised third-party packages.
+specialised third-party packages.  This section covers the details.
 
-- To search through notes, use =M-x grep=, =M-x find-name-dired=, =M-x
-  consult-find=, =M-x consult-grep=, and so on (the latter two are
-  provided by the =consult= package).
+** Narrow the list of files in Dired
+:PROPERTIES:
+:CUSTOM_ID: h:ea173a01-69ef-4574-89a7-6e60ede02f13
+:END:
 
-- To quickly jump to the ~denote-directory~, visit it with =M-x
-  find-file= and then make a bookmark with =M-x bookmark-set=.  Access
-  bookmarks with =M-x bookmark-jump=, =M-x consult-buffer= (from
-  =consult=), and the like.
+Emacs' standard file manager (or directory editor) can read a regular
+expression to mark the matching files.  This is the command
+~dired-mark-files-regexp~, which is bound to =% m= by default.  For
+example, =% m _denote= will match all files that have the =denote=
+keyword ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
 
-- Control the versioning of notes by turning the ~denote-directory~ into
-  a Git project.  Consider the built-in project.el or the =projectile=
-  package, as well as the built-in VC framework and/or the =magit=
-  package.
+Once the files are matched, the user has to options: (i) narrow the list
+to the matching items or (ii) exclude the matching items from the list.
 
-- It is possible to narrow the list of notes in Dired using a regular
-  expression or literal string.  Do =M-x dired-mark-files-regexp RET
-  type-regexp-here RET t k=.  The =t= will toggle the match so that it
-  marks all files that do not match the regexp and =k= will remove them
-  from the buffer (restore them by reverting the buffer).
+For the former, we want to toggle the marks by typing =t= (calls the
+command ~dired-toggle-marks~ by default) and then hit the letter =k=
+(for ~dired-do-kill-lines~).  The remaining files are those that match
+the regexp that was provided earlier.
 
-- A narrowed list of files can also be produced through the minibuffer,
-  with the help of the =embark= package.  For example, =M-x find-file
-  RET path/to/denote-directory RET regexp embark-act embark-export=.
-  The final two commands, ~embark-act~ and ~embark-export~, are normally
-  bound to keys.  The whole sequence will thus look like =C-x C-f path
-  RET regexp C-. E=.
+For the latter approach of filtering out the matching items, simply
+involves the use of the =k= command (~dired-do-kill-lines~) to omit the
+marked files from the list.
+
+These sequences can be combined to incrementally narrow the list.  Note
+that ~dired-do-kill-lines~ does not delete files: it simply hides them
+from the current view.
+
+Revert to the original listing with =g= (~revert-buffer~).
+
+For a convenient wrapper, consider this example:
+
+#+begin_src emacs-lisp
+(defvar prot-dired--limit-hist '()
+  "Minibuffer history for `prot-dired-limit-regexp'.")
+
+;;;###autoload
+(defun prot-dired-limit-regexp (regexp omit)
+  "Limit Dired to keep files matching REGEXP.
+
+With optional OMIT argument as a prefix (\\[universal-argument]),
+exclude files matching REGEXP.
+
+Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
+  (interactive
+   (list
+    (read-regexp
+     (concat "Files "
+             (when current-prefix-arg
+               (propertize "NOT " 'face 'warning))
+             "matching PATTERN: ")
+     nil 'prot-dired--limit-hist)
+    current-prefix-arg))
+  (dired-mark-files-regexp regexp)
+  (unless omit (dired-toggle-marks))
+  (dired-do-kill-lines))
+#+end_src
+
+** Use Embark to collect minibuffer candidates
+:PROPERTIES:
+:CUSTOM_ID: h:edf9b651-86eb-4d5f-bade-3c9e270082f0
+:END:
+
+=embark= is a remarkable package that lets you perform relevant,
+context-dependent actions using a prefix key (simplifying in the
+interest of brevity).
+
+For our purposes, Embark can be used to produce a Dired listing directly
+from the minibuffer.  Suppose the current note has links to three other
+notes.  You might use the ~denote-link-find-file~ command to pick one
+via the minibuffer.  But why not turn those three links into their own
+Dired listing?  While in the minibuffer, invoke ~embark-act~ which you
+may have already bound to =C-.= and then follow it up with =E= (for the
+~embark-export~ command).
+
+This pattern can be repeated with any list of candidates, meaning that
+you can narrow the list by providing some input before eventually
+exporting the results with Embark.
+
+Overall, this is very powerful and you might prefer it over doing the
+same thing directly in Dired, since you also benefit from all the power
+of the minibuffer ([[#h:ea173a01-69ef-4574-89a7-6e60ede02f13][Narrow the list of files in Dired]]).
+
+** Search file contents
+:PROPERTIES:
+:CUSTOM_ID: h:76198fab-d6d2-4c67-9ccb-7a08cc883952
+:END:
+
+Emacs provides built-in commands which are wrappers of standard Unix
+tools: =M-x grep= lets the user input the flags of a ~grep~ call and
+pass a regular expression to the =-e= flag.
+
+The author of Denote uses this thin wrapper instead:
+
+#+begin_src emacs-lisp
+(defvar prot-search--grep-hist '()
+  "Input history of grep searches.")
+
+;;;###autoload
+(defun prot-search-grep (regexp &optional recursive)
+  "Run grep for REGEXP.
+
+Search in the current directory using `lgrep'.  With optional
+prefix argument (\\[universal-argument]) for RECURSIVE, run a
+search starting from the current directory with `rgrep'."
+  (interactive
+   (list
+    (read-from-minibuffer (concat (if current-prefix-arg
+                                      (propertize "Recursive" 'face 'warning)
+                                    "Local")
+                                  " grep for PATTERN: ")
+                          nil nil nil 'prot-search--grep-hist)
+    current-prefix-arg))
+  (unless grep-command
+    (grep-compute-defaults))
+  (if recursive
+      (rgrep regexp "*" default-directory)
+    (lgrep regexp "*" default-directory)))
+#+end_src
+
+Rather than maintain custom code, consider using the excellent =consult=
+package: it provides commands such as ~consult-grep~ and ~consult-find~
+which provide live results and are generally easier to use than the
+built-in commands.
+
+** Bookmark the directory with the notes
+:PROPERTIES:
+:CUSTOM_ID: h:1bba4c1e-6812-4749-948f-57df4fd49b36
+:END:
+
+Part of the reason Denote does not reinvent existing functionality is to
+encourage you to learn more about Emacs.  You do not need a bespoke
+"jump to my notes" directory because such commands do not scale well.
+Will you have a "jump to my downloads" then another for multimedia and
+so on?  No.
+
+Emacs has a built-in framework for recording persistent markers to
+locations.  Visit the ~denote-directory~ (or any dir/file for that
+matter) and invoke the ~bookmark-set~ command (bound to =C-x r m= by
+default).  It lets you create a bookmark.
+
+The list of bookmarks can be reviewed with the ~bookmark-bmenu-list~
+command (bound to =C-x r l= by default).  A minibuffer interface is
+available with ~bookmark-jump~ (=C-x r b=).
+
+If you use the =consult= package, its default ~consult-buffer~ command
+has the means to group together buffers, recent files, and bookmarks.
+Each of those types can be narrowed to with a prefix key.  The package
+=consult-dir= is an extension to =consult= which provides useful extras
+for working with directories, including bookmarks.
+
+** Use the consult-notes package
+:PROPERTIES:
+:CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
+:END:
+
+If you are already using =consult= (which is a brilliant package), you
+will probably like its =consult-notes= extension.  It uses the familiar
+mechanisms of Consult to filter searches via a prefix key.  For example:
+
+#+begin_src emacs-lisp
+(setq consult-notes-data-dirs
+      `(("Notes"  ?n ,denote-directory)
+        ("Books"  ?b "~/Documents/books")))
+#+end_src
+
+With the above, =M-x consult-notes= will list the files in those two
+directories.  If you type =n= and space, it narrows the list to just the
+notes, while =b= does the same for books.
+
+Note that =consult-notes= is in its early stages of development.  Expect
+improvements in the near future (written on 2022-06-22 16:48 +0300).
+
+** Treat your notes as a project
+:PROPERTIES:
+:CUSTOM_ID: h:fad3eb08-ddc7-43e4-ba28-210d89668037
+:END:
+
+Emacs a built-in library for treating a directory tree as a "project".
+This means that the contents of this tree are seen as part of the same
+set, so commands like ~project-switch-to-buffer~ (=C-x p b= by default)
+will only consider buffers in the current project (e.g. three notes that
+are currently being visited).
+
+Normally, a "project" is a directory tree whose root is under version
+control.  For our purposes, all you need is to navigate to the
+~denote-directory~ (for the shell or via Dired) and use the command-line
+to run this (requires the =git= executable):
+
+: git init
+
+From Dired, you can type =M-!= which invokes ~dired-smart-shell-command~
+and then run the git call there.
+
+The project can then be registered by invoking any project-related
+command inside of it, such as ~project-find-file~ (=C-x p f=).
+
+It is a good idea to keep your notes under version control, as that
+gives you a history of changes for each file.  We shall not delve into
+the technicalities here, though suffice to note that Emacs' built-in
+version control framework or the exceptionally well-crafted =magit=
+package will get the job done (VC can work with other backends besides
+Git).
 
 * Installation
 :PROPERTIES:
