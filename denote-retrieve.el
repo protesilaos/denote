@@ -39,7 +39,7 @@ The match that needs to be extracted is explicityly marked as
 group 1.")
 
 (defconst denote-retrieve--identifier-regexp
-  "^.?.?\\b\\(?:identifier\\|ID\\)\\s-*[:=]\\s-*[\"']?\\(?1:[0-9T]+\\)[\"']?"
+  "^.?.?\\b\\(?:identifier\\|[Ii][Dd]\\)\\s-*[:=]\\s-*[\"']?\\(?1:[0-9T]+\\)[\"']?"
   "Regular expression for identifier key and value.
 The match that needs to be extracted is explicityly marked as
 group 1.")

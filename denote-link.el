@@ -196,6 +196,9 @@ and/or the documentation string of `display-buffer'."
 (defconst denote-link--format-org "[[denote:%s][%s]]"
   "Format of Org link to note.")
 
+(defconst denote-link--format-org-with-id "[[id:%s][%s]]"
+  "Format of Org link to note for `denote-use-org-id'.")
+
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
 
@@ -203,7 +206,7 @@ and/or the documentation string of `display-buffer'."
   "Format of identifier-only link to note.")
 
 (defconst denote-link--regexp-org
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
+  (concat "\\[\\[" "\\(denote\\|[Ii][Dd]\\):"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
 
 (defconst denote-link--regexp-markdown
   (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
@@ -213,9 +216,12 @@ and/or the documentation string of `display-buffer'."
 
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
-  (pcase (file-name-extension file)
-    ("md" denote-link--format-markdown)
-    (_ denote-link--format-org))) ; Includes backup files.  Maybe we can remove them?
+  (let ((org-format (if denote-use-org-id
+                        denote-link--format-org-with-id
+                      denote-link--format-org)))
+    (pcase (file-name-extension file)
+      ("md" denote-link--format-markdown)
+      (_ org-format)))) ; Includes backup files.  Maybe we can remove them?
 
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
