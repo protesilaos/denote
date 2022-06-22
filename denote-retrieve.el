@@ -99,7 +99,8 @@ Optional GROUP is a regexp construct for
 (autoload 'xref--analyze "xref")
 
 (defun denote-retrieve--xrefs (identifier)
-  "Return xrefs of IDENTIFIER in variable `denote-directory'."
+  "Return xrefs of IDENTIFIER in variable `denote-directory'.
+The xrefs are returned as an alist."
   (xref--analyze
    (xref-matches-in-files identifier (denote--directory-files :absolute))))
 
