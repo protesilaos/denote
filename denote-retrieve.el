@@ -96,7 +96,7 @@ Optional GROUP is a regexp construct for
                       (when (denote--only-note-p f) f))
                     files)))
 
-(autoload 'xref--analyze "xref")
+(declare-function xref--analyze "xref" (xrefs))
 
 (defun denote-retrieve--xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
