@@ -296,9 +296,6 @@ format is always [[denote:IDENTIFIER]]."
 
 ;;;; Link buttons
 
-;; TODO 2022-06-19: Review link and backlins buttons.  Consolidate what
-;; is needed.
-
 ;; Evaluate: (info "(elisp) Button Properties")
 ;;
 ;; Button can provide a help-echo function as well, but I think we might
