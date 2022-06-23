@@ -485,36 +485,38 @@ derived automatically.
 
 This is how it looks for Org mode (~denote-file-type~ is nil):
 
-#+begin_example
-#+title:      This is a sample note
-#+date:       2022-06-10
-#+filetags:   denote  testing
-#+identifier: 20220610T202537
-#+end_example
+#+begin_src org
+:PROPERTIES:
+:ID: 20220610T202537
+:END:
+,#+title:      This is a sample note
+,#+date:       2022-06-10
+,#+filetags:   denote  testing
+#+end_src
 
 For Markdown with YAML, it looks like this (~denote-file-type~ has the
 =markdown-yaml= value):
 
-#+begin_example
+#+begin_src md
 ---
 title:      "This is a sample note"
 date:       2022-06-10
 tags:       denote  testing
 identifier: "20220610T202021"
 ---
-#+end_example
+#+end_src
 
 For Markdown with TOML, it looks like this (~denote-file-type~ has the
 =markdown-toml= value):
 
-#+begin_example
+#+begin_src md
 +++
 title      = "This is a sample note"
 date       = 2022-06-10
 tags       = ["denote", "testing"]
 identifier = "20220610T201510"
 +++
-#+end_example
+#+end_src
 
 And for plain text, we have the following (~denote-file-type~ has the
 =text= value):
@@ -567,10 +569,12 @@ what we have in =denote.el=:
 
 #+begin_src emacs-lisp
 (defvar denote-org-front-matter
-  "#+title:      %s
+  ":PROPERTIES:
+:ID:          %4$s
+:END:
+#+title:      %s
 #+date:       %s
 #+filetags:   %s
-#+identifier: %s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
@@ -579,43 +583,46 @@ how front matter is produced, consider using something like %2$s
 to control where Nth argument is placed.")
 #+end_src
 
-The default front matter is:
+Notice how we can pass a number to the =%s= specifier for the =:ID:=
+property.  This is what allows us to change the placement of the
+provided arguments.
 
-#+begin_example
-#+title:      This is a sample note
-#+date:       2022-06-10
-#+filetags:   denote  testing
-#+identifier: 20220610T202537
-#+end_example
+The default Org mode front matter is formatted as:
 
-We can add a =PROPERTIES= drawer to it, with something like this:
+#+begin_src org
+:PROPERTIES:
+:ID: 20220610T202537
+:END:
+,#+title:      This is a sample note
+,#+date:       2022-06-10
+,#+filetags:   denote  testing
+#+end_src
+
+If the user does not need =org-id= compatible ID property drawer, they
+can do this instead:
 
 #+begin_src emacs-lisp
 (setq denote-org-front-matter
-      ":PROPERTIES:
-:ID: %4$s
-:END:
-#+title:      %1$s
-#+date:       %2$s
-#+filetags:   %3$s
-#+identifier: %4$s
-\n")
+      "#+title:     %s
+,#+date:       %s
+,#+filetags:   %s
+,#+identifier: %s
+\n"
+      "Org front matter value for `format'.
+The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
+are an avdanced user who wants to edit this variable to affect
+how front matter is produced, consider using something like %2$s
+to control where Nth argument is placed.")
 #+end_src
 
 The output is now formatted thus:
 
-#+begin_example
-:PROPERTIES:
-:ID: 20220611T092444
-:END:
-#+title:      This is a sample note
-#+date:       2022-06-11
-#+filetags:   denote  testing
-#+identifier: 20220611T092444
-#+end_example
-
-Notice how we can pass a number to the =%s= specifier.  This is what
-allows us to change the placement of the provided arguments.
+#+begin_src org
+,#+title:      This is a sample note
+,#+date:       2022-06-10
+,#+filetags:   denote  testing
+,#+identifier: 20220610T202537
+#+end_src
 
 For another example, we will use the plain text variant, as it differs a
 bit from the above.  By default it is formatted this way:
