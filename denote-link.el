@@ -429,6 +429,8 @@ default, it will show up below the current window."
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
 
+;;;; Add links matching regexp
+
 (defvar denote-link--links-to-files nil
   "String of `denote-link-add-links-matching-keyword'.")
 
