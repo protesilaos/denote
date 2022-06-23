@@ -280,9 +280,6 @@ format is always [[denote:IDENTIFIER]]."
                    nil t
                    nil 'denote-link--find-file-history))
 
-;; TODO 2022-06-14: We should document the use of Embark for
-;; `denote-link-find-file'.  Users are gonna love it!
-
 ;; TODO 2022-06-14: Do we need to add any sort of extension to better
 ;; integrate with Embark?  For the minibuffer interaction it is not
 ;; necessary, but maybe it can be done to immediately recognise the
