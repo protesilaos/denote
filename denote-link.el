@@ -231,14 +231,17 @@ Other files types beside Org always use the `denote:' links."
 (defconst denote-link--regexp-plain
   (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]]"))
 
-(defun denote-link--file-type-format (file)
-  "Return link format based on FILE format."
-  (let ((org-format (if denote-link-use-org-id
-                        denote-link--format-org-with-id
-                      denote-link--format-org)))
-    (pcase (file-name-extension file)
-      ("md" denote-link--format-markdown)
-      (_ org-format)))) ; Includes backup files.  Maybe we can remove them?
+(defun denote-link--file-type-format (current-file target-file)
+  "Return link format based on CURRENT-FILE format.
+Account for TARGET-FILE format"
+  ;; Includes backup files.  Maybe we can remove them?
+  (pcase (file-name-extension current-file)
+    ("md" denote-link--format-markdown)
+    ("txt" denote-link--format-org)
+    (_ (if (and denote-link-use-org-id
+                (string= (file-name-extension target-file) "org"))
+           denote-link--format-org-with-id
+         denote-link--format-org))))
 
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
@@ -253,13 +256,16 @@ Other files types beside Org always use the `denote:' links."
                       (denote-retrieve--value-title file))))
     (format pattern file-id file-title)))
 
-(defun denote-link--extension-format-or-id (id-only)
+(defun denote-link--extension-format-or-id (id-only &optional target-file)
   "Determine format for link.
 If ID-ONLY is non-nil, use `denote-link--format-id-only', else
-delegate to `denote-link--file-type-format'."
+delegate to `denote-link--file-type-format'.
+
+Optional TARGET-FILE is passed to `denote-link--format-id-only'
+to determine if the id: link format will be used in Org."
   (if id-only
       denote-link--format-id-only
-    (denote-link--file-type-format (buffer-file-name))))
+    (denote-link--file-type-format (buffer-file-name) target-file)))
 
 ;;;###autoload
 (defun denote-link (target &optional id-only)
@@ -273,7 +279,7 @@ format is always [[denote:IDENTIFIER]]."
     (insert
      (denote-link--format-link
       target
-      (denote-link--extension-format-or-id id-only)))
+      (denote-link--extension-format-or-id id-only target)))
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
