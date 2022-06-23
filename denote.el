@@ -494,9 +494,9 @@ is specific to this variable: it expect a delimiter such as
   ":PROPERTIES:
 :ID:          %4$s
 :END:
-#+title:      %s
-#+date:       %s
-#+filetags:   %s
+#+title:      %1$s
+#+date:       %2$s
+#+filetags:   %3$s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
