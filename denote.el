@@ -211,25 +211,6 @@ is suspended: we use whatever the user wants."
           (string :tag "Custom format for `format-time-string'"))
   :group 'denote)
 
-(defcustom denote-use-org-id nil
-  "When non-nil use the ID property and link type in Org files.
-To use the ID property, a PROPERTIES drawer is added to the top
-of newly created notes.  Furthermore, newly created links will
-use the standard 'id:' hyperlink type instead of the custom
-'denote:' type.
-
-In practical terms, the ID ensures maximum compatibility with the
-Org ecosystem.
-
-When the value is nil, Denote uses a generic front matter for new
-notes and links rely on the custom 'denote:' type (which should
-behave the same as the standard 'file:' type).
-
-Other files types beside Org always use the 'denote:' links and
-keep their generic front matter."
-  :type 'boolean
-  :group 'denote)
-
 ;;;; Main variables
 
 (defconst denote--id-format "%Y%m%dT%H%M%S"
@@ -274,7 +255,7 @@ We consider those characters illigal for our purposes.")
          (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
     (unless (file-directory-p path)
       (make-directory path t))
-    (when (and denote-use-org-id (require 'org-id nil t))
+    (when (require 'org-id nil :noerror)
       (setq org-id-extra-files (directory-files path nil "\.org$")))
     (file-name-as-directory path)))
 
@@ -510,10 +491,12 @@ is specific to this variable: it expect a delimiter such as
   "Final delimiter for plain text front matter.")
 
 (defvar denote-org-front-matter
-  "#+title:      %s
+  ":PROPERTIES:
+:ID:          %4$s
+:END:
+#+title:      %s
 #+date:       %s
 #+filetags:   %s
-#+identifier: %s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
@@ -531,16 +514,6 @@ and do not use any empty line before it.
 These help ensure consistency and might prove useful if we need
 to operate on the front matter as a whole.")
 
-(defvar denote-org-with-id-front-matter
-  ":PROPERTIES:
-:ID:          %4$s
-:END:
-#+title:      %1$s
-#+date:       %2$s
-#+filetags:   %3$s
-\n"
-  "Like `denote-org-front-matter' but for `denote-use-org-id'.")
-
 (defun denote--file-meta-header (title date keywords id &optional filetype)
   "Front matter for new notes.
 
@@ -550,13 +523,12 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 Optional FILETYPE is one of the values of `denote-file-type',
 else that variable is used."
   (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-toml (denote--file-meta-keywords keywords 'toml))
-        (org-front (if denote-use-org-id denote-org-with-id-front-matter denote-org-front-matter)))
+        (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase (or filetype denote-file-type)
       ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
-      (_ (format org-front title date kw-space id)))))
+      (_ (format denote-org-front-matter title date kw-space id)))))
 
 (defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.

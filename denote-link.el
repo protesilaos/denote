@@ -190,6 +190,23 @@ and/or the documentation string of `display-buffer'."
                alist)
   :group 'denote-link)
 
+(defcustom denote-link-use-org-id nil
+  "When non-nil use the ID link type in Org files.
+
+Newly created links will use the standard `id:' hyperlink type
+instead of the custom `denote:' type.
+
+In practical terms, the ID ensures maximum compatibility with the
+Org ecosystem.
+
+When the value is nil, Denote links rely on the custom `denote:'
+type (which should behave the same as the standard `file:' type).
+
+Other files types beside Org always use the `denote:' links."
+  :type 'boolean
+  :group 'denote-link)
+;;;###autoload (put 'denote-link-use-org-id 'safe-local-variable 'booleanp)
+
 ;;;; Link to note
 
 ;; Arguments are: FILE-ID FILE-TITLE
@@ -197,7 +214,7 @@ and/or the documentation string of `display-buffer'."
   "Format of Org link to note.")
 
 (defconst denote-link--format-org-with-id "[[id:%s][%s]]"
-  "Format of Org link to note for `denote-use-org-id'.")
+  "Format of Org link to note for `denote-link-use-org-id'.")
 
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
@@ -216,7 +233,7 @@ and/or the documentation string of `display-buffer'."
 
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
-  (let ((org-format (if denote-use-org-id
+  (let ((org-format (if denote-link-use-org-id
                         denote-link--format-org-with-id
                       denote-link--format-org)))
     (pcase (file-name-extension file)
