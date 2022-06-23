@@ -314,13 +314,14 @@ format is always [[denote:IDENTIFIER]]."
   (when (or (thing-at-point-looking-at denote-link--regexp-plain)
             (thing-at-point-looking-at denote-link--regexp-markdown)
             (thing-at-point-looking-at denote-link--regexp-org)
-            ;; REVIEW 2022-06-19: This is crude.  It is meant to handles
-            ;; the case where a link is broken by `fill-paragraph' into
-            ;; two lines, in which case it buttonizes only the
-            ;; "denote:ID" part.  Example:
+            ;; Meant to handle the case where a link is broken by
+            ;; `fill-paragraph' into two lines, in which case it
+            ;; buttonizes only the "denote:ID" part.  Example:
             ;;
             ;; [[denote:20220619T175212][This is a
             ;; test]]
+            ;;
+            ;; Maybe there is a better way?
             (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
     (match-string-no-properties 0)))
 
