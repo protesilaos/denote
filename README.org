@@ -1454,7 +1454,7 @@ Everything is in place to set up the package.
 
 ;; If you want links to and from Org notes to use the standard 'id:'
 ;; link type instead of 'denote:'.
-(setq denote-link-use-org-id nil)
+(setq denote-link-use-org-id t)
 
 ;; By default, we fontify backlinks in their bespoke buffer.
 (setq denote-link-fontify-backlinks t)
