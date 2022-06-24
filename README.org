@@ -1619,11 +1619,11 @@ This is a non-exhaustive list and you are always welcome to either
 report or work on something else.
 
 - [X] Buttonize =denote:= links in Markdown and plain text, but not Org.
+- [X] Experiment with switch to =id:= link type instead of =denote:=.
 - [ ] Ensure integration between =denote:= links and Embark.
 - [ ] Add command that expands the identifier in links to a full name.
 - [ ] Add command that rewrites full names in links, if they are invalid.
 - [ ] Consider completion-at-point after =denote:= links.
-- [ ] Experiment with switch to =id:= link type instead of =denote:=.
 - [ ] Support mutually-exclusive sets of tags.
 
 These are just ideas.  We need to consider the pros and cons in each
