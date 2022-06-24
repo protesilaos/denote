@@ -129,61 +129,6 @@ recursive or otherwise, of increasingly dubious utility like:
 But we'll let you get back to work.  Don't Eschew or Neglect your
 Obligations, Tasks, and Engagements.
 
-** All the functions and user options in brief
-:PROPERTIES:
-:CUSTOM_ID: h:a4d783fb-ef36-4e90-b048-836906edf7df
-:END:
-
-The following are explained at length in this document.  Here we provide
-a reference card.
-
-| Functions                                |
-|------------------------------------------|
-| denote                                   |
-| denote-type                              |
-| denote-org-capture                       |
-| denote-date                              |
-| denote-create-note                       |
-| denote-create-note-using-type            |
-| denote-create-note-using-date            |
-| denote-dired-rename-file                 |
-| denote-dired-rewrite-front-matter        |
-| denote-link                              |
-| denote-link-buttonize-buffer             |
-| denote-link-find-file                    |
-| denote-link-backlinks                    |
-| denote-link-add-links                    |
-| denote-link-insert-link                  |
-| denote-link-show-backlinks-buffer        |
-| denote-link-insert-links-matching-regexp |
-| denote-dired-mode                        |
-| denote-dired-mode-in-directories         |
-
-| User options                                |
-|---------------------------------------------|
-| denote-directory                            |
-| denote-allow-multi-word-keywords            |
-| denote-file-type                            |
-| denote-known-keywords                       |
-| denote-infer-keywords                       |
-| denote-sort-keywords                        |
-| denote-org-capture-specifiers               |
-| denote-dired-rename-expert                  |
-| denote-dired-post-rename-functions          |
-| denote-front-matter-date-format             |
-| denote-link-fontify-backlinks               |
-| denote-link-backlinks-display-buffer-action |
-| denote-dired-directories                    |
-
-| Faces (used by denote-dired-mode) |
-|-----------------------------------|
-| denote-dired-field-date           |
-| denote-dired-field-delimiter      |
-| denote-dired-field-extension      |
-| denote-dired-field-keywords       |
-| denote-dired-field-time           |
-| denote-dired-field-title          |
-
 * The file-naming scheme
 :PROPERTIES:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
