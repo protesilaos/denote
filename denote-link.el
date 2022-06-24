@@ -35,11 +35,20 @@
 ;; it formats links like `[[denote:IDENTIFIER]]'.  The user might prefer
 ;; its simplicity.
 ;;
+;; When the user option `denote-link-use-org-id' is set to non-nil (default
+;; is nil), inserted links in Org notes that target other Org notes will
+;; use the standard `id:' type so the format is `[[id:IDENTIFIER][TITLE]]'
+;; (the title is omitted is `denote-link' is called with a prefix argument,
+;; as explained above).  When, however, an Org note links to a note in
+;; another file, the link with use our own `denote:' type as there is no
+;; standard for this case.
+;;
 ;; Inserted links are automatically buttonized and remain active for as
 ;; long as the buffer is available.  In Org this is handled automatically
-;; as Denote creates its own custom hyperlink: the `denote:' type which
-;; works exactly like the `file:'.  In Markdown and plain text, Denote
-;; handles the buttonization of those links.
+;; as Denote either uses the standard `id:' link type or creates its own
+;; custom hyperlink: the `denote:' type which works exactly like the
+;; `file:'.  In Markdown and plain text, Denote handles the buttonization
+;; of those links.
 ;;
 ;; To buttonize links in existing files while visiting them, the user must
 ;; add this snippet to their setup:
@@ -52,8 +61,8 @@
 ;; The `denote-link-find-file' is such a command.  It uses minibuffer
 ;; completion to visit a file that is linked to from the current note.
 ;; The candidates have the correct metadata, which is ideal for
-;; integration with other standards-compliant tools (see "Extending
-;; Denote" in the manual).  For instance, a package such as `marginalia'
+;; integration with other standards-compliant tools (see the manual's
+;; "Extending Denote").  For instance, a package such as `marginalia'
 ;; will display accurate annotations, while the `embark' package will be
 ;; able to work its magic such as in exporting the list into a filtered
 ;; Dired buffer (i.e. a familiar Dired listing with only the files of
@@ -62,10 +71,8 @@
 ;; The command `denote-link-backlinks' produces a bespoke buffer which
 ;; displays the file name of all notes linking to the current one.  Each
 ;; file name appears on its own line and is buttonized so that it performs
-;; the action of visiting the referenced file.  [Development note:
-;; currently this depends on the `find' executable.  Maybe we can make it
-;; work with Emacs' `xref' facility to work everywhere without losing the
-;; bespoke buffer?]  The backlinks' buffer looks like this:
+;; the action of visiting the referenced file.  The backlinks' buffer looks
+;; like this:
 ;;
 ;;     Backlinks to "On being honest" (20220614T130812)
 ;;     ------------------------------------------------
@@ -106,11 +113,14 @@
 ;; pointless).
 ;;
 ;; When called with a prefix argument (`C-u') `denote-link-add-links' will
-;; format all links as `[[denote:IDENTIFIER]]', hence a typographic list:
+;; format all links as `[[TYPE:IDENTIFIER]]', hence a typographic list:
 ;;
-;;     - [[denote:IDENTIFIER-1]]
-;;     - [[denote:IDENTIFIER-2]]
-;;     - [[denote:IDENTIFIER-3]]
+;;     - [[TYPE:IDENTIFIER-1]]
+;;     - [[TYPE:IDENTIFIER-2]]
+;;     - [[TYPE:IDENTIFIER-3]]
+;;
+;; The `TYPE' is either `denote:' or `id:', exactly as we explained above
+;; for the `denote-link' command.
 ;;
 ;; Same examples of a regular expression that can be used with this
 ;; command:
