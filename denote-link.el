@@ -191,16 +191,19 @@ and/or the documentation string of `display-buffer'."
   :group 'denote-link)
 
 (defcustom denote-link-use-org-id nil
-  "When non-nil use the ID link type in Org files.
+  "When non-nil use the ID link type in Org files if appropriate.
 
-Newly created links will use the standard `id:' hyperlink type
-instead of the custom `denote:' type.
+Newly created links from Org notes which target other Org notes
+will use the standard `id:' hyperlink type instead of the custom
+`denote:' type.  If the target's file type is not Org, our own
+`denote:' type is used.
 
-In practical terms, the ID ensures maximum compatibility with the
-Org ecosystem.
+In practical terms, the ID ensures maximum compatibility with
+other tools in the Org ecosystem.
 
 When the value is nil, Denote links rely on the custom `denote:'
-type (which should behave the same as the standard `file:' type).
+hyperlink type (which should behave the same as the standard
+`file:' type).
 
 Other files types beside Org always use the `denote:' links."
   :type 'boolean
