@@ -422,25 +422,29 @@ want to lift that restriction once everything works as intended.
 :END:
 
 Notes have their own "front matter".  This is a block of data at the top
-of the file, which is automatically generated at the creation of a new
-note. The front matter includes the title and keywords (aka "tags" or
-"filetags", depending on the file type) which the user specified at the
-relevant prompt, as well as the date and unique identifier which are
-derived automatically.
+of the file, with no empty lines between the entries, which is
+automatically generated at the creation of a new note. The front matter
+includes the title and keywords (aka "tags" or "filetags", depending on
+the file type) which the user specified at the relevant prompt, as well
+as the date and unique identifier which are derived automatically.
 
 This is how it looks for Org mode (~denote-file-type~ is nil):
 
 #+begin_src org
 :PROPERTIES:
-:ID: 20220610T202537
+:ID:           20220610T202537
 :END:
 ,#+title:      This is a sample note
 ,#+date:       2022-06-10
 ,#+filetags:   denote  testing
 #+end_src
 
-For Markdown with YAML, it looks like this (~denote-file-type~ has the
-=markdown-yaml= value):
+Org notes use a =PROPERTIES= drawer at the top of the file for maximum
+compatibility with the Org ecosystem, particularly for linking to notes
+and exporting them ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
+
+For Markdown with YAML, the front matter looks like this
+(~denote-file-type~ has the =markdown-yaml= value):
 
 #+begin_src md
 ---
@@ -633,11 +637,21 @@ When ~denote-link~ is called with a prefix argument (=C-u= by default)
 it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
 its simplicity.
 
+#+vindex: denote-link-use-org-id
+When the user option ~denote-link-use-org-id~ is set to non-nil (default
+is nil), inserted links in Org notes that target other Org notes will
+use the standard =id:= type so the format is =[[id:IDENTIFIER][TITLE]]=
+(the title is omitted is ~denote-link~ is called with a prefix argument,
+as explained above).  When, however, an Org note links to a note in
+another file, the link with use our own =denote:= type as there is no
+standard for this case.
+
 Inserted links are automatically buttonized and remain active for as
 long as the buffer is available.  In Org this is handled automatically
-as Denote creates its own custom hyperlink: the =denote:= type which
-works exactly like the =file:=.  In Markdown and plain text, Denote
-handles the buttonization of those links.
+as Denote either uses the standard =id:= link type or creates its own
+custom hyperlink: the =denote:= type which works exactly like the
+=file:=.  In Markdown and plain text, Denote handles the buttonization
+of those links.
 
 To buttonize links in existing files while visiting them, the user must
 add this snippet to their setup:
@@ -715,13 +729,16 @@ note is excluded from the matching entries (adding a link to itself is
 pointless).
 
 When called with a prefix argument (=C-u=) ~denote-link-add-links~ will
-format all links as =[[denote:IDENTIFIER]]=, hence a typographic list:
+format all links as =[[TYPE:IDENTIFIER]]=, hence a typographic list:
 
 #+begin_example
-- [[denote:IDENTIFIER-1]]
-- [[denote:IDENTIFIER-2]]
-- [[denote:IDENTIFIER-3]]
+- [[TYPE:IDENTIFIER-1]]
+- [[TYPE:IDENTIFIER-2]]
+- [[TYPE:IDENTIFIER-3]]
 #+end_example
+
+The =TYPE= is either =denote:= or =id:=, exactly as we explained above
+for the ~denote-link~ command.
 
 Same examples of a regular expression that can be used with this
 command:
