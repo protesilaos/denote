@@ -475,14 +475,19 @@ default, it will show up below the current window."
 (defvar denote-link-add-links-sort nil
   "Add REVERSE to `sort-lines' of `denote-link-add-links' when t.")
 
-(defun denote-link--prepare-links (files ext)
-  "Prepare links to FILES using format of EXT."
+(defun denote-link--prepare-links (files current-file id-only)
+  "Prepare links to FILES from CURRENT-FILE.
+When ID-ONLY is non-nil, use a generic link format.  See
+`denote-link--file-type-format'."
   (setq denote-link--links-to-files
         (with-temp-buffer
-          (mapc (lambda (f)
+          (mapc (lambda (file)
                   (insert
-                   (format denote-link--prepare-links-format
-                           (denote-link--format-link f ext))))
+                   (format
+                    denote-link--prepare-links-format
+                    (denote-link--format-link
+                     file
+                     (denote-link--file-type-format current-file file id-only)))))
                 files)
           (sort-lines denote-link-add-links-sort (point-min) (point-max))
           (buffer-string))))
@@ -504,10 +509,10 @@ inserts links with just the identifier."
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
   (let* ((default-directory (denote-directory))
-         (ext (denote-link--extension-format-or-id id-only)))
+         (current-file (buffer-file-name)))
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (let ((beg (point)))
-          (insert (denote-link--prepare-links files ext))
+          (insert (denote-link--prepare-links files current-file id-only))
           (unless (derived-mode-p 'org-mode)
             (denote-link-buttonize-buffer beg (point))))
       (user-error "No links matching `%s'" regexp))))
