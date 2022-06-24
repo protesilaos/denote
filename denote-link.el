@@ -222,6 +222,9 @@ Other files types beside Org always use the `denote:' links."
 (defconst denote-link--format-id-only "[[denote:%s]]"
   "Format of identifier-only link to note.")
 
+(defconst denote-link--format-id-only-with-org-id "[[id:%s]]"
+  "Format of identifier-only link to note with Org id link type.")
+
 (defconst denote-link--regexp-org
   (concat "\\[\\[" "\\(denote\\|[Ii][Dd]\\):"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
 
@@ -231,17 +234,28 @@ Other files types beside Org always use the `denote:' links."
 (defconst denote-link--regexp-plain
   (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]]"))
 
-(defun denote-link--file-type-format (current-file target-file)
+(defun denote-link--file-type-format (current-file target-file id-only)
   "Return link format based on CURRENT-FILE format.
-Account for TARGET-FILE format"
+Account for TARGET-FILE format when choosing the format.
+
+With non-nil ID-ONLY, use the generic link format without a
+title."
   ;; Includes backup files.  Maybe we can remove them?
-  (pcase (file-name-extension current-file)
-    ("md" denote-link--format-markdown)
-    ("txt" denote-link--format-org)
-    (_ (if (and denote-link-use-org-id
-                (string= (file-name-extension target-file) "org"))
-           denote-link--format-org-with-id
-         denote-link--format-org))))
+  (let* ((current-file-ext (file-name-extension current-file))
+         (target-file-ext (file-name-extension target-file))
+         (use-org-id (and denote-link-use-org-id (string= target-file-ext "org"))))
+    (cond
+     (id-only
+      (if use-org-id
+          denote-link--format-id-only-with-org-id
+        denote-link--format-id-only))
+     ((string= current-file-ext "md")
+      denote-link--format-markdown)
+     ((string= current-file-ext "txt")
+      denote-link--format-org)    ; Plain text uses [[denote:ID][TITLE]]
+     (t (if use-org-id
+            denote-link--format-org-with-id
+          denote-link--format-org)))))
 
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
@@ -256,17 +270,6 @@ Account for TARGET-FILE format"
                       (denote-retrieve--value-title file))))
     (format pattern file-id file-title)))
 
-(defun denote-link--extension-format-or-id (id-only &optional target-file)
-  "Determine format for link.
-If ID-ONLY is non-nil, use `denote-link--format-id-only', else
-delegate to `denote-link--file-type-format'.
-
-Optional TARGET-FILE is passed to `denote-link--format-id-only'
-to determine if the id: link format will be used in Org."
-  (if id-only
-      denote-link--format-id-only
-    (denote-link--file-type-format (buffer-file-name) target-file)))
-
 ;;;###autoload
 (defun denote-link (target &optional id-only)
   "Create link to TARGET note in variable `denote-directory'.
@@ -279,7 +282,7 @@ format is always [[denote:IDENTIFIER]]."
     (insert
      (denote-link--format-link
       target
-      (denote-link--extension-format-or-id id-only target)))
+      (denote-link--file-type-format (buffer-file-name) target id-only)))
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
