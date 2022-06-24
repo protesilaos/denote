@@ -1761,6 +1761,11 @@ core Org facilities.  Whatever the case, an alternative was in order.
 
 The existence of PACKAGE is never a good reason for me not to conduct my
 own experiments for recreational, educational, or practical purposes.
+When the question arises of "why not contribute to PACKAGE instead?" the
+answer is that without me experimenting in the first place, I would lack
+the skills for such a task.  Furthermore, contributing to another
+package does not guarantee I get what I want in terms of workflow.
+
 Whether you should use Denote or not is another matter altogether:
 choose whatever you want.
 
@@ -1774,7 +1779,9 @@ right tool for every job.  When I write notes, I want to focus on
 writing.  Nothing more.  I thus have no need for stuff like org-babel,
 scheduling to-do items, clocking time, and so on.  The more "mental
 dependencies" you add to your workflow, the heavier the burden you carry
-and the less focused you are on the task at hand.
+and the less focused you are on the task at hand: there is always that
+temptation to tweak the markup, tinker with some syntactic construct,
+obsess about what ought to be irrelevant to writing as such.
 
 In technical terms, I also am not fond of Org's code base (I understand
 why it is the way it is---just commenting on the fact).  Ever tried to
@@ -1782,10 +1789,10 @@ read it?  You will routinely find functions that are tens-to-hundreds of
 lines long and have all sorts of special casing.  As I am not a
 programmer and only learnt to write Elisp through trial and error, I
 have no confidence in my ability to make Org do what I want at that
-level.
+level, hence =denote= instead of =org-denote= or something.
 
 Perhaps the master programmer is one who can deal with complexity and
-keep adding to it.  I am of the opposite view as language---code
+keep adding to it.  I am of the opposite view, as language---code
 included---is at its communicative best when it is clear and accessible.
 
 Make no mistake: I use Org for the agenda and also to write technical
