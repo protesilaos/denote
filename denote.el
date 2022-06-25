@@ -631,10 +631,15 @@ used to construct the path's identifier."
 (defvar denote--title-history nil
   "Minibuffer history of `denote--title-prompt'.")
 
-(defun denote--title-prompt ()
-  "Read file title for `denote'."
-  (setq denote-last-title
-        (read-string "File title: " nil 'denote--title-history)))
+(defun denote--title-prompt (&optional default-title)
+  "Read file title for `denote'.
+
+Optional DEFAULT-TITLE is used as the default value."
+  (let ((format (if default-title
+                    (format " File title [%s]: " default-title)
+                  "File title: ")))
+    (setq denote-last-title
+          (read-string format nil 'denote--title-history default-title))))
 
 ;;;###autoload
 (defun denote (title keywords)
