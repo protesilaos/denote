@@ -432,7 +432,7 @@ This is how it looks for Org mode (~denote-file-type~ is nil):
 
 #+begin_src org
 :PROPERTIES:
-:ID:           20220610T202537
+:ID:          20220610T202537
 :END:
 ,#+title:      This is a sample note
 ,#+date:       2022-06-10
