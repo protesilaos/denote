@@ -32,23 +32,17 @@
 (require 'denote)
 (require 'xref)
 
-(defconst denote-retrieve--title-front-matter-regexp
-  "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b\\)[\"']?"
-  "Regular expression for title key and value.
-The match that needs to be extracted is explicityly marked as
-group 1.")
+(defconst denote-retrieve--title-front-matter-key-regexp
+  "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]"
+  "Regular expression for title key.")
 
-(defconst denote-retrieve--id-front-matter-regexp
-  "^.?.?\\b\\(?:identifier\\|[Ii][Dd]\\)\\s-*[:=]\\s-*[\"']?\\(?1:[0-9T]+\\)[\"']?"
-  "Regular expression for identifier key and value.
-The match that needs to be extracted is explicityly marked as
-group 1.")
+(defconst denote-retrieve--id-front-matter-key-regexp
+  "^.?.?\\b\\(?:identifier\\|[Ii][Dd]\\)\\s-*[:=]"
+  "Regular expression for identifier key.")
 
-(defconst denote-retrieve--date-front-matter-regexp
-  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b]?\\)[\"']?"
-  "Regular expression for date key and value.
-The match that needs to be extracted is explicityly marked as
-group 1.")
+(defconst denote-retrieve--date-front-matter-key-regexp
+  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]"
+  "Regular expression for date key.")
 
 (defun denote-retrieve--filename-identifier (file)
   "Extract identifier from FILE name."
@@ -58,35 +52,33 @@ group 1.")
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
-(defun denote-retrieve--search (regexp &optional group)
-  "Search for REGEXP in the current buffer.
-With optional GROUP match it, else match group 1."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (re-search-forward regexp nil t 1)
-      (unless (eq (point) (point-min))
-        (match-string-no-properties (or group 1))))))
-
-(defun denote-retrieve--value (file regexp &optional group)
-  "Return REGEXP value from FILE.
-FILE is a note in the variable `denote-directory'.
-
-Optional GROUP is a regexp construct for
-`denote-retrieve--search'."
+(defun denote-retrieve--search (file key-regexp &optional key)
+  "Return the value associated with the KEY-REGEXP key in the
+current buffer from FILE.
+If optional KEY is non-nil, return the key instead."
   (with-temp-buffer
     (insert-file-contents file)
-    (or (denote-retrieve--search regexp group)
-        nil)))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (when (re-search-forward key-regexp nil t 1)
+          (if key
+              (match-string-no-properties 0)
+            (let ((trims "[ \t\n\r\"']+"))
+              (string-trim
+               (buffer-substring-no-properties (point) (point-at-eol))
+               trims trims))))))))
 
-(defun denote-retrieve--value-title (file &optional group)
-  "Return title from FILE, optionally matching regexp GROUP."
-  (denote-retrieve--value file denote-retrieve--title-front-matter-regexp group))
+(defun denote-retrieve--value-title (file &optional key)
+  "Return title value from FILE.
+If optional KEY is non-nil, return the key instead."
+  (denote-retrieve--search file denote-retrieve--title-front-matter-key-regexp key))
 
-(defun denote-retrieve--value-date (file &optional group)
-  "Return date from FILE, optionally matching regexp GROUP."
-  (denote-retrieve--value file denote-retrieve--date-front-matter-regexp group))
+(defun denote-retrieve--value-date (file &optional key)
+  "Return date value from FILE.
+If optional KEY is non-nil, return the key instead."
+  (denote-retrieve--search file denote-retrieve--date-front-matter-key-regexp key))
 
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
