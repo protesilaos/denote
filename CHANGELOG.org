@@ -1,0 +1,120 @@
+#+title: Change log of Denote
+#+author: Protesilaos Stavrou
+#+email: info@protesilaos.com
+#+options: ':nil toc:nil num:nil author:nil email:nil
+
+This document contains the release notes for each tagged commit on the
+project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
+
+The newest release is at the top.  For further details, please consult
+the manual: <https://protesilaos.com/emacs/denote>.
+
+* Version 0.1.0 on 2022-06-27
+
+The present entry is intended for early adopters of Denote who may have
+not caught up with the latest developments.  Prospective users are
+advised to read the manual: <https://protesilaos.com/emacs/denote>.  For
+a video demonstration: <https://protesilaos.com/codelog/2022-06-18-denote-demo/>.
+
++ The =denote= package on GNU ELPA will be available a few hours after
+  this release.  GNU ELPA provides the latest stable release.  To use a
+  development snapshot, read:
+  <https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/>.
+
++ Remember that any significant contribution (above ~15 lines) requires
+  copyright assignment to the Free Software Foundation.  A form with
+  instructions is included in the manual's "Contributing" section:
+  <https://protesilaos.com/emacs/denote#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd>.
+
++ The front matter of notes in Org has changed to be compliant with the
+  standard =org-id= infrastructure.  A =PROPERTIES= drawer is added to
+  the top of the file, which includes an =ID= property with the value of
+  the Denote identifier.  Sample:
+
+  #+begin_src org
+  :PROPERTIES:
+  :ID:          20220610T202537
+  :END:
+  ,#+title:      Sample Org front matter
+  ,#+date:       2022-06-10
+  ,#+filetags:   denote  testing
+  #+end_src
+
++ The front matter of Markdown (YAML or TOML) and plain text files
+  remains constant.  For completeness, this is how they look:
+
+   #+begin_src md
+   ---
+   title:      "Sample with Markdown and YAML"
+   date:       2022-06-10
+   tags:       denote  testing
+   identifier: "20220610T202021"
+   ---
+   #+end_src
+
+  #+begin_src md
+  +++
+  title      = "Sample with Markdown and TOML"
+  date       = 2022-06-10
+  tags       = ["denote", "testing"]
+  identifier = "20220610T201510"
+  +++
+  #+end_src
+
+  #+begin_example
+  title:      Sample plain text
+  date:       2022-06-10
+  tags:       denote  testing
+  identifier: 20220610T202232
+  ---------------------------
+  #+end_example
+
++ The integration with =org-id= extends to how linking works.  By
+  default, Denote uses its own custom hyperlink type which starts with
+  the =denote:= prefix.  In Org, it works like the =file:= type.  When
+  the user option ~denote-link-use-org-id~ is non-nil, links from Org
+  notes to other Org notes will use the standard =id:= type instead.  As
+  this is an Org-specific feature, Denote takes care to use the
+  major-mode-agnostic =denote:= type when the link targets a non-Org
+  note.
+
++ In Org files the links created by Denote are buttonized automatically.
+  For Markdown and plain text, we use our own methods.  When a link is
+  inserted it is buttonized outright.  To buttonize links in existing
+  notes while visiting them in a buffer, add/evaluate this (it excludes
+  Org on its own):
+
+  #+begin_src emacs-lisp
+  (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+  #+end_src
+
++ The generation of the backlinks' buffer now uses the built-in =xref=
+  library instead of relying on a hardcoded call to the =find=
+  executable.  This means that the ~denote-link-backlinks~ command will,
+  in principle, work properly with all Emacs builds.
+
++ Users of Emacs 28 or higher can configure ~xref-search-program~ to
+  change from the default =grep= to =ripgrep=, =ugrep=, or a
+  user-defined alternative.
+
++ This is the first stable release of Denote.  It covers close to 400
+  commits starting from 2022-06-04.  Denote is the successor to a toy
+  package of mine, USLS, whose first public version was made available
+  in early November 2020: <https://gitlab.com/protesilaos/usls>.
+
++ Thanks to everyone involved in the development of Denote.  Code
+  contributions, bug reports, discussion of ideas, are all valuable.
+  From A-Z the names mentioned in the manual's "Acknowledgements"
+  section: Colin McLear, Damien Cassou, Frank Ehmsen, Jack Baty, Kaushal
+  Modi, Peter Povinec, Sven Seebeck, Ypot.
+
++ Sources of Denote:
+
+  + Package name (GNU ELPA): =denote=
+  + Official manual: <https://protesilaos.com/emacs/denote>
+  + Change log: <https://protesilaos.com/emacs/denote-changelog>
+  + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
+    - Mirrors:
+      + GitHub: <https://github.com/protesilaos/denote>
+      + GitLab: <https://gitlab.com/protesilaos/denote>
+  + Mailing list: <https://lists.sr.ht/~protesilaos/denote>

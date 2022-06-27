@@ -5,9 +5,9 @@
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
 
-#+macro: stable-version N/A
-#+macro: release-date N/A
-#+macro: development-version 0.1.0-dev
+#+macro: stable-version 0.1.0
+#+macro: release-date 2022-06-27
+#+macro: development-version 0.2.0-dev
 #+macro: file @@texinfo:@file{@@$1@@texinfo:}@@
 #+macro: space @@texinfo:@: @@
 #+macro: kbd @@texinfo:@kbd{@@$1@@texinfo:}@@
@@ -36,8 +36,9 @@ commit, is explicitly marked as such.
 
 Current development target is {{{development-version}}}.
 
-+ Package name (GNU ELPA): =denote= (once {{{development-version}}} is out)
++ Package name (GNU ELPA): =denote=
 + Official manual: <https://protesilaos.com/emacs/denote>
++ Change log: <https://protesilaos.com/emacs/denote-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
   - Mirrors:
     + GitHub: <https://github.com/protesilaos/denote>
@@ -45,8 +46,7 @@ Current development target is {{{development-version}}}.
 + Mailing list: <https://lists.sr.ht/~protesilaos/denote>
 
 If you are viewing the README.org version of this file, please note that
-the GNU ELPA machinery automatically generates an Info manual out of it
-(relevant once {{{development-version}}} is released).
+the GNU ELPA machinery automatically generates an Info manual out of it.
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
@@ -1049,6 +1049,7 @@ Sources for =tmr=:
 
 + Package name (GNU ELPA): =tmr=
 + Official manual: <https://protesilaos.com/emacs/tmr>
++ Change log: <https://protesilaos.com/emacs/denote-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
   - Mirrors:
     + GitHub: <https://github.com/protesilaos/tmr>
@@ -1377,7 +1378,7 @@ Git).
 :END:
 #+cindex: Installation instructions
 
-** COMMENT GNU ELPA package
+** GNU ELPA package
 :PROPERTIES:
 :CUSTOM_ID: h:42953f87-82bd-43ec-ab99-22b1e22955e7
 :END:
@@ -1529,9 +1530,9 @@ Everything is in place to set up the package.
 :CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
 :END:
 
-Denote is a GNU ELPA package (relevant once {{{development-version}}} is
-released).  As such, any significant change to the code requires
-copyright assignment to the Free Software Foundation (more below).
+Denote is a GNU ELPA package.  As such, any significant change to the
+code requires copyright assignment to the Free Software Foundation (more
+below).
 
 You do not need to be a programmer to contribute to this package.
 Sharing an idea or describing a workflow is equally helpful, as it
@@ -1542,8 +1543,9 @@ a section herein referencing all such articles.  Everyone gets
 acknowledged ([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]).  There is no such thing as an
 "insignificant contribution"---they all matter.
 
-+ Package name (GNU ELPA): =denote= (once {{{development-version}}} is out)
++ Package name (GNU ELPA): =denote=
 + Official manual: <https://protesilaos.com/emacs/denote>
++ Change log: <https://protesilaos.com/emacs/denote-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
   - Mirrors:
     + GitHub: <https://github.com/protesilaos/denote>
