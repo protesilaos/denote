@@ -1,4 +1,4 @@
-;;; denote-org-capture.el --- Integration between denote and org-capture -*- lexical-binding: t -*-
+;;; denote-org-capture.el --- Integration between Denote and org-capture -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Free Software Foundation, Inc.
 
@@ -58,7 +58,7 @@
 (require 'denote)
 
 (defgroup denote-org-capture ()
-  "Integration between denote and Org Capture."
+  "Integration between Denote and Org Capture."
   :group 'denote)
 
 (defcustom denote-org-capture-specifiers "%l\n%i\n%?"

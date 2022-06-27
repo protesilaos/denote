@@ -95,7 +95,7 @@
 ;;; Code:
 
 (defgroup denote ()
-  "Simple notes with a strict file-naming scheme."
+  "Simple notes with an efficient file-naming scheme."
   :group 'files)
 
 ;;;; User options
