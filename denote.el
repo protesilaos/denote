@@ -310,6 +310,13 @@ FILE is relative to the variable `denote-directory'."
        (string-match-p (concat "\\b" denote--id-regexp) file)
        (not (string-match-p "[#~]\\'" file))))
 
+(defun denote--file-name-relative-to-denote-directory (file)
+  "Return file name of FILE relative to the variable `denote-directory'.
+FILE must be an absolute path."
+  (if (and (file-name-absolute-p file)
+           (string-prefix-p (denote-directory) file))
+    (substring-no-properties file (length (denote-directory)))))
+
 (defun denote--current-file-is-note-p ()
   "Return non-nil if current file likely is a Denote note."
   (and (or (string-match-p denote--id-regexp (buffer-file-name))
@@ -322,11 +329,18 @@ FILE is relative to the variable `denote-directory'."
   "List note files, assuming flat directory.
 If optional ABSOLUTE, show full paths, else only show base file
 names that are relative to the variable `denote-directory'."
-  (let ((default-directory (denote-directory)))
-    (seq-remove
-     (lambda (f)
-       (not (denote--only-note-p f)))
-     (directory-files default-directory absolute directory-files-no-dot-files-regexp t))))
+  (let* ((default-directory (denote-directory))
+         (files (mapcar
+                 (lambda (s) (expand-file-name s))
+                 (seq-remove
+                  (lambda (f)
+                    (not (denote--only-note-p f)))
+                  (directory-files-recursively default-directory directory-files-no-dot-files-regexp t)))))
+    (if absolute
+        files
+      (mapcar
+       (lambda (s) (denote--file-name-relative-to-denote-directory s))
+       files))))
 
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
   "Return list of files matching REGEXP.

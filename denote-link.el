@@ -312,9 +312,13 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--expand-identifiers (regexp)
   "Expend identifiers matching REGEXP into file paths."
-  (delq nil (mapcar (lambda (i)
-                      (file-name-completion i (denote-directory)))
-                    (denote-link--collect-identifiers regexp))))
+  (let ((files (denote--directory-files))
+        (found-files))
+    (dolist (file files)
+      (dolist (i (denote-link--collect-identifiers regexp))
+        (if (string-prefix-p i (file-name-nondirectory file))
+            (push file found-files))))
+    found-files))
 
 (defvar denote-link--find-file-history nil
   "History for `denote-link-find-file'.")
@@ -442,16 +446,16 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
-              (insert (file-name-nondirectory f))
+              (insert f)
               (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
               (newline))
             files)
-      (goto-char (point-min))
+      (goto-char (point-min)))
       ;; NOTE 2022-06-15: Technically this is not Dired.  Maybe we
       ;; should abstract the fontification into a general purpose
       ;; minor-mode.
-      (when denote-link-fontify-backlinks
-        (denote-dired-mode 1)))
+      ;(when denote-link-fontify-backlinks
+        ;(denote-dired-mode 1)))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload
