@@ -90,7 +90,8 @@ Optional GROUP is a regexp construct for
 
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
-  (read-file-name "Select note: " (denote-directory) nil nil nil #'denote--only-note-p))
+  (read-file-name "Select note: " (denote-directory) nil nil nil
+                  #'(lambda (f) (or (denote--only-note-p f) (file-directory-p f)))))
 
 (defun denote-retrieve--files-in-output (files)
   "Return list of FILES from `find' output."
@@ -109,14 +110,14 @@ The xrefs are returned as an alist."
 Parse `denote-retrieve--xrefs'."
   (sort
    (mapcar (lambda (x)
-             (file-name-nondirectory (car x)))
+             (denote--file-name-relative-to-denote-directory (car x)))
            xrefs)
    #'string-lessp))
 
 (defun denote-retrieve--proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (let* ((default-directory (denote-directory))
-         (file (file-name-nondirectory (buffer-file-name))))
+         (file (denote--file-name-relative-to-denote-directory (buffer-file-name))))
     (denote-retrieve--files-in-output
      (delete file (denote-retrieve--files-in-xrefs
                    (denote-retrieve--xrefs identifier))))))
