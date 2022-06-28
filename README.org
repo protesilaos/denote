@@ -515,15 +515,25 @@ what we have in =denote.el=:
   ":PROPERTIES:
 :ID:          %4$s
 :END:
-#+title:      %s
-#+date:       %s
-#+filetags:   %s
+#+title:      %1$s
+#+date:       %2$s
+#+filetags:   %3$s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
 are an avdanced user who wants to edit this variable to affect
 how front matter is produced, consider using something like %2$s
-to control where Nth argument is placed.")
+to control where Nth argument is placed.
+
+Make sure to
+
+1. Not use empty lines inside the front matter block.
+
+2. Insert at least one empty line after the front matter block
+and do not use any empty line before it.
+
+These help ensure consistency and might prove useful if we need
+to operate on the front matter as a whole.")
 #+end_src
 
 Notice how we can pass a number to the =%s= specifier for the =:ID:=
@@ -534,7 +544,7 @@ The default Org mode front matter is formatted as:
 
 #+begin_src org
 :PROPERTIES:
-:ID: 20220610T202537
+:ID:          20220610T202537
 :END:
 ,#+title:      This is a sample note
 ,#+date:       2022-06-10
