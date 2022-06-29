@@ -227,6 +227,10 @@ is suspended: we use whatever the user wants."
   (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
   "Regular expression to match the entire file name'.")
 
+(defconst denote--file-only-note-regexp
+  (concat denote--file-regexp "\\.\\(org\\|md\\|txt\\)")
+  "Regular expression to match the entire file name of a note file.")
+
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
   "Regular expression of punctionation that should be removed.
 We consider those characters illigal for our purposes.")
@@ -307,7 +311,7 @@ trailing hyphen."
 FILE is relative to the variable `denote-directory'."
   (and (not (file-directory-p file))
        (file-regular-p file)
-       (string-match-p (concat "\\b" denote--id-regexp) file)
+       (string-match-p denote--file-only-note-regexp file)
        (not (string-match-p "[#~]\\'" file))))
 
 (defun denote--file-name-relative-to-denote-directory (file)
