@@ -594,7 +594,7 @@ backend."
          (path (file-name-nondirectory (car path-id)))
          (p (file-name-sans-extension path))
          (id (cdr path-id))
-	     (desc (or description (concat "denote:" id))))
+         (desc (or description (concat "denote:" id))))
     (cond
      ((eq format 'html) (format "<a target=\"_blank\" href=\"%s.html\">%s</a>" p desc))
      ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
