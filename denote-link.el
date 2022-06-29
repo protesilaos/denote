@@ -316,8 +316,8 @@ format is always [[denote:IDENTIFIER]]."
         (found-files))
     (dolist (file files)
       (dolist (i (denote-link--collect-identifiers regexp))
-        (if (string-prefix-p i (file-name-nondirectory file))
-            (push file found-files))))
+        (when (string-prefix-p i (file-name-nondirectory file))
+          (push file found-files))))
     found-files))
 
 (defvar denote-link--find-file-history nil
