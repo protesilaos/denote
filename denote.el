@@ -326,7 +326,7 @@ FILE must be an absolute path."
 ;;;; Keywords
 
 (defun denote--directory-files (&optional absolute)
-  "List note files, assuming flat directory.
+  "List note files.
 If optional ABSOLUTE, show full paths, else only show base file
 names that are relative to the variable `denote-directory'."
   (let* ((default-directory (denote-directory))
