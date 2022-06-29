@@ -450,12 +450,12 @@ Use optional TITLE for a prettier heading."
               (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
               (newline))
             files)
-      (goto-char (point-min)))
+      (goto-char (point-min))
       ;; NOTE 2022-06-15: Technically this is not Dired.  Maybe we
       ;; should abstract the fontification into a general purpose
       ;; minor-mode.
-      ;(when denote-link-fontify-backlinks
-        ;(denote-dired-mode 1)))
+      (when denote-link-fontify-backlinks
+        (denote-dired-mode 1)))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload

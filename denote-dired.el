@@ -398,7 +398,7 @@ appropriate."
   :group 'denote-dired)
 
 (defconst denote-dired-font-lock-keywords
-  `((,denote--file-regexp
+  `((,(concat "\\(?:.*/\\)?" denote--file-regexp)
      (1 'denote-dired-field-date)
      (2 'denote-dired-field-time)
      (3 'denote-dired-field-delimiter)
