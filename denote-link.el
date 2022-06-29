@@ -553,11 +553,12 @@ inserts links with just the identifier."
 With optional PATH-ID return a cons cell consisting of the path
 and the identifier."
   (let* ((search (and (string-match "::\\(.*\\)\\'" link)
-		              (match-string 1 link)))
-	     (id (if (and (stringp search) (not (string-empty-p search)))
+                      (match-string 1 link)))
+         (id (if (and (stringp search) (not (string-empty-p search)))
                  (substring link 0 (match-beginning 0))
                link))
-         (path (expand-file-name (file-name-completion id (denote-directory)))))
+         (path (cl-find-if (lambda (f) (string-prefix-p id (file-name-nondirectory f)))
+                           (denote--directory-files :absolute))))
     (cond
      (path-id
       (cons (format "%s" path) (format "%s" id)))
