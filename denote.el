@@ -329,17 +329,21 @@ FILE must be an absolute path."
 
 ;;;; Keywords
 
+(defun denote--directory-files-recursively (directory)
+  "Return expanded files in DIRECTORY recursively."
+  (mapcar
+   (lambda (s) (expand-file-name s))
+   (seq-remove
+    (lambda (f)
+      (not (denote--only-note-p f)))
+    (directory-files-recursively directory directory-files-no-dot-files-regexp t))))
+
 (defun denote--directory-files (&optional absolute)
   "List note files.
 If optional ABSOLUTE, show full paths, else only show base file
 names that are relative to the variable `denote-directory'."
   (let* ((default-directory (denote-directory))
-         (files (mapcar
-                 (lambda (s) (expand-file-name s))
-                 (seq-remove
-                  (lambda (f)
-                    (not (denote--only-note-p f)))
-                  (directory-files-recursively default-directory directory-files-no-dot-files-regexp t)))))
+         (files (denote--directory-files-recursively default-directory)))
     (if absolute
         files
       (mapcar
