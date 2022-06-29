@@ -352,6 +352,12 @@ names that are relative to the variable `denote-directory'."
        (lambda (s) (denote--file-name-relative-to-denote-directory s))
        files))))
 
+(defun denote--get-note-path-by-id(id)
+  "Given an ID, return the absolute path of the corresponding note
+in `denote-directory'."
+  (cl-find-if (lambda (f) (string-prefix-p id (file-name-nondirectory f)))
+              (denote--directory-files :absolute)))
+
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
   "Return list of files matching REGEXP.
 With optional NO-CHECK-CURRENT do not test if the current file is
