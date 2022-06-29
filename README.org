@@ -129,8 +129,14 @@ Obligations, Tasks, and Engagements.
 :END:
 
 #+vindex: denote-directory
-Notes are stored as a flat list in the ~denote-directory~ (i.e. no
-subdirectories).  The default path is =~/Documents/notes=.
+Notes are stored the ~denote-directory~.  The default path is
+=~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
+meaning that it has no subdirectories, or it can be a directory tree.
+At any rate, Denote takes care to only consider "notes" as valid
+candidates in the relevant operations and will omit other files or
+directories.
+
+[ Subdirectory support is part of {{{development-version}}} ]
 
 Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
