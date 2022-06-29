@@ -327,7 +327,7 @@ FILE must be an absolute path."
   "Return non-nil if current file likely is a Denote note."
   (and (or (string-match-p denote--id-regexp (buffer-file-name))
            (string-match-p denote--id-regexp (buffer-name)))
-       (string= (expand-file-name default-directory) (denote-directory))))
+       (string-prefix-p (denote-directory) (expand-file-name default-directory))))
 
 ;;;; Keywords
 
