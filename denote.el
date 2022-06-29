@@ -317,9 +317,11 @@ FILE is relative to the variable `denote-directory'."
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return file name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
-  (if (and (file-name-absolute-p file)
-           (string-prefix-p (denote-directory) file))
-    (substring-no-properties file (length (denote-directory)))))
+  (if-let* ((dir (denote-directory))
+            ((file-name-absolute-p file))
+            ((string-prefix-p dir file)))
+      (substring-no-properties file (length dir))
+    file))
 
 (defun denote--current-file-is-note-p ()
   "Return non-nil if current file likely is a Denote note."
