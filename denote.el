@@ -327,7 +327,7 @@ FILE must be an absolute path."
   "Return non-nil if current file likely is a Denote note."
   (and (or (string-match-p denote--id-regexp (buffer-file-name))
            (string-match-p denote--id-regexp (buffer-name)))
-       (string= (expand-file-name default-directory) (denote-directory))))
+       (string-prefix-p (denote-directory) (expand-file-name default-directory))))
 
 ;;;; Keywords
 
@@ -351,6 +351,12 @@ names that are relative to the variable `denote-directory'."
       (mapcar
        (lambda (s) (denote--file-name-relative-to-denote-directory s))
        files))))
+
+(defun denote--get-note-path-by-id(id)
+  "Given an ID, return the absolute path of the corresponding note
+in `denote-directory'."
+  (cl-find-if (lambda (f) (string-prefix-p id (file-name-nondirectory f)))
+              (denote--directory-files :absolute)))
 
 (defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
   "Return list of files matching REGEXP.

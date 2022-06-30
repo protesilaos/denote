@@ -386,11 +386,12 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
-  (let ((id (denote-link--id-from-string
-             (buffer-substring-no-properties
-              (button-start button)
-              (button-end button)))))
-    (funcall denote-link-buton-action (file-name-completion id (denote-directory)))))
+  (let* ((id (denote-link--id-from-string
+              (buffer-substring-no-properties
+               (button-start button)
+               (button-end button))))
+         (file (denote--get-note-path-by-id id)))
+    (funcall denote-link-buton-action file)))
 
 ;;;###autoload
 (defun denote-link-buttonize-buffer (&optional beg end)
@@ -557,8 +558,7 @@ and the identifier."
          (id (if (and (stringp search) (not (string-empty-p search)))
                  (substring link 0 (match-beginning 0))
                link))
-         (path (cl-find-if (lambda (f) (string-prefix-p id (file-name-nondirectory f)))
-                           (denote--directory-files :absolute))))
+         (path (denote--get-note-path-by-id id)))
     (cond
      (path-id
       (cons (format "%s" path) (format "%s" id)))
