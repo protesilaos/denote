@@ -354,60 +354,19 @@ appropriate."
 
 ;;;; Extra fontification
 
-(defface denote-dired-field-date
-  '((((class color) (min-colors 88) (background light))
-     :foreground "#00538b")
-    (((class color) (min-colors 88) (background dark))
-     :foreground "#00d3d0")
-    (t :inherit font-lock-variable-name-face))
-  "Face for file name date in `dired-mode' buffers."
-  :group 'denote-dired)
-
-(defface denote-dired-field-time
-  '((t :inherit denote-dired-field-date))
-  "Face for file name time in `dired-mode' buffers."
-  :group 'denote-dired)
-
-(defface denote-dired-field-title
-  '((t ))
-  "Face for file name title in `dired-mode' buffers."
-  :group 'denote-dired)
-
-(defface denote-dired-field-extension
-  '((t :inherit shadow))
-  "Face for file extension type in `dired-mode' buffers."
-  :group 'denote-dired)
-
-(defface denote-dired-field-keywords
-  '((default :inherit bold)
-    (((class color) (min-colors 88) (background light))
-     :foreground "#8f0075")
-    (((class color) (min-colors 88) (background dark))
-     :foreground "#f78fe7")
-    (t :inherit font-lock-builtin-face))
-  "Face for file name keywords in `dired-mode' buffers."
-  :group 'denote-dired)
-
-(defface denote-dired-field-delimiter
-  '((((class color) (min-colors 88) (background light))
-     :foreground "gray70")
-    (((class color) (min-colors 88) (background dark))
-     :foreground "gray30")
-    (t :inherit shadow))
-  "Face for file name delimiters in `dired-mode' buffers."
-  :group 'denote-dired)
+(require 'denote-faces)
 
 (defconst denote-dired-font-lock-keywords
-  `((,(concat "\\(?:.*/\\)?" denote--file-regexp)
-     (1 'denote-dired-field-date)
-     (2 'denote-dired-field-time)
-     (3 'denote-dired-field-delimiter)
-     (4 'denote-dired-field-title)
-     (5 'denote-dired-field-delimiter)
-     (6 'denote-dired-field-keywords)
-     (7 'denote-dired-field-extension))
+  `((,denote--file-regexp
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter)
+     (4 'denote-faces-title)
+     (5 'denote-faces-delimiter)
+     (6 'denote-faces-keywords)
+     (7 'denote-faces-extension))
     ("_"
-     (0 'denote-dired-field-delimiter t)))
+     (0 'denote-faces-delimiter t)))
   "Keywords for fontification.")
 
 ;;;###autoload
