@@ -424,14 +424,14 @@ positions, limit the process to the region in-between."
   "Action for BUTTON to `find-file'."
   (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
 
-(declare-function denote-dired-mode "denote-dired")
-
 (defun denote-link--display-buffer (buf)
   "Run `display-buffer' on BUF.
 Expand `denote-link-backlinks-display-buffer-action'."
   (display-buffer
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
+
+(require 'denote-faces)
 
 (defun denote-link--prepare-backlinks (id files &optional title)
   "Create backlinks' buffer for ID including FILES.
@@ -452,11 +452,8 @@ Use optional TITLE for a prettier heading."
               (newline))
             files)
       (goto-char (point-min))
-      ;; NOTE 2022-06-15: Technically this is not Dired.  Maybe we
-      ;; should abstract the fontification into a general purpose
-      ;; minor-mode.
       (when denote-link-fontify-backlinks
-        (denote-dired-mode 1)))
+        (font-lock-add-keywords nil denote-faces-file-name-with-subdir-keywords t)))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload

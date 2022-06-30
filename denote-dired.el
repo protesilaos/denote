@@ -356,27 +356,14 @@ appropriate."
 
 (require 'denote-faces)
 
-(defconst denote-dired-font-lock-keywords
-  `((,denote--file-regexp
-     (1 'denote-faces-date)
-     (2 'denote-faces-time)
-     (3 'denote-faces-delimiter)
-     (4 'denote-faces-title)
-     (5 'denote-faces-delimiter)
-     (6 'denote-faces-keywords)
-     (7 'denote-faces-extension))
-    ("_"
-     (0 'denote-faces-delimiter t)))
-  "Keywords for fontification.")
-
 ;;;###autoload
 (define-minor-mode denote-dired-mode
   "Fontify all Denote-style file names in Dired."
   :global nil
   :group 'denote-dired
   (if denote-dired-mode
-      (font-lock-add-keywords nil denote-dired-font-lock-keywords t)
-    (font-lock-remove-keywords nil denote-dired-font-lock-keywords))
+      (font-lock-add-keywords nil denote-faces-file-name-keywords t)
+    (font-lock-remove-keywords nil denote-faces-file-name-keywords))
   (font-lock-flush (point-min) (point-max)))
 
 (defun denote-dired--modes-dirs-as-dirs ()

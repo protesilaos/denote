@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'denote)
+
 (defgroup denote-faces ()
   "Faces for Denote."
   :group 'denote)
@@ -87,6 +89,25 @@ and seconds."
     (t :inherit shadow))
   "Face for file name delimiters in Dired buffers."
   :group 'denote-faces)
+
+(defconst denote-faces-file-name-keywords
+  `((,denote--file-regexp
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter)
+     (4 'denote-faces-title)
+     (5 'denote-faces-delimiter)
+     (6 'denote-faces-keywords)
+     (7 'denote-faces-extension))
+    ("_"
+     (0 'denote-faces-delimiter t)))
+  "Keywords for fontification of file names.")
+
+(defconst denote-faces-file-name-with-subdir-keywords
+  (append denote-faces-file-name-keywords
+          '(("\\(^.*/\\)?"
+             (0 'denote-faces-subdirectory))))
+  "Keywords for fontification of file names with a directory.")
 
 (provide 'denote-faces)
 ;;; denote-faces.el ends here
