@@ -426,10 +426,10 @@ This is how it looks for Org mode (~denote-file-type~ is nil):
 
 #+begin_src org
 :PROPERTIES:
-:ID:          20220610T202537
+:ID:          20220630T160934
 :END:
 ,#+title:      This is a sample note
-,#+date:       2022-06-10
+,#+date:       [2022-06-30 Thu 16:09]
 ,#+filetags:   denote  testing
 #+end_src
 
@@ -443,9 +443,9 @@ For Markdown with YAML, the front matter looks like this
 #+begin_src md
 ---
 title:      "This is a sample note"
-date:       2022-06-10
+date:       2022-06-30T16:09:58+03:00
 tags:       denote  testing
-identifier: "20220610T202021"
+identifier: "20220630T160958"
 ---
 #+end_src
 
@@ -455,9 +455,9 @@ For Markdown with TOML, it looks like this (~denote-file-type~ has the
 #+begin_src md
 +++
 title      = "This is a sample note"
-date       = 2022-06-10
+date       = 2022-06-30T16:10:13+03:00
 tags       = ["denote", "testing"]
-identifier = "20220610T201510"
+identifier = "20220630T161013"
 +++
 #+end_src
 
@@ -466,31 +466,31 @@ And for plain text, we have the following (~denote-file-type~ has the
 
 #+begin_example
 title:      This is a sample note
-date:       2022-06-10
+date:       2022-06-30
 tags:       denote  testing
-identifier: 20220610T202232
+identifier: 20220630T161028
 ---------------------------
 #+end_example
 
-#+vindex: denote-front-matter-date-format
+#+vindex: denote-date-format
 The format of the date in the front matter is controlled by the user
-option ~denote-front-matter-date-format~:
+option ~denote-date-format~.  When nil, Denote uses a file-type-specific
+format:
 
-- When the value is nil (the default), the date uses a plain
-  =YEAR-MONTH-DAY= notation, like =2022-06-08= (the ISO 8601 standard).
+- For Org, an inactive timestamp is used, such as
+  =[2022-06-30 Wed 06:19]=.
 
-- When the value is the =org-timestamp= symbol, the date is recorded as
-  an inactive Org timestamp, such as =[2022-06-08 Wed 06:19]=.
+- For Markdowmn, the RFC3339 standard is applied:
+  =2022-06-30T15:48:00+03:00=.
 
-- An arbitrary string value is interpreted as the argument for the
-  function ~format-time-string~.  This gives the user maximum control
-  over how time is represented in the front matter.
+- For plain text, the format is that of ISO 8601: =2022-06-30=.
 
-When ~denote-file-type~ specifies one of the Markdown flavors, we ignore
-this user option in order to enforce the RFC3339 specification (Markdown
-is typically employed in static site generators as source code for Web
-pages).  However, when ~denote-front-matter-date-format~ has a string
-value, this rule is suspended: we use whatever the user wants.
+If the value is a string, ignore the above and use it instead.  The
+string must include format specifiers for the date.  These are described
+in the doc string of ~format-time-string~..
+
+[ DEV NOTE: ~denote-date-format~ supersedes the now obsolete
+  ~denote-front-matter-date-format~ as part of {{{development-version}}} ]
 
 ** Tweaking the front matter
 :PROPERTIES:
@@ -1450,7 +1450,7 @@ Everything is in place to set up the package.
 ;; preference is for single-word keywords for a more rigid workflow.
 (setq denote-allow-multi-word-keywords t)
 
-(setq denote-front-matter-date-format nil) ; change this to `org-timestamp' or custom string
+(setq denote-date-format nil) ; read doc string
 
 ;; You will not need to `require' all those individually once the
 ;; package is available.
@@ -1936,7 +1936,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kaushal Modi.
 
 + Ideas and/or user feedback :: Colin McLear, Damien Cassou, Frank
-  Ehmsen, Jack Baty, Kaushal Modi, Sven Seebeck, Ypot.
+  Ehmsen, Jack Baty, Kaushal Modi, Peter Prevos, Sven Seebeck, Ypot.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

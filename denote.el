@@ -186,30 +186,28 @@ Any other non-nil value is the same as the default."
           (const :tag "Plain text" text))
   :group 'denote)
 
-(defcustom denote-front-matter-date-format nil
+(defcustom denote-date-format nil
   "Date format in the front matter (file header) of new notes.
 
-If the value is nil, use a plain date in YEAR-MONTH-DAY notation,
-like 2022-06-08 (the ISO 8601 standard).
+When nil, use a file-type-specific format:
 
-If the value is the `org-timestamp' symbol, format the date as an
-inactive Org timestamp such as: [2022-06-08 Wed 06:19].
+- For Org, an inactive timestamp is used, such as [2022-06-30 Wed
+  06:19].
 
-If a string, use it as the argument of `format-time-string'.
-Read the documentation of that function for valid format
-specifiers.
+- For Markdowmn, the RFC3339 standard is applied:
+  2022-06-30T15:48:00+03:00.
 
-When `denote-file-type' specifies one of the Markdown flavors, we
-ignore this user option in order to enforce the RFC3339
-specification (Markdown is typically employed in static site
-generators as source code for Web pages).  However, when
-`denote-front-matter-date-format' has a string value, this rule
-is suspended: we use whatever the user wants."
+- For plain text, the format is that of ISO 8601: 2022-06-30.
+
+If the value is a string, ignore the above and use it instead.
+The string must include format specifiers for the date.  These
+are described in the doc string of `format-time-string'."
   :type '(choice
-          (const :tag "Just the date like 2022-06-08" nil)
-          (const :tag "An inactive Org timestamp like [2022-06-08 Wed 06:19]" org-timestamp)
+          (const :tag "Use appropiate format for each file type" nil)
           (string :tag "Custom format for `format-time-string'"))
   :group 'denote)
+
+(make-obsolete 'denote-front-matter-date-format 'denote-date-format "0.2.0")
 
 ;;;; Main variables
 
@@ -564,16 +562,17 @@ With optional DATE, use it else use the current one."
 (defun denote--date (&optional date)
   "Expand the date for a new note's front matter.
 With optional DATE, use it else use the current one."
-  (let ((format denote-front-matter-date-format))
+  (let ((format denote-date-format))
     (cond
      ((stringp format)
       (format-time-string format date))
      ((or (eq denote-file-type 'markdown-toml)
           (eq denote-file-type 'markdown-yaml))
       (denote--date-rfc3339 date))
-     ((eq format 'org-timestamp)
-      (denote--date-org-timestamp date))
-     (t (denote--date-iso-8601 date)))))
+     ((eq denote-file-type 'text)
+      (denote--date-iso-8601 date))
+     (t
+      (denote--date-org-timestamp date)))))
 
 (defun denote--prepare-note (title keywords &optional path date id)
   "Use TITLE and KEYWORDS to prepare new note file.
