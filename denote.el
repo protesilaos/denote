@@ -94,6 +94,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl-lib))
+
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
   :group 'files)
@@ -352,9 +354,10 @@ names that are relative to the variable `denote-directory'."
        (lambda (s) (denote--file-name-relative-to-denote-directory s))
        files))))
 
-(defun denote--get-note-path-by-id(id)
-  "Given an ID, return the absolute path of the corresponding note
-in `denote-directory'."
+(declare-function cl-find-if "cl-seq" (cl-pred cl-list &rest cl-keys))
+
+(defun denote--get-note-path-by-id (id)
+  "Return the absolute path of ID note in variable `denote-directory'."
   (cl-find-if (lambda (f) (string-prefix-p id (file-name-nondirectory f)))
               (denote--directory-files :absolute)))
 
