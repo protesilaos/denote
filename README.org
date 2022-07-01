@@ -641,9 +641,12 @@ When ~denote-link~ is called with a prefix argument (=C-u= by default)
 it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
 its simplicity.
 
+[ Default value of ~denote-link-use-org-id~ changed as part of
+  {{{development-version}}} ]
+
 #+vindex: denote-link-use-org-id
-When the user option ~denote-link-use-org-id~ is set to non-nil (default
-is nil), inserted links in Org notes that target other Org notes will
+When the user option ~denote-link-use-org-id~ is set to non-nil (the
+default), inserted links in Org notes that target other Org notes will
 use the standard =id:= type so the format is =[[id:IDENTIFIER][TITLE]]=
 (the title is omitted is ~denote-link~ is called with a prefix argument,
 as explained above).  When, however, an Org note links to a note in
