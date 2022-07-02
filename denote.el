@@ -260,7 +260,7 @@ We consider those characters illigal for our purposes.")
     (unless (file-directory-p path)
       (make-directory path t))
     (when (require 'org-id nil :noerror)
-      (setq org-id-extra-files (directory-files path nil "\.org$")))
+      (setq org-id-extra-files (directory-files-recursively path "\.org$")))
     (file-name-as-directory path)))
 
 (defun denote--extract (regexp str &optional group)
