@@ -378,6 +378,11 @@ part of the list."
   (delq nil (mapcar
              (lambda (x)
                (denote--extract denote--file-regexp x 6))
+             ;; REVIEW 2022-07-03: I tested this with ~3000 files.  It
+             ;; has about 2 seconds of delay on my end.  After I placed
+             ;; the list of those files in a variable instead of calling
+             ;; `denote--directory-files', there was no noticeable
+             ;; performance penalty.
              (denote--directory-files))))
 
 (defun denote--inferred-keywords ()
