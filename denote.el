@@ -639,7 +639,7 @@ used to construct the path's identifier."
 
 Optional DEFAULT-TITLE is used as the default value."
   (let ((format (if default-title
-                    (format " File title [%s]: " default-title)
+                    (format "File title [%s]: " default-title)
                   "File title: ")))
     (setq denote-last-title
           (read-string format nil 'denote--title-history default-title))))
