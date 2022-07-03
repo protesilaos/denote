@@ -468,7 +468,7 @@ option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
   (let* ((default-directory (denote-directory))
-         (file (file-name-nondirectory (buffer-file-name)))
+         (file (buffer-file-name))
          (id (denote-retrieve--filename-identifier file))
          (title (denote-retrieve--value-title file)))
     (if-let ((files (denote-retrieve--proces-grep id)))
