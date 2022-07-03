@@ -251,8 +251,6 @@ We consider those characters illigal for our purposes.")
         `(metadata (category . ,category))
       (complete-with-action action candidates string pred))))
 
-(defvar org-id-extra-files)
-
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
   (let* ((val (or (buffer-local-value 'denote-directory (current-buffer))
@@ -260,8 +258,6 @@ We consider those characters illigal for our purposes.")
          (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
     (unless (file-directory-p path)
       (make-directory path t))
-    (when (require 'org-id nil :noerror)
-      (setq org-id-extra-files (directory-files-recursively path "\.org$")))
     (file-name-as-directory path)))
 
 (defun denote--extract (regexp str &optional group)
@@ -527,12 +523,10 @@ is specific to this variable: it expect a delimiter such as
   "Final delimiter for plain text front matter.")
 
 (defvar denote-org-front-matter
-  ":PROPERTIES:
-:ID:          %4$s
-:END:
-#+title:      %1$s
-#+date:       %2$s
-#+filetags:   %3$s
+  "#+title:      %s
+#+date:       %s
+#+filetags:   %s
+#+identifier: %s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you

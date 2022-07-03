@@ -423,28 +423,22 @@ want to lift that restriction once everything works as intended.
 
 Notes have their own "front matter".  This is a block of data at the top
 of the file, with no empty lines between the entries, which is
-automatically generated at the creation of a new note. The front matter
+automatically generated at the creation of a new note.  The front matter
 includes the title and keywords (aka "tags" or "filetags", depending on
 the file type) which the user specified at the relevant prompt, as well
-as the date and unique identifier which are derived automatically.
+as the date and unique identifier, which are derived automatically.
 
-This is how it looks for Org mode (~denote-file-type~ is nil):
+This is how it looks for Org mode (when ~denote-file-type~ is nil):
 
 #+begin_src org
-:PROPERTIES:
-:ID:          20220630T160934
-:END:
 ,#+title:      This is a sample note
 ,#+date:       [2022-06-30 Thu 16:09]
 ,#+filetags:   denote  testing
+.#+identifier: 20220630T160934
 #+end_src
 
-Org notes use a =PROPERTIES= drawer at the top of the file for maximum
-compatibility with the Org ecosystem, particularly for linking to notes
-and exporting them ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
-
-For Markdown with YAML, the front matter looks like this
-(~denote-file-type~ has the =markdown-yaml= value):
+For Markdown with YAML (~denote-file-type~ has the =markdown-yaml=
+value), the front matter looks like this:
 
 #+begin_src md
 ---
@@ -455,8 +449,8 @@ identifier: "20220630T160958"
 ---
 #+end_src
 
-For Markdown with TOML, it looks like this (~denote-file-type~ has the
-=markdown-toml= value):
+For Markdown with TOML (~denote-file-type~ has the =markdown-toml=
+value), it is:
 
 #+begin_src md
 +++
@@ -467,8 +461,8 @@ identifier = "20220630T161013"
 +++
 #+end_src
 
-And for plain text, we have the following (~denote-file-type~ has the
-=text= value):
+And for plain text (~denote-file-type~ has the =text= value), we have
+the following:
 
 #+begin_example
 title:      This is a sample note
@@ -498,143 +492,19 @@ in the doc string of ~format-time-string~..
 [ DEV NOTE: ~denote-date-format~ supersedes the now obsolete
   ~denote-front-matter-date-format~ as part of {{{development-version}}} ]
 
-** Tweaking the front matter
-:PROPERTIES:
-:CUSTOM_ID: h:f69371d5-1843-493d-9ff5-c1ab3b43024e
-:END:
-
-What follows is for advanced users.  When in doubt, only configure
-variables we describe as a "user option": they are declared in the
-source code with the ~defcustom~ keyword.
-
-Denote's code base is designed in a composable way, which lets the user
-make precise interventions to affect the output of the relevant
-commands.  One such case is to configure the front matter, such as by
-changing the order the keys appear in, renaming them, or adding new
-elements.
-
-Some examples are in order, starting with the Org file type.  This is
-what we have in =denote.el=:
-
-#+begin_src emacs-lisp
-(defvar denote-org-front-matter
-  ":PROPERTIES:
-:ID:          %4$s
-:END:
-#+title:      %1$s
-#+date:       %2$s
-#+filetags:   %3$s
-\n"
-  "Org front matter value for `format'.
-The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
-are an avdanced user who wants to edit this variable to affect
-how front matter is produced, consider using something like %2$s
-to control where Nth argument is placed.
-
-Make sure to
-
-1. Not use empty lines inside the front matter block.
-
-2. Insert at least one empty line after the front matter block
-and do not use any empty line before it.
-
-These help ensure consistency and might prove useful if we need
-to operate on the front matter as a whole.")
-#+end_src
-
-Notice how we can pass a number to the =%s= specifier for the =:ID:=
-property.  This is what allows us to change the placement of the
-provided arguments.
-
-The default Org mode front matter is formatted as:
-
-#+begin_src org
-:PROPERTIES:
-:ID:          20220610T202537
-:END:
-,#+title:      This is a sample note
-,#+date:       2022-06-10
-,#+filetags:   denote  testing
-#+end_src
-
-If the user does not need =org-id= compatible ID property drawer, they
-can do this instead:
-
-#+begin_src emacs-lisp
-(setq denote-org-front-matter
-      "#+title:     %s
-,#+date:       %s
-,#+filetags:   %s
-,#+identifier: %s
-\n"
-      "Org front matter value for `format'.
-The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
-are an avdanced user who wants to edit this variable to affect
-how front matter is produced, consider using something like %2$s
-to control where Nth argument is placed.")
-#+end_src
-
-The output is now formatted thus:
-
-#+begin_src org
-,#+title:      This is a sample note
-,#+date:       2022-06-10
-,#+filetags:   denote  testing
-,#+identifier: 20220610T202537
-#+end_src
-
-For another example, we will use the plain text variant, as it differs a
-bit from the above.  By default it is formatted this way:
-
-#+begin_example
-title:      This is a sample note
-date:       2022-06-10
-tags:       denote  testing
-identifier: 20220610T202232
----------------------------
-#+end_example
-
-The line with the hyphens is the product of the fifth format specifier,
-as documented in ~denote-text-front-matter~.  Its value is stored in
-~denote-text-front-matter-delimiter~.  Say we want to have a delimiter
-both at the top and bottom:
-
-#+begin_src emacs-lisp
-(setq denote-text-front-matter
-      "%5$s
-title:      %1$s
-date:       %2$s
-tags:       %3$s
-identifier: %4$s
-%5$s\n\n")
-#+end_src
-
-Which gives us:
-
-#+begin_example
----------------------------
-title:      This is a sample note
-date:       2022-06-11
-tags:       denote  testing
-identifier: 20220611T093252
----------------------------
-#+end_example
-
-Or we would rather use another character instead of hyphens, such as the
-equals sign:
-
-#+begin_src emacs-lisp
-(setq denote-text-front-matter-delimiter (make-string 27 ?=))
-#+end_src
-
-Remember that this is for advanced users.  If you want to see changes
-done on this front, you are welcome to share your thoughts and/or
-participate in the development of Denote.
-
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
+
+[ Support for =id:= type notes is REMOVED as part of
+  {{{development-version}}}.  The reason is that to fully support org-id
+  we need to change Denote's scope.  That will never be reconciled with
+  the project's principles.  Users of the =id:= functionality are
+  advised to use org-roam: it has first-class support for it, is a major
+  project, and has a massive community.  My sincere apologies for not
+  foreseeing this and for breaking some user configurations in the
+  process. ]
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to an entry specified
@@ -643,33 +513,17 @@ type of current note.  In Org and plain text buffers, links are
 formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown they
 are expressed as =[TITLE](denote:IDENTIFIER)=.
 
-When ~denote-link~ is called with a prefix argument (=C-u= by default)
+When ~denote-link~ is called with a prefix argument (=C-u= by default),
 it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
 its simplicity.
 
-#+vindex: denote-link-use-org-id
-When the user option ~denote-link-use-org-id~ is set to non-nil (the
-default is nil), inserted links in Org notes that target other Org notes
-will use the standard =id:= hyperlink type.  The format is
-=[[id:IDENTIFIER][TITLE]]= (the title is omitted if ~denote-link~ is
-called with a prefix argument, as explained above).  When, however, an
-Org note links to a note of another file type (e.g Org to Markdown), the
-link will use our own =denote:= type as there is no standard for this
-case.
-
-# TODO 2022-07-03: Document potential downsides of the 'id:' type and
-# write documentation on what the user must do to ensure that everything
-# works properly.
-
 Inserted links are automatically buttonized and remain active for as
-long as the buffer is available.  In Org this is handled automatically
-as Denote either uses the standard =id:= link type or creates its own
-custom hyperlink: the =denote:= type which works exactly like the
-=file:=.  In Markdown and plain text, Denote handles the buttonization
-of those links.
-
-To buttonize links in existing files while visiting them, the user must
-add this snippet to their setup:
+long as the buffer is available.  In Org this is handled by the major
+mode: the =denote:= hyperlink type works exactly like the standard
+=file:=.  In Markdown and plain text, Denote performs the buttonization
+of those links.  To buttonize links in existing files while visiting
+them, the user must add this snippet to their setup (it already excludes
+Org):
 
 #+findex: denote-link-buttonize-buffer
 #+begin_src emacs-lisp
@@ -712,11 +566,11 @@ effect by setting its value to nil.
 #+vindex: denote-link-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
 ~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
-underlying ~display-buffer~ mechanism, this inevitably is an advanced
-feature.  By default, the backlinks' buffer is displayed below the
-current window.  The doc string of our user option includes a
+underlying ~display-buffer~ mechanism, this inevitably is a relatively
+advanced feature.  By default, the backlinks' buffer is displayed below
+the current window.  The doc string of our user option includes a sample
 configuration that places the buffer in a left side window instead.
-Reproducing it here for your convenience:
+Reproducing it here for the sake of convenience:
 
 #+begin_src emacs-lisp
 (setq denote-link-backlinks-display-buffer-action
@@ -744,16 +598,13 @@ note is excluded from the matching entries (adding a link to itself is
 pointless).
 
 When called with a prefix argument (=C-u=) ~denote-link-add-links~ will
-format all links as =[[TYPE:IDENTIFIER]]=, hence a typographic list:
+format all links as =[[denote:IDENTIFIER]]=, hence a typographic list:
 
 #+begin_example
-- [[TYPE:IDENTIFIER-1]]
-- [[TYPE:IDENTIFIER-2]]
-- [[TYPE:IDENTIFIER-3]]
+- [[denote:IDENTIFIER-1]]
+- [[denote:IDENTIFIER-2]]
+- [[denote:IDENTIFIER-3]]
 #+end_example
-
-The =TYPE= is either =denote:= or =id:=, exactly as we explained above
-for the ~denote-link~ command.
 
 Same examples of a regular expression that can be used with this
 command:
@@ -958,9 +809,6 @@ purposes.  All you need to do is write functions that ~let~ bind the
 
 You do not need a third command for the Org files, as those would be the
 default used by regular ~denote~.
-
-Given Denote's composable code, you can tweak the output however you
-like, including the contents of the file ([[#h:f69371d5-1843-493d-9ff5-c1ab3b43024e][Tweaking the front matter]]).
 
 If you do place different types of notes in their own directories, you
 must introduce directory-local variables to keep things working
@@ -1468,10 +1316,6 @@ Everything is in place to set up the package.
 (require 'denote-retrieve)
 (require 'denote-link)
 
-;; Set to non-nil if you want links to and from Org notes to use the
-;; standard 'id:' link type instead of 'denote:'.
-(setq denote-link-use-org-id nil)
-
 ;; By default, we fontify backlinks in their bespoke buffer.
 (setq denote-link-fontify-backlinks t)
 
@@ -1635,8 +1479,6 @@ the future and which you might want to help with ([[#h:1ebe4865-c001-4747-a6f2-0
 This is a non-exhaustive list and you are always welcome to either
 report or work on something else.
 
-- [X] Buttonize =denote:= links in Markdown and plain text, but not Org.
-- [X] Experiment with switch to =id:= link type instead of =denote:=.
 - [ ] Ensure integration between =denote:= links and Embark.
 - [ ] Add command that expands the identifier in links to a full name.
 - [ ] Add command that rewrites full names in links, if they are invalid.

@@ -37,7 +37,7 @@
   "Regular expression for title key.")
 
 (defconst denote-retrieve--id-front-matter-key-regexp
-  "^.?.?\\b\\(?:identifier\\|[Ii][Dd]\\)\\s-*[:=]"
+  "^.?.?\\b\\(?:identifier\\)\\s-*[:=]"
   "Regular expression for identifier key.")
 
 (defconst denote-retrieve--date-front-matter-key-regexp
