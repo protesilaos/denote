@@ -441,6 +441,8 @@ output is sorted with `string-lessp'."
 
 ;;;; New note
 
+;;;;; Common helpers for new notes
+
 (defun denote--file-extension ()
   "Return file type extension based on `denote-file-type'."
   (pcase denote-file-type
@@ -641,6 +643,8 @@ Optional DEFAULT-TITLE is used as the default value."
     (setq denote-last-title
           (read-string format nil 'denote--title-history default-title))))
 
+;;;;; The `denote' command
+
 ;;;###autoload
 (defun denote (title keywords)
   "Create new note with the appropriate metadata and file name.
@@ -664,6 +668,8 @@ alphabetically in both the file name and file contents."
   (denote--keywords-add-to-history keywords))
 
 (defalias 'denote-create-note (symbol-function 'denote))
+
+;;;;; The `denote-type' command
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote--file-type-prompt'.")
@@ -698,6 +704,8 @@ When called from Lisp the FILETYPE must be a symbol."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-type (symbol-function 'denote-type))
+
+;;;;; The `denote-date' command
 
 (defvar denote--date-history nil
   "Minibuffer history of `denote--date-prompt'.")
