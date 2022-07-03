@@ -94,6 +94,7 @@
 
 ;;; Code:
 
+(require 'seq)
 (eval-when-compile (require 'cl-lib))
 
 (defgroup denote ()
