@@ -393,8 +393,14 @@ part of the list."
             sequence)))
 
 (defun denote-keywords ()
-  "Combine `denote--inferred-keywords' with `denote-known-keywords'."
-  (delete-dups (append (denote--inferred-keywords) denote-known-keywords)))
+  "Return appropriate list of keyword candidates.
+If `denote-infer-keywords' is non-nil, infer keywords from
+existing notes and combine them into a list with
+`denote-known-keywords'.  Else use only the latter."
+  (delete-dups
+   (if denote-infer-keywords
+       (append (denote--inferred-keywords) denote-known-keywords)
+     denote-known-keywords)))
 
 (defvar denote--keyword-history nil
   "Minibuffer history of inputted keywords.")
@@ -460,9 +466,7 @@ or equivalent: they will all be converted into a single string.
 EXTENSION is the file type extension, either a string which
 include the starting dot or the return value of
 `denote--file-extension'."
-  (let ((kws (if denote-infer-keywords
-                 (denote--keywords-combine keywords)
-               keywords))
+  (let ((kws (denote--keywords-combine keywords))
         (ext (or extension (denote--file-extension))))
     (format "%s%s--%s__%s%s" path id slug kws ext)))
 
