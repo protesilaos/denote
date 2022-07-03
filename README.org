@@ -647,17 +647,19 @@ When ~denote-link~ is called with a prefix argument (=C-u= by default)
 it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
 its simplicity.
 
-[ Default value of ~denote-link-use-org-id~ changed as part of
-  {{{development-version}}} ]
-
 #+vindex: denote-link-use-org-id
 When the user option ~denote-link-use-org-id~ is set to non-nil (the
-default), inserted links in Org notes that target other Org notes will
-use the standard =id:= type so the format is =[[id:IDENTIFIER][TITLE]]=
-(the title is omitted is ~denote-link~ is called with a prefix argument,
-as explained above).  When, however, an Org note links to a note in
-another file, the link with use our own =denote:= type as there is no
-standard for this case.
+default is nil), inserted links in Org notes that target other Org notes
+will use the standard =id:= hyperlink type.  The format is
+=[[id:IDENTIFIER][TITLE]]= (the title is omitted if ~denote-link~ is
+called with a prefix argument, as explained above).  When, however, an
+Org note links to a note of another file type (e.g Org to Markdown), the
+link will use our own =denote:= type as there is no standard for this
+case.
+
+# TODO 2022-07-03: Document potential downsides of the 'id:' type and
+# write documentation on what the user must do to ensure that everything
+# works properly.
 
 Inserted links are automatically buttonized and remain active for as
 long as the buffer is available.  In Org this is handled automatically
@@ -1466,9 +1468,9 @@ Everything is in place to set up the package.
 (require 'denote-retrieve)
 (require 'denote-link)
 
-;; If you want links to and from Org notes to use the standard 'id:'
-;; link type instead of 'denote:'.
-(setq denote-link-use-org-id t)
+;; Set to non-nil if you want links to and from Org notes to use the
+;; standard 'id:' link type instead of 'denote:'.
+(setq denote-link-use-org-id nil)
 
 ;; By default, we fontify backlinks in their bespoke buffer.
 (setq denote-link-fontify-backlinks t)
