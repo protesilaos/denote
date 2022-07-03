@@ -284,7 +284,7 @@ TITLE, DATE, KEYWORDS, FILENAME, ID, and FILETYPE are all strings
   "Return likely file type of FILE.
 The return value is for `denote--file-meta-header'."
   (pcase (file-name-extension file)
-    ("md" (if (string-match-p "title\\s-*=" (denote-retrieve--value-title file 0))
+    ("md" (if (string-match-p "title\\s-*=" (denote-retrieve--value-title file t))
               'markdown-toml
             'markdown-yaml))
     ("txt" 'text)
