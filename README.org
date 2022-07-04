@@ -123,128 +123,6 @@ recursive or otherwise, of increasingly dubious utility like:
 But we'll let you get back to work.  Don't Eschew or Neglect your
 Obligations, Tasks, and Engagements.
 
-* The file-naming scheme
-:PROPERTIES:
-:CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
-:END:
-
-#+vindex: denote-directory
-Notes are stored the ~denote-directory~.  The default path is
-=~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
-meaning that it has no subdirectories, or it can be a directory tree.
-Either way, Denote takes care to only consider "notes" as valid
-candidates in the relevant operations and will omit other files or
-directories.
-
-[ Subdirectory support is part of {{{development-version}}} ]
-
-Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
-
-: DATE--TITLE__KEYWORDS.EXTENSION
-
-The =DATE= field represents the date in year-month-day format followed
-by the capital letter =T= (for "time") and the current time in
-hour-minute-second notation.  The presentation is compact:
-=20220531T091625=.  The =DATE= serves as the unique identifier of each
-note.
-
-The =TITLE= field is the title of the note, as provided by the user.  It
-automatically gets downcased and hyphenated.  An entry about "Economics
-in the Euro Area" produces an =economics-in-the-euro-area= string for
-the =TITLE= of the file name.
-
-#+vindex: denote-allow-multi-word-keywords
-The =KEYWORDS= field consists of one or more entries demarcated by an
-underscore (the separator is inserted automatically).  Each keyword is a
-string provided by the user at the relevant prompt which broadly
-describes the contents of the entry.  Keywords that need to be more than
-one-word-long must be written with hyphens: any other character, such as
-spaces or the plus sign is automatically converted into a hyphen.  So
-when =emacs_library= appears in a file name, it is interpreted as two
-distinct keywords, whereas =emacs-library= is one keyword.  This is
-reflected in how the keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
-While Denote supports multi-word keywords by default, the user option
-~denote-allow-multi-word-keywords~ can be set to nil to forcibly join
-all words into one, meaning that an input of =word1 word2= will be
-written as =word1word2=.
-
-#+vindex: denote-file-type
-The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
-though the user option ~denote-file-type~ provides support for Markdown
-with YAML or TOML variants (=.md= which runs ~markdown-mode~) and plain
-text (=.txt= via ~text-mode~).  Consult its doc string for the minutia.
-While files end in the =.org= extension by default, the Denote code base
-does not actually depend on org.el and/or its accoutrements.
-
-Examples:
-
-: 20220610T043241--initial-thoughts-on-the-zettelkasten-method__notetaking.org
-: 20220610T062201--define-custom-org-hyperlink-type__denote_emacs_package.md
-: 20220610T162327--on-hierarchy-and-taxis__notetaking_philosophy.txt
-
-The different field separators, namely =--= and =__= introduce an
-efficient way to anchor searches (such as with Emacs commands like
-~isearch~ or from the command-line with ~find~ and related).  A query
-for =_word= always matches a keyword, while a regexp in the form of,
-say, ="\\([0-9T]+?\\)--\\(.*?\\)_"= captures the date in group =\1= and
-the title in =\2= (test any regular expression in the current buffer by
-invoking =M-x re-builder=).
-
-[[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
-
-While Denote is an Emacs package, notes should work long-term and not
-depend on the functionality of a specific program.  The file-naming
-scheme we apply guarantees that a listing is readable in a variety of
-contexts.
-
-** Sluggified title and keywords
-:PROPERTIES:
-:CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
-:END:
-
-Denote has to be highly opinionated about which characters can be used
-in file names and the file's front matter in order to enforce its
-file-naming scheme.  The private variable ~denote--punctuation-regexp~
-holds the relevant value.  In simple terms:
-
-+ What we count as "illegal characters" are converted into hyphens.
-
-+ Input for a file title is hyphenated and downcased.  The original
-  value is preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
-
-+ Keywords should not have spaces or other delimiters.  If they do, they
-  are converted into hyphens.  Keywords are always downcased.
-
-** Features of the file-naming scheme for searching or filtering
-:PROPERTIES:
-:CUSTOM_ID: h:1a953736-86c2-420b-b566-fb22c97df197
-:END:
-
-File names have three fields and two sets of field delimiters between
-them:
-
-: DATE--TITLE__KEYWORDS.EXTENSION
-
-The first field delimiter is the double hyphen, while the second is the
-double underscore.  These practically serve as anchors for easier
-searching.  Consider this example:
-
-: 20220621T062327--introduction-to-denote__denote_emacs.txt
-
-You will notice that there are two matches for the word =denote=: one in
-the title field and another in the keywords' field.  Because of the
-distinct field delimiters, if we search for =-denote= we only match the
-first instance while =_denote= targets the second one.  When sorting
-through your notes, this kind of specificity is invaluable---and you get
-it for free from the file names alone!
-
-Users can get a lot of value out of this simple arrangement, even if
-they have no knowledge of regular expressions.  One thing to consider,
-for maximum effect, is to avoid using multi-word keywords as those get
-hyphenated like the title and will thus interfere with the above: either
-set the user option ~denote-allow-multi-word-keywords~ to nil or simply
-insert single words at the relevant prompts.
-
 * Points of entry
 :PROPERTIES:
 :CUSTOM_ID: h:17896c8c-d97a-4faa-abf6-31df99746ca6
@@ -462,6 +340,128 @@ does the right thing.  To avoid any trouble, it always asks for
 confirmation before performing the replacement.  This confirmation
 ignores ~denote-dired-rename-expert~ for the time being, though we might
 want to lift that restriction once everything works as intended.
+
+* The file-naming scheme
+:PROPERTIES:
+:CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
+:END:
+
+#+vindex: denote-directory
+Notes are stored the ~denote-directory~.  The default path is
+=~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
+meaning that it has no subdirectories, or it can be a directory tree.
+Either way, Denote takes care to only consider "notes" as valid
+candidates in the relevant operations and will omit other files or
+directories.
+
+[ Subdirectory support is part of {{{development-version}}} ]
+
+Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
+
+: DATE--TITLE__KEYWORDS.EXTENSION
+
+The =DATE= field represents the date in year-month-day format followed
+by the capital letter =T= (for "time") and the current time in
+hour-minute-second notation.  The presentation is compact:
+=20220531T091625=.  The =DATE= serves as the unique identifier of each
+note.
+
+The =TITLE= field is the title of the note, as provided by the user.  It
+automatically gets downcased and hyphenated.  An entry about "Economics
+in the Euro Area" produces an =economics-in-the-euro-area= string for
+the =TITLE= of the file name.
+
+#+vindex: denote-allow-multi-word-keywords
+The =KEYWORDS= field consists of one or more entries demarcated by an
+underscore (the separator is inserted automatically).  Each keyword is a
+string provided by the user at the relevant prompt which broadly
+describes the contents of the entry.  Keywords that need to be more than
+one-word-long must be written with hyphens: any other character, such as
+spaces or the plus sign is automatically converted into a hyphen.  So
+when =emacs_library= appears in a file name, it is interpreted as two
+distinct keywords, whereas =emacs-library= is one keyword.  This is
+reflected in how the keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+While Denote supports multi-word keywords by default, the user option
+~denote-allow-multi-word-keywords~ can be set to nil to forcibly join
+all words into one, meaning that an input of =word1 word2= will be
+written as =word1word2=.
+
+#+vindex: denote-file-type
+The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
+though the user option ~denote-file-type~ provides support for Markdown
+with YAML or TOML variants (=.md= which runs ~markdown-mode~) and plain
+text (=.txt= via ~text-mode~).  Consult its doc string for the minutia.
+While files end in the =.org= extension by default, the Denote code base
+does not actually depend on org.el and/or its accoutrements.
+
+Examples:
+
+: 20220610T043241--initial-thoughts-on-the-zettelkasten-method__notetaking.org
+: 20220610T062201--define-custom-org-hyperlink-type__denote_emacs_package.md
+: 20220610T162327--on-hierarchy-and-taxis__notetaking_philosophy.txt
+
+The different field separators, namely =--= and =__= introduce an
+efficient way to anchor searches (such as with Emacs commands like
+~isearch~ or from the command-line with ~find~ and related).  A query
+for =_word= always matches a keyword, while a regexp in the form of,
+say, ="\\([0-9T]+?\\)--\\(.*?\\)_"= captures the date in group =\1= and
+the title in =\2= (test any regular expression in the current buffer by
+invoking =M-x re-builder=).
+
+[[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
+
+While Denote is an Emacs package, notes should work long-term and not
+depend on the functionality of a specific program.  The file-naming
+scheme we apply guarantees that a listing is readable in a variety of
+contexts.
+
+** Sluggified title and keywords
+:PROPERTIES:
+:CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
+:END:
+
+Denote has to be highly opinionated about which characters can be used
+in file names and the file's front matter in order to enforce its
+file-naming scheme.  The private variable ~denote--punctuation-regexp~
+holds the relevant value.  In simple terms:
+
++ What we count as "illegal characters" are converted into hyphens.
+
++ Input for a file title is hyphenated and downcased.  The original
+  value is preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+
++ Keywords should not have spaces or other delimiters.  If they do, they
+  are converted into hyphens.  Keywords are always downcased.
+
+** Features of the file-naming scheme for searching or filtering
+:PROPERTIES:
+:CUSTOM_ID: h:1a953736-86c2-420b-b566-fb22c97df197
+:END:
+
+File names have three fields and two sets of field delimiters between
+them:
+
+: DATE--TITLE__KEYWORDS.EXTENSION
+
+The first field delimiter is the double hyphen, while the second is the
+double underscore.  These practically serve as anchors for easier
+searching.  Consider this example:
+
+: 20220621T062327--introduction-to-denote__denote_emacs.txt
+
+You will notice that there are two matches for the word =denote=: one in
+the title field and another in the keywords' field.  Because of the
+distinct field delimiters, if we search for =-denote= we only match the
+first instance while =_denote= targets the second one.  When sorting
+through your notes, this kind of specificity is invaluable---and you get
+it for free from the file names alone!
+
+Users can get a lot of value out of this simple arrangement, even if
+they have no knowledge of regular expressions.  One thing to consider,
+for maximum effect, is to avoid using multi-word keywords as those get
+hyphenated like the title and will thus interfere with the above: either
+set the user option ~denote-allow-multi-word-keywords~ to nil or simply
+insert single words at the relevant prompts.
 
 * Front matter
 :PROPERTIES:
