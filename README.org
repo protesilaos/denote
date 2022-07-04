@@ -525,9 +525,9 @@ option ~denote-date-format~.  When nil, Denote uses a file-type-specific
 format:
 
 - For Org, an inactive timestamp is used, such as
-  =[2022-06-30 Wed 06:19]=.
+  =[2022-06-30 Wed 15:31]=.
 
-- For Markdowmn, the RFC3339 standard is applied:
+- For Markdown, the RFC3339 standard is applied:
   =2022-06-30T15:48:00+03:00=.
 
 - For plain text, the format is that of ISO 8601: =2022-06-30=.
