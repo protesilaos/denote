@@ -487,7 +487,7 @@ inserts links with just the identifier."
 
 ;;;; Register `denote:' custom Org hyperlink
 
-(declare-function org-link-set-parameters "ol.el" (type &rest parameters))
+(autoload 'org-link-set-parameters "ol.el")
 
 (org-link-set-parameters
  "denote"
