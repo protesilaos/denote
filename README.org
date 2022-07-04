@@ -761,18 +761,20 @@ the function ~denote-dired-mode-in-directories~:
 
 The faces we define are:
 
-#+vindex: denote-dired-field-date
-#+vindex: denote-dired-field-delimiter
-#+vindex: denote-dired-field-extension
-#+vindex: denote-dired-field-keywords
-#+vindex: denote-dired-field-time
-#+vindex: denote-dired-field-title
-+ ~denote-dired-field-date~
-+ ~denote-dired-field-delimiter~
-+ ~denote-dired-field-extension~
-+ ~denote-dired-field-keywords~
-+ ~denote-dired-field-time~
-+ ~denote-dired-field-title~
+#+vindex: denote-faces-date
+#+vindex: denote-faces-delimiter
+#+vindex: denote-faces-extension
+#+vindex: denote-faces-keywords
+#+vindex: denote-faces-subdirectory
+#+vindex: denote-faces-time
+#+vindex: denote-faces-title
++ ~denote-faces-date~
++ ~denote-faces-delimiter~
++ ~denote-faces-extension~
++ ~denote-faces-keywords~
++ ~denote-faces-subdirectory~
++ ~denote-faces-time~
++ ~denote-faces-title~
 
 For the time being, the =diredfl= package is not compatible with this
 facility.
