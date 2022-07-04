@@ -258,12 +258,20 @@ insert single words at the relevant prompts.
 There are five ways to write a note with Denote: invoke the ~denote~,
 ~denote-type~, ~denote-date~, ~denote-subdirectory~ commands, or
 leverage the ~org-capture-templates~ by setting up a template which
-calls the function ~denote-org-capture~.
+calls the function ~denote-org-capture~.  We explain all those in the
+subsequent sections.
 
-In the first case, all that is needed is to run ~denote~.  It will
-prompt for a title.  Once it is supplied, the command will ask for
-keywords.  The resulting note will have a file name as already explained
-([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]).
+** Standard note creation
+:PROPERTIES:
+:CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
+:END:
+
+The ~denote~ command will prompt for a title.  Once that is supplied, it
+will ask for keywords.  The resulting note will have a file name as
+already explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
+
+The file type of the new note is determined by the user option
+~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
 #+vindex: denote-known-keywords
 #+vindex: denote-infer-keywords
@@ -283,30 +291,68 @@ The ~denote~ command can also be called from Lisp, in which case it
 expects the =TITLE= and =KEYWORDS= arguments.  The former is a string,
 the latter a list of strings.
 
-The ~denote-type~ command is like ~denote~ except it also prompts for a
-file type to use as a local value for ~denote-file-type~.  In practical
-terms, this lets you produce, say, a note in Markdown even though you
-normally write in Org ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).
+#+findex: denote-create-note
+In the interest of discoverability, ~denote~ is also available under the
+alias ~denote-create-note~.
 
-Similarly, the ~denote-date~ command accepts the same =TITLE= and
-=KEYWORDS= arguments, though it starts by asking for a date.  Normally,
-Denote use the current date and time to construct an identifier, but
-~denote-date~ allows the user to specify any date+time combination.  The
-input for the =DATE= argument is like =2022-06-16= or =2022-06-16
-14:30=.  When the time is omitted, it is interpreted as =00:00=.
+** Create note by specifying file type
+:PROPERTIES:
+:CUSTOM_ID: h:2ee9736b-327c-44a6-8c00-c73253d8c326
+:END:
+
+The ~denote-type~ command is like ~denote~ except it also prompts for a
+file type to use as an ad-hoc value for ~denote-file-type~.  In practical
+terms, this lets you produce, say, a note in Markdown even though you
+normally write in Org ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+
+#+findex: denote-create-note-using-type
+The ~denote-create-note-using-type~ is an alias of ~denote-type~.
+
+** Create note using a date
+:PROPERTIES:
+:CUSTOM_ID: h:70b8d932-3783-4f81-afdc-30d12fbadd0f
+:END:
+
+Normally, Denote reads the current date and time to derive the
+identifier of a new note ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  Sometimes, however,
+the user needs to set an explicit date+time value.
+
+This is where the ~denote-date~ command comes in.  It accepts the
+familiar =TITLE= and =KEYWORDS= arguments, though it starts by asking
+for a date.  The input for the =DATE= argument is like =2022-06-16= or
+=2022-06-16 14:30=.  When the time is omitted, it is interpreted as
+=00:00=.
 
 Since the ability to insert a date may result in duplicate identifiers,
 Denote takes care to abort the operation if such an identity is
 established (e.g. when you use ~denote-date~ with =2022-06-16= twice, it
 will generate the same identifier of =20220616T000000=).  The user must
-thus call the ~denote-date~ command again and provide a unique value.
+thus call the ~denote-date~ command again and provide a unique date or
+date+time value.
+
+#+findex: denote-create-note-using-date
+The ~denote-create-note-using-date~ is an alias of ~denote-date~.
+
+** Create note in a specific directory
+:PROPERTIES:
+:CUSTOM_ID: h:588c1f96-ca01-4c2c-be7a-ca6359c9465b
+:END:
 
 [ The ~denote-subdirectory~ is part of {{{development-version}}} ]
 
-The ~denote-subdirectory~ command is the same as ~denote~ except it
-prompts for a directory to place the new note in.  Candidates are the
-value of the user option ~denote-directory~ and any subdirectory inside
-of it.  Denote does not create subdirectories.
+The ~denote-subdirectory~ command is like ~denote~ except it prompts for
+a directory to place the new note in ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+Candidates are the value of the user option ~denote-directory~ and any
+subdirectory inside of it.  Denote does not create subdirectories.
+
+#+findex: denote-create-note-in-subdirectory
+The ~denote-create-note-in-subdirectory~ is a more descriptive alias of
+~denote-subdirectory~.
+
+** Create note using Org capture
+:PROPERTIES:
+:CUSTOM_ID: h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881
+:END:
 
 For integration with ~org-capture~, the user must first add the relevant
 template.  Such as:
@@ -325,23 +371,25 @@ template.  Such as:
 #+end_src
 
 [ In the future, we might develop Denote in ways which do not require such
-  manual intervention. ]
+  manual intervention.  More user feedback is required to identify the
+  relevant workflows. ]
 
 Once the template is added, it is accessed from the specified key.  If,
 for instance, ~org-capture~ is bound to =C-c c=, then the note creation
-is initiated with =C-c c n=.  After that, the process is the same as
-with invoking ~denote~ directly, namely: a prompt for a title followed
-by a prompt for keywords.
+is initiated with =C-c c n=, per the above snippet.  After that, the
+process is the same as with invoking ~denote~ directly, namely: a prompt
+for a title followed by a prompt for keywords ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
 #+vindex: denote-org-capture-specifiers
 Users may prefer to leverage ~org-capture~ in order to extend file
 creation with the specifiers described in the ~org-capture-templates~
 documentation (such as to capture the active region and/or create a
 hyperlink pointing to the given context).  Due to the particular
-file-naming scheme of Denote, such specifiers cannot be written directly
-in the template.  Instead, they have to be assigned to the user option
-~denote-org-capture-specifiers~, which is interpreted by the function
-~denote-org-capture~.  Example with our default value:
+file-naming scheme of Denote, which is derived dynamically, such
+specifiers cannot be written directly in the template.  Instead, they
+have to be assigned to the user option ~denote-org-capture-specifiers~,
+which is interpreted by the function ~denote-org-capture~.  Example with
+our default value:
 
 #+begin_src emacs-lisp
 (setq denote-org-capture-specifiers "%l\n%i\n%?")
@@ -351,22 +399,6 @@ Note that ~denote-org-capture~ ignores the ~denote-file-type~: it always
 sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
-
-#+findex: denote-create-note
-#+findex: denote-create-note-using-type
-#+findex: denote-create-note-using-date
-#+findex: denote-create-note-in-subdirectory
-For convenience, we provide these aliases:
-
-| Name                | Alias                              |
-|---------------------+------------------------------------|
-| denote              | denote-create-note                 |
-| denote-type         | denote-create-note-using-type      |
-| denote-date         | denote-create-note-using-date      |
-| denote-subdirectory | denote-create-note-in-subdirectory |
-
-The purpose of these aliases is to provide alternative, more descriptive
-names of select commands to aid with discoverability.
 
 * Renaming files
 :PROPERTIES:
