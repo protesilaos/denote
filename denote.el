@@ -111,9 +111,16 @@
 
 A safe local value of either `default-directory' or `local' can
 be added as a value in a .dir-local.el file.  Do this if you
-intend to use multiple directories for your notes while still
+intend to use multiple directory silos for your notes while still
 relying on a global value (which is the value of this variable).
 The Denote manual has a sample (search for '.dir-locals.el').
+Those silos do not communicate with each other: they remain
+separate.
+
+The local value influences where commands such as `denote' will
+place the newly created note.  If the command is called from a
+directory or file where the local value exists, then that value
+take precedence, otherwise the global value is used.
 
 If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead: it returns the path as a
