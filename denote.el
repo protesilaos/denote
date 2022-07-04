@@ -209,7 +209,8 @@ Any other non-nil value is the same as the default."
 (defcustom denote-date-format nil
   "Date format in the front matter (file header) of new notes.
 
-When nil (the default value), use a file-type-specific format:
+When nil (the default value), use a file-type-specific
+format (also check `denote-file-type'):
 
 - For Org, an inactive timestamp is used, such as [2022-06-30 Wed
   06:19].
