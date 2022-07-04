@@ -1657,9 +1657,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Contributions to code or the manual :: Damien Cassou, Jack Baty,
   Jean-Philippe Gagné Guay, Kaushal Modi.
 
-+ Ideas and/or user feedback :: Colin McLear, Damien Cassou, Frank
-  Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter Prevos,
-  Shreyas Ragavan, Sven Seebeck, Ypot.
++ Ideas and/or user feedback :: Benjamin Kästner, Colin McLear, Damien
+  Cassou, Frank Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter
+  Prevos, Shreyas Ragavan, Sven Seebeck, Ypot.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
