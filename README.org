@@ -254,10 +254,11 @@ insert single words at the relevant prompts.
 #+findex: denote-type
 #+findex: denote-org-capture
 #+findex: denote-date
-There are four ways to write a note with Denote: invoke the ~denote~,
-~denote-type~, ~denote-date~ commands, or leverage the
-~org-capture-templates~ by setting up a template which calls the
-function ~denote-org-capture~.
+#+findex: denote-subdirectory
+There are five ways to write a note with Denote: invoke the ~denote~,
+~denote-type~, ~denote-date~, ~denote-subdirectory~ commands, or
+leverage the ~org-capture-templates~ by setting up a template which
+calls the function ~denote-org-capture~.
 
 In the first case, all that is needed is to run ~denote~.  It will
 prompt for a title.  Once it is supplied, the command will ask for
@@ -299,6 +300,13 @@ Denote takes care to abort the operation if such an identity is
 established (e.g. when you use ~denote-date~ with =2022-06-16= twice, it
 will generate the same identifier of =20220616T000000=).  The user must
 thus call the ~denote-date~ command again and provide a unique value.
+
+[ The ~denote-subdirectory~ is part of {{{development-version}}} ]
+
+The ~denote-subdirectory~ command is the same as ~denote~ except it
+prompts for a directory to place the new note in.  Candidates are the
+value of the user option ~denote-directory~ and any subdirectory inside
+of it.  Denote does not create subdirectories.
 
 For integration with ~org-capture~, the user must first add the relevant
 template.  Such as:
@@ -347,11 +355,18 @@ the ~denote-org-capture-specifiers~.
 #+findex: denote-create-note
 #+findex: denote-create-note-using-type
 #+findex: denote-create-note-using-date
-For convencience, the ~denote~ command has a ~denote-create-note~ alias.
-Same for ~denote-type~ which is ~denote-create-note-using-type~ and
-~denote-date~ that has ~denote-create-note-using-date~.  The purpose of
-these aliases is to provide alternative, more descriptive names of
-select commands to aid with discoverability.
+#+findex: denote-create-note-in-subdirectory
+For convenience, we provide these aliases:
+
+| Name                | Alias                              |
+|---------------------+------------------------------------|
+| denote              | denote-create-note                 |
+| denote-type         | denote-create-note-using-type      |
+| denote-date         | denote-create-note-using-date      |
+| denote-subdirectory | denote-create-note-in-subdirectory |
+
+The purpose of these aliases is to provide alternative, more descriptive
+names of select commands to aid with discoverability.
 
 * Renaming files
 :PROPERTIES:
@@ -1358,6 +1373,7 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n n") #'denote)
   (define-key map (kbd "C-c n N") #'denote-type)
   (define-key map (kbd "C-c n d") #'denote-date)
+  (define-key map (kbd "C-c n s") #'denote-subdirectory)
   ;; If you intend to use Denote with a variety of file types, it is
   ;; easier to bind the link-related commands to the `global-map', as
   ;; shown here.  Otherwise follow the same pattern for `org-mode-map',

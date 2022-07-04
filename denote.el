@@ -767,5 +767,59 @@ The TITLE and KEYWORDS arguments are the same as with `denote'."
 
 (defalias 'denote-create-note-using-date (symbol-function 'denote-date))
 
+;;;;; The `denote-subdirectory' command
+
+(defvar denote--subdir-history nil
+  "Minibuffer history of `denote-subdirectory'.")
+
+(defun denote--subdirs ()
+  "Return list of subdirectories in variable `denote-directory'."
+  (seq-remove
+   (lambda (filename)
+     ;; TODO 2022-07-03: Generalise for all VC backends.  Which ones?
+     ;;
+     ;; TODO 2022-07-03: Maybe it makes sense to also allow the user to
+     ;; specify a blocklist of directories that should always be
+     ;; excluded?
+     (or (string-match-p "\\.git" filename)
+         (not (file-directory-p filename))))
+   (directory-files-recursively (denote-directory) ".*" t t)))
+
+(defun denote--subdirs-completion-table (dirs)
+  "Match DIRS as a completion table."
+  (let* ((def (car denote--subdir-history))
+         (table (denote--completion-table 'file dirs))
+         (prompt (if def
+                     (format "Select subdirectory [%s]: " def)
+                   "Select subdirectory: ")))
+    (completing-read prompt table nil t nil 'denote--subdir-history def)))
+
+(defun denote--subdirs-prompt ()
+  "Handle user input on choice of subdirectory."
+  (let* ((root (denote-directory))
+         (subdirs (denote--subdirs))
+         (dirs (push root subdirs)))
+    (denote--subdirs-completion-table dirs)))
+
+;;;###autoload
+(defun denote-subdirectory (directory title keywords)
+  "Like `denote' but ask for DIRECTORY to put the note in.
+
+The DIRECTORY is either the variable `denote-directory' or a
+subdirectory of it.  The TITLE and KEYWORDS are the same as for
+the `denote' command.
+
+Denote does not create subdirectories."
+  (interactive
+   (list
+    (denote--subdirs-prompt)
+    (denote--title-prompt)
+    (denote--keywords-prompt)))
+  (let ((denote-directory directory))
+    (denote--prepare-note title keywords)
+    (denote--keywords-add-to-history keywords)))
+
+(defalias 'denote-create-note-in-subdirectory (symbol-function 'denote-subdirectory))
+
 (provide 'denote)
 ;;; denote.el ends here
