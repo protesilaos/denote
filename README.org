@@ -807,81 +807,15 @@ configuration:
 (add-hook 'after-init-hook #'savehist-mode)
 #+end_src
 
-* Notes in multiple file types
+* Extending Denote
 :PROPERTIES:
-:CUSTOM_ID: h:f34b172b-3440-446c-aec1-bf818d0aabfe
+:CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
 :END:
 
-As noted before, Denote does not have a particular preference on the
-workflow the user wishes to follow nor does it expect a specific file
-type.  It is entirely possible to store notes in a variety of formats
-across multiple directories and Denote will still be able to work with
-them, provided they follow the file-naming scheme and have an identifier
-in their front matter, where relevant.  Here we show how to create new
-notes that take the example of the ~denote-type~ command and take it one
-step further.
-
-Suppose you want to use the ~denote~ command to store some notes in
-Markdown, others in Org, and others still in plain text.  Maybe you also
-want to place each of those in its own directory.  Using the
-~denote-type~ command is not sufficient, as it only operates on the
-value of the user option ~denote-directory~.  You need some small
-wrapper functions.
-
-For example:
-
-+ =~/Documents/notes/= is your default and contains Org files.
-+ =~/Documents/blog/= holds the files of your blog.
-+ =~/Documents/random/= is where you scribble thoughts in plain text.
-
-Why would you do that?  It does not matter.  This is for didactic
-purposes.  All you need to do is write functions that ~let~ bind the
-~denote-directory~ and to the desired value.
-
-#+begin_src emacs-lisp
-(defun my-denote-markdown-toml ()
-  "Create Markdown+TOML note in ~/Documents/blog/."
-  (interactive)
-  (let ((denote-file-type 'markdown-toml)
-        (denote-directory "~/Documents/blog/"))
-    (call-interactively #'denote)))
-
-(defun my-denote-plain-text ()
-  "Create plain text note in ~/Documents/random/."
-  (interactive)
-  (let ((denote-file-type 'text)
-        (denote-directory "~/Documents/random/"))
-    (call-interactively #'denote)))
-#+end_src
-
-You do not need a third command for the Org files, as those would be the
-default used by regular ~denote~.
-
-If you do place different types of notes in their own directories, you
-must introduce directory-local variables to keep things working
-seamlessly.  Otherwise you cannot create notes, retrieve backlinks, and
-so on.  To that end, the ~denote-directory~ variable considers the
-symbols =default-directory= or =local= as safe local variables.  Write a
-=.dir-locals.el= file in each of your non-default notes directories with
-the following contents (replacing =default-directory= with =local=, if
-you prefer):
-
-#+begin_src emacs-lisp
-;;; Directory Local Variables
-;;; For more information see (info "(emacs) Directory Variables")
-
-((nil . ((denote-directory . default-directory))))
-#+end_src
-
-This will allow things to work smoothly (e.g. ~denote-infer-keywords~).
-
-Your default ~denote-directory~ does not need this, as it already is the
-normal target that Denote uses.
-
-Want to automate aspects of note creation ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]])?
-Have more ideas?  Something does not work quite right?  Areas you wish
-were more abstract in the code?  Please participate in the development
-process.
+Denote is a tool with a narrow scope: create notes and link between
+them, based on the aforementioned file-naming scheme.  For other common
+operations the user is advised to rely on standard Emacs facilities or
+specialised third-party packages.  This section covers the details.
 
 ** Keep a journal or diary
 :PROPERTIES:
@@ -894,14 +828,14 @@ they both describe a personal space that holds a record of your thoughts
 about your experiences and/or view of events in the world.
 
 Suppose you are committed to writing an entry every day.  Unlike what we
-demonstrated before, your writing will follow a regular naming pattern
-([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You know that the title of the new note
-must always look like =Tuesday 14 June 2022= and the keyword has to be
-=journal= or =diary=.  As such, you want to automate the task instead of
-being prompted each time, as is the norm with ~denote~ and the relevant
-commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  This is easy to accomplish because ~denote~
-can be called from Lisp and given the required arguments of =TITLE= and
-=KEYWORDS= directly.  All you need is a simple wrapper function:
+demonstrated before, your writing will follow a regular naming pattern.
+You know that the title of the new note must always look like =Tuesday
+14 June 2022= and the keyword has to be =journal= or =diary=.  As such,
+you want to automate the task instead of being prompted each time, as is
+the norm with ~denote~ and the relevant commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+This is easy to accomplish because ~denote~ can be called from Lisp and
+given the required arguments of =TITLE= and =KEYWORDS= directly.  All
+you need is a simple wrapper function:
 
 #+begin_src emacs-lisp
 (defun my-denote-journal ()
@@ -965,119 +899,6 @@ Sources for =tmr=:
     + GitHub: <https://github.com/protesilaos/tmr>
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
-
-Recall what we discussed elsewhere in the manual about changing the file
-type and target directory ([[#h:f34b172b-3440-446c-aec1-bf818d0aabfe][Notes in multiple file types]]).  You basically
-~let~ bind the relevant variables.  Such bindings are specific to the
-function: they do not affect anything outside of it, so you can keep the
-defaults for your regular notes and use something different for your
-journaling.  For example, the following snippet is like the previous
-sample of writing a journal entry and setting a timer, but it also uses
-a plain text file type and adds the new note to the
-=~/Documents/journal/= directory:
-
-#+begin_src emacs-lisp
-(defun my-denote-journal-with-tmr-and-custom-type-and-dir ()
-  "Like `my-denote-journal-with-tmr' with custom type and directory."
-  (interactive)
-  (let ((denote-file-type 'text) ; it supports other file types as well: read its doc string
-        (denote-directory "~/Documents/journal/"))
-    (denote
-     (format-time-string "%A %e %B %Y")
-     "journal")
-    (tmr 10 "Practice writing in my journal")))
-#+end_src
-
-Finally, we can incorporate the idea of the ~denote-date~ command into
-our journaling workflow.  Unlike regular ~denote~, this command has a
-slightly different structure.  Below are variants of the aforementioned
-ideas.  If you pick more than one, just give them a unique name (the
-text right after ~defun~):
-
-#+begin_src emacs-lisp
-(defun my-denote-journal-with-date (date title)
-  "Ask for DATE and TITLE to write a journal entry.
-
-Read the doc string of `denote-date' on what a valid DATE is."
-  (interactive
-   (list
-    (denote--date-prompt)
-    (denote--title-prompt)))
-  (when-let ((d (denote--valid-date date))
-             (id (format-time-string denote--id-format d))
-             ((denote--barf-duplicate-id id)))
-    (denote--prepare-note title "journal" nil d id)))
-
-(defun my-denote-journal-with-date (date)
-  "Ask for DATE to write a journal entry.
-
-Read the doc string of `denote-date' on what a valid DATE input is.
-
-The title of the note is something like Tuesday 17 June 2020,
-though you can modify the `format-time-string' specifiers as
-described in its doc string."
-  (interactive (list (denote--date-prompt)))
-  (when-let ((d (denote--valid-date date))
-             (id (format-time-string denote--id-format d))
-             ((denote--barf-duplicate-id id)))
-    (denote--prepare-note
-     (format-time-string "%A %e %B %Y" d)
-     "journal" nil d id)))
-
-(defun my-denote-journal-with-date (date)
-  "Ask for DATE to write a journal entry.
-
-Journal entries are stored in ~/Documents/journal/ and use plain
-text for their `denote-file-type'.
-
-Read the doc string of `denote-date' on what a valid DATE input is.
-
-The title of the note is something like Tuesday 17 June 2020,
-though you can modify the `format-time-string' specifiers as
-described in its doc string."
-  (interactive (list (denote--date-prompt)))
-  (when-let ((d (denote--valid-date date))
-             (id (format-time-string denote--id-format d))
-             ((denote--barf-duplicate-id id))
-             (denote-file-type 'text) ; it supports other file types as well: read its doc string
-             (denote-directory "~/Documents/journal/"))
-    (denote--prepare-note
-     (format-time-string "%A %e %B %Y" d)
-     "journal" nil d id)))
-
-(defun my-denote-journal-with-date (date)
-  "Ask for DATE to write a journal entry and start a 10-minute tmr.
-
-Journal entries are stored in ~/Documents/journal/ and use plain
-text for their `denote-file-type'.  The `tmr' command comes from
-the package of the same name (same dev as Denote's).
-
-Read the doc string of `denote-date' on what a valid DATE input is.
-
-The title of the note is something like Tuesday 17 June 2020,
-though you can modify the `format-time-string' specifiers as
-described in its doc string."
-  (interactive (list (denote--date-prompt)))
-  (when-let ((d (denote--valid-date date))
-             (id (format-time-string denote--id-format d))
-             ((denote--barf-duplicate-id id))
-             (denote-file-type 'text) ; it supports other file types as well: read its doc string
-             (denote-directory "~/Documents/journal/"))
-    (denote--prepare-note
-     (format-time-string "%A %e %B %Y" d)
-     "journal" nil d id)
-    (tmr 10 "Practice writing in my journal")))
-#+end_src
-
-* Extending Denote
-:PROPERTIES:
-:CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
-:END:
-
-Denote is a tool with a narrow scope: create notes and link between
-them, based on the aforementioned file-naming scheme.  For other common
-operations the user is advised to rely on standard Emacs facilities or
-specialised third-party packages.  This section covers the details.
 
 ** Narrow the list of files in Dired
 :PROPERTIES:
