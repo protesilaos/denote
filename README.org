@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.1.0
-#+macro:                 release-date 2022-06-27
-#+macro:                 development-version 0.2.0-dev
+#+macro:                 stable-version 0.2.0
+#+macro:                 release-date 2022-07-04
+#+macro:                 development-version 0.3.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -216,8 +216,6 @@ The ~denote-create-note-using-date~ is an alias of ~denote-date~.
 :CUSTOM_ID: h:588c1f96-ca01-4c2c-be7a-ca6359c9465b
 :END:
 
-[ The ~denote-subdirectory~ is part of {{{development-version}}} ]
-
 The ~denote-subdirectory~ command is like ~denote~ except it prompts for
 a directory to place the new note in ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 Candidates are the value of the user option ~denote-directory~ and any
@@ -353,8 +351,6 @@ meaning that it has no subdirectories, or it can be a directory tree.
 Either way, Denote takes care to only consider "notes" as valid
 candidates in the relevant operations and will omit other files or
 directories.
-
-[ Subdirectory support is part of {{{development-version}}} ]
 
 Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
@@ -536,22 +532,10 @@ If the value is a string, ignore the above and use it instead.  The
 string must include format specifiers for the date.  These are described
 in the doc string of ~format-time-string~..
 
-[ DEV NOTE: ~denote-date-format~ supersedes the now obsolete
-  ~denote-front-matter-date-format~ as part of {{{development-version}}} ]
-
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
-
-[ Support for =id:= type notes is REMOVED as part of
-  {{{development-version}}}.  The reason is that to fully support org-id
-  we need to change Denote's scope.  That will never be reconciled with
-  the project's principles.  Users of the =id:= functionality are
-  advised to use org-roam: it has first-class support for it, is a major
-  project, and has a massive community.  My sincere apologies for not
-  foreseeing this and for breaking some user configurations in the
-  process. ]
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to an entry specified
