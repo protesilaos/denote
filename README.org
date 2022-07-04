@@ -132,7 +132,7 @@ Obligations, Tasks, and Engagements.
 Notes are stored the ~denote-directory~.  The default path is
 =~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
 meaning that it has no subdirectories, or it can be a directory tree.
-At any rate, Denote takes care to only consider "notes" as valid
+Either way, Denote takes care to only consider "notes" as valid
 candidates in the relevant operations and will omit other files or
 directories.
 
