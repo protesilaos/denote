@@ -129,7 +129,7 @@
 (defcustom denote-dired-directories
   ;; We use different ways to specify a path for demo purposes.
   (list denote-directory
-        (thread-last denote-directory (expand-file-name "attachments"))
+        ;; (thread-last denote-directory (expand-file-name "attachments"))
         (expand-file-name "~/Documents/vlog"))
   "List of directories where `denote-dired-mode' should apply to."
   :type '(repeat directory)
