@@ -138,16 +138,26 @@ Also see user options: `denote-allow-multi-word-keywords',
   :type '(repeat string))
 
 (defcustom denote-infer-keywords t
-  "Whether to infer keywords.
+  "Whether to infer keywords from existing notes' file names.
 
 When non-nil, search the file names of existing notes in the
 variable `denote-directory' for their keyword field and extract
 the entries as \"inferred keywords\".  These are combined with
 `denote-known-keywords' and are presented as completion
-candidated while using `denote' interactively.
+candidates while using `denote' and related commands
+interactively.
 
 If nil, refrain from inferring keywords.  The aforementioned
-completion prompt only shows the `denote-known-keywords'."
+completion prompt only shows the `denote-known-keywords'.  Use
+this if you want to enforce a restricted vocabulary.
+
+Inferred keywords are specific to the value of the variable
+`denote-directory'.  If a silo with a local value is used, as
+explained in that variable's doc string, the inferred keywords
+are specific to the given silo.
+
+For advanced Lisp usage, the function `denote-keywords' returns
+the appropriate list of strings."
   :group 'denote
   :type 'boolean)
 
