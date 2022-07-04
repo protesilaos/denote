@@ -53,8 +53,7 @@
     (error "Cannot find `%s' as a file" file)))
 
 (defun denote-retrieve--search (file key-regexp &optional key)
-  "Return the value associated with the KEY-REGEXP key in the
-current buffer from FILE.
+  "Return value of KEY-REGEXP key in current buffer from FILE.
 If optional KEY is non-nil, return the key instead."
   (with-temp-buffer
     (insert-file-contents file)
