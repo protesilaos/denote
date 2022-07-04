@@ -813,7 +813,7 @@ The TITLE and KEYWORDS arguments are the same as with `denote'."
 
 (defun denote--subdirs-prompt ()
   "Handle user input on choice of subdirectory."
-  (let* ((root (denote-directory))
+  (let* ((root (directory-file-name (denote-directory)))
          (subdirs (denote--subdirs))
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
