@@ -305,18 +305,26 @@ trailing hyphen."
 
 (defun denote--sluggify (str)
   "Make STR an appropriate slug for file names and related."
+  (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+
+(defun denote--sluggify-and-join (str)
+  "Sluggify STR while joining separate words."
   (downcase
-   (if denote-allow-multi-word-keywords
-       (denote--slug-hyphenate (denote--slug-no-punct str))
-     (replace-regexp-in-string
-      "-" ""
-      (denote--slug-hyphenate (denote--slug-no-punct str))))))
+   (replace-regexp-in-string
+    "-" ""
+    (denote--slug-hyphenate (denote--slug-no-punct str)))))
 
 (defun denote--sluggify-keywords (keywords)
   "Sluggify KEYWORDS."
-  (if (listp keywords)
-      (mapcar #'denote--sluggify keywords)
-    (denote--sluggify keywords)))
+  (cond
+   ((listp keywords)
+    (if denote-allow-multi-word-keywords
+        (mapcar #'denote--sluggify keywords)
+      (mapcar #'denote--sluggify-and-join keywords)))
+   (t
+    (if denote-allow-multi-word-keywords
+        (denote--sluggify keywords)
+      (denote--sluggify-and-join keywords)))))
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
