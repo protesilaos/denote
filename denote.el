@@ -316,9 +316,10 @@ trailing hyphen."
 
 (defun denote--sluggify-keywords (keywords)
   "Sluggify KEYWORDS."
-  (if denote-allow-multi-word-keywords
-      (mapcar #'denote--sluggify keywords)
-    (mapcar #'denote--sluggify-and-join keywords)))
+  (mapcar (if denote-allow-multi-word-keywords
+              #'denote--sluggify
+            #'denote--sluggify-and-join)
+          keywords))
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
