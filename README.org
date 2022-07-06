@@ -1641,7 +1641,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Author/maintainer :: Protesilaos Stavrou.
 
 + Contributions to code or the manual :: Damien Cassou, Jack Baty,
-  Jean-Philippe Gagné Guay, Kaushal Modi.
+  Jean-Philippe Gagné Guay, Kaushal Modi, Stefan Monnier.
 
 + Ideas and/or user feedback :: Benjamin Kästner, Colin McLear, Damien
   Cassou, Frank Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter
