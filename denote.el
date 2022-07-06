@@ -316,15 +316,9 @@ trailing hyphen."
 
 (defun denote--sluggify-keywords (keywords)
   "Sluggify KEYWORDS."
-  (cond
-   ((listp keywords)
-    (if denote-allow-multi-word-keywords
-        (mapcar #'denote--sluggify keywords)
-      (mapcar #'denote--sluggify-and-join keywords)))
-   (t
-    (if denote-allow-multi-word-keywords
-        (denote--sluggify keywords)
-      (denote--sluggify-and-join keywords)))))
+  (if denote-allow-multi-word-keywords
+      (mapcar #'denote--sluggify keywords)
+    (mapcar #'denote--sluggify-and-join keywords)))
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
@@ -445,34 +439,19 @@ In the case of multiple entries, those are separated by the
 output is sorted with `string-lessp'."
   (let ((choice (denote--keywords-crm (denote-keywords))))
     (setq denote-last-keywords
-          (cond
-           ((null choice)
-            "")
-           ((= (length choice) 1)
-            (car choice))
-           ((if denote-sort-keywords
-                (sort choice #'string-lessp)
-              choice))))))
+          (if denote-sort-keywords
+              (sort choice #'string-lessp)
+            choice))))
 
 (defun denote--keywords-combine (keywords)
   "Format KEYWORDS output of `denote--keywords-prompt'."
-  (if (and (> (length keywords) 1)
-           (not (stringp keywords)))
-      (mapconcat #'downcase keywords "_")
-    keywords))
+  (mapconcat #'downcase keywords "_"))
 
 (defun denote--keywords-add-to-history (keywords)
   "Append KEYWORDS to `denote--keyword-history'."
-  (if-let ((listed (listp keywords))
-           (length (length keywords)))
-      (cond
-       ((and listed (= length 1))
-        (car keywords))
-       ((and listed (> length 1))
-        (mapc (lambda (kw)
-                (add-to-history 'denote--keyword-history kw))
-              (delete-dups keywords))))
-    (add-to-history 'denote--keyword-history keywords)))
+  (mapc (lambda (kw)
+          (add-to-history 'denote--keyword-history kw))
+        (delete-dups keywords)))
 
 ;;;; New note
 
@@ -513,15 +492,9 @@ With optional TYPE, format the keywords accordingly (this might
 be `toml' or, in the future, some other spec that needss special
 treatment)."
   (let ((kw (denote--sluggify-keywords keywords)))
-    (cond
-     ((and (> (length kw) 1) (not (stringp kw)))
-      (pcase type
-        ('toml (format "[%s]" (denote--map-quote-downcase kw)))
-        (_ (mapconcat #'downcase kw "  "))))
-     (t
-      (pcase type
-        ('toml (format "[%S]" (downcase kw)))
-        (_ (downcase kw)))))))
+    (pcase type
+      ('toml (format "[%s]" (denote--map-quote-downcase kw)))
+      (_ (mapconcat #'downcase kw "  ")))))
 
 (defvar denote-toml-front-matter
   "+++
