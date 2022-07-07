@@ -203,7 +203,7 @@ The prompts will happen in the given order.
 If the value of this user option is nil, the `title' and
 `keywords' are used."
   :group 'denote
-  :type '(repeat symbol))
+  :type '(repeat symbol)) ; TODO 2022-07-07: Add `denote--prompt-symbols'
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
