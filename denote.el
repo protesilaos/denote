@@ -196,8 +196,8 @@ The value is a list of symbols, which includes any of the following:
 - `subdirectory': Prompts with completion for a subdirectory in
   which to create the note.  Available candidates are the value
   of the user option `denote-directory' and all of its
-  subdirectories (except .git).  Any subdirectory must already
-  exist: Denote will not create it.
+  subdirectories.  Any subdirectory must already exist: Denote
+  will not create it.
 
 The prompts will happen in the given order.
 
@@ -779,10 +779,11 @@ here for clarity."
 
 ;;;###autoload
 (defun denote-type ()
-  "Convenience function to have `denote' prompt for a date.
+  "Create note while prompting for a file type.
 
-This is equivalent to calling `denote' when `denote-prompts' is set to
-'(file-type title keywords)."
+This is the equivalent to calling `denote' when `denote-prompts'
+is set to \\'(file-type title keywords)."
+  (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(file-type title keywords)))
     (call-interactively #'denote)))
@@ -821,10 +822,14 @@ NO-CHECK-CURRENT passes the appropriate flag to
 
 ;;;###autoload
 (defun denote-date ()
-  "Convenience function to have `denote' prompt for a date.
+  "Create note while prompting for a date.
 
-This is equivalent to calling `denote' when `denote-prompts' is set to
-'(date title keywords)."
+The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
+that plus the time: 2022-06-16 14:30
+
+This is the equivalent to calling `denote' when `denote-prompts'
+is set to \\'(date title keywords)."
+  (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(date title keywords)))
     (call-interactively #'denote)))
@@ -867,10 +872,14 @@ This is equivalent to calling `denote' when `denote-prompts' is set to
 
 ;;;###autoload
 (defun denote-subdirectory ()
-  "Convenience function to have `denote' prompt for subdirectory.
+  "Create note while prompting for a subdirectory.
+
+Available candidates include the value of the variable
+`denote-directory' and any subdirectory thereof.
 
 This is equivalent to calling `denote' when `denote-prompts' is set to
-'(subdirectory title keywords)."
+\\'(subdirectory title keywords)."
+  (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(subdirectory title keywords)))
     (call-interactively #'denote)))
