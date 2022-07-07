@@ -466,16 +466,25 @@ output is sorted with `string-lessp'."
     ('text ".txt")
     (_ ".org")))
 
-(defun denote--format-file (path id keywords slug extension)
+(defun denote--format-file (path id keywords title-slug extension)
   "Format file name.
-PATH, ID, KEYWORDS, SLUG are expected to be supplied by `denote'
-or equivalent: they will all be converted into a single string.
-EXTENSION is the file type extension, either a string which
-include the starting dot or the return value of
+PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
+`denote' or equivalent: they will all be converted into a single
+string.  EXTENSION is the file type extension, either a string
+which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
-        (ext (or extension (denote--file-extension))))
-    (format "%s%s--%s__%s%s" path id slug kws ext)))
+        (ext (or extension (denote--file-extension)))
+        (empty-title (string-empty-p title-slug)))
+    (cond
+     ((and keywords title-slug (not empty-title))
+      (format "%s%s--%s__%s%s" path id title-slug kws ext))
+     ((and keywords empty-title)
+      (format "%s%s__%s%s" path id kws ext))
+     ((and title-slug (not empty-title))
+      (format "%s%s--%s%s" path id title-slug ext))
+     (t
+      (format "%s%s%s" path id ext)))))
 
 (defun denote--map-quote-downcase (seq)
   "Quote and downcase elements in SEQ."
