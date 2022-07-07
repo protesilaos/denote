@@ -715,13 +715,20 @@ appropriate symbols, per `denote--prompt-symbols'."
 When called interactively, the metadata and file name are prompted
 according to the value of `denote-prompts'.
 
-Optional TITLE should be a string or nil.
-Optional KEYWORDS should be a list of strings.
-Optional TYPE should be a symbol among 'org, 'markdown-toml,
-'markdown-yaml or 'text.
-Optional DATE should be a string representing a date, or nil.
-Optional SUBDIR should be the path string of the subdir in
-which to create the note, or nil."
+When called from Lisp, all arguments are optional.
+
+- TITLE is a string.  If nil, an empty string is used.
+
+- KEYWORDS is a list of strings.
+
+- TYPE is a symbol among those described in `denote-file-type'.
+
+- DATE is a string representing a date like 2022-06-30 or a date
+  and time like 2022-06-16 14:30.
+
+- SUBDIR is a string representing the path to either the value of
+  the variable `denote-directory' or a subdirectory thereof.  The
+  subdirectory must exist: Denote will not create it."
   (interactive)
   (when (called-interactively-p 'any)
     (dolist (prompt (denote--prompts))
