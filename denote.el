@@ -708,6 +708,10 @@ appropriate symbols, per `denote--prompt-symbols'."
         '(title keywords)
       common)))
 
+;; TODO 2022-07-07: We need to normalize all the arguments that `denote'
+;; accepts when called from Lisp.  Just to be sure we don't get an
+;; undesirable outcome.
+
 ;;;###autoload
 (defun denote (&optional title keywords type date subdir)
   "Create a new note with the appropriate metadata and file name.
