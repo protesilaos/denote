@@ -165,15 +165,39 @@ the appropriate list of strings."
 (defcustom denote-prompts '(title keywords)
   "Specify the prompts of the `denote' command.
 
-Valid values are:
-  date: The date of the note.
-  file-type: The filetype of the note (md, txt, org).
-  subdirectory: The subdirectory in which to create the note.
-  title: The title of the note. If unspecified, the title is
-         \"unspecified\".
-  keywords: The keywords of the note.
+The value is a list of symbols, which includes any of the following:
 
-The prompts will happen in the given order."
+- `title': Prompt for the title of the new note.  If unspecified, the
+  title is the \"unspecified\" string.
+
+- `keywords': Prompts with completion for the keywords of the new
+  note.  Available candidates are those specified in the user
+  option `denote-known-keywords'.  If the user option
+  `denote-infer-keywords' is non-nil, keywords in existing note
+  file names are included in the list of candidates.  The
+  `keywords' prompt uses `completing-read-multiple', meaning that
+  it can accept multiple keywords, separated by a comma (or
+  whatever the value of `crm-sepator' is).
+
+- `date': Prompts for the date of the new note.  It will expect a
+  date like 2022-06-16 or a date plus time: 2022-06-16 14:30.
+  Without the `date' prompt, the `denote' command uses the
+  `current-time'.
+
+- `file-type': Prompts with completion for the filetype of the
+  new note.  Available candidates are those specified in the user
+  option `denote-file-type'.  Without this prompt `denote' uses
+  the value of `denote-file-type'.
+
+- `subdirectory': Prompts with completion for a subdirectory in
+  which to create the note.  Available candidates are the value
+  of the user option `denote-directory' and all of its
+  subdirectories (except .git).
+
+The prompts will happen in the given order.
+
+If the value of this user option is nil, the `title' and
+`keywords' are used."
   :group 'denote
   :type '(repeat symbol))
 
