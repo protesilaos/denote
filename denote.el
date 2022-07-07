@@ -162,6 +162,10 @@ the appropriate list of strings."
   :group 'denote
   :type 'boolean)
 
+(defconst denote--prompt-symbols
+  '(title keywords date file-type subdirectory)
+  "List of symbols representing `denote' prompts.")
+
 (defcustom denote-prompts '(title keywords)
   "Specify the prompts of the `denote' command.
 
