@@ -172,7 +172,7 @@ the appropriate list of strings."
 The value is a list of symbols, which includes any of the following:
 
 - `title': Prompt for the title of the new note.  If unspecified, the
-  title is the \"unspecified\" string.
+  title is left empty.
 
 - `keywords': Prompts with completion for the keywords of the new
   note.  Available candidates are those specified in the user
