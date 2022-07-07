@@ -723,7 +723,7 @@ Optional SUBDIR should be the path string of the subdir in
 which to create the note, or nil."
   (interactive)
   (when (called-interactively-p 'any)
-    (dolist (prompt denote-prompts)
+    (dolist (prompt (denote--prompts))
       (pcase prompt
         ('title (setq title (denote--title-prompt)))
         ('date (setq date (denote--date-prompt)))
