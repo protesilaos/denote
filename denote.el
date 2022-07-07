@@ -196,7 +196,8 @@ The value is a list of symbols, which includes any of the following:
 - `subdirectory': Prompts with completion for a subdirectory in
   which to create the note.  Available candidates are the value
   of the user option `denote-directory' and all of its
-  subdirectories (except .git).
+  subdirectories (except .git).  Any subdirectory must already
+  exist: Denote will not create it.
 
 The prompts will happen in the given order.
 
