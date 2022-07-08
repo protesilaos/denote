@@ -95,7 +95,7 @@ and seconds."
     ("--"
      (0 'denote-faces-delimiter))
     ("_"
-     (0 'denote-faces-delimiter t)))
+     (0 'denote-faces-delimiter)))
   "Keywords for fontification of file names.")
 
 (defconst denote-faces-file-name-with-subdir-keywords
