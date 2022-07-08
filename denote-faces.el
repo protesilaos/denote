@@ -82,20 +82,22 @@ and seconds."
   "Face for file name delimiters in Dired buffers."
   :group 'denote-faces)
 
+(defvar denote-faces--file-name-regexp
+  (concat "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
+          "\\(--\\)?\\([0-9A-Za-z-]*\\)?"
+          "\\(__\\)?\\([0-9A-Za-z_-]*\\)?"
+          "\\(\\..*\\)?")
+  "Regexp of file names for fontification.")
+
 (defconst denote-faces-file-name-keywords
-  `((,denote--id-regexp
+  `((,denote-faces--file-name-regexp
      (1 'denote-faces-date)
-     (2 'denote-faces-time))
-    (,denote--title-regexp
-     (1 'denote-faces-title))
-    (,denote--keywords-regexp
-     (1 'denote-faces-keywords))
-    ("\\..*" ; here we do not need `denote--extension-regexp'
-     (0 'denote-faces-extension))
-    ("--"
-     (0 'denote-faces-delimiter))
-    ("_"
-     (0 'denote-faces-delimiter)))
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-delimiter nil t)
+     (6 'denote-faces-keywords nil t)
+     (7 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
 
 (defconst denote-faces-file-name-with-subdir-keywords
