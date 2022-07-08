@@ -93,7 +93,7 @@ and seconds."
     ("\\..*" ; here we do not need `denote--extension-regexp'
      (0 'denote-faces-extension))
     ("--"
-     (0 'denote-faces-delimiter t))
+     (0 'denote-faces-delimiter))
     ("_"
      (0 'denote-faces-delimiter t)))
   "Keywords for fontification of file names.")
