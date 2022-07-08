@@ -83,10 +83,10 @@ and seconds."
   :group 'denote-faces)
 
 (defvar denote-faces--file-name-regexp
-  (concat "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
-          "\\(--\\)?\\([0-9A-Za-z-]*\\)?"
-          "\\(__\\)?\\([0-9A-Za-z_-]*\\)?"
-          "\\(\\..*\\)?")
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?:\\(?3:--\\)\\(?4:[0-9A-Za-z-]*\\)\\)?"
+          "\\(?:\\(?5:__\\)\\(?6:[0-9A-Za-z_-]*\\)\\)?"
+          "\\(?7:\\..*\\)?")
   "Regexp of file names for fontification.")
 
 (defconst denote-faces-file-name-keywords
