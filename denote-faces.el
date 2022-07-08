@@ -90,7 +90,7 @@ and seconds."
      (1 'denote-faces-title))
     (,denote--keywords-regexp
      (1 'denote-faces-keywords))
-    (,denote--extension-regexp
+    ("\\..*" ; here we do not need `denote--extension-regexp'
      (0 'denote-faces-extension))
     ("--"
      (0 'denote-faces-delimiter t))
