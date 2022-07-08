@@ -405,7 +405,7 @@ Use optional TITLE for a prettier heading."
             files)
       (goto-char (point-min))
       (when denote-link-fontify-backlinks
-        (font-lock-add-keywords nil denote-faces-file-name-with-subdir-keywords t)))
+        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload
