@@ -242,6 +242,9 @@ are described in the doc string of `format-time-string'."
 (defconst denote--keywords-regexp "__\\([0-9A-Za-z_-]*\\)"
   "Regular expression to match keywords.")
 
+(defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
+  "Regular expression to match supported Denote extensions.")
+
 (defconst denote--file-title-regexp
   (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
   "Regular expression to match file names from `denote'.")
@@ -249,10 +252,6 @@ are described in the doc string of `format-time-string'."
 (defconst denote--file-regexp
   (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
   "Regular expression to match the entire file name'.")
-
-(defconst denote--file-only-note-regexp
-  (concat denote--file-regexp "\\.\\(org\\|md\\|txt\\)")
-  "Regular expression to match the entire file name of a note file.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
   "Regular expression of punctionation that should be removed.
@@ -321,10 +320,13 @@ trailing hyphen."
 (defun denote--only-note-p (file)
   "Make sure FILE is an actual Denote note.
 FILE is relative to the variable `denote-directory'."
-  (and (not (file-directory-p file))
-       (file-regular-p file)
-       (string-match-p denote--file-only-note-regexp file)
-       (not (string-match-p "[#~]\\'" file))))
+  (let ((file-name (file-name-nondirectory file)))
+    (and (not (file-directory-p file))
+         (file-regular-p file)
+         (string-match-p (concat "\\`" denote--id-regexp
+                                 ".*" denote--extension-regexp "\\'")
+                         file-name)
+         (not (string-match-p "[#~]\\'" file)))))
 
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return file name of FILE relative to the variable `denote-directory'.
