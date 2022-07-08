@@ -239,6 +239,9 @@ are described in the doc string of `format-time-string'."
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id-format'.")
 
+(defconst denote--keywords-regexp "__\\([0-9A-Za-z_-]*\\)"
+  "Regular expression to match keywords.")
+
 (defconst denote--file-title-regexp
   (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
   "Regular expression to match file names from `denote'.")
@@ -278,16 +281,6 @@ We consider those characters illigal for our purposes.")
     (unless (file-directory-p path)
       (make-directory path t))
     (file-name-as-directory path)))
-
-(defun denote--extract (regexp str &optional group)
-  "Extract REGEXP from STR, with optional regexp GROUP."
-  (when group
-    (unless (and (integerp group) (> group 0))
-      (error "`%s' is not a positive integer" group)))
-  (with-temp-buffer
-    (insert str)
-    (when (re-search-forward regexp nil t -1)
-      (match-string (or group 1)))))
 
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
@@ -395,24 +388,25 @@ part of the list."
         f))
     (denote--directory-files))))
 
-(defun denote--keywords-in-files ()
-  "Produce list of keywords in `denote--directory-files'."
-  (delq nil (mapcar
-             (lambda (x)
-               (denote--extract denote--file-regexp x 6))
-             ;; REVIEW 2022-07-03: I tested this with ~3000 files.  It
-             ;; has about 2 seconds of delay on my end.  After I placed
-             ;; the list of those files in a variable instead of calling
-             ;; `denote--directory-files', there was no noticeable
-             ;; performance penalty.
-             (denote--directory-files))))
+(defun denote--extract-keywords-from-path (path)
+  "Extract keywords from PATH."
+  (let* ((file-name (file-name-nondirectory path))
+         (kws (when (string-match denote--keywords-regexp file-name)
+                (match-string-no-properties 1 file-name))))
+    (when kws
+      (split-string kws "_"))))
 
 (defun denote--inferred-keywords ()
   "Extract keywords from `denote--directory-files'."
-  (let ((sequence (denote--keywords-in-files)))
-    (mapcan (lambda (s)
-              (split-string s "_" t))
-            sequence)))
+  (delete-dups
+   (mapcan (lambda (p)
+             (denote--extract-keywords-from-path p))
+           ;; REVIEW 2022-07-03: I tested this with ~3000 files.  It
+           ;; has about 2 seconds of delay on my end.  After I placed
+           ;; the list of those files in a variable instead of calling
+           ;; `denote--directory-files', there was no noticeable
+           ;; performance penalty.
+           (denote--directory-files))))
 
 (defun denote-keywords ()
   "Return appropriate list of keyword candidates.
