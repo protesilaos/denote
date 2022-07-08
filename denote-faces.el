@@ -82,22 +82,55 @@ and seconds."
   "Face for file name delimiters in Dired buffers."
   :group 'denote-faces)
 
-(defvar denote-faces--file-name-regexp
+(defvar denote-faces--file-name-regexp-with-title-and-keywords
   (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
           "\\(?:\\(?3:--\\)\\(?4:[0-9A-Za-z-]*\\)\\)?"
           "\\(?:\\(?5:__\\)\\(?6:[0-9A-Za-z_-]*\\)\\)?"
-          "\\(?7:\\..*\\)?")
+          "\\(?7:\\..*\\)")
+  "Regexp of file names for fontification.")
+
+(defvar denote-faces--file-name-regexp-with-title-only
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?:\\(?3:--\\)\\(?4:[0-9A-Za-z-]*\\)\\)?"
+          "\\(?5:\\..*\\)")
+  "Regexp of file names for fontification.")
+
+(defvar denote-faces--file-name-regexp-with-keywords-only
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?:\\(?3:__\\)\\(?4:[0-9A-Za-z_-]*\\)\\)?"
+          "\\(?5:\\..*\\)")
+  "Regexp of file names for fontification.")
+
+(defvar denote-faces--file-name-regexp-without-title-and-keywords
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?3:\\..*\\)")
   "Regexp of file names for fontification.")
 
 (defconst denote-faces-file-name-keywords
-  `((,denote-faces--file-name-regexp
+  `((,denote-faces--file-name-regexp-with-title-and-keywords
      (1 'denote-faces-date)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
      (4 'denote-faces-title nil t)
      (5 'denote-faces-delimiter nil t)
      (6 'denote-faces-keywords nil t)
-     (7 'denote-faces-extension nil t )))
+     (7 'denote-faces-extension))
+    (,denote-faces--file-name-regexp-with-title-only
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-extension))
+    (,denote-faces--file-name-regexp-with-keywords-only
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-keywords nil t)
+     (5 'denote-faces-extension))
+    (,denote-faces--file-name-regexp-with-title-and-keywords
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-extension)))
   "Keywords for fontification of file names.")
 
 (defconst denote-faces-file-name-with-subdir-keywords
