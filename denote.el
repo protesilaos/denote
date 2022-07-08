@@ -239,19 +239,14 @@ are described in the doc string of `format-time-string'."
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id-format'.")
 
+(defconst denote--title-regexp "--\\([0-9A-Za-z-]*\\)"
+  "Regular expression to match keywords.")
+
 (defconst denote--keywords-regexp "__\\([0-9A-Za-z_-]*\\)"
   "Regular expression to match keywords.")
 
 (defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
   "Regular expression to match supported Denote extensions.")
-
-(defconst denote--file-title-regexp
-  (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
-  "Regular expression to match file names from `denote'.")
-
-(defconst denote--file-regexp
-  (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
-  "Regular expression to match the entire file name'.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
   "Regular expression of punctionation that should be removed.

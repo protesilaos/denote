@@ -83,14 +83,17 @@ and seconds."
   :group 'denote-faces)
 
 (defconst denote-faces-file-name-keywords
-  `((,denote--file-regexp
+  `((,denote--id-regexp
      (1 'denote-faces-date)
-     (2 'denote-faces-time)
-     (3 'denote-faces-delimiter)
-     (4 'denote-faces-title)
-     (5 'denote-faces-delimiter)
-     (6 'denote-faces-keywords)
-     (7 'denote-faces-extension))
+     (2 'denote-faces-time))
+    (,denote--title-regexp
+     (1 'denote-faces-title))
+    (,denote--keywords-regexp
+     (1 'denote-faces-keywords))
+    (,denote--extension-regexp
+     (0 'denote-faces-extension))
+    ("--"
+     (0 'denote-faces-delimiter t))
     ("_"
      (0 'denote-faces-delimiter t)))
   "Keywords for fontification of file names.")
