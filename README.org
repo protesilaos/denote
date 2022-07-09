@@ -1631,6 +1631,10 @@ deal with searching and narrowing, and version control software handle
 the tracking of changes.
 
 ** Why do I get "Search failed with status 1" when I search for backlinks?
+:PROPERTIES:
+:CUSTOM_ID: h:42f6b07e-5956-469a-8294-17f9cf62eb2b
+:END:
+
 Denote uses [[info:emacs#Xref][Emacs' Xref]] to find backlinks.  Xref requires ~xargs~ and
 one of ~grep~ or ~ripgrep~, depending on your configuration.
 
