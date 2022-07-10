@@ -103,9 +103,10 @@ The xrefs are returned as an alist."
   "Return sorted file names sans directory from XREFS.
 Parse `denote-retrieve--xrefs'."
   (sort
-   (mapcar (lambda (x)
-             (denote--file-name-relative-to-denote-directory (car x)))
-           xrefs)
+   (delete-dups
+    (mapcar (lambda (x)
+              (denote--file-name-relative-to-denote-directory (car x)))
+            xrefs))
    #'string-lessp))
 
 (defun denote-retrieve--proces-grep (identifier)
