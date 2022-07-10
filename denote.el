@@ -283,17 +283,14 @@ are described in the doc string of `format-time-string'."
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id-format'.")
 
-(defconst denote--file-title-regexp
-  (concat denote--id-regexp "\\(--\\)\\(.*\\)\\(__\\)")
-  "Regular expression to match file names from `denote'.")
+(defconst denote--title-regexp "--\\([0-9A-Za-z-]*\\)"
+  "Regular expression to match keywords.")
 
-(defconst denote--file-regexp
-  (concat denote--file-title-regexp "\\([0-9A-Za-z_-]*\\)\\(\\.?.*\\)")
-  "Regular expression to match the entire file name'.")
+(defconst denote--keywords-regexp "__\\([0-9A-Za-z_-]*\\)"
+  "Regular expression to match keywords.")
 
-(defconst denote--file-only-note-regexp
-  (concat denote--file-regexp "\\.\\(org\\|md\\|txt\\)")
-  "Regular expression to match the entire file name of a note file.")
+(defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
+  "Regular expression to match supported Denote extensions.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
   "Regular expression of punctionation that should be removed.
@@ -322,16 +319,6 @@ We consider those characters illigal for our purposes.")
     (unless (file-directory-p path)
       (make-directory path t))
     (file-name-as-directory path)))
-
-(defun denote--extract (regexp str &optional group)
-  "Extract REGEXP from STR, with optional regexp GROUP."
-  (when group
-    (unless (and (integerp group) (> group 0))
-      (error "`%s' is not a positive integer" group)))
-  (with-temp-buffer
-    (insert str)
-    (when (re-search-forward regexp nil t -1)
-      (match-string (or group 1)))))
 
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
@@ -372,10 +359,13 @@ trailing hyphen."
 (defun denote--only-note-p (file)
   "Make sure FILE is an actual Denote note.
 FILE is relative to the variable `denote-directory'."
-  (and (not (file-directory-p file))
-       (file-regular-p file)
-       (string-match-p denote--file-only-note-regexp file)
-       (not (string-match-p "[#~]\\'" file))))
+  (let ((file-name (file-name-nondirectory file)))
+    (and (not (file-directory-p file))
+         (file-regular-p file)
+         (string-match-p (concat "\\`" denote--id-regexp
+                                 ".*" denote--extension-regexp "\\'")
+                         file-name)
+         (not (string-match-p "[#~]\\'" file)))))
 
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return file name of FILE relative to the variable `denote-directory'.
@@ -439,24 +429,20 @@ part of the list."
         f))
     (denote--directory-files))))
 
-(defun denote--keywords-in-files ()
-  "Produce list of keywords in `denote--directory-files'."
-  (delq nil (mapcar
-             (lambda (x)
-               (denote--extract denote--file-regexp x 6))
-             ;; REVIEW 2022-07-03: I tested this with ~3000 files.  It
-             ;; has about 2 seconds of delay on my end.  After I placed
-             ;; the list of those files in a variable instead of calling
-             ;; `denote--directory-files', there was no noticeable
-             ;; performance penalty.
-             (denote--directory-files))))
+(defun denote--extract-keywords-from-path (path)
+  "Extract keywords from PATH."
+  (let* ((file-name (file-name-nondirectory path))
+         (kws (when (string-match denote--keywords-regexp file-name)
+                (match-string-no-properties 1 file-name))))
+    (when kws
+      (split-string kws "_"))))
 
 (defun denote--inferred-keywords ()
   "Extract keywords from `denote--directory-files'."
-  (let ((sequence (denote--keywords-in-files)))
-    (mapcan (lambda (s)
-              (split-string s "_" t))
-            sequence)))
+  (delete-dups
+   (mapcan (lambda (p)
+             (denote--extract-keywords-from-path p))
+           (denote--directory-files))))
 
 (defun denote-keywords ()
   "Return appropriate list of keyword candidates.
@@ -510,16 +496,25 @@ output is sorted with `string-lessp'."
     ('text ".txt")
     (_ ".org")))
 
-(defun denote--format-file (path id keywords slug extension)
+(defun denote--format-file (path id keywords title-slug extension)
   "Format file name.
-PATH, ID, KEYWORDS, SLUG are expected to be supplied by `denote'
-or equivalent: they will all be converted into a single string.
-EXTENSION is the file type extension, either a string which
-include the starting dot or the return value of
+PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
+`denote' or equivalent: they will all be converted into a single
+string.  EXTENSION is the file type extension, either a string
+which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
-        (ext (or extension (denote--file-extension))))
-    (format "%s%s--%s__%s%s" path id slug kws ext)))
+        (ext (or extension (denote--file-extension)))
+        (empty-title (string-empty-p title-slug)))
+    (cond
+     ((and keywords title-slug (not empty-title))
+      (format "%s%s--%s__%s%s" path id title-slug kws ext))
+     ((and keywords empty-title)
+      (format "%s%s__%s%s" path id kws ext))
+     ((and title-slug (not empty-title))
+      (format "%s%s--%s%s" path id title-slug ext))
+     (t
+      (format "%s%s%s" path id ext)))))
 
 (defun denote--map-quote-downcase (seq)
   "Quote and downcase elements in SEQ."

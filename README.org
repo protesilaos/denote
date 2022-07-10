@@ -612,6 +612,12 @@ Reproducing it here for the sake of convenience:
         (window-width . 0.3)))
 #+end_src
 
+Note that the backlinking facility uses Emacs' built-in Xref
+infrastructure.  On some operating systems, the user may need to add
+certain executables to the relevant environment variable.
+
+[[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
+
 #+findex: denote-link-add-links
 The command ~denote-link-add-links~ adds links at point matching a
 regular expression or plain string.  The links are inserted as a
@@ -1630,6 +1636,25 @@ the file manager organise and provide access to files, search programs
 deal with searching and narrowing, and version control software handle
 the tracking of changes.
 
+** Why do I get "Search failed with status 1" when I search for backlinks?
+:PROPERTIES:
+:CUSTOM_ID: h:42f6b07e-5956-469a-8294-17f9cf62eb2b
+:END:
+
+Denote uses [[info:emacs#Xref][Emacs' Xref]] to find backlinks.  Xref requires ~xargs~ and
+one of ~grep~ or ~ripgrep~, depending on your configuration.
+
+This is usually not an issue on *nix systems, but the necessary
+executables are not available on Windows Emacs distributions.  Please
+ensure that you have both ~xargs~ and either ~grep~ or ~ripgrep~
+available within your ~PATH~ environment variable.
+
+If you have ~git~ on Windows installed, then you may use the following
+code (adjust the git's installation path if necessary):
+#+begin_src emacs-lisp
+  (setenv "PATH" (concat (getenv "PATH") ";" "C:\\Program Files\\Git\\usr\\bin"))
+#+end_src
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
@@ -1640,8 +1665,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Author/maintainer :: Protesilaos Stavrou.
 
-+ Contributions to code or the manual :: Damien Cassou, Jack Baty,
-  Jean-Philippe Gagné Guay, Kaushal Modi, Stefan Monnier.
++ Contributions to code or the manual :: Benjamin Kästner, Damien
+  Cassou, Jack Baty, Jean-Philippe Gagné Guay, Kaushal Modi, Stefan
+  Monnier.
 
 + Ideas and/or user feedback :: Benjamin Kästner, Colin McLear, Damien
   Cassou, Frank Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter

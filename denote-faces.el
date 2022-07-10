@@ -82,24 +82,40 @@ and seconds."
   "Face for file name delimiters in Dired buffers."
   :group 'denote-faces)
 
+(defvar denote-faces--file-name-regexp
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?:\\(?3:--\\)\\(?4:[0-9A-Za-z-]*\\)\\)?"
+          "\\(?:\\(?5:__\\)\\(?6:[0-9A-Za-z_-]*\\)\\)?"
+          "\\(?7:\\..*\\)?$")
+  "Regexp of file names for fontification.")
+
 (defconst denote-faces-file-name-keywords
-  `((,denote--file-regexp
+  `((,(concat " " denote-faces--file-name-regexp)
      (1 'denote-faces-date)
      (2 'denote-faces-time)
-     (3 'denote-faces-delimiter)
-     (4 'denote-faces-title)
-     (5 'denote-faces-delimiter)
-     (6 'denote-faces-keywords)
-     (7 'denote-faces-extension))
-    ("_"
-     (0 'denote-faces-delimiter t)))
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-delimiter nil t)
+     (6 'denote-faces-keywords nil t)
+     (7 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
 
-(defconst denote-faces-file-name-with-subdir-keywords
-  (append denote-faces-file-name-keywords
-          '(("\\(^.*/\\)?"
-             (0 'denote-faces-subdirectory))))
-  "Keywords for fontification of file names with a directory.")
+(define-obsolete-variable-alias
+  'denote-faces-file-name-with-subdir-keywords
+  'denote-faces-file-name-keywords-for-backlinks
+  "0.3.0")
+
+(defconst denote-faces-file-name-keywords-for-backlinks
+  `((,(concat "^\\(?8:.*/\\)?" denote-faces--file-name-regexp)
+     (8 'denote-faces-subdirectory nil t)
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-delimiter nil t)
+     (6 'denote-faces-keywords nil t)
+     (7 'denote-faces-extension nil t )))
+  "Keywords for fontification of file names in the backlinks buffer.")
 
 (provide 'denote-faces)
 ;;; denote-faces.el ends here
