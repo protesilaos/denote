@@ -276,6 +276,67 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+** Maintain separate directories for notes
+:PROPERTIES:
+:CUSTOM_ID: h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5
+:END:
+#+cindex: Note silos
+
+The user option ~denote-directory~ accepts a value that represents the
+path to a directory, such as =~/Documents/notes=.  Normally, the user
+will have one place where they store all their notes, in which case this
+arrangement shall suffice.
+
+There is, however, the possibility to maintain separate directories of
+notes.  By "separate", we mean that they do not communicate with each
+other: no linking between them, no common keywords, nothing.  Think of
+the scenario where one set of notes is for private use and another is
+for an employer.  We call these separate directories "silos".
+
+To create silos, the user must specify a local variable at the root of
+the desired directory.  This is done by creating a =.dir-locals.el=
+file, with the following contents:
+
+#+begin_src emacs-lisp
+;;; Directory Local Variables.  For more information evaluate:
+;;;
+;;;     (info "(emacs) Directory Variables")
+
+((nil . ((denote-directory . default-directory))))
+#+end_src
+
+When inside the directory that contains this =.dir-locals.el= file, all
+Denote commands/functions for note creation, linking, the inference of
+available keywords, et cetera will use the silo as their point of
+reference.  They will not read the global value of ~denote-directory~.
+The global value of ~denote-directory~ is read everywhere else except
+the silos.
+
+In concrete terms, this is a representation of the directory structures
+(notice the =.dir-locals.el= file is needed only for the silos):
+
+#+begin_example
+;; This is the global value of 'denote-directory' (no need for a .dir-locals.el)
+~/Documents/notes
+|-- 20210303T120534--this-is-a-test__journal_philosophy.txt
+|-- 20220303T120534--another-sample__journal_testing.md
+`-- 20220620T181255--the-third-test__keyword.org
+
+;; A silo with notes for the employer
+~/different/path/to/notes-for-employer
+|-- .dir-locals.el
+|-- 20210303T120534--this-is-a-test__conference.txt
+|-- 20220303T120534--another-sample__meeting.md
+`-- 20220620T181255--the-third-test__keyword.org
+
+;; Another silo with notes for my volunteering
+~/different/path/to/notes-for-volunteering
+|-- .dir-locals.el
+|-- 20210303T120534--this-is-a-test__activism.txt
+|-- 20220303T120534--another-sample__teambuilding.md
+`-- 20220620T181255--the-third-test__keyword.org
+#+end_example
+
 * Renaming files
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
