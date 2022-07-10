@@ -721,14 +721,17 @@ according to the value of `denote-prompts'.
 
 When called from Lisp, all arguments are optional.
 
-- TITLE is a string.  If nil, an empty string is used.
+- TITLE is a string or a function returning a string.  If nil, an
+  empty string is used.
 
-- KEYWORDS is a list of strings.
+- KEYWORDS is a list of strings.  The list can be empty or the
+  value can be set to nil.
 
 - TYPE is a symbol among those described in `denote-file-type'.
 
 - DATE is a string representing a date like 2022-06-30 or a date
-  and time like 2022-06-16 14:30.
+  and time like 2022-06-16 14:30.  A nil value or an empty string
+  is interpreted as the `current-time'.
 
 - SUBDIR is a string representing the path to either the value of
   the variable `denote-directory' or a subdirectory thereof.  The
