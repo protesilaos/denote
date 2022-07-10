@@ -201,8 +201,25 @@ The value is a list of symbols, which includes any of the following:
 
 The prompts will happen in the given order.
 
-If the value of this user option is nil, the `title' and
-`keywords' are used."
+If the value of this user option is nil, no prompts are used.
+The resulting file name will consist of an identifier (i.e. the
+date and time) and a supported file type extension (per
+`denote-file-type').
+
+Recall that Denote's standard file-naming scheme is as
+follows (read the manual for the technicalities):
+
+    DATE--TITLE__KEYWORDS.EXT
+
+If either or both of the `title' and `keywords' prompts are not
+included in the value of this variable, file names will be any of
+those permutations:
+
+    DATE.EXT
+    DATE--TITLE.EXT
+    DATE__KEYWORDS.EXT
+
+When in doubt, always include the `title' and `keywords' prompts."
   :group 'denote
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
