@@ -190,7 +190,7 @@ The value is a list of symbols, which includes any of the following:
 
 - `file-type': Prompts with completion for the filetype of the
   new note.  Available candidates are those specified in the user
-  option `denote-file-type'.  Without this prompt `denote' uses
+  option `denote-file-type'.  Without this prompt, `denote' uses
   the value of `denote-file-type'.
 
 - `subdirectory': Prompts with completion for a subdirectory in
