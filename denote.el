@@ -736,15 +736,16 @@ When called from Lisp, all arguments are optional.
 - SUBDIR is a string representing the path to either the value of
   the variable `denote-directory' or a subdirectory thereof.  The
   subdirectory must exist: Denote will not create it."
-  (interactive)
-  (when (called-interactively-p 'any)
-    (dolist (prompt denote-prompts)
-      (pcase prompt
-        ('title (setq title (denote--title-prompt)))
-        ('date (setq date (denote--date-prompt)))
-        ('file-type (setq type (denote--file-type-prompt)))
-        ('subdirectory (setq subdir (denote--subdirs-prompt)))
-        ('keywords (setq keywords (denote--keywords-prompt))))))
+  (interactive
+   (let ((args (make-vector 5 nil)))
+     (dolist (prompt denote-prompts)
+       (pcase prompt
+         ('title (aset args 0 (denote--title-prompt)))
+         ('keywords (aset args 1 (denote--keywords-prompt)))
+         ('file-type (aset args 2 (denote--file-type-prompt)))
+         ('date (aset args 3 (denote--date-prompt)))
+         ('subdirectory (aset args 4 (denote--subdirs-prompt)))))
+     (append args nil)))
   (let* ((denote-file-type (denote--file-type-symbol (or type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
