@@ -689,24 +689,6 @@ Optional DEFAULT-TITLE is used as the default value."
 
 ;;;;; The `denote' command
 
-(defun denote--prompts ()
-  "Normalize value of `denote-prompts'.
-Return a list with `title' and `keywords' as its elements if its
-value (i) is not a list (ii) is nil, (iii) does not contain the
-appropriate symbols, per `denote--prompt-symbols'."
-  (let* ((prompts denote-prompts)
-         (symbols denote--prompt-symbols)
-         (common (seq-intersection prompts symbols)))
-    (if (or (not (listp prompts))
-            (null prompts)
-            (null common))
-        '(title keywords)
-      common)))
-
-;; TODO 2022-07-07: We need to normalize or at least check with an error
-;; all the arguments that `denote' accepts when called from Lisp.  Just
-;; to be sure we don't get an undesirable outcome.
-
 ;;;###autoload
 (defun denote (&optional title keywords type date subdir)
   "Create a new note with the appropriate metadata and file name.
@@ -730,7 +712,7 @@ When called from Lisp, all arguments are optional.
   subdirectory must exist: Denote will not create it."
   (interactive)
   (when (called-interactively-p 'any)
-    (dolist (prompt (denote--prompts))
+    (dolist (prompt denote-prompts)
       (pcase prompt
         ('title (setq title (denote--title-prompt)))
         ('date (setq date (denote--date-prompt)))
