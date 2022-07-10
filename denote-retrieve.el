@@ -94,8 +94,10 @@ If optional KEY is non-nil, return the key instead."
 (defun denote-retrieve--xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
-  (xref--analyze
-   (xref-matches-in-files identifier (denote--directory-files :absolute))))
+  (xref--alistify
+   (xref-matches-in-files identifier (denote--directory-files :absolute))
+   (lambda (x)
+     (xref-location-group (xref-item-location x)))))
 
 (defun denote-retrieve--files-in-xrefs (xrefs)
   "Return sorted file names sans directory from XREFS.
