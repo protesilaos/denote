@@ -204,7 +204,13 @@ The prompts will happen in the given order.
 If the value of this user option is nil, the `title' and
 `keywords' are used."
   :group 'denote
-  :type '(repeat symbol)) ; TODO 2022-07-07: Add `denote--prompt-symbols'
+  :type '(radio (const :tag "Use no prompts" nil)
+                (set :tag "Available prompts" :greedy t
+                     (const :tag "Title" title)
+                     (const :tag "Keywords" keywords)
+                     (const :tag "Date" date)
+                     (const :tag "File type extension" file-type)
+                     (const :tag "Subdirectory" subdirectory))))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
