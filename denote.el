@@ -713,7 +713,7 @@ Optional DEFAULT-TITLE is used as the default value."
 ;;;;; The `denote' command
 
 ;;;###autoload
-(defun denote (&optional title keywords type date subdir)
+(defun denote (&optional title keywords file-type date subdirectory)
   "Create a new note with the appropriate metadata and file name.
 
 When called interactively, the metadata and file name are prompted
@@ -727,13 +727,13 @@ When called from Lisp, all arguments are optional.
 - KEYWORDS is a list of strings.  The list can be empty or the
   value can be set to nil.
 
-- TYPE is a symbol among those described in `denote-file-type'.
+- FILE-TYPE is a symbol among those described in `denote-file-type'.
 
 - DATE is a string representing a date like 2022-06-30 or a date
   and time like 2022-06-16 14:30.  A nil value or an empty string
   is interpreted as the `current-time'.
 
-- SUBDIR is a string representing the path to either the value of
+- SUBDIRECTORY is a string representing the path to either the value of
   the variable `denote-directory' or a subdirectory thereof.  The
   subdirectory must exist: Denote will not create it."
   (interactive
@@ -746,12 +746,12 @@ When called from Lisp, all arguments are optional.
          ('date (aset args 3 (denote--date-prompt)))
          ('subdirectory (aset args 4 (denote--subdirs-prompt)))))
      (append args nil)))
-  (let* ((denote-file-type (denote--file-type-symbol (or type denote-file-type)))
+  (let* ((denote-file-type (denote--file-type-symbol (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
          (id (format-time-string denote--id-format date))
-         (denote-directory (or subdir (denote-directory))))
+         (denote-directory (or subdirectory (denote-directory))))
     (denote--barf-duplicate-id id)
     (denote--prepare-note (or title "") keywords nil date id)
     (denote--keywords-add-to-history keywords)))
