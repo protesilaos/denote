@@ -222,9 +222,10 @@ When in doubt, always include the `title' and `keywords' prompts.
 
 Finally, this user option only affects the interactive use of the
 `denote' command (advanced users can call it from Lisp).  For
-relevant interactive actions users may want to invoke the
-convenience commands that also creating notes: `denote-type',
-`denote-subdirectory', `denote-date'."
+ad-hoc interactive actions that do not change the default
+behaviour of the `denote' command, users can invoke these
+convenience commands: `denote-type', `denote-subdirectory',
+`denote-date'."
   :group 'denote
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
