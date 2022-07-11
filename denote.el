@@ -227,6 +227,7 @@ behaviour of the `denote' command, users can invoke these
 convenience commands: `denote-type', `denote-subdirectory',
 `denote-date'."
   :group 'denote
+  :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
                      (const :tag "Title" title)
