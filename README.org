@@ -258,12 +258,14 @@ this can be achieved globally by changing the ~denote-prompts~ user
 option, there are cases where an ad-hoc method is the appropriate one
 ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).
 
-To this end, Denote provides the follow convenience commands for note
-creation:
+To this end, Denote provides the following convenience interactive
+commands for note creation:
 
-+ Create note by specifying file type :: The ~denote-type~ command is
-  like ~denote~ except it also prompts for a file type to use as an
-  ad-hoc value for ~denote-file-type~.  In practical terms, this lets
++ Create note by specifying file type :: The ~denote-type~ command
+  creates a note while prompting for a file type.
+
+  This is the equivalent to calling ~denote~ when ~denote-prompts~ is
+  set to ='(file-type title keywords)=.  In practical terms, this lets
   you produce, say, a note in Markdown even though you normally write in
   Org ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
@@ -275,27 +277,23 @@ creation:
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  Sometimes, however, the user needs to set
   an explicit date+time value.
 
-  This is where the ~denote-date~ command comes in.  It accepts the
-  familiar =TITLE= and =KEYWORDS= arguments, though it starts by asking
-  for a date.  The input for the =DATE= argument is like =2022-06-16= or
-  =2022-06-16 14:30=.  When the time is omitted, it is interpreted as
-  =00:00=.
+  This is where the ~denote-date~ command comes in.  It creates a note
+  while prompting for a date.  The date can be in YEAR-MONTH-DAY
+  notation like =2022-06-30= or that plus the time: =2022-06-16 14:30=.
 
-  Since the ability to insert a date may result in duplicate
-  identifiers, Denote takes care to abort the operation if such an
-  identity is established (e.g. when you use ~denote-date~ with
-  =2022-06-16= twice, it will generate the same identifier of
-  =20220616T000000=).  The user must thus call the ~denote-date~ command
-  again and provide a unique date or date+time value.
+  This is the equivalent to calling ~denote~ when ~denote-prompts~ is
+  set to ='(date title keywords)=.
 
   #+findex: denote-create-note-using-date
   The ~denote-create-note-using-date~ is an alias of ~denote-date~.
 
 + Create note in a specific directory :: The ~denote-subdirectory~
-  command is like ~denote~ except it prompts for a directory to place
-  the new note in ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). Candidates are the value of
-  the user option ~denote-directory~ and any subdirectory inside of it.
-  Denote does not create subdirectories.
+  command creates a note while prompting for a subdirectory.  Available
+  candidates include the value of the variable ~denote-directory~ and
+  any subdirectory thereof (Denote does not create subdirectories).
+
+  This is equivalent to calling ~denote~ when ~denote-prompts~ is set to
+  ='(subdirectory title keywords)=.
 
   #+findex: denote-create-note-in-subdirectory
   The ~denote-create-note-in-subdirectory~ is a more descriptive alias
