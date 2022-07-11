@@ -713,7 +713,7 @@ Optional DEFAULT-TITLE is used as the default value."
 ;;;;; The `denote' command
 
 ;;;###autoload
-(defun denote (&optional title keywords file-type date subdirectory)
+(defun denote (&optional title keywords file-type subdirectory date)
   "Create a new note with the appropriate metadata and file name.
 
 When called interactively, the metadata and file name are prompted
@@ -729,13 +729,13 @@ When called from Lisp, all arguments are optional.
 
 - FILE-TYPE is a symbol among those described in `denote-file-type'.
 
-- DATE is a string representing a date like 2022-06-30 or a date
-  and time like 2022-06-16 14:30.  A nil value or an empty string
-  is interpreted as the `current-time'.
-
 - SUBDIRECTORY is a string representing the path to either the value of
   the variable `denote-directory' or a subdirectory thereof.  The
-  subdirectory must exist: Denote will not create it."
+  subdirectory must exist: Denote will not create it.
+
+- DATE is a string representing a date like 2022-06-30 or a date
+  and time like 2022-06-16 14:30.  A nil value or an empty string
+  is interpreted as the `current-time'."
   (interactive
    (let ((args (make-vector 5 nil)))
      (dolist (prompt denote-prompts)
@@ -743,8 +743,8 @@ When called from Lisp, all arguments are optional.
          ('title (aset args 0 (denote--title-prompt)))
          ('keywords (aset args 1 (denote--keywords-prompt)))
          ('file-type (aset args 2 (denote--file-type-prompt)))
-         ('date (aset args 3 (denote--date-prompt)))
-         ('subdirectory (aset args 4 (denote--subdirs-prompt)))))
+         ('subdirectory (aset args 4 (denote--subdirs-prompt)))
+         ('date (aset args 3 (denote--date-prompt)))))
      (append args nil)))
   (let* ((denote-file-type (denote--file-type-symbol (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
