@@ -274,7 +274,7 @@ We consider those characters illigal for our purposes.")
          (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
     (unless (file-directory-p path)
       (make-directory path t))
-    (file-name-as-directory path)))
+    (file-name-as-directory (expand-file-name path))))
 
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
