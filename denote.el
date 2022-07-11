@@ -721,8 +721,7 @@ according to the value of `denote-prompts'.
 
 When called from Lisp, all arguments are optional.
 
-- TITLE is a string or a function returning a string.  If nil, an
-  empty string is used.
+- TITLE is a string or a function returning a string.
 
 - KEYWORDS is a list of strings.  The list can be empty or the
   value can be set to nil.
