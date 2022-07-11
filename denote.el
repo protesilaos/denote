@@ -198,14 +198,14 @@ The value is a list of symbols, which includes any of the following:
   Without the `date' prompt, the `denote' command uses the
   `current-time'.
 
-The prompts will occur in the given order.
+The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.
 The resulting file name will consist of an identifier (i.e. the
 date and time) and a supported file type extension (per
 `denote-file-type').
 
-Recall that Denote's standard file-naming scheme is as
+Recall that Denote's standard file-naming scheme is defined as
 follows (read the manual for the technicalities):
 
     DATE--TITLE__KEYWORDS.EXT
