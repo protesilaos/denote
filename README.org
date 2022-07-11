@@ -972,7 +972,7 @@ you need is a simple wrapper function:
   (interactive)
   (denote
    (format-time-string "%A %e %B %Y") ; format like Tuesday 14 June 2022
-   "journal")) ; multiple keywords are a list of strings: '("one" "two")
+   '("journal"))) ; multiple keywords are a list of strings: '("one" "two")
 #+end_src
 
 By invoking ~my-denote-journal~ you will go straight into the newly
@@ -987,7 +987,7 @@ Of course, you can always set up the function so that it asks for a
   (interactive)
   (denote
    (denote--title-prompt) ; ask for title, instead of using human-readable date
-   "journal"))
+   '("journal")))
 #+end_src
 
 Sometimes journaling is done with the intent to hone one's writing
@@ -1007,7 +1007,7 @@ The `tmr' command is part of the `tmr' package."
   (interactive)
   (denote
    (format-time-string "%A %e %B %Y")
-   "journal")
+   '("journal"))
   (tmr 10 "Practice writing in my journal")) ; set 10 minute timer with a description
 #+end_src
 
@@ -1346,7 +1346,7 @@ Everything is in place to set up the package.
   (interactive)
   (denote
    (denote--title-prompt)
-   "journal"))
+   '("journal")))
 
 ;; Denote does not define any key bindings.  This is for the user to
 ;; decide.  For example:
