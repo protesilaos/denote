@@ -167,7 +167,7 @@ the appropriate list of strings."
   "List of symbols representing `denote' prompts.")
 
 (defcustom denote-prompts '(title keywords)
-  "Specify the prompts of the `denote' command.
+  "Specify the prompts of the `denote' command for interactive use.
 
 The value is a list of symbols, which includes any of the following:
 
