@@ -136,7 +136,7 @@ Obligations, Tasks, and Engagements.
 There are five ways to write a note with Denote: invoke the ~denote~,
 ~denote-type~, ~denote-date~, ~denote-subdirectory~ commands, or
 leverage the ~org-capture-templates~ by setting up a template which
-calls the function ~denote-org-capture~.  We explain all those in the
+calls the function ~denote-org-capture~.  We explain all of those in the
 subsequent sections.
 
 ** Standard note creation
