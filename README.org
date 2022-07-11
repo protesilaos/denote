@@ -1732,7 +1732,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Benjamin Kästner, Colin McLear, Damien
   Cassou, Frank Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter
-  Prevos, Shreyas Ragavan, Sven Seebeck, Ypot.
+  Prevos, Shreyas Ragavan, Sven Seebeck, Ypot, pRot0ta1p.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
