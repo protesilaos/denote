@@ -171,8 +171,7 @@ the appropriate list of strings."
 
 The value is a list of symbols, which includes any of the following:
 
-- `title': Prompt for the title of the new note.  If unspecified, the
-  title is left empty.
+- `title': Prompt for the title of the new note.
 
 - `keywords': Prompts with completion for the keywords of the new
   note.  Available candidates are those specified in the user
@@ -180,15 +179,10 @@ The value is a list of symbols, which includes any of the following:
   `denote-infer-keywords' is non-nil, keywords in existing note
   file names are included in the list of candidates.  The
   `keywords' prompt uses `completing-read-multiple', meaning that
-  it can accept multiple keywords, separated by a comma (or
+  it can accept multiple keywords separated by a comma (or
   whatever the value of `crm-sepator' is).
 
-- `date': Prompts for the date of the new note.  It will expect a
-  date like 2022-06-16 or a date plus time: 2022-06-16 14:30.
-  Without the `date' prompt, the `denote' command uses the
-  `current-time'.
-
-- `file-type': Prompts with completion for the filetype of the
+- `file-type': Prompts with completion for the file type of the
   new note.  Available candidates are those specified in the user
   option `denote-file-type'.  Without this prompt, `denote' uses
   the value of `denote-file-type'.
@@ -199,7 +193,12 @@ The value is a list of symbols, which includes any of the following:
   subdirectories.  Any subdirectory must already exist: Denote
   will not create it.
 
-The prompts will happen in the given order.
+- `date': Prompts for the date of the new note.  It will expect
+  an input like 2022-06-16 or a date plus time: 2022-06-16 14:30.
+  Without the `date' prompt, the `denote' command uses the
+  `current-time'.
+
+The prompts will occur in the given order.
 
 If the value of this user option is nil, no prompts are used.
 The resulting file name will consist of an identifier (i.e. the
@@ -219,7 +218,13 @@ those permutations:
     DATE--TITLE.EXT
     DATE__KEYWORDS.EXT
 
-When in doubt, always include the `title' and `keywords' prompts."
+When in doubt, always include the `title' and `keywords' prompts.
+
+Finally, this user option only affects the interactive use of the
+`denote' command (advanced users can call it from Lisp).  For
+relevant interactive actions users may want to invoke the
+convenience commands that also creating notes: `denote-type',
+`denote-subdirectory', `denote-date'."
   :group 'denote
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
