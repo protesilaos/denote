@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.2.0
-#+macro:                 release-date 2022-07-04
-#+macro:                 development-version 0.3.0-dev
+#+macro:                 stable-version 0.3.0
+#+macro:                 release-date 2022-07-11
+#+macro:                 development-version 0.4.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -166,8 +166,6 @@ When the user option ~denote-sort-keywords~ is non-nil (the default),
 keywords are sorted alphabetically (technically, the sorting is done
 with ~string-lessp~).
 
-[ The ~denote-prompts~ is part of {{{development-version}}} ]
-
 The interactive behaviour of the ~denote~ command is influenced by the
 user option ~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).
 
@@ -182,9 +180,6 @@ alias ~denote-create-note~.
 :PROPERTIES:
 :CUSTOM_ID: h:f9204f1f-fcee-49b1-8081-16a08a338099
 :END:
-
-[ What is described in this section is part of
-  {{{development-version}}}. ]
 
 #+vindex: denote-prompts
 The user option ~denote-prompts~ determines how the ~denote~ command
@@ -1804,9 +1799,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Cassou, Jack Baty, Jean-Philippe Gagné Guay, Kaushal Modi, Stefan
   Monnier.
 
-+ Ideas and/or user feedback :: Benjamin Kästner, Colin McLear, Damien
-  Cassou, Frank Ehmsen, Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter
-  Prevos, Shreyas Ragavan, Sven Seebeck, Ypot, pRot0ta1p.
++ Ideas and/or user feedback :: Alan Schmitt, Alfredo Borrás, Benjamin
+  Kästner, Colin McLear, Damien Cassou, Frank Ehmsen, Jack Baty, Kaushal
+  Modi, M. Hadi Timachi, Peter Prevos, Shreyas Ragavan, Summer Emacs,
+  Sven Seebeck, Ypot, pRot0ta1p.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

@@ -9,6 +9,203 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 0.3.0 on 2022-07-11
+:PROPERTIES:
+:CUSTOM_ID: h:6864cfd4-d0be-4c89-b313-39ba6e892a03
+:END:
+
++ Fixed how references are analysed to produce the backlinks' buffer.
+  This should resolve the issue that some users faced where the
+  backlinks would not be produced.
+
+  The previous implementation would not yield the appropriate results if
+  (i) the value of the user option ~denote-directory~ was a "project"
+  per the built-in project.el and (ii) the link to the given entry was
+  from a subdirectory.  In short, the references were sometimes returned
+  as relative file paths, whereas they should always be absolute.
+  Thanks to Jean-Philippe Gagné Guay for the feedback in issue 42 over
+  at the GitHub mirror: <https://github.com/protesilaos/denote/pull/42>.
+
+  [ Jean-Philippe has assigned copyright to the Free Software
+    Foundation.  It is a prerequisite for contributing to core Emacs
+    and/or any package distributed via the official GNU ELPA. ]
+
++ Addressed a regression in the function ~denote-directory~ (this is the
+  function that normalises the variable of the same name) which
+  prevented it from returning an expanded file path.  This too
+  contributed to problems with the backlinking facility.  Thanks to
+  Jean-Philippe Gagné Guay for the contribution in pull request 44 over
+  at the GitHub mirror: <https://github.com/protesilaos/denote/pull/44>.
+
+  Also thanks to user pRot0ta1p for the relevant feedback in issue 43
+  (also on the mirror): <https://github.com/protesilaos/denote/issues/43>.
+  More thanks to Alfredo Borrás, Benjamin Kästner, and Sven Seebeck for
+  their comments in a related thread on the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/%3CCA73E705-1194-4324-9962-70708C4C72E5%40zoho.eu%3E>.
+  These discussions showed we had a problem, which we managed to
+  identify.
+
++ Introduced the user option ~denote-prompts~ (read its doc string or
+  the relevant entry in the manual).  It governs how the standard
+  ~denote~ command for creating new notes will behave in interactive
+  usage.  By default, ~denote~ prompts for a title and keywords.  With
+  ~denote-prompts~, the command can also ask for a file type (per
+  ~denote-file-type~), subdirectory of the ~denote-directory~, and a
+  specific date+time.  Prompts occur in the order they are specified.
+  Furthermore, the ~denote-prompts~ can be set to values which do not
+  include the title and keywords.  This means that the resulting file
+  names can be any of those permutations:
+
+  : DATE.EXT
+  : DATE--TITLE.EXT
+  : DATE__KEYWORDS.EXT
+
+  Recall that Denote's standard file-naming scheme is defined as follows
+  (read the manual for the details):
+
+  : DATE--TITLE__KEYWORDS.EXT
+
+  For our purposes, Denote will work perfectly fine for linking and
+  backlinking, even if file names do not include the =TITLE= and
+  =KEYWORDS= fields.  However, the user is advised to consider the
+  implications on usability: notes without a descriptive title and/or
+  useful keywords may be hard to filter and practically impossible to
+  manage at scale.  File names without such information should at least
+  be added to subdirectories which themselves have a descriptive name.
+
+  At any rate, Denote does not have strong opinions about one's
+  workflow.  The standard file name is the culmination of years of
+  experience.
+
+  Consider the ~denote-prompts~ the affirmative answer to the question
+  "Can keywords be optional?" as posed by Jack Baty on the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/%3C8D392BC3-980A-4E5B-9480-D6A00BE8279F%40baty.net%3E>.
+
+  Thanks to Jean-Philippe Gagné Guay for the original contribution in
+  commit 9b981a2.  It was originally part of a pull request, but due to
+  some internal changes I had to merge it as a patch and technically the
+  web UI did not count the PR as "merged" (though it was in terms of
+  substance).
+
++ Refactored the ~denote~ command to (i) accommodate the new user option
+  ~denote-prompts~ via its interactive specification and (ii) be more
+  flexible when called from Lisp.  The latter scenario is for advanced
+  users or, generally, those who can maintain some custom code in their
+  configuration.  A case in point is one of the examples we show in the
+  manual for a programmatic way to create notes that automatically get
+  the =journal= tag:
+
+  #+begin_src emacs-lisp
+  (defun my-denote-journal ()
+    "Create an entry tagged 'journal', while prompting for a title."
+    (interactive)
+    (denote
+     (denote--title-prompt)
+     '("journal")))
+  #+end_src
+
+  Notice that the ='("journal")= is a list of strings even for a single
+  keyword.  Whereas before a single one was a plain string.  This is a
+  breaking change.
+
+  Please consult the doc string of the ~denote~ command for the
+  technicalities.
+
++ Refashioned the interactive convenience functions of ~denote-type~,
+  ~denote-date~, ~denote-subdirectory~ to leverage the ~denote-prompts~
+  user option while calling ~denote~ interactively.  In practical terms,
+  they no longer accept any arguments when called from Lisp.  Users who
+  need a programmatic approach are advised to either call ~denote~
+  directly, or check how these commands ~let~ bind the ~denote-prompts~
+  to carry out their operations.  The doc string of each command
+  explains how it works.  Or evaluate this to check the manual:
+
+  #+begin_src emacs-lisp
+  (info "(denote) Convenience commands for note creation")
+  #+end_src
+
+  Else visit:
+  <https://protesilaos.com/emacs/denote#h:887bdced-9686-4e80-906f-789e407f2e8f>
+
++ Documented how the user option ~denote-directory~ can accept a local
+  value.  This is pertinent to scenaria where the user needs to maintain
+  separate directories of notes.  By "separate" we mean sets of notes
+  that do not communicate with each other, cannot create links between
+  them, etc.  The manual delves into the technicalities.  If you have
+  the Info entry installed, evaluate:
+
+  #+begin_src emacs-lisp
+  (info "(denote) Maintain separate directories for notes")
+  #+end_src
+
+  Else visit:
+  <https://protesilaos.com/emacs/denote#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5>.
+
+  Thanks to user "Summer Emacs" for starting the discussion on the
+  mailing list, and Benjamin Kästner for their participation:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm25yk5e856.fsf@gmail.com%3E>.
+
++ Added an entry to the manual's Frequently Asked Questions about a
+  failed search for backlinks.  It includes sample code that users of
+  Windows can apply, if necessary.  (The error is not Denote's fault.)
+  Thanks to Benjamin Kästner for the patch, which is below the ~15 line
+  threshold and thus does not require copyright assignment to the Free
+  Software Foundation:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cce117b14-55cf-622e-6cd8-0af698091ae3%40gmail.com%3E>.
+
++ Removed duplicate entries from the list of file paths that the =xref=
+  library returns for the purposes of backlinking.  Thanks to
+  Jean-Philippe Gagné Guay for the contribution in pull request 44 on
+  the GitHub mirror: <https://github.com/protesilaos/denote/issues/44>.
+
++ Applied an appropriate face to the backlinks' button to mitigate an
+  error.  Thanks to Jean-Philippe Gagné Guay for the contribution in
+  pull request 45 on the GitHub mirror and for later testing a
+  subsequent tweak: <https://github.com/protesilaos/denote/issues/45>.
+
++ Simplfied all the faces we define to make them work with all themes.
+  The previous colours were consistent with the =modus-themes=:
+  <https://protesilaos.com/emacs/modus-themes>.
+
++ Refined how strings are sluggified under all circumstances.  Before, a
+  nil value for the user option ~denote-allow-multi-word-keywords~ would
+  have the adverse effect of joining all the strings in the title field
+  of the file name.  The intent always was to do that only for
+  multi-word keywords, not the title.  This change was part of a hotfix,
+  formalised as version =0.2.1= a day after the release of =0.2.0=.
+
++ Made the fontification rules more robust, while avoiding any false
+  positives.  This was done over a series of commits as it had
+  implications for the file name permutations that were mentioned
+  earlier.  Thanks to Jean-Philippe Gagné Guay for the patches and/or
+  discussion about the merits of each change and concomitant
+  considerations:
+
+  - https://github.com/protesilaos/denote/pull/36
+  - https://github.com/protesilaos/denote/pull/38
+  - https://github.com/protesilaos/denote/pull/40
+  - https://github.com/protesilaos/denote/pull/42
+
++ Rewrote all relevant entries in the manual to reflect all the
+  user-facing aspects of the aforementioned.
+
++ Discussed a use-case of rewriting old journal entries as Denote-style
+  files.  As of this writing, we do not support migration of files in
+  bulk.  It might happen at some point, though it is no mean task.
+  Thanks to Summer Emacs and Alan Schmitt for their participation:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm27d4mbktj.fsf%40gmail.com%3E>.
+
+  An aside here as this topic was brought up: my packages are open to
+  users of all skill levels and is why I maintain a mailing list as well
+  as mirrors of the official git repository on SourceHut.  Do not
+  hesitate to ask a question.  If, for whatever reason, those
+  communication channels are not appropriate, you are welcome to contact
+  me in private: <https://protesilaos.com/contact>.
+
+Thanks again to Jean-Philippe Gagné Guay for the numerous contributions.
+Please read the commit log for the minutia, as this change log entry
+omitted some of the finer yet important details.
+
 * Version 0.2.0 on 2022-07-04
 :PROPERTIES:
 :CUSTOM_ID: h:2002fee6-3f0c-48be-9727-6d4e20f34856
