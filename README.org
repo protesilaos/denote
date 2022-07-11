@@ -1296,11 +1296,11 @@ Everything is in place to set up the package.
 
 ;; Remember to check the doc strings of those variables.
 (setq denote-directory (expand-file-name "~/Documents/notes/"))
-(setq denote-known-keywords
-      '("emacs" "philosophy" "politics" "economics"))
+(setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
 (setq denote-file-type nil) ; Org is the default, set others here
+(setq denote-prompts '(title keywords))
 
 ;; We allow multi-word keywords by default.  The author's personal
 ;; preference is for single-word keywords for a more rigid workflow.
