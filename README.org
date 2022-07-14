@@ -1799,10 +1799,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Cassou, Jack Baty, Jean-Philippe Gagné Guay, Kaushal Modi, Stefan
   Monnier.
 
-+ Ideas and/or user feedback :: Alan Schmitt, Alfredo Borrás, Benjamin
-  Kästner, Colin McLear, Damien Cassou, Frank Ehmsen, Jack Baty, Kaushal
-  Modi, M. Hadi Timachi, Peter Prevos, Shreyas Ragavan, Summer Emacs,
-  Sven Seebeck, Ypot, pRot0ta1p.
++ Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
+  Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
+  Jack Baty, Kaushal Modi, M. Hadi Timachi, Peter Prevos, Shreyas
+  Ragavan, Summer Emacs, Sven Seebeck, Ypot, pRot0ta1p.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

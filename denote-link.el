@@ -488,14 +488,6 @@ inserts links with just the identifier."
 
 ;;;; Register `denote:' custom Org hyperlink
 
-(autoload 'org-link-set-parameters "ol.el")
-
-(org-link-set-parameters
- "denote"
- :follow #'denote-link-ol-follow
- :complete #'denote-link-ol-complete
- :export #'denote-link-ol-export)
-
 (declare-function org-link-open-as-file "ol" (path arg))
 
 (defun denote-link--ol-resolve-link-to-target (link &optional path-id)
@@ -551,6 +543,23 @@ backend."
      ((eq format 'ascii) (format "[%s] <denote:%s>" desc path)) ; NOTE 2022-06-16: May be tweaked further
      ((eq format 'md) (format "[%s](%s.md)" desc p))
      (t path))))
+
+;; The `eval-after-load' part with the quoted lambda is adapted from
+;; Elfeed: <https://github.com/skeeto/elfeed/>.
+
+;;;###autoload
+(eval-after-load 'org
+  `(funcall
+    ;; The extra quote below is necessary because uncompiled closures
+    ;; do not evaluate to themselves. The quote is harmless for
+    ;; byte-compiled function objects.
+    ',(lambda ()
+        (with-no-warnings
+          (org-link-set-parameters
+           "denote"
+           :follow #'denote-link-ol-follow
+           :complete #'denote-link-ol-complete
+           :export #'denote-link-ol-export)))))
 
 (provide 'denote-link)
 ;;; denote-link.el ends here
