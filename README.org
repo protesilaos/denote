@@ -469,6 +469,32 @@ confirmation before performing the replacement.  This confirmation
 ignores ~denote-dired-rename-expert~ for the time being, though we might
 want to lift that restriction once everything works as intended.
 
+* Converting files to Denote notes
+:PROPERTIES:
+:CUSTOM_ID: h:322fefee-6412-487d-bdad-9bd862f0423a
+:END:
+
+[ ~denote-dired-convert-file-to-denote~ is part of {{{development-version}}} ]
+
+#+findex: denote-dired-convert-file-to-denote
+The command ~denote-dired-convert-file-to-denote~ renames a file to the
+Denote format while also inserting the relevant front matter to the top
+of the file.  The front matter is prepended unconditionally, regardless
+of the file's contents.  To rename and existing note, use the command
+~denote-dired-rename-file~ instead ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
+
+The only condition for converting a file to a Denote note is that it
+must be a regular file (i.e. not a directory, named pipe, et cetera).
+
+When in a Dired buffer, ~denote-dired-convert-file-to-denote~ operates
+on the file at point.  Otherwise it uses the minibuffer to prompt for a
+file.
+
+Once the target file is found, ~denote-dired-convert-file-to-denote~
+prompts for a title and keywords ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  The default
+title is retrieved from a line starting with a title field, depending on
+the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).  Else, the file name is used.
+
 * The file-naming scheme
 :PROPERTIES:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
