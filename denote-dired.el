@@ -354,6 +354,7 @@ appropriate."
           ;; those.
           (delete-blank-lines))))))
 
+;;;###autoload
 (defun denote-dired-convert-file-to-denote (file title keywords)
   "Convert a file to Denote format.
 
