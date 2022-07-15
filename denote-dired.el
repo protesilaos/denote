@@ -358,19 +358,25 @@ appropriate."
 (defun denote-dired-convert-file-to-denote (file title keywords)
   "Convert a file to Denote format.
 
-This function adds a front matter unconditionally at the start of
-the file. It does not check if one is already present. If a front
-matter is already present, you will end up with two. Consider
-using `denote-dired-rename-file' in this case.
+Prompt for a FILE, a TITLE, and KEYWORDS.  The unique identifier
+is retrieved from the filename if there is one, else the last
+modification time is used to derive one.
 
-It prompts for a FILE, a TITLE and KEYWORDS.
+The default title is retrieved from a line starting with a title
+field, depending on the given file type.  Else, the file name is
+used.
 
-The identifier is retrieved from the filename if there is one,
-else the last modification time is used.
+This command adds a front matter unconditionally at the start of
+the file.  It does not check if one is already present.  If a
+front matter is already present, you will end up with two.
+Consider using `denote-dired-rename-file' in this case.
 
-The default title is retrieved from a line starting with
-\"#+title:\" if such a line exists (and depending on the file
-type). Else, the file name is used."
+For per-file-type front matter, refer to the variables:
+
+- `denote-org-front-matter'
+- `denote-text-front-matter'
+- `denote-toml-front-matter'
+- `denote-yaml-front-matter'"
   (interactive
    (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
      (list
