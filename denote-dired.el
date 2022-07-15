@@ -354,6 +354,55 @@ appropriate."
           ;; those.
           (delete-blank-lines))))))
 
+(defun denote-dired-convert-file-to-denote (file title keywords)
+  "Convert a file to Denote format.
+
+This function adds a front matter unconditionally at the start of
+the file. It does not check if one is already present. If a front
+matter is already present, you will end up with two. Consider
+using `denote-dired-rename-file' in this case.
+
+It prompts for a FILE, a TITLE and KEYWORDS.
+
+The identifier is retrieved from the filename if there is one,
+else the last modification time is used.
+
+The default title is retrieved from a line starting with
+\"#+title:\" if such a line exists (and depending on the file
+type). Else, the file name is used."
+  (interactive
+   (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
+     (list
+      file
+      (denote--title-prompt (or (denote-retrieve--value-title file)
+                                (file-name-sans-extension (file-name-nondirectory file))))
+      (denote--keywords-prompt))))
+  (let* ((dir (file-name-directory file))
+         (old-name (file-name-nondirectory file))
+         (id (denote-dired--file-name-id file))
+         (extension (file-name-extension file t))
+         (new-name (denote--format-file
+                    dir
+                    (denote-dired--file-name-id file)
+                    keywords
+                    (denote--sluggify title)
+                    extension))
+         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
+    (unless (string= old-name (file-name-nondirectory new-name))
+      (when (y-or-n-p
+             (format "Rename %s to %s?"
+                     (propertize old-name 'face 'error)
+                     (propertize (file-name-nondirectory new-name) 'face 'success)))
+        (rename-file old-name new-name nil)
+        (denote-dired--rename-buffer old-name new-name)
+        (denote-dired-update-dired-buffers)))
+    (when-let* ((filetype (denote-dired--filetype-heuristics file))
+                (date (denote--date (date-to-time id)))
+                (new-front-matter (denote--file-meta-header title date keywords id filetype)))
+      (with-current-buffer (find-file-noselect new-name)
+        (goto-char (point-min))
+        (insert new-front-matter)))))
+
 ;;;; Extra fontification
 
 (require 'denote-faces)
