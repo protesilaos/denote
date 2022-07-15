@@ -362,6 +362,9 @@ Prompt for a FILE, a TITLE, and KEYWORDS.  The unique identifier
 is retrieved from the filename if there is one, else the last
 modification time is used to derive one.
 
+In Dired, FILE is the one at point.  It has to be a regular
+file (not a directory, a named pipe, etc.).
+
 The default title is retrieved from a line starting with a title
 field, depending on the given file type.  Else, the file name is
 used.
