@@ -490,9 +490,10 @@ existing notes and combine them into a list with
 
 (defun denote--keywords-crm (keywords)
   "Use `completing-read-multiple' for KEYWORDS."
-  (completing-read-multiple
-   "File keyword: " keywords
-   nil nil nil 'denote--keyword-history))
+  (delete-dups
+   (completing-read-multiple
+    "File keyword: " keywords
+    nil nil nil 'denote--keyword-history)))
 
 (defun denote--keywords-prompt ()
   "Prompt for one or more keywords.
