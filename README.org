@@ -161,7 +161,7 @@ default).
 
 #+vindex: denote-sort-keywords
 Multiple keywords can be inserted by separating them with a comma (or
-whatever the value of the ~crm-indicator~ is---which should be a comma).
+whatever the value of the ~crm-separator~ is---which should be a comma).
 When the user option ~denote-sort-keywords~ is non-nil (the default),
 keywords are sorted alphabetically (technically, the sorting is done
 with ~string-lessp~).
