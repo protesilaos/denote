@@ -422,10 +422,12 @@ For per-file-type front matter, refer to the variables:
 
 Rename marked files in Dired using the following pattern:
 
-- the file's existing file name is retained and becomes the FILE
+- the file's existing file name is retained and becomes the TITLE
   field, per Denote's file-naming scheme;
 
-- an identifier is prepended to the FILE;
+- the TITLE is sluggified and downcased, per our conventions;
+
+- an identifier is prepended to the TITLE;
 
 - the file's contents are not touched (no insertion of front
   matter, no other changes);
