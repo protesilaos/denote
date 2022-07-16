@@ -241,8 +241,8 @@ attachments that the user adds to their notes."
    (lambda (buf)
      (with-current-buffer buf
        (when (and (eq major-mode 'dired-mode)
-                  (string-match-p (expand-file-name default-directory)
-                                  (expand-file-name (denote-directory))))
+                  (string-prefix-p (denote-directory)
+                                   (expand-file-name default-directory)))
          (revert-buffer))))
    (buffer-list)))
 
