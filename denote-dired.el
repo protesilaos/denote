@@ -417,7 +417,7 @@ For per-file-type front matter, refer to the variables:
 
 ;; REVIEW 2022-07-16: This is a proof-of-concept
 ;;;###autoload
-(defun denote-dired-batch-rename (keywords)
+(defun denote-dired-batch-rename ()
   "DEV NOTE 2022-07-16: proof of concept---help flesh it out.
 
 Rename marked files in Dired using the following pattern:
@@ -439,11 +439,12 @@ Rename marked files in Dired using the following pattern:
 
 Batch renaming ignores files that comply with Denote's
 file-naming scheme."
-  (interactive (list (denote--keywords-prompt)) dired-mode)
+  (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (progn
         (dolist (file marks)
-          (let* ((dir (file-name-directory file))
+          (let* ((keywords (denote--keywords-prompt))
+                 (dir (file-name-directory file))
                  (title (file-name-sans-extension (file-name-nondirectory file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
