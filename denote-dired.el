@@ -427,7 +427,12 @@ Rename marked files in Dired using the following pattern:
 
 - an identifier is prepended to the FILE;
 
-- a prompt is asked once for the KEYWORDS field, the input is
+- the file's contents are not touched (no insertion of front
+  matter, no other changes);
+
+- the file's extension is retained;
+
+- a prompt is asked once for the KEYWORDS field and the input is
   applied to all files."
   (interactive (list (denote--keywords-prompt)) dired-mode)
   (if-let ((marks (dired-get-marked-files)))
