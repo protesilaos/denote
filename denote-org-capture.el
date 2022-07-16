@@ -66,9 +66,9 @@
   "String with format specifiers for `org-capture-templates'.
 Check that variable's documentation for the details.
 
-This string is appended to new notes in the `denote-org-capture'
-function.  Every new note has the standard front matter we
-define."
+The string can include arbitrary text.  It is appended to new
+notes via the `denote-org-capture' function.  Every new note has
+the standard front matter we define."
   :type 'string
   :group 'denote-org-capture)
 
