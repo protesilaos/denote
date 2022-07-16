@@ -258,7 +258,8 @@ format is always [[denote:IDENTIFIER]]."
   (let (matches)
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward regexp nil t)
+      (while (or (re-search-forward regexp nil t)
+                 (re-search-forward denote-link--regexp-plain nil t))
         (push (match-string-no-properties 1) matches)))
     matches))
 
