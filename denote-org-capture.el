@@ -83,7 +83,8 @@ expanded with the usual specifiers or strings that
 Note that this function ignores the `denote-file-type': it always
 sets the Org file extension for the created note to ensure that
 the capture process works as intended, especially for the desired
-output of the `denote-org-capture-specifiers'.
+output of the `denote-org-capture-specifiers' (which can include
+arbitrary text).
 
 Consult the manual for template samples."
   (let ((title (denote--title-prompt))
