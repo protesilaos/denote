@@ -721,18 +721,6 @@ Optional DEFAULT-TITLE is used as the default value."
 
 ;;;;; The `denote' command
 
-;; TODO 2022-07-16: Should we check for an absolute path?  Now it is
-;; relative, so "testing" is true if ~/testing exists when called from
-;; $HOME.
-(defun denote--path-to-directory-p (directory)
-  "Return DIRECTORY if it exists, else throw an `error'.
-This is to ensure that `denote' does not create file paths when
-called from Lisp."
-  (if (and (file-exists-p directory)
-           (file-directory-p directory))
-      directory
-    (error "`%s' does not exist; Denote will not create it; do it manually" directory)))
-
 ;;;###autoload
 (defun denote (&optional title keywords file-type subdirectory date)
   "Create a new note with the appropriate metadata and file name.
@@ -771,7 +759,7 @@ When called from Lisp, all arguments are optional.
                    (current-time)
                  (denote--valid-date date)))
          (id (format-time-string denote--id-format date))
-         (denote-directory (or (denote--path-to-directory-p subdirectory) (denote-directory))))
+         (denote-directory (or subdirectory (denote-directory))))
     (denote--barf-duplicate-id id)
     (denote--prepare-note (or title "") keywords nil date id)
     (denote--keywords-add-to-history keywords)))
