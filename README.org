@@ -329,12 +329,13 @@ for a title followed by a prompt for keywords ([[#h:6a92a8b5-d766-42cc-8e5b-8dc2
 Users may prefer to leverage ~org-capture~ in order to extend file
 creation with the specifiers described in the ~org-capture-templates~
 documentation (such as to capture the active region and/or create a
-hyperlink pointing to the given context).  Due to the particular
-file-naming scheme of Denote, which is derived dynamically, such
-specifiers cannot be written directly in the template.  Instead, they
-have to be assigned to the user option ~denote-org-capture-specifiers~,
-which is interpreted by the function ~denote-org-capture~.  Example with
-our default value:
+hyperlink pointing to the given context).
+
+IMPORTANT.  Due to the particular file-naming scheme of Denote, which is
+derived dynamically, such specifiers or other arbitrary text cannot be
+written directly in the template.  Instead, they have to be assigned to
+the user option ~denote-org-capture-specifiers~, which is interpreted by
+the function ~denote-org-capture~.  Example with our default value:
 
 #+begin_src emacs-lisp
 (setq denote-org-capture-specifiers "%l\n%i\n%?")
