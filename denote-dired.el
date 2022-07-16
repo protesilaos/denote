@@ -433,7 +433,10 @@ Rename marked files in Dired using the following pattern:
 - the file's extension is retained;
 
 - a prompt is asked once for the KEYWORDS field and the input is
-  applied to all files."
+  applied to all files.
+
+Batch renaming ignores files that comply with Denote's
+file-naming scheme."
   (interactive (list (denote--keywords-prompt)) dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (progn
@@ -447,7 +450,8 @@ Rename marked files in Dired using the following pattern:
                             keywords
                             (denote--sluggify title)
                             extension)))
-            (rename-file (file-name-nondirectory file) new-name)))
+            (unless (denote--only-note-p file)
+              (rename-file (file-name-nondirectory file) new-name))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
