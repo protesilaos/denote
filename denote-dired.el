@@ -235,10 +235,8 @@ attachments that the user adds to their notes."
         (denote-dired-update-dired-buffers)
         (denote-dired-rewrite-front-matter new-name title keywords)))))
 
-(defun denote-dired-update-dired-buffers (&rest _)
-  "Update Dired buffers of variable `denote-directory'.
-Can run after `denote-dired-post-rename-functions', though it
-ignores all its arguments."
+(defun denote-dired-update-dired-buffers ()
+  "Update Dired buffers of variable `denote-directory'."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
