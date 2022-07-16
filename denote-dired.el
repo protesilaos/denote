@@ -187,20 +187,19 @@ everything works as intended."
       (set-visited-file-name new-name nil t))))
 
 (defun denote-dired--rename-dired-file-or-prompt ()
-  "Return Dired file at point, else prompt for one."
+  "Return Dired file at point, else prompt for one.
+
+Throw error is FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
       (let* ((file (buffer-file-name))
              (format (if file
                          (format "Rename file Denote-style [%s]: " file)
-                       "Rename file Denote-style: ")))
-        (read-file-name format nil file t nil))))
-
-(defun denote-dired--rename-file-is-regular (file)
-  "Throw error is FILE is not regular, else return FILE."
-  (if (or (file-directory-p file)
-          (not (file-regular-p file)))
-      (user-error "Only rename regular files")
-    file))
+                       "Rename file Denote-style: "))
+             (selected-file (read-file-name format nil file t nil)))
+        (if (or (file-directory-p selected-file)
+                (not (file-regular-p selected-file)))
+            (user-error "Only rename regular files")
+          selected-file))))
 
 ;;;###autoload
 (defun denote-dired-rename-file (file title keywords)
@@ -232,7 +231,7 @@ This command is intended to (i) rename existing Denote
 notes, (ii) complement note-taking, such as by renaming
 attachments that the user adds to their notes."
   (interactive
-   (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
+   (let ((file (denote-dired--rename-dired-file-or-prompt)))
      (list
       file
       (denote--title-prompt (denote-retrieve--value-title file))
@@ -381,7 +380,7 @@ For per-file-type front matter, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'"
   (interactive
-   (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
+   (let ((file (denote-dired--rename-dired-file-or-prompt)))
      (list
       file
       (denote--title-prompt (or (denote-retrieve--value-title file)
