@@ -422,11 +422,11 @@ Rename marked files in Dired using the following pattern:
 Batch renaming ignores files that comply with Denote's
 file-naming scheme."
   (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files)))
+  (if-let ((marks (dired-get-marked-files))
+           (keywords (denote--keywords-prompt)))
       (progn
         (dolist (file marks)
-          (let* ((keywords (denote--keywords-prompt))
-                 (dir (file-name-directory file))
+          (let* ((dir (file-name-directory file))
                  (id (denote-dired--file-name-id file))
                  (title (or (denote-retrieve--value-title file)
                             (file-name-sans-extension
@@ -434,8 +434,8 @@ file-naming scheme."
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
-            (unless (denote--only-note-p file)
-              (rename-file (file-name-nondirectory file) new-name))))
+            (when (denote--only-note-p file)
+              (rename-file file new-name))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
