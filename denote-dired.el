@@ -470,6 +470,37 @@ file-naming scheme."
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
+;;;###autoload
+(defun denote-dired-rename-marked-files-and-add-front-matter ()
+  "DEV NOTE 2022-07-16: proof of concept---help flesh it out.
+
+Like `denote-dired-rename-marked-files' but also adds front
+matter to each file.  Buffers are not saved.  The user can thus
+check them to confirm that the new front matter does not cause
+any problems.
+
+Multiple buffers can be saved with `save-some-buffers' (read its
+doc string)."
+  (interactive nil dired-mode)
+  (if-let ((marks (dired-get-marked-files))
+           (keywords (denote--keywords-prompt))
+           ((y-or-n-p "Add front matter to all FILES (buffers are not saved)?")))
+      (progn
+        (dolist (file marks)
+          (let* ((dir (file-name-directory file))
+                 (id (denote-dired--file-name-id file))
+                 (title (or (denote-retrieve--value-title file)
+                            (file-name-sans-extension
+                             (file-name-nondirectory file))))
+                 (extension (file-name-extension file t))
+                 (new-name (denote--format-file
+                            dir id keywords (denote--sluggify title) extension)))
+            (rename-file file new-name)
+            (denote-dired--rename-buffer file new-name)
+            (denote-dired--add-front-matter new-name title keywords id)))
+        (revert-buffer))
+    (user-error "No marked files; aborting")))
+
 ;;;; Extra fontification
 
 (require 'denote-faces)
