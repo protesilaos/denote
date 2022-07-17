@@ -440,11 +440,11 @@ Rename marked files in Dired using the following pattern:
 Batch renaming ignores files that comply with Denote's
 file-naming scheme."
   (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files)))
+  (if-let ((marks (dired-get-marked-files))
+           (keywords (denote--keywords-prompt)))
       (progn
         (dolist (file marks)
-          (let* ((keywords (denote--keywords-prompt))
-                 (dir (file-name-directory file))
+          (let* ((dir (file-name-directory file))
                  (title (file-name-sans-extension (file-name-nondirectory file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
