@@ -497,7 +497,8 @@ doc string)."
                             dir id keywords (denote--sluggify title) extension)))
             (rename-file file new-name)
             (denote-dired--rename-buffer file new-name)
-            (denote-dired--add-front-matter new-name title keywords id)))
+            (when (denote--only-note-p file)
+              (denote-dired--add-front-matter new-name title keywords id))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
