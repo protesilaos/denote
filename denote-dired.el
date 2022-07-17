@@ -434,8 +434,7 @@ file-naming scheme."
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
-            (when (denote--only-note-p file)
-              (rename-file file new-name))))
+            (rename-file file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
