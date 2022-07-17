@@ -215,8 +215,7 @@ Return t if the file is renamed, nil otherwise."
                     (propertize (file-name-nondirectory new-name) 'face 'success)))))
       (when response
         (rename-file old-name new-name nil)
-        (denote-dired--rename-buffer old-name new-name)
-        (denote-dired-update-dired-buffers))
+        (denote-dired--rename-buffer old-name new-name))
       response)))
 
 (defun denote-dired-update-dired-buffers ()
@@ -373,6 +372,7 @@ attachments that the user adds to their notes."
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-dired--rename-file file new-name)
+      (denote-dired-update-dired-buffers)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
 (define-obsolete-function-alias
@@ -421,6 +421,7 @@ For per-file-type front matter, refer to the variables:
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-dired--rename-file file new-name)
+      (denote-dired-update-dired-buffers)
       (denote-dired--add-front-matter new-name title keywords id))))
 
 (define-obsolete-function-alias
