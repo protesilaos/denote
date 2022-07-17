@@ -91,7 +91,9 @@ Consult the manual for template samples."
         (keywords (denote--keywords-prompt))
         (denote-file-type nil)) ; we enforce the .org extension for `org-capture'
     (denote--path title keywords)
-    (denote--prepare-note denote-last-title denote-last-keywords denote-last-path)
+    (setq denote-last-front-matter (denote--file-meta-header
+                                    title (denote--date nil) keywords
+                                    (format-time-string denote--id-format nil)))
     (denote--keywords-add-to-history denote-last-keywords)
     (concat denote-last-front-matter denote-org-capture-specifiers)))
 

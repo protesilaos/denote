@@ -687,23 +687,20 @@ With optional DATE, use it else use the current one."
      (t
       (denote--date-org-timestamp date)))))
 
-(defun denote--prepare-note (title keywords &optional path date id)
-  "Use TITLE and KEYWORDS to prepare new note file.
-Use optional PATH, else create it with `denote--path'.  When PATH
-is provided, refrain from writing to a buffer (useful for org
-capture).
+(defun denote--prepare-note (title keywords date id directory file-type)
+  "Prepare a new note file.
 
-Optional DATE is passed to `denote--date', while optional ID is
-used to construct the path's identifier."
-  (let* ((default-directory (denote-directory))
-         (p (or path (denote--path title keywords default-directory id)))
-         (buffer (unless path (find-file p)))
+Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, and FILE-TYPE
+should be valid for note creation."
+  (let* ((default-directory directory)
+         (path (denote--path title keywords default-directory id))
+         (buffer (find-file path))
          (header (denote--file-meta-header
                   title (denote--date date) keywords
-                  (format-time-string denote--id-format date))))
-    (unless path
-      (with-current-buffer buffer (insert header))
-      (setq denote-last-buffer buffer))
+                  (format-time-string denote--id-format date)
+                  file-type)))
+    (with-current-buffer buffer (insert header))
+    (setq denote-last-buffer buffer)
     (setq denote-last-front-matter header)))
 
 (defvar denote--title-history nil
@@ -763,15 +760,16 @@ When called from Lisp, all arguments are optional.
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
          ('date (aset args 4 (denote--date-prompt)))))
      (append args nil)))
-  (let* ((denote-file-type (denote--file-type-symbol (or file-type denote-file-type)))
+  (let* ((file-type (denote--file-type-symbol (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
          (id (format-time-string denote--id-format date))
-         (denote-directory (or (denote--dir-in-denote-directory-p subdirectory)
-                               (denote-directory))))
+         (directory (if (denote--dir-in-denote-directory-p subdirectory)
+                        (file-name-nondirectory subdirectory)
+                      (denote-directory))))
     (denote--barf-duplicate-id id)
-    (denote--prepare-note (or title "") keywords nil date id)
+    (denote--prepare-note (or title "") keywords date id directory file-type)
     (denote--keywords-add-to-history keywords)))
 
 (defalias 'denote-create-note (symbol-function 'denote))
