@@ -465,7 +465,8 @@ file-naming scheme."
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
-            (rename-file file new-name)))
+            (rename-file file new-name)
+            (denote-dired--rename-buffer file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
