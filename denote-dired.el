@@ -472,7 +472,7 @@ file-naming scheme."
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
-(defun denote-dired-rename-marked-files-and-add-front-matter ()
+(defun denote-dired-rename-marked-files-and-add-front-matters ()
   "DEV NOTE 2022-07-17: proof of concept---help flesh it out.
 
 Like `denote-dired-rename-marked-files' but also adds front
