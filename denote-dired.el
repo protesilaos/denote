@@ -70,10 +70,10 @@
 ;; added to that hook must accept three arguments, as explained in its
 ;; doc string.  For the time being, the only function we define is the
 ;; one which updates the underlying note's front matter to match the new
-;; file name: `denote-dired-rewrite-front-matter'.  The function takes
+;; file name: `denote-dired--rewrite-front-matter'.  The function takes
 ;; care to only operate on an actual note, instead of arbitrary files.
 ;;
-;; DEVELOPMENT NOTE: the `denote-dired-rewrite-front-matter' needs to be
+;; DEVELOPMENT NOTE: the `denote-dired--rewrite-front-matter' needs to be
 ;; tested thoroughly.  It rewrites file contents so we have to be sure
 ;; it does the right thing.  To avoid any trouble, it always asks for
 ;; confirmation before performing the replacement.  This confirmation
@@ -145,7 +145,7 @@ old name followed by the new one."
 
 (defcustom denote-dired-post-rename-functions
   (list #'denote-dired-update-dired-buffers
-        #'denote-dired-rewrite-front-matter)
+        #'denote-dired--rewrite-front-matter)
   "List of functions called after `denote-dired-rename-file'.
 Each function must accept three arguments: FILE, TITLE, and
 KEYWORDS.  The first is the full path to the file provided as a
@@ -164,7 +164,9 @@ everything works as intended."
   :type 'hook
   :group 'denote-dired)
 
-;;;; Commands
+(make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
+
+;;;; File helper functions
 
 (defun denote-dired--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
@@ -187,85 +189,44 @@ everything works as intended."
       (set-visited-file-name new-name nil t))))
 
 (defun denote-dired--rename-dired-file-or-prompt ()
-  "Return Dired file at point, else prompt for one."
+  "Return Dired file at point, else prompt for one.
+
+Throw error is FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
       (let* ((file (buffer-file-name))
              (format (if file
                          (format "Rename file Denote-style [%s]: " file)
-                       "Rename file Denote-style: ")))
-        (read-file-name format nil file t nil))))
+                       "Rename file Denote-style: "))
+             (selected-file (read-file-name format nil file t nil)))
+        (if (or (file-directory-p selected-file)
+                (not (file-regular-p selected-file)))
+            (user-error "Only rename regular files")
+          selected-file))))
 
-(defun denote-dired--rename-file-is-regular (file)
-  "Throw error is FILE is not regular, else return FILE."
-  (if (or (file-directory-p file)
-          (not (file-regular-p file)))
-      (user-error "Only rename regular files")
-    file))
-
-;;;###autoload
-(defun denote-dired-rename-file (file title keywords)
-  "Rename FILE to include TITLE and KEYWORDS.
-
-If in Dired, consider FILE to be the one at point, else prompt
-with completion.
-
-If FILE has a Denote-compliant identifier, retain it while
-updating the TITLE and KEYWORDS fields of the file name.  Else
-create an identifier based on the file's attribute of last
-modification time.  If such attribute cannot be found, the
-identifier falls back to the current time.
-
-As a final step, prompt for confirmation, showing the difference
-between old and new file names.  If `denote-dired-rename-expert'
-is non-nil, conduct the renaming operation outright---no
-questions asked!
-
-The file type extension (e.g. .pdf) is read from the underlying
-file and is preserved through the renaming process.  Files that
-have no extension are simply left without one.
-
-Renaming only occurs relative to the current directory.  Files
-are not moved between directories.  As a final step, call the
-`denote-dired-post-rename-functions'.
-
-This command is intended to (i) rename existing Denote
-notes, (ii) complement note-taking, such as by renaming
-attachments that the user adds to their notes."
-  (interactive
-   (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
-     (list
-      file
-      (denote--title-prompt (denote-retrieve--value-title file))
-      (denote--keywords-prompt))))
-  (let* ((dir (file-name-directory file))
-         (old-name (file-name-nondirectory file))
-         (extension (file-name-extension file t))
-         (new-name (denote--format-file
-                    dir
-                    (denote-dired--file-name-id file)
-                    keywords
-                    (denote--sluggify title)
-                    extension))
-         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (unless (string= old-name (file-name-nondirectory new-name))
-      (when (y-or-n-p
-             (format "Rename %s to %s?"
-                     (propertize old-name 'face 'error)
-                     (propertize (file-name-nondirectory new-name) 'face 'success)))
+(defun denote-dired--rename-file (old-name new-name)
+  "Rename file named OLD-NAME to NEW-NAME.
+Update Dired buffers if the file is renamed.
+Return t if the file is renamed, nil otherwise."
+  (unless (string= (expand-file-name old-name) (expand-file-name new-name))
+    (let ((response
+           (y-or-n-p
+            (format "Rename %s to %s?"
+                    (propertize (file-name-nondirectory old-name) 'face 'error)
+                    (propertize (file-name-nondirectory new-name) 'face 'success)))))
+      (when response
         (rename-file old-name new-name nil)
         (denote-dired--rename-buffer old-name new-name)
-        (run-hook-with-args 'denote-dired-post-rename-functions new-name title keywords)))))
+        (denote-dired-update-dired-buffers))
+      response)))
 
-(defun denote-dired-update-dired-buffers (&rest _)
-  "Update Dired buffers of variable `denote-directory'.
-Can run after `denote-dired-post-rename-functions', though it
-ignores all its arguments."
+(defun denote-dired-update-dired-buffers ()
+  "Update Dired buffers of variable `denote-directory'."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (when (and (eq major-mode 'dired-mode)
-                  (string-match-p (expand-file-name default-directory)
-                                  (expand-file-name (denote-directory))))
+                  (string-prefix-p (denote-directory)
+                                   (expand-file-name default-directory)))
          (revert-buffer))))
    (buffer-list)))
 
@@ -273,7 +234,7 @@ ignores all its arguments."
   "Front matter for renamed notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID, and FILETYPE are all strings
- which are provided by `denote-dired-rewrite-front-matter'."
+ which are provided by `denote-dired--rewrite-front-matter'."
   (let ((kw-space (denote--file-meta-keywords keywords))
         (kw-toml (denote--file-meta-keywords keywords 'toml)))
     (pcase filetype
@@ -308,7 +269,7 @@ The return value is for `denote--file-meta-header'."
 
 (defun denote-dired--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote-dired-rewrite-front-matter': if FILE
+This is relevant for `denote-dired--rewrite-front-matter': if FILE
 has no front matter, then we abort early instead of trying to
 replace what isn't there."
   (when-let ((ext (file-name-extension file)))
@@ -319,7 +280,7 @@ replace what isn't there."
          ;; Heuristic to check if this is one of our notes
          (string= (expand-file-name default-directory) (denote-directory)))))
 
-(defun denote-dired-rewrite-front-matter (file title keywords)
+(defun denote-dired--rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct a new front matter block if
@@ -354,9 +315,74 @@ appropriate."
           ;; those.
           (delete-blank-lines))))))
 
+(defun denote-dired--add-front-matter (file title keywords id)
+  "Add front matter to the beginning of FILE.
+The TITLE, KEYWORDS and ID are passed from the renaming
+command and are used to construct a new front matter block if
+appropriate."
+  (when-let* ((filetype (denote-dired--filetype-heuristics file))
+              (date (denote--date (date-to-time id)))
+              (new-front-matter (denote--file-meta-header title date keywords id filetype)))
+    (with-current-buffer (find-file-noselect file)
+      (goto-char (point-min))
+      (insert new-front-matter))))
+
+;;;; Renaming commands
+
 ;;;###autoload
-(defun denote-dired-convert-file-to-denote (file title keywords)
-  "Convert a file to Denote format.
+(defun denote-dired-rename-file-and-rewrite-front-matter (file title keywords)
+  "Rename FILE to include TITLE and KEYWORDS.
+
+If in Dired, consider FILE to be the one at point, else prompt
+with completion.
+
+If FILE has a Denote-compliant identifier, retain it while
+updating the TITLE and KEYWORDS fields of the file name.  Else
+create an identifier based on the file's attribute of last
+modification time.  If such attribute cannot be found, the
+identifier falls back to the current time.
+
+As a final step, prompt for confirmation, showing the difference
+between old and new file names.  If `denote-dired-rename-expert'
+is non-nil, conduct the renaming operation outright---no
+questions asked!
+
+The file type extension (e.g. .pdf) is read from the underlying
+file and is preserved through the renaming process.  Files that
+have no extension are simply left without one.
+
+Renaming only occurs relative to the current directory.  Files
+are not moved between directories.  As a final step, call the
+`denote-dired-post-rename-functions'.
+
+This command is intended to (i) rename existing Denote
+notes, (ii) complement note-taking, such as by renaming
+attachments that the user adds to their notes."
+  (interactive
+   (let ((file (denote-dired--rename-dired-file-or-prompt)))
+     (list
+      file
+      (denote--title-prompt
+       (or (denote-retrieve--value-title file)
+           (file-name-sans-extension (file-name-nondirectory file))))
+      (denote--keywords-prompt))))
+  (let* ((dir (file-name-directory file))
+         (id (denote-dired--file-name-id file))
+         (extension (file-name-extension file t))
+         (new-name (denote--format-file
+                    dir id keywords (denote--sluggify title) extension))
+         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
+    (when (denote-dired--rename-file file new-name)
+      (denote-dired--rewrite-front-matter new-name title keywords))))
+
+(define-obsolete-function-alias
+  'denote-dired-rename-file
+  'denote-dired-rename-file-and-rewrite-front-matter
+  "0.4.0")
+
+;;;###autoload
+(defun denote-dired-rename-file-and-add-front-matter (file title keywords)
+  "Rename FILE and add a front matter.
 
 Prompt for a FILE, a TITLE, and KEYWORDS.  The unique identifier
 is retrieved from the filename if there is one, else the last
@@ -381,43 +407,29 @@ For per-file-type front matter, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'"
   (interactive
-   (let ((file (denote-dired--rename-file-is-regular (denote-dired--rename-dired-file-or-prompt))))
+   (let ((file (denote-dired--rename-dired-file-or-prompt)))
      (list
       file
-      (denote--title-prompt (or (denote-retrieve--value-title file)
-                                (file-name-sans-extension (file-name-nondirectory file))))
+      (denote--title-prompt
+       (or (denote-retrieve--value-title file)
+           (file-name-sans-extension (file-name-nondirectory file))))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
-         (old-name (file-name-nondirectory file))
          (id (denote-dired--file-name-id file))
          (extension (file-name-extension file t))
          (new-name (denote--format-file
-                    dir
-                    (denote-dired--file-name-id file)
-                    keywords
-                    (denote--sluggify title)
-                    extension))
+                    dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (unless (string= old-name (file-name-nondirectory new-name))
-      (when (y-or-n-p
-             (format "Rename %s to %s?"
-                     (propertize old-name 'face 'error)
-                     (propertize (file-name-nondirectory new-name) 'face 'success)))
-        (rename-file old-name new-name nil)
-        (denote-dired--rename-buffer old-name new-name)
-        (denote-dired-update-dired-buffers)))
-    (when-let* ((filetype (denote-dired--filetype-heuristics file))
-                (date (denote--date (date-to-time id)))
-                (new-front-matter (denote--file-meta-header title date keywords id filetype)))
-      (with-current-buffer (find-file-noselect new-name)
-        (goto-char (point-min))
-        (insert new-front-matter)))))
+    (when (denote-dired--rename-file file new-name)
+      (denote-dired--add-front-matter new-name title keywords id))))
 
-;;;; Batch-renaming facility
+(define-obsolete-function-alias
+  'denote-dired-convert-file-to-denote
+  'denote-dired-rename-file-and-add-front-matter
+  "0.4.0")
 
-;; REVIEW 2022-07-16: This is a proof-of-concept
 ;;;###autoload
-(defun denote-dired-batch-rename ()
+(defun denote-dired-rename-marked-files ()
   "DEV NOTE 2022-07-16: proof of concept---help flesh it out.
 
 Rename marked files in Dired using the following pattern:
@@ -445,16 +457,14 @@ file-naming scheme."
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
-                 (title (file-name-sans-extension (file-name-nondirectory file)))
+                 (id (denote-dired--file-name-id file))
+                 (title (or (denote-retrieve--value-title file)
+                            (file-name-sans-extension
+                             (file-name-nondirectory file))))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
-                            dir
-                            (denote-dired--file-name-id file)
-                            keywords
-                            (denote--sluggify title)
-                            extension)))
-            (unless (denote--only-note-p file)
-              (rename-file (file-name-nondirectory file) new-name))))
+                            dir id keywords (denote--sluggify title) extension)))
+            (rename-file file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 

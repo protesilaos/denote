@@ -56,19 +56,20 @@
 (defun denote-retrieve--search (file key-regexp &optional key)
   "Return value of KEY-REGEXP key in current buffer from FILE.
 If optional KEY is non-nil, return the key instead."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (when (re-search-forward key-regexp nil t 1)
-          (if key
-              (match-string-no-properties 0)
-            (let ((trims "[ \t\n\r\"']+"))
-              (string-trim
-               (buffer-substring-no-properties (point) (point-at-eol))
-               trims trims))))))))
+  (when (denote--only-note-p file)
+    (with-temp-buffer
+      (insert-file-contents file)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (when (re-search-forward key-regexp nil t 1)
+            (if key
+                (match-string-no-properties 0)
+              (let ((trims "[ \t\n\r\"']+"))
+                (string-trim
+                 (buffer-substring-no-properties (point) (point-at-eol))
+                 trims trims)))))))))
 
 (defun denote-retrieve--value-title (file &optional key)
   "Return title value from FILE.
