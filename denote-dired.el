@@ -319,7 +319,8 @@ appropriate."
 The TITLE, KEYWORDS and ID are passed from the renaming
 command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((filetype (denote-dired--filetype-heuristics file))
+  (when-let* ((denote--only-note-p file)
+              (filetype (denote-dired--filetype-heuristics file))
               (date (denote--date (date-to-time id)))
               (new-front-matter (denote--file-meta-header title date keywords id filetype)))
     (with-current-buffer (find-file-noselect file)
@@ -499,8 +500,7 @@ doc string)."
                             dir id keywords (denote--sluggify title) extension)))
             (rename-file file new-name)
             (denote-dired--rename-buffer file new-name)
-            (when (denote--only-note-p file)
-              (denote-dired--add-front-matter new-name title keywords id))))
+            (denote-dired--add-front-matter new-name title keywords id)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
