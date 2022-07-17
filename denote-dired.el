@@ -375,8 +375,10 @@ attachments that the user adds to their notes."
     (when (denote-dired--rename-file file new-name)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
-(defalias 'denote-dired-rename-file
-  (symbol-function 'denote-dired-rename-file-and-rewrite-front-matter))
+(define-obsolete-function-alias
+  'denote-dired-rename-file
+  'denote-dired-rename-file-and-rewrite-front-matter
+  "0.4.0")
 
 ;;;###autoload
 (defun denote-dired-rename-file-and-add-front-matter (file title keywords)
@@ -420,6 +422,11 @@ For per-file-type front matter, refer to the variables:
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-dired--rename-file file new-name)
       (denote-dired--add-front-matter new-name title keywords id))))
+
+(define-obsolete-function-alias
+  'denote-dired-convert-file-to-denote
+  'denote-dired-rename-file-and-add-front-matter
+  "0.4.0")
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files ()
