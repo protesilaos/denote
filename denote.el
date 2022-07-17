@@ -721,8 +721,8 @@ Optional DEFAULT-TITLE is used as the default value."
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
   (when-let* ((dir directory)
-              ((string-match-p (expand-file-name (denote-directory))
-                               (expand-file-name dir))))
+              ((string-prefix-p (expand-file-name (denote-directory))
+                                (expand-file-name dir))))
     dir))
 
 ;;;###autoload
