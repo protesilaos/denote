@@ -472,10 +472,12 @@ file-naming scheme."
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-and-add-front-matter ()
-  "DEV NOTE 2022-07-16: proof of concept---help flesh it out.
+  "DEV NOTE 2022-07-17: proof of concept---help flesh it out.
 
 Like `denote-dired-rename-marked-files' but also adds front
-matter to each file.  Buffers are not saved.  The user can thus
+matter to each file if it has the appropriate file type extension
+of the supported file types (per the user option
+`denote-file-type').  Buffers are not saved.  The user can thus
 check them to confirm that the new front matter does not cause
 any problems.
 
