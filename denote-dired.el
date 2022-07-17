@@ -352,6 +352,9 @@ attachments that the user adds to their notes."
     (when (denote-dired--rename-file file new-name)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
+(defalias 'denote-dired-rename-file
+  (symbol-function 'denote-dired-rename-file-and-rewrite-front-matter))
+
 ;;;###autoload
 (defun denote-dired-rename-file-and-add-front-matter (file title keywords)
   "Convert a file to Denote format.
