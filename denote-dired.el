@@ -357,7 +357,7 @@ attachments that the user adds to their notes."
 
 ;;;###autoload
 (defun denote-dired-rename-file-and-add-front-matter (file title keywords)
-  "Convert a file to Denote format.
+  "Rename FILE and add a front matter.
 
 Prompt for a FILE, a TITLE, and KEYWORDS.  The unique identifier
 is retrieved from the filename if there is one, else the last
