@@ -825,6 +825,19 @@ is set to \\'(file-type title keywords)."
   "Return DATE if parsed by `date-to-time', else signal error."
   (date-to-time date))
 
+(defun denote--buffer-file-names ()
+  "Return file names of active buffers."
+  (mapcar
+   (lambda (name)
+     (file-name-nondirectory name))
+   (delq nil
+         (mapcar
+          (lambda (buf)
+            (buffer-file-name buf))
+          (buffer-list)))))
+
+(declare-function cl-some "cl-extra" (cl-pred cl-seq &rest cl-rest))
+
 ;; This should only be relevant for `denote-date', otherwise the
 ;; identifier is always unique (we trust that no-one writes multiple
 ;; notes within fractions of a second).
@@ -832,7 +845,11 @@ is set to \\'(file-type title keywords)."
   "Return non-nil if IDENTIFIER already exists.
 NO-CHECK-CURRENT passes the appropriate flag to
 `denote--directory-files-matching-regexp'."
-  (denote--directory-files-matching-regexp identifier no-check-current))
+  (or (cl-some (lambda (file)
+                 (string-match-p (concat "\\`" identifier) file))
+               (denote--buffer-file-names))
+      (denote--directory-files-matching-regexp
+       (concat "\\`" identifier) no-check-current)))
 
 (defun denote--barf-duplicate-id (identifier)
   "Throw a user-error if IDENTIFIER already exists else return t."
