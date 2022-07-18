@@ -950,7 +950,7 @@ configuration:
 #+begin_src emacs-lisp
 (require 'savehist)
 (setq savehist-file (locate-user-emacs-file "savehist"))
-(setq history-length 10000)
+(setq history-length 500)
 (setq history-delete-duplicates t)
 (setq savehist-save-minibuffer-history t)
 (add-hook 'after-init-hook #'savehist-mode)
