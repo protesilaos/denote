@@ -827,11 +827,13 @@ is set to \\'(file-type title keywords)."
   (mapcar
    (lambda (name)
      (file-name-nondirectory name))
-   (delq nil
-         (mapcar
-          (lambda (buf)
-            (buffer-file-name buf))
-          (buffer-list)))))
+   (seq-filter
+    (lambda (name) (denote--only-note-p name))
+    (delq nil
+          (mapcar
+           (lambda (buf)
+             (buffer-file-name buf))
+           (buffer-list))))))
 
 (declare-function cl-some "cl-extra" (cl-pred cl-seq &rest cl-rest))
 
