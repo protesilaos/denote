@@ -763,7 +763,7 @@ When called from Lisp, all arguments are optional.
                  (denote--valid-date date)))
          (id (format-time-string denote--id-format date))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
-                        (file-name-nondirectory subdirectory)
+                        (file-name-as-directory subdirectory)
                       (denote-directory))))
     (denote--barf-duplicate-id id)
     (denote--prepare-note (or title "") keywords date id directory file-type)
