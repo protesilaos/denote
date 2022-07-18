@@ -445,18 +445,15 @@ names that are relative to the variable `denote-directory'."
      (string-prefix-p id (file-name-nondirectory f)))
    (denote--directory-files :absolute)))
 
-(defun denote--directory-files-matching-regexp (regexp &optional no-check-current)
-  "Return list of files matching REGEXP.
-With optional NO-CHECK-CURRENT do not test if the current file is
-part of the list."
+(defun denote--directory-files-matching-regexp (regexp)
+  "Return list of files matching REGEXP."
   (delq
    nil
    (mapcar
     (lambda (f)
       (when (and (denote--only-note-p f)
                  (string-match-p regexp f)
-                 (or no-check-current
-                     (not (string= (file-name-nondirectory (buffer-file-name)) f))))
+                 (not (string= (file-name-nondirectory (buffer-file-name)) f)))
         f))
     (denote--directory-files))))
 
@@ -841,19 +838,20 @@ is set to \\'(file-type title keywords)."
 ;; This should only be relevant for `denote-date', otherwise the
 ;; identifier is always unique (we trust that no-one writes multiple
 ;; notes within fractions of a second).
-(defun denote--id-exists-p (identifier no-check-current)
-  "Return non-nil if IDENTIFIER already exists.
-NO-CHECK-CURRENT passes the appropriate flag to
-`denote--directory-files-matching-regexp'."
-  (or (cl-some (lambda (file)
-                 (string-match-p (concat "\\`" identifier) file))
-               (denote--buffer-file-names))
-      (denote--directory-files-matching-regexp
-       (concat "\\`" identifier) no-check-current)))
+(defun denote--id-exists-p (identifier)
+  "Return non-nil if IDENTIFIER already exists."
+  (let ((current-buffer-name (when (buffer-file-name)
+                               (file-name-nondirectory (buffer-file-name)))))
+    (or (cl-some (lambda (file)
+                   (string-match-p (concat "\\`" identifier) file))
+                 (delete current-buffer-name (denote--buffer-file-names)))
+        (delete current-buffer-name
+                (denote--directory-files-matching-regexp
+                 (concat "\\`" identifier))))))
 
 (defun denote--barf-duplicate-id (identifier)
   "Throw a user-error if IDENTIFIER already exists else return t."
-  (if (denote--id-exists-p identifier :no-check-current)
+  (if (denote--id-exists-p identifier)
       (user-error "`%s' already exists; aborting new note creation" identifier)
     t))
 
