@@ -324,7 +324,7 @@ are described in the doc string of `format-time-string'."
   "Regular expression to match supported Denote extensions.")
 
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
-  "Regular expression of punctionation that should be removed.
+  "Punctionation that is removed from file names.
 We consider those characters illigal for our purposes.")
 
 (defvar denote-last-path nil "Store last path.")
