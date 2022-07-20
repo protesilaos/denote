@@ -327,6 +327,13 @@ are described in the doc string of `format-time-string'."
   "Punctionation that is removed from file names.
 We consider those characters illigal for our purposes.")
 
+(defvar denote-punctuation-excluded-extra-regexp nil
+  "Additional punctuation that is removed from file names.
+This variable is for advanced users who need to extend the
+`denote--punctuation-regexp'.  Once we have a better
+understanding of what we should be omitting, we will update
+things accordingly.")
+
 (defvar denote-last-path nil "Store last path.")
 (defvar denote-last-title nil "Store last title.")
 (defvar denote-last-keywords nil "Store last keywords.")
@@ -353,7 +360,9 @@ We consider those characters illigal for our purposes.")
 
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
-  (replace-regexp-in-string denote--punctuation-regexp "" str))
+  (replace-regexp-in-string
+   (concat denote--punctuation-regexp denote-punctuation-excluded-extra-regexp)
+   "" str))
 
 (defun denote--slug-hyphenate (str)
   "Replace spaces with hyphens in STR.
