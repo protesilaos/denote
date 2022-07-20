@@ -931,7 +931,8 @@ created by Denote: it covers every file name that follows our naming
 conventions ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  This is particularly useful for
 scenaria where, say, one wants to organise their collection of PDFs and
 multimedia in a systematic way (and, perhaps, use them as attachments
-for the notes Denote produces).
+for the notes Denote produces if you are writing Org notes and are using
+its standand attachments' facility).
 
 * Minibuffer histories
 :PROPERTIES:
