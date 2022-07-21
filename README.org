@@ -418,6 +418,11 @@ part of the user's longer-term storage ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5
 Denote does not manage such files, it already has all the mechanisms to
 facilitate the task of renaming them.
 
+** Rename a single file
+:PROPERTIES:
+:CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
+:END:
+
 #+findex: denote-dired-rename-file
 To this end, we provide the ~denote-dired-rename-file~ command.  It has
 a two-fold purpose: (i) to change the name of an existing file while
@@ -460,8 +465,12 @@ If the underlying file has identifiable Denote-style front matter,
 it (e.g. to update the title).  The specific format of the front matter
 depends on the file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
-[ Everything in this section below the current line is part of
-  {{{development-version}}}. ]
+** Rename multiple files at once
+:PROPERTIES:
+:CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
+:END:
+
+[ Everything in this section is part of {{{development-version}}}. ]
 
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
