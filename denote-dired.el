@@ -28,37 +28,36 @@
 ;;
 ;; Denote's file-naming scheme is not specific to notes or text files:
 ;; it is useful for all sorts of files, such as multimedia and PDFs that
-;; form part of the user's longer-term storage (read manual about "The
-;; file-naming scheme").  While Denote does not manage such files, it
-;; already has all the mechanisms to facilitate the task of renaming
-;; them.
+;; form part of the user's longer-term storage (see manual's "The
+;; file-naming scheme").  While Denote does not manage such files
+;; (e.g. doesn't create links to them), it already has all the
+;; mechanisms to facilitate the task of renaming them.
 ;;
-;; To this end, we provide the `denote-dired-rename-file' command.  It
-;; has a two-fold purpose: (i) to change the name of an existing file
-;; while retaining its identifier and (ii) to write a Denote-compliant
-;; file name for an item that was not created by `denote' or related
-;; commands (such as an image or PDF).
+;; The `denote-dired-rename-file' command renames a file and updates
+;; existing front matter if appropriate.
 ;;
-;; The `denote-dired-rename-file-and-rewrite-front-matter' command
-;; (deprecated alias is `denote-dired-rename-file' as part of
-;; {{{development-version}}}) will target the file at point if it finds
-;; one in the current Dired buffer.  Otherwise it prompts with
-;; minibuffer completion for a file name.  It then uses the familiar
-;; prompts for a `TITLE' and `KEYWORDS' the same way the `denote'
-;; command calls them (read manual about "Points of entry").  As a final
-;; step, it asks for confirmation before renaming the file at point,
-;; showing a message like:
+;; If in Dired, the `FILE' to be renamed is the one at point, else the
+;; command prompts with minibuffer completion for a target file.
+;;
+;; If `FILE' has a Denote-compliant identifier, the command retains it
+;; while updating the `TITLE' and `KEYWORDS' fields of the file name.
+;; Otherwise it creates an identifier based on the file's attribute of last
+;; modification time.  If such attribute cannot be found, the identifier
+;; falls back to the current date and time.
+;;
+;; The default `TITLE' is retrieved from a line starting with a title
+;; field in the file's contents, depending on the given file type (see
+;; manual's "Front matter").  Else, the file name is used as a default
+;; value at the minibuffer prompt.
+;;
+;; As a final step after the `FILE', `TITLE', and `KEYWORDS' prompts, ask
+;; for confirmation, showing the difference between old and new file names.
+;; For example:
 ;;
 ;;     Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
 ;;
-;; However, if the user option `denote-dired-rename-expert' is non-nil, it
-;; conducts the renaming operation outright---no questions asked.
-;;
-;; When operating on a file that has no identifier, such as
-;; `sample.pdf', Denote reads the file properties to retrieve its last
-;; modification time.  If the file was from a past date like 2000-11-31
-;; it will get an identifier starting with `20001131' followed by the
-;; time component (per our file-naming scheme).
+;; However, if the user option `denote-dired-rename-expert' is non-nil, the
+;; command conducts the renaming operation outright---no questions asked!
 ;;
 ;; The file type extension (e.g. `.pdf') is read from the underlying file
 ;; and is preserved through the renaming process.  Files that have no
@@ -67,15 +66,36 @@
 ;; Renaming only occurs relative to the current directory.  Files are not
 ;; moved between directories.
 ;;
-;; If the underlying file has identifiable Denote-style front matter,
-;; `denote-dired-rename-file-and-rewrite-front-matter' will ask to
-;; rewrite it (e.g. to update the title).  The specific format of the
-;; front matter depends on the file type (read manual about "Front
-;; matter).
+;; If the `FILE' has Denote-style front matter, the command asks to rewrite
+;; it in order to reflect the new values of `TITLE' and/or `KEYWORDS' (this
+;; step always requires confirmation and the underlying buffer is not
+;; saved, so consider invoking `diff-buffer-with-file' to double-check the
+;; effect).  If the file doesn't have front matter, the command skips this
+;; step (see manual's "Rename file and add front matter").
 ;;
-;; The `denote-dired-rename-marked-files' command renames marked files
-;; in Dired to conform with our file-naming scheme.  The operation does
-;; the following:
+;; The `denote-dired-rename-file' command is intended to (i) rename
+;; existing Denote notes while updating their front matter, (ii) rename
+;; files that can benefit from Denote's file-naming scheme.  The latter is
+;; a convenience we provide, since we already have all the requisite
+;; mechanisms in place (Denote does not manage such files though).
+;;
+;;
+;; The command `denote-dired-rename-file-and-add-front-matter' has the
+;; same modalities of interaction as the `denote-dired-rename-file'
+;; command (see manual's "Rename a single file").  The difference is
+;; that it unconditionally inserts front matter at the start of a file.
+;;
+;; This command is thus suitable for a workflow where an existing writable
+;; file needs to be converted into a Denote-style note.  Whereas the other
+;; command does not insert front matter if one doesn't already exist.
+;;
+;; Front matter is added when the file type extension is among the
+;; supported ones (per `denote-file-type').
+;;
+;;
+;; The `denote-dired-rename-marked-files' command renames marked files in
+;; Dired to conform with our file-naming scheme.  The operation does the
+;; following:
 ;;
 ;; - the file's existing file name is retained and becomes the `TITLE'
 ;;   field, per our file-naming scheme;
@@ -95,15 +115,14 @@
 ;; This command ignores files that comply with Denote's file-naming
 ;; scheme.
 ;;
-;; The command `denote-dired-rename-marked-files-and-add-front-matters'
-;; is like `denote-dired-rename-marked-files' but also adds front
-;; matter.  The additon of front matter takes place only if the file has
-;; the appropriate file type extension (per the user option
-;; `denote-file-type').
+;; The command `denote-dired-rename-marked-files-and-add-front-matters' is
+;; like `denote-dired-rename-marked-files' but also adds front matter.  The
+;; additon of front matter takes place only if the file has the appropriate
+;; file type extension (per the user option `denote-file-type').
 ;;
-;; Buffers are not saved.  The user can thus check them to confirm that
-;; the new front matter does not cause any problems (e.g. by invoking
-;; the command `diff-buffer-with-file').
+;; Buffers are not saved.  The user can thus check them to confirm that the
+;; new front matter does not cause any problems (e.g. by invoking the
+;; command `diff-buffer-with-file').
 ;;
 ;; Multiple buffers can be saved with `save-some-buffers' (read its doc
 ;; string).
@@ -167,7 +186,7 @@
   "If t, renaming a file doesn't ask for confirmation.
 The confiration is asked via a `y-or-n-p' prompt which shows the
 old name followed by the new one.  This applies to the command
-`denote-dired-rename-file-and-rewrite-front-matter'."
+`denote-dired-rename-file'."
   :type 'boolean
   :group 'denote-dired)
 
@@ -337,22 +356,27 @@ appropriate."
 ;;;; Renaming commands
 
 ;;;###autoload
-(defun denote-dired-rename-file-and-rewrite-front-matter (file title keywords)
-  "Rename FILE to include TITLE and KEYWORDS.
+(defun denote-dired-rename-file (file title keywords)
+  "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
-with completion.
+with minibuffer completion for one.
 
 If FILE has a Denote-compliant identifier, retain it while
 updating the TITLE and KEYWORDS fields of the file name.  Else
 create an identifier based on the file's attribute of last
 modification time.  If such attribute cannot be found, the
-identifier falls back to the current time.
+identifier falls back to the `current-time'.
 
-As a final step, prompt for confirmation, showing the difference
-between old and new file names.  If `denote-dired-rename-expert'
-is non-nil, conduct the renaming operation outright---no
-questions asked!
+The default TITLE is retrieved from a line starting with a title
+field in the file's contents, depending on the given file type.
+Else, the file name is used as a default value at the minibuffer
+prompt.
+
+As a final step after the FILE, TITLE, and KEYWORDS prompts, ask
+for confirmation, showing the difference between old and new file
+names.  If `denote-dired-rename-expert' is non-nil, conduct the
+renaming operation outright---no question asked!
 
 The file type extension (e.g. .pdf) is read from the underlying
 file and is preserved through the renaming process.  Files that
@@ -361,9 +385,18 @@ have no extension are simply left without one.
 Renaming only occurs relative to the current directory.  Files
 are not moved between directories.
 
-This command is intended to (i) rename existing Denote
-notes, (ii) complement note-taking, such as by renaming
-attachments that the user adds to their notes."
+If the FILE has Denote-style front matter, ask to rewrite it in
+order to reflect the new values of TITLE and/or KEYWORDS (this
+step always requires confirmation and the underlying buffer is
+not saved, so consider invoking `diff-buffer-with-file' to
+double-check the effect).  If the file doesn't have front matter,
+skip this step (see `denote-dired-rename-file-and-add-front-matter').
+
+This command is intended to (i) rename existing Denote notes
+while updating their front matter, (ii) rename files that can
+benefit from Denote's file-naming scheme.  The latter is a
+convenience we provide, since we already have all the requisite
+mechanisms in place (Denote does not manage such files though)."
   (interactive
    (let ((file (denote-dired--rename-dired-file-or-prompt)))
      (list
@@ -382,32 +415,19 @@ attachments that the user adds to their notes."
       (denote-dired-update-dired-buffers)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
-(define-obsolete-function-alias
-  'denote-dired-rename-file
-  'denote-dired-rename-file-and-rewrite-front-matter
-  "0.4.0")
-
 ;;;###autoload
 (defun denote-dired-rename-file-and-add-front-matter (file title keywords)
-  "Rename FILE and add a front matter.
+  "Rename FILE and unconditionally add front matter.
 
-Prompt for a FILE, a TITLE, and KEYWORDS.  The unique identifier
-is retrieved from the filename if there is one, else the last
-modification time is used to derive one.
+This command has the same modalities of interaction as
+`denote-dired-rename-file' in terms of the FILE, TITLE, and
+KEYWORDS prompts, except it always inserts front matter at the
+start of the file.  It does not check if any front matter is
+already present.
 
-In Dired, FILE is the one at point.  It has to be a regular
-file (not a directory, a named pipe, etc.).
-
-The default title is retrieved from a line starting with a title
-field, depending on the given file type.  Else, the file name is
-used.
-
-This command adds a front matter unconditionally at the start of
-the file.  It does not check if one is already present.  If a
-front matter is already present, you will end up with two.
-Consider using `denote-dired-rename-file' in this case.
-
-For per-file-type front matter, refer to the variables:
+Front matter is added only when the file is one of the supported
+file types (per `denote-file-type').  For per-file-type front
+matter, refer to the variables:
 
 - `denote-org-front-matter'
 - `denote-text-front-matter'
