@@ -488,6 +488,55 @@ inserts links with just the identifier."
 
 (defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
 
+;;;; Links from Dired marks
+
+;; NOTE 2022-07-21: I don't think we need a history for this one.
+(defun denote-link--buffer-prompt (buffers)
+  "Select buffer from BUFFERS visiting Denote notes."
+  (completing-read
+   "Select note buffer: "
+   (denote--completion-table 'buffer buffers)
+   nil t))
+
+(declare-function dired-get-marked-files "dired" (&optional localp arg filter distinguish-one-marked error))
+
+(defun denote-link--map-over-notes ()
+  "Return list of `denote--only-note-p' from Dired marked items."
+  (delq nil (mapcar
+	         (lambda (f)
+               ;; TODO 2022-07-21: Check that we are in a `denote-directory'?
+               (when (denote--only-note-p f) f))
+             (dired-get-marked-files))))
+
+;;;###autoload
+(defun denote-link-dired-marked-notes (files buffer &optional id-only)
+  "Insert Dired marked FILES as links in BUFFER.
+FILES are Denote notes: no other file is recognised (the list of
+marked files ignored whatever does not count as a note for our
+purposes).
+
+The BUFFER is one which visits a Denote note file.  If there are
+multiple buffers, prompt with completion for one among them.
+
+With optional ID-ONLY as a prefix argument, insert links with
+just the identifier (same principle as with `denote-link')."
+  (interactive
+   (list
+    (denote-link--map-over-notes)
+    (let ((buffers (denote--buffer-file-names)))
+      (get-buffer
+       (if (eq (length buffers) 1)
+           (car buffers)
+         (denote-link--buffer-prompt buffers))))
+    current-prefix-arg)
+   dired-mode)
+  (if (null files)
+      (user-error "No note files to link to")
+    (when (y-or-n-p (format "Create links at point in %s?" buffer))
+      (with-current-buffer buffer
+        (insert (denote-link--prepare-links files (buffer-file-name) id-only))
+        (denote-link-buttonize-buffer)))))
+
 ;;;; Register `denote:' custom Org hyperlink
 
 (declare-function org-link-open-as-file "ol" (path arg))
