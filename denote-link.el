@@ -502,17 +502,24 @@ inserts links with just the identifier."
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote--only-note-p' from Dired marked items."
-  (delq nil (mapcar
-	         (lambda (f)
-               ;; TODO 2022-07-21: Check that we are in a `denote-directory'?
-               (when (denote--only-note-p f) f))
-             (dired-get-marked-files))))
+  (delq nil
+        (mapcar
+	     (lambda (f)
+           (when (and (denote--only-note-p f)
+                      (denote--dir-in-denote-directory-p default-directory))
+             f))
+         (dired-get-marked-files))))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
   "Insert Dired marked FILES as links in BUFFER.
-FILES are Denote notes: no other file is recognised (the list of
-marked files ignored whatever does not count as a note for our
+
+FILES are Denote notes, meaning that they have our file-naming
+scheme, are writable/regular files, and use the appropriate file
+type extension (per `denote-file-type').  Furthermore, the marked
+files need to be inside the variable `denote-directory' or one of
+its subdirectories.  No other file is recognised (the list of
+marked files ignores whatever does not count as a note for our
 purposes).
 
 The BUFFER is one which visits a Denote note file.  If there are
@@ -525,9 +532,13 @@ just the identifier (same principle as with `denote-link')."
     (denote-link--map-over-notes)
     (let ((buffers (denote--buffer-file-names)))
       (get-buffer
-       (if (eq (length buffers) 1)
-           (car buffers)
-         (denote-link--buffer-prompt buffers))))
+       (cond
+        ((null buffers)
+         (user-error "No buffers visiting Denote notes"))
+        ((eq (length buffers) 1)
+         (car buffers))
+        (t
+         (denote-link--buffer-prompt buffers)))))
     current-prefix-arg)
    dired-mode)
   (if (null files)
