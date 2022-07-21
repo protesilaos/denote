@@ -357,6 +357,7 @@ then you do not need this.
 
 When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
+  (interactive)
   (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
     (save-excursion
       (goto-char (or beg (point-min)))
