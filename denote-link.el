@@ -523,10 +523,13 @@ marked files ignores whatever does not count as a note for our
 purposes).
 
 The BUFFER is one which visits a Denote note file.  If there are
-multiple buffers, prompt with completion for one among them.
+multiple buffers, prompt with completion for one among them.  If
+there isn't one, throw an error.
 
 With optional ID-ONLY as a prefix argument, insert links with
-just the identifier (same principle as with `denote-link')."
+just the identifier (same principle as with `denote-link').
+
+This command is meant to be used from a Dired buffer."
   (interactive
    (list
     (denote-link--map-over-notes)
