@@ -718,6 +718,9 @@ Org):
 (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
 #+end_src
 
+The ~denote-link-buttonize-buffer~ is also an interactive function in
+case the user needs it [ this is part of {{{development-version}}} ].
+
 #+findex: denote-link-find-file
 Denote has a major-mode-agnostic mechanism to collect all linked file
 references in the current buffer and return them as an appropriately
