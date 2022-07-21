@@ -143,27 +143,6 @@ old name followed by the new one."
   :type 'boolean
   :group 'denote-dired)
 
-(defcustom denote-dired-post-rename-functions
-  (list #'denote-dired-update-dired-buffers
-        #'denote-dired--rewrite-front-matter)
-  "List of functions called after `denote-dired-rename-file'.
-Each function must accept three arguments: FILE, TITLE, and
-KEYWORDS.  The first is the full path to the file provided as a
-string, the second is the human-readable file name (not what
-Denote sluggifies) also as a string, and the third are the
-keywords.  If there is only one keyword, it is a string, else a
-list of strings.
-
-DEVELOPMENT NOTE: the `denote-dired-rewrite-front-matter' needs
-to be tested thoroughly.  It rewrites file contents so we have to
-be sure it does the right thing.  To avoid any trouble, it always
-asks for confirmation before performing the replacement.  This
-confirmation ignores `denote-dired-rename-expert' for the time
-being, though we might want to lift that restriction once
-everything works as intended."
-  :type 'hook
-  :group 'denote-dired)
-
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
 
 ;;;; File helper functions
@@ -352,8 +331,7 @@ file and is preserved through the renaming process.  Files that
 have no extension are simply left without one.
 
 Renaming only occurs relative to the current directory.  Files
-are not moved between directories.  As a final step, call the
-`denote-dired-post-rename-functions'.
+are not moved between directories.
 
 This command is intended to (i) rename existing Denote
 notes, (ii) complement note-taking, such as by renaming
