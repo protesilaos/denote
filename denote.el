@@ -827,9 +827,25 @@ is set to \\'(file-type title keywords)."
    "DATE and TIME for note (e.g. 2022-06-16 14:30): "
    nil 'denote--date-history))
 
+(defun denote--date-add-current-time (date)
+  "Add current time to date, if necessary.
+The idea is to turn 2020-01-15 into 2020-01-15 16:19 so that the
+hour and minute component is not left to 00:00.
+
+This reduces the burden on the user who would otherwise need to
+input that value in order to avoid the error of duplicate
+identifiers.
+
+It also addresses a difference between Emacs 28 and Emacs 29
+where the former does not read dates without a time component."
+  (if (<= (length date) 10)
+      (format "%s %s" date (format-time-string "%H:%M:%S" (current-time)))
+    date))
+
 (defun denote--valid-date (date)
   "Return DATE if parsed by `date-to-time', else signal error."
-  (date-to-time date))
+  (let ((datetime (denote--date-add-current-time date)))
+    (date-to-time datetime)))
 
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
