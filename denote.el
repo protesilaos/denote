@@ -809,7 +809,7 @@ here for clarity."
   "Create note while prompting for a file type.
 
 This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\'(file-type title keywords)."
+is set to \\='(file-type title keywords)."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(file-type title keywords)))
@@ -891,7 +891,7 @@ The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
 that plus the time: 2022-06-16 14:30
 
 This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\'(date title keywords)."
+is set to \\='(date title keywords)."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(date title keywords)))
@@ -941,7 +941,7 @@ Available candidates include the value of the variable
 `denote-directory' and any subdirectory thereof.
 
 This is equivalent to calling `denote' when `denote-prompts' is set to
-\\'(subdirectory title keywords)."
+\\='(subdirectory title keywords)."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(subdirectory title keywords)))
