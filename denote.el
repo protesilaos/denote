@@ -571,7 +571,7 @@ be `toml' or, in the future, some other spec that needss special
 treatment)."
   (let ((kw (denote--sluggify-keywords keywords)))
     (pcase type
-      ('toml (format "[%s]" (denote--map-quote-downcase kw)))
+      ('markdown-toml (format "[%s]" (denote--map-quote-downcase kw)))
       (_ (mapconcat #'downcase kw "  ")))))
 
 (defvar denote-toml-front-matter
@@ -640,7 +640,7 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 Optional FILETYPE is one of the values of `denote-file-type',
 else that variable is used."
   (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-toml (denote--file-meta-keywords keywords 'toml)))
+        (kw-toml (denote--file-meta-keywords keywords 'markdown-toml)))
     (pcase (or filetype denote-file-type)
       ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))

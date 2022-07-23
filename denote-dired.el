@@ -261,7 +261,7 @@ Return t if the file is renamed, nil otherwise."
 TITLE, DATE, KEYWORDS, FILENAME, ID, and FILETYPE are all strings
  which are provided by `denote-dired--rewrite-front-matter'."
   (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-toml (denote--file-meta-keywords keywords 'toml)))
+        (kw-toml (denote--file-meta-keywords keywords 'markdown-toml)))
     (pcase filetype
       ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
