@@ -45,6 +45,10 @@
   "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]"
   "Regular expression for date key.")
 
+(defconst denote-retrieve--keywords-front-matter-key-regexp
+  "^\\(?:#\\+\\)?\\(?:tags\\|filetags\\)\\s-*[:=]"
+  "Regular expression for keywords key.")
+
 (defun denote-retrieve--filename-identifier (file)
   "Extract identifier from FILE name."
   (if (file-exists-p file)
@@ -80,6 +84,11 @@ If optional KEY is non-nil, return the key instead."
   "Return date value from FILE.
 If optional KEY is non-nil, return the key instead."
   (denote-retrieve--search file denote-retrieve--date-front-matter-key-regexp key))
+
+(defun denote-retrieve--value-keywords (file &optional key)
+  "Return keywords value from FILE.
+If optional KEY is non-nil, return the key instead."
+  (denote-retrieve--search file denote-retrieve--keywords-front-matter-key-regexp key))
 
 (defun denote-retrieve--read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
