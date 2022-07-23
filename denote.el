@@ -829,7 +829,7 @@ is set to \\='(file-type title keywords)."
    nil 'denote--date-history))
 
 (defun denote--date-add-current-time (date)
-  "Add current time to date, if necessary.
+  "Add current time to DATE, if necessary.
 The idea is to turn 2020-01-15 into 2020-01-15 16:19 so that the
 hour and minute component is not left to 00:00.
 
