@@ -699,6 +699,7 @@ With optional DATE, use it else use the current one."
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, and FILE-TYPE
 should be valid for note creation."
   (let* ((default-directory directory)
+         (denote-file-type file-type)
          (path (denote--path title keywords default-directory id))
          (buffer (find-file path))
          (header (denote--file-meta-header
