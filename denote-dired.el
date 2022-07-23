@@ -255,19 +255,6 @@ Return t if the file is renamed, nil otherwise."
          (revert-buffer))))
    (buffer-list)))
 
-(defun denote-dired--file-meta-header (title date keywords id filetype)
-  "Front matter for renamed notes.
-
-TITLE, DATE, KEYWORDS, FILENAME, ID, and FILETYPE are all strings
- which are provided by `denote-dired--rewrite-front-matter'."
-  (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-toml (denote--file-meta-keywords keywords 'markdown-toml)))
-    (pcase filetype
-      ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
-      ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
-      ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
-      (_ (format denote-org-front-matter title date kw-space id)))))
-
 (defun denote-dired--filetype-heuristics (file)
   "Return likely file type of FILE.
 The return value is for `denote--file-meta-header'."
@@ -277,20 +264,6 @@ The return value is for `denote--file-meta-header'."
             'markdown-yaml))
     ("txt" 'text)
     (_ 'org)))
-
-(defun denote-dired--front-matter-search-delimiter (filetype)
-  "Return likely front matter delimiter search for FILETYPE."
-  (pcase filetype
-    ('markdown-toml (re-search-forward "^\\+\\+\\+$" nil t 2))
-    ('markdown-yaml (re-search-forward "^---$" nil t 2))
-    ;; 2 at most, as the user might prepend it to the block as well.
-    ;; Though this might give us false positives, it ultimately is the
-    ;; user's fault.
-    ('text (or (re-search-forward denote-text-front-matter-delimiter nil t 2)
-               (re-search-forward denote-text-front-matter-delimiter nil t 1)
-               (re-search-forward "^[\s\t]*$" nil t 1)))
-    ;; Org does not have a real delimiter.  This is the trickiest one.
-    (_ (re-search-forward "^[\s\t]*$" nil t 1))))
 
 (defun denote-dired--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
@@ -312,33 +285,26 @@ command and are used to construct a new front matter block if
 appropriate."
   (when-let* ((denote-dired--edit-front-matter-p file)
               (id (denote-retrieve--filename-identifier file))
-              (date (denote-retrieve--value-date file))
-              (filetype (denote-dired--filetype-heuristics file))
-              (new-front-matter (denote--file-meta-header title date keywords id filetype)))
-    (let (old-front-matter front-matter-delimiter)
+              (date (denote-retrieve--value-date file)))
+    (let ((old-title (denote-retrieve--value-title file))
+          (old-keywords (denote-retrieve--value-keywords file))
+          (new-title title)
+          (new-keywords (denote--file-meta-keywords
+                         keywords (denote-dired--filetype-heuristics file))))
       (with-current-buffer (find-file-noselect file)
-        (save-excursion
-          (save-restriction
-            (widen)
+        (when (y-or-n-p (format
+                         "Replace front matter?\n-%s\n+%s\n-%s\n+%s"
+                         (propertize old-title 'face 'error)
+                         (propertize new-title 'face 'success)
+                         (propertize old-keywords 'face 'error)
+                         (propertize new-keywords 'face 'success)))
+          (save-excursion
             (goto-char (point-min))
-            (setq front-matter-delimiter (denote-dired--front-matter-search-delimiter filetype))
-            (when front-matter-delimiter
-              (setq old-front-matter
-                    (buffer-substring-no-properties
-                     (point-min)
-                     (progn front-matter-delimiter (point)))))))
-        (when (and old-front-matter
-                   (y-or-n-p
-                    (format "%s\n%s\nReplace front matter?"
-                            (propertize old-front-matter 'face 'error)
-                            (propertize new-front-matter 'face 'success))))
-          (delete-region (point-min) front-matter-delimiter)
-          (goto-char (point-min))
-          (insert new-front-matter)
-          ;; FIXME 2022-06-16: Instead of `delete-blank-lines', we
-          ;; should check if we added any new lines and delete only
-          ;; those.
-          (delete-blank-lines))))))
+            (search-forward old-title nil t 1)
+            (replace-match (concat "\\1" new-title) t)
+            (goto-char (point-min))
+            (search-forward old-keywords nil t 1)
+            (replace-match (concat "\\1" new-keywords) t)))))))
 
 (defun denote-dired--add-front-matter (file title keywords id)
   "Add front matter to the beginning of FILE.
