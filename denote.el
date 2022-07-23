@@ -181,7 +181,7 @@ The value is a list of symbols, which includes any of the following:
   file names are included in the list of candidates.  The
   `keywords' prompt uses `completing-read-multiple', meaning that
   it can accept multiple keywords separated by a comma (or
-  whatever the value of `crm-sepator' is).
+  whatever the value of `crm-separator' is).
 
 - `file-type': Prompts with completion for the file type of the
   new note.  Available candidates are those specified in the user
