@@ -96,7 +96,9 @@
 ;;; Code:
 
 (require 'seq)
-(eval-when-compile (require 'cl-lib))
+(eval-when-compile
+  (require 'cl-lib)
+  (require 'subr-x))
 
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
