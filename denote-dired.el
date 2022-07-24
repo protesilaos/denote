@@ -214,7 +214,7 @@ old name followed by the new one.  This applies to the command
 
 (defun denote-dired--rename-buffer (old-name new-name)
   "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
-  (when-let* ((buffer (find-buffer-visiting old-name)))
+  (when-let ((buffer (find-buffer-visiting old-name)))
     (with-current-buffer buffer
       (set-visited-file-name new-name nil t))))
 
