@@ -96,9 +96,7 @@
 ;;; Code:
 
 (require 'seq)
-(eval-when-compile
-  (require 'cl-lib)
-  (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
@@ -448,11 +446,9 @@ names that are relative to the variable `denote-directory'."
        (lambda (s) (denote--file-name-relative-to-denote-directory s))
        files))))
 
-(declare-function cl-find-if "cl-seq" (cl-pred cl-list &rest cl-keys))
-
 (defun denote--get-note-path-by-id (id)
   "Return the absolute path of ID note in variable `denote-directory'."
-  (cl-find-if
+  (seq-find
    (lambda (f)
      (string-prefix-p id (file-name-nondirectory f)))
    (denote--directory-files :absolute)))
@@ -864,8 +860,6 @@ where the former does not read dates without a time component."
              (buffer-file-name buf))
            (buffer-list))))))
 
-(declare-function cl-some "cl-extra" (cl-pred cl-seq &rest cl-rest))
-
 ;; This should only be relevant for `denote-date', otherwise the
 ;; identifier is always unique (we trust that no-one writes multiple
 ;; notes within fractions of a second).
@@ -873,9 +867,9 @@ where the former does not read dates without a time component."
   "Return non-nil if IDENTIFIER already exists."
   (let ((current-buffer-name (when (buffer-file-name)
                                (file-name-nondirectory (buffer-file-name)))))
-    (or (cl-some (lambda (file)
-                   (string-match-p (concat "\\`" identifier) file))
-                 (delete current-buffer-name (denote--buffer-file-names)))
+    (or (seq-some (lambda (file)
+                    (string-match-p (concat "\\`" identifier) file))
+                  (delete current-buffer-name (denote--buffer-file-names)))
         (delete current-buffer-name
                 (denote--directory-files-matching-regexp
                  (concat "\\`" identifier))))))
