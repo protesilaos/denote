@@ -460,18 +460,34 @@ extension are simply left without one.
 Renaming only occurs relative to the current directory.  Files are not
 moved between directories.
 
-If the =FILE= has Denote-style front matter, the command asks to rewrite
-it in order to reflect the new values of =TITLE= and/or =KEYWORDS= (this
-step always requires confirmation and the underlying buffer is not
-saved, so consider invoking ~diff-buffer-with-file~ to double-check the
-effect).  If the file doesn't have front matter, the command skips this
-step ([[#h:322fefee-6412-487d-bdad-9bd862f0423a][Rename file and add front matter]]).
+[ The front matter rewrite has been refined as part of
+  {{{development-version}}}.  Before it would replace the whole block.
+  Only it only touches the relevant values. ]
+
+If the =FILE= has Denote-style front matter for the =TITLE= and
+=KEYWORDS=, this command asks to rewrite their values in order to
+reflect the new input (this step always requires confirmation and the
+underlying buffer is not saved, so consider invoking
+~diff-buffer-with-file~ to double-check the effect).  The rewrite of the
+=FILE= and =KEYWORDS= in the front matter should not affect the rest of
+the block.
+
+If the file doesn't have front matter, the command skips this step (see
+the command ~denote-dired-rename-file-and-add-front-matter~).
+
+This command is intended to (i) rename existing Denote notes while
+updating their title and keywords in the front matter, (ii) rename files
+that can benefit from Denote's file-naming scheme.  The latter is a
+convenience we provide, since we already have all the requisite
+mechanisms in place (Denote does not and will not manage such files
+though). ([[#h:322fefee-6412-487d-bdad-9bd862f0423a][Rename file and add front matter]]).
 
 The ~denote-dired-rename-file~ command is intended to (i) rename
 existing Denote notes while updating their front matter, (ii) rename
 files that can benefit from Denote's file-naming scheme.  The latter is
 a convenience we provide, since we already have all the requisite
-mechanisms in place (Denote does not manage such files though).
+mechanisms in place (though Denote does not---and will not---manage such
+files).
 
 ** Rename file and add front matter
 :PROPERTIES:

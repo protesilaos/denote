@@ -66,18 +66,22 @@
 ;; Renaming only occurs relative to the current directory.  Files are not
 ;; moved between directories.
 ;;
-;; If the `FILE' has Denote-style front matter, the command asks to rewrite
-;; it in order to reflect the new values of `TITLE' and/or `KEYWORDS' (this
+;; If the FILE has Denote-style front matter for the TITLE and KEYWORDS,
+;; ask to rewrite their values in order to reflect the new input (this
 ;; step always requires confirmation and the underlying buffer is not
-;; saved, so consider invoking `diff-buffer-with-file' to double-check the
-;; effect).  If the file doesn't have front matter, the command skips this
-;; step (see manual's "Rename file and add front matter").
+;; saved, so consider invoking `diff-buffer-with-file' to double-check
+;; the effect).  The rewrite of the FILE and KEYWORDS in the front
+;; matter should not affect the rest of the block.
+;;
+;; If the file doesn't have front matter, skip this step (see the
+;; command `denote-dired-rename-file-and-add-front-matter').
 ;;
 ;; The `denote-dired-rename-file' command is intended to (i) rename
-;; existing Denote notes while updating their front matter, (ii) rename
-;; files that can benefit from Denote's file-naming scheme.  The latter is
-;; a convenience we provide, since we already have all the requisite
-;; mechanisms in place (Denote does not manage such files though).
+;; existing Denote notes while updating their title and keywords in the
+;; front matter, (ii) rename files that can benefit from Denote's
+;; file-naming scheme.  The latter is a convenience we provide, since we
+;; already have all the requisite mechanisms in place (though Denote
+;; does not---and will not---manage such files).
 ;;
 ;;
 ;; The command `denote-dired-rename-file-and-add-front-matter' has the
@@ -293,7 +297,7 @@ appropriate."
                          keywords (denote-dired--filetype-heuristics file))))
       (with-current-buffer (find-file-noselect file)
         (when (y-or-n-p (format
-                         "Replace front matter?\n-%s\n+%s\n-%s\n+%s"
+                         "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s"
                          (propertize old-title 'face 'error)
                          (propertize new-title 'face 'success)
                          (propertize old-keywords 'face 'error)
@@ -351,18 +355,23 @@ have no extension are simply left without one.
 Renaming only occurs relative to the current directory.  Files
 are not moved between directories.
 
-If the FILE has Denote-style front matter, ask to rewrite it in
-order to reflect the new values of TITLE and/or KEYWORDS (this
-step always requires confirmation and the underlying buffer is
-not saved, so consider invoking `diff-buffer-with-file' to
-double-check the effect).  If the file doesn't have front matter,
-skip this step (see `denote-dired-rename-file-and-add-front-matter').
+If the FILE has Denote-style front matter for the TITLE and
+KEYWORDS, ask to rewrite their values in order to reflect the new
+input (this step always requires confirmation and the underlying
+buffer is not saved, so consider invoking `diff-buffer-with-file'
+to double-check the effect).  The rewrite of the FILE and
+KEYWORDS in the front matter should not affect the rest of the
+block.
+
+If the file doesn't have front matter, skip this step (see the
+command `denote-dired-rename-file-and-add-front-matter').
 
 This command is intended to (i) rename existing Denote notes
-while updating their front matter, (ii) rename files that can
-benefit from Denote's file-naming scheme.  The latter is a
-convenience we provide, since we already have all the requisite
-mechanisms in place (Denote does not manage such files though)."
+while updating their title and keywords in the front matter, (ii)
+rename files that can benefit from Denote's file-naming scheme.
+The latter is a convenience we provide, since we already have all
+the requisite mechanisms in place (though Denote does not---and
+will not---manage such files)."
   (interactive
    (let ((file (denote-dired--rename-dired-file-or-prompt)))
      (list
