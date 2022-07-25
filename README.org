@@ -541,9 +541,6 @@ following:
   command ~diff-buffer-with-file~).  Multiple buffers can be saved with
   ~save-some-buffers~ (read its doc string).
 
-This command ignores files that comply with Denote's file-naming
-scheme.
-
 #+findex: denote-dired-rename-marked-files-and-add-front-matters
 The command ~denote-dired-rename-marked-files-and-add-front-matters~ is
 like ~denote-dired-rename-marked-files~ but also adds front matter.  The

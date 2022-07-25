@@ -121,9 +121,6 @@
 ;;   the command `diff-buffer-with-file').  Multiple buffers can be
 ;;   saved with `save-some-buffers' (read its doc string).
 ;;
-;; This command ignores files that comply with Denote's file-naming
-;; scheme.
-;;
 ;; The command `denote-dired-rename-marked-files-and-add-front-matters' is
 ;; like `denote-dired-rename-marked-files' but also adds front matter.  The
 ;; additon of front matter takes place only if the file has the appropriate
@@ -488,10 +485,7 @@ The operation does the following:
   to confirm that the new front matter does not cause any
   problems (e.g. with the command `diff-buffer-with-file').
   Multiple buffers can be saved with `save-some-buffers' (read
-  its doc string).
-
-This command ignores files that comply with Denote's file-naming
-scheme."
+  its doc string)."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files))
            (keywords (denote--keywords-prompt)))
