@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.3.0
-#+macro:                 release-date 2022-07-11
-#+macro:                 development-version 0.4.0-dev
+#+macro:                 stable-version 0.4.0
+#+macro:                 release-date 2022-07-25
+#+macro:                 development-version 0.5.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -460,10 +460,6 @@ extension are simply left without one.
 Renaming only occurs relative to the current directory.  Files are not
 moved between directories.
 
-[ The front matter rewrite has been refined as part of
-  {{{development-version}}}.  Before it would replace the whole block.
-  Only it only touches the relevant values. ]
-
 If the =FILE= has Denote-style front matter for the =TITLE= and
 =KEYWORDS=, this command asks to rewrite their values in order to
 reflect the new input (this step always requires confirmation and the
@@ -494,8 +490,6 @@ files).
 :CUSTOM_ID: h:322fefee-6412-487d-bdad-9bd862f0423a
 :END:
 
-[ ~denote-dired-rename-file-and-add-front-matter~ is part of {{{development-version}}} ]
-
 #+findex: denote-dired-rename-file-and-add-front-matter
 The command ~denote-dired-rename-file-and-add-front-matter~ has the same
 modalities of interaction as the ~denote-dired-rename-file~ command
@@ -513,8 +507,6 @@ supported ones (per ~denote-file-type~).
 :PROPERTIES:
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
-
-[ Everything in this section is part of {{{development-version}}}. ]
 
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
@@ -793,7 +785,7 @@ Org):
 #+end_src
 
 The ~denote-link-buttonize-buffer~ is also an interactive function in
-case the user needs it [ this is part of {{{development-version}}} ].
+case the user needs it.
 
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
@@ -864,8 +856,6 @@ purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 :PROPERTIES:
 :CUSTOM_ID: h:9cbb692e-5d8a-44a6-9193-899a07872a07
 :END:
-
-[ The ~denote-link-dired-marked-notes~ is part of {{{development-version}}} ]
 
 #+findex: denote-link-dired-marked-notes
 The command ~denote-link-dired-marked-notes~ is similar to
