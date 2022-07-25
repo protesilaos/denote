@@ -345,7 +345,7 @@ operation on multiple files."
 The TITLE, KEYWORDS and ID are passed from the renaming
 command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((denote--only-note-p file)
+  (when-let* (((denote--only-note-p file))
               (filetype (denote-dired--filetype-heuristics file))
               (date (denote--date (date-to-time id)))
               (new-front-matter (denote--file-meta-header title date keywords id filetype)))
