@@ -290,14 +290,12 @@ replace what isn't there."
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((denote-dired--edit-front-matter-p file)
-              (id (denote-retrieve--filename-identifier file))
-              (date (denote-retrieve--value-date file)))
-    (let ((old-title (denote-retrieve--value-title file))
-          (old-keywords (denote-retrieve--value-keywords file))
-          (new-title title)
-          (new-keywords (denote--file-meta-keywords
-                         keywords (denote-dired--filetype-heuristics file))))
+  (when-let ((denote-dired--edit-front-matter-p file)
+             (old-title (denote-retrieve--value-title file))
+             (old-keywords (denote-retrieve--value-keywords file))
+             (new-title title)
+             (new-keywords (denote--file-meta-keywords
+                            keywords (denote-dired--filetype-heuristics file))))
       (with-current-buffer (find-file-noselect file)
         (when (y-or-n-p (format
                          "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
@@ -306,14 +304,16 @@ appropriate."
                          (propertize old-keywords 'face 'error)
                          (propertize new-keywords 'face 'success)))
           (save-excursion
-            (goto-char (point-min))
-            (re-search-forward denote-retrieve--title-front-matter-key-regexp nil t 1)
-            (search-forward old-title nil t 1)
-            (replace-match (concat "\\1" new-title) t)
-            (goto-char (point-min))
-            (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
-            (search-forward old-keywords nil t 1)
-            (replace-match (concat "\\1" new-keywords) t)))))))
+            (save-restriction
+              (widen)
+              (goto-char (point-min))
+              (re-search-forward denote-retrieve--title-front-matter-key-regexp nil t 1)
+              (search-forward old-title nil t 1)
+              (replace-match (concat "\\1" new-title) t)
+              (goto-char (point-min))
+              (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
+              (search-forward old-keywords nil t 1)
+              (replace-match (concat "\\1" new-keywords) t)))))))
 
 (defun denote-dired--add-front-matter (file title keywords id)
   "Add front matter to the beginning of FILE.
