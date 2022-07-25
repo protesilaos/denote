@@ -315,10 +315,10 @@ are described in the doc string of `format-time-string'."
 (defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote--id-format'.")
 
-(defconst denote--title-regexp "--\\([[:alnum:]-]*\\)"
+(defconst denote--title-regexp "--\\([[:alnum:][:nonascii:]-]*\\)"
   "Regular expression to match the title field.")
 
-(defconst denote--keywords-regexp "__\\([[:alnum:]_-]*\\)"
+(defconst denote--keywords-regexp "__\\([[:alnum:][:nonascii:]_-]*\\)"
   "Regular expression to match keywords.")
 
 (defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
