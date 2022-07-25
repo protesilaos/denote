@@ -33,6 +33,9 @@
 (require 'denote)
 (require 'xref)
 
+;; FIXME 2022-07-25: We must review these.  When we need to move in the
+;; buffer, we should capture both the key and its value at once.  Check
+;; `denote-dired--rewrite-front-matter'.
 (defconst denote-retrieve--title-front-matter-key-regexp
   "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]"
   "Regular expression for title key.")

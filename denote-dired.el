@@ -282,6 +282,25 @@ replace what isn't there."
          ;; Heuristic to check if this is one of our notes
          (string= (expand-file-name default-directory) (denote-directory)))))
 
+;; FIXME 2022-07-25: We should make the underlying regular expressions
+;; that `denote-retrieve--value-title' targets more refined, so that we
+;; capture eveyrhing at once.
+(defun denote-dired--rewrite-title (file old new)
+  "Rewrite OLD front matter of title to NEW value in FILE."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward denote-retrieve--title-front-matter-key-regexp nil t 1)
+    (search-forward old nil t 1)
+    (replace-match (concat "\\1" new) t)))
+
+(defun denote-dired--rewrite-keywords (file old new)
+  "Rewrite OLD front matter of keywords to NEW value in FILE."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
+    (search-forward old nil t 1)
+    (replace-match (concat "\\1" new) t)))
+
 (defun denote-dired--rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
@@ -302,13 +321,8 @@ appropriate."
                          (propertize new-title 'face 'success)
                          (propertize old-keywords 'face 'error)
                          (propertize new-keywords 'face 'success)))
-          (save-excursion
-            (goto-char (point-min))
-            (search-forward old-title nil t 1)
-            (replace-match (concat "\\1" new-title) t)
-            (goto-char (point-min))
-            (search-forward old-keywords nil t 1)
-            (replace-match (concat "\\1" new-keywords) t)))))))
+          (denote-dired--rewrite-title file old-title new-title)
+          (denote-dired--rewrite-keywords file old-keywords new-keywords))))))
 
 (defun denote-dired--add-front-matter (file title keywords id)
   "Add front matter to the beginning of FILE.
