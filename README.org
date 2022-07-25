@@ -522,19 +522,24 @@ Dired to conform with our file-naming scheme.  The operation does the
 following:
 
 - the file's existing file name is retained and becomes the =TITLE=
-  field, per our file-naming scheme;
+  field, per Denote's file-naming scheme;
 
 - the =TITLE= is sluggified and downcased, per our conventions;
 
 - an identifier is prepended to the =TITLE=;
 
-- the file's contents are not touched (no insertion of front
-  matter, no other changes);
-
 - the file's extension is retained;
 
 - a prompt is asked once for the =KEYWORDS= field and the input is
-  applied to all files.
+  applied to all file names;
+
+- if the file is recognized as a Denote note, its front matter is
+  rewritten to include the new keywords.  A confirmation to carry out
+  this step is performed once at the outset.  Note that the affected
+  buffers are not saved.  The user can thus check them to confirm that
+  the new front matter does not cause any problems (e.g. with the
+  command ~diff-buffer-with-file~).  Multiple buffers can be saved with
+  ~save-some-buffers~ (read its doc string).
 
 This command ignores files that comply with Denote's file-naming
 scheme.
