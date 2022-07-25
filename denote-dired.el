@@ -265,7 +265,8 @@ Return t if the file is renamed, nil otherwise."
   "Return likely file type of FILE.
 The return value is for `denote--file-meta-header'."
   (pcase (file-name-extension file)
-    ("md" (if (string-match-p "title\\s-*=" (denote-retrieve--value-title file t))
+    ("md" (if-let ((title-key (denote-retrieve--value-title file t))
+                   ((string-match-p "title\\s-*=" title-key)))
               'markdown-toml
             'markdown-yaml))
     ("txt" 'text)
