@@ -1533,9 +1533,9 @@ Everything is in place to set up the package.
 
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
-  (define-key map (kbd "C-c C-d i") #'denote-link-dired-marked-notes)
-  (define-key map (kbd "C-c C-d r") #'denote-dired-rename-marked-files)
-  (define-key map (kbd "C-c C-d R") #'denote-dired-rename-marked-files-and-add-front-matters))
+  (define-key map (kbd "C-c C-d C-i") #'denote-link-dired-marked-notes)
+  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files)
+  (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-and-add-front-matters))
 
 (with-eval-after-load 'org-capture
   (require 'denote-org-capture)
