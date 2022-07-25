@@ -525,7 +525,7 @@ doc string)."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files))
            (keywords (denote--keywords-prompt))
-           ((y-or-n-p "Add front matter to all FILES (buffers are not saved)?")))
+           ((yes-or-no-p "Add front matter to all relevant files (buffers are not saved)?")))
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
