@@ -288,7 +288,7 @@ replace what isn't there."
 (defun denote-dired--rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
-command and are used to construct a new front matter block if
+command and are used to construct new front matter values if
 appropriate."
   (when-let ((denote-dired--edit-front-matter-p file)
              (old-title (denote-retrieve--value-title file))
