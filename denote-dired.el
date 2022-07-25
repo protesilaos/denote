@@ -343,7 +343,7 @@ operation on multiple files."
           (replace-match (concat "\\1" new-keywords) t))))))
 
 (defun denote-dired--add-front-matter (file title keywords id)
-  "Add front matter to the beginning of FILE.
+  "Prepend front matter to FILE if `denote--only-note-p'.
 The TITLE, KEYWORDS and ID are passed from the renaming
 command and are used to construct a new front matter block if
 appropriate."
