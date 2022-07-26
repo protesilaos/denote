@@ -398,8 +398,7 @@ trailing hyphen."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
 (defun denote--only-note-p (file)
-  "Make sure FILE is an actual Denote note.
-FILE is relative to the variable `denote-directory'."
+  "Make sure FILE is an actual Denote note."
   (let ((file-name (file-name-nondirectory file)))
     (and (not (file-directory-p file))
          (file-regular-p file)
