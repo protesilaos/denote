@@ -552,11 +552,11 @@ which include the starting dot or the return value of
      (t
       (format "%s%s%s" path id ext)))))
 
-(defun denote--format-markdown-keywords (seq)
-  "Quote and downcase elements in SEQ."
-  (mapconcat (lambda (k)
-               (format "%S" (downcase k)))
-             seq ", "))
+(defun denote--format-markdown-keywords (keywords)
+  "Quote, downcase, and comma-separate elements in KEYWORDS."
+  (format "[%s]" (mapconcat (lambda (k)
+                              (format "%S" (downcase k)))
+                            keywords ", ")))
 
 (defun denote--file-meta-keywords (keywords &optional type)
   "Prepare KEYWORDS for inclusion in the file's front matter.
@@ -568,9 +568,9 @@ With optional TYPE, format the keywords accordingly (this might
 be `toml' or, in the future, some other spec that needss special
 treatment)."
   (let ((kw (denote--sluggify-keywords keywords)))
-    (pcase type
-      ('markdown-toml (format "[%s]" (denote--format-markdown-keywords kw)))
-      (_ (mapconcat #'downcase kw "  ")))))
+    (if (or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
+        (denote--format-markdown-keywords kw)
+      (mapconcat #'downcase kw "  "))))
 
 (defvar denote-toml-front-matter
   "+++
@@ -638,10 +638,12 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 Optional FILETYPE is one of the values of `denote-file-type',
 else that variable is used."
   (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-toml (denote--file-meta-keywords keywords 'markdown-toml)))
+        (kw-md (denote--file-meta-keywords keywords 'md)))
+    ;; TODO 2022-07-27: Rewrite this (and/or related) to avoid
+    ;; duplication with the markdown flavours.
     (pcase (or filetype denote-file-type)
-      ('markdown-toml (format denote-toml-front-matter title date kw-toml id))
-      ('markdown-yaml (format denote-yaml-front-matter title date kw-space id))
+      ('markdown-toml (format denote-toml-front-matter title date kw-md id))
+      ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date kw-space id)))))
 
