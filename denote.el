@@ -552,7 +552,7 @@ which include the starting dot or the return value of
      (t
       (format "%s%s%s" path id ext)))))
 
-(defun denote--map-quote-downcase (seq)
+(defun denote--format-markdown-keywords (seq)
   "Quote and downcase elements in SEQ."
   (mapconcat (lambda (k)
                (format "%S" (downcase k)))
@@ -569,7 +569,7 @@ be `toml' or, in the future, some other spec that needss special
 treatment)."
   (let ((kw (denote--sluggify-keywords keywords)))
     (pcase type
-      ('markdown-toml (format "[%s]" (denote--map-quote-downcase kw)))
+      ('markdown-toml (format "[%s]" (denote--format-markdown-keywords kw)))
       (_ (mapconcat #'downcase kw "  ")))))
 
 (defvar denote-toml-front-matter
