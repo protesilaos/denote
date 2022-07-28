@@ -403,7 +403,9 @@ trailing hyphen."
     (and (not (file-directory-p file))
          (file-regular-p file)
          (string-match-p (concat "\\`" denote--id-regexp
-                                 ".*" denote--extension-regexp "\\'")
+                                 ".*" denote--extension-regexp
+                                 "\\(.gpg\\)?"
+                                 "\\'")
                          file-name)
          (not (string-match-p "[#~]\\'" file)))))
 
