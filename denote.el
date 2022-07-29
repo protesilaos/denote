@@ -712,88 +712,12 @@ should be valid for note creation."
     (setq denote-last-buffer buffer)
     (setq denote-last-front-matter header)))
 
-(defvar denote--title-history nil
-  "Minibuffer history of `denote--title-prompt'.")
-
-(defun denote--title-prompt (&optional default-title)
-  "Read file title for `denote'.
-
-Optional DEFAULT-TITLE is used as the default value."
-  (let ((format (if default-title
-                    (format "File title [%s]: " default-title)
-                  "File title: ")))
-    (setq denote-last-title
-          (read-string format nil 'denote--title-history default-title))))
-
-;;;;; The `denote' command
-
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
   (when-let* ((dir directory)
               ((string-prefix-p (expand-file-name (denote-directory))
                                 (expand-file-name dir))))
     dir))
-
-;;;###autoload
-(defun denote (&optional title keywords file-type subdirectory date)
-  "Create a new note with the appropriate metadata and file name.
-
-When called interactively, the metadata and file name are prompted
-according to the value of `denote-prompts'.
-
-When called from Lisp, all arguments are optional.
-
-- TITLE is a string or a function returning a string.
-
-- KEYWORDS is a list of strings.  The list can be empty or the
-  value can be set to nil.
-
-- FILE-TYPE is a symbol among those described in `denote-file-type'.
-
-- SUBDIRECTORY is a string representing the path to either the
-  value of the variable `denote-directory' or a subdirectory
-  thereof.  The subdirectory must exist: Denote will not create
-  it.  If SUBDIRECTORY does not resolve to a valid path, the
-  variable `denote-directory' is used instead.
-
-- DATE is a string representing a date like 2022-06-30 or a date
-  and time like 2022-06-16 14:30.  A nil value or an empty string
-  is interpreted as the `current-time'."
-  (interactive
-   (let ((args (make-vector 5 nil)))
-     (dolist (prompt denote-prompts)
-       (pcase prompt
-         ('title (aset args 0 (denote--title-prompt)))
-         ('keywords (aset args 1 (denote--keywords-prompt)))
-         ('file-type (aset args 2 (denote--file-type-prompt)))
-         ('subdirectory (aset args 3 (denote--subdirs-prompt)))
-         ('date (aset args 4 (denote--date-prompt)))))
-     (append args nil)))
-  (let* ((file-type (denote--file-type-symbol (or file-type denote-file-type)))
-         (date (if (or (null date) (string-empty-p date))
-                   (current-time)
-                 (denote--valid-date date)))
-         (id (format-time-string denote--id-format date))
-         (directory (if (denote--dir-in-denote-directory-p subdirectory)
-                        (file-name-as-directory subdirectory)
-                      (denote-directory))))
-    (denote--barf-duplicate-id id)
-    (denote--prepare-note (or title "") keywords date id directory file-type)
-    (denote--keywords-add-to-history keywords)))
-
-;;;;; The `denote-type' command
-
-(defvar denote--file-type-history nil
-  "Minibuffer history of `denote--file-type-prompt'.")
-
-(defun denote--file-type-prompt ()
-  "Prompt for `denote-file-type'.
-Note that a non-nil value other than `text', `markdown-yaml', and
-`markdown-toml' falls back to an Org file type.  We use `org'
-here for clarity."
-  (completing-read
-   "Select file type: " '(org markdown-yaml markdown-toml text) nil t
-   nil 'denote--file-type-history))
 
 (defun denote--file-type-symbol (filetype)
   "Return FILETYPE as a symbol."
@@ -803,17 +727,6 @@ here for clarity."
    ((symbolp filetype)
     filetype)
    (t (user-error "`%s' is not a symbol or string" filetype))))
-
-;;;;; The `denote-date' command
-
-(defvar denote--date-history nil
-  "Minibuffer history of `denote--date-prompt'.")
-
-(defun denote--date-prompt ()
-  "Prompt for date."
-  (read-string
-   "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-   nil 'denote--date-history))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
@@ -868,11 +781,6 @@ where the former does not read dates without a time component."
       (user-error "`%s' already exists; aborting new note creation" identifier)
     t))
 
-;;;;; The `denote-subdirectory' command
-
-(defvar denote--subdir-history nil
-  "Minibuffer history of `denote-subdirectory'.")
-
 (defun denote--subdirs ()
   "Return list of subdirectories in variable `denote-directory'."
   (seq-remove
@@ -885,6 +793,92 @@ where the former does not read dates without a time component."
      (or (string-match-p "\\.git" filename)
          (not (file-directory-p filename))))
    (directory-files-recursively (denote-directory) ".*" t t)))
+
+;;;;; The `denote' command and its prompts
+
+;;;###autoload
+(defun denote (&optional title keywords file-type subdirectory date)
+  "Create a new note with the appropriate metadata and file name.
+
+When called interactively, the metadata and file name are prompted
+according to the value of `denote-prompts'.
+
+When called from Lisp, all arguments are optional.
+
+- TITLE is a string or a function returning a string.
+
+- KEYWORDS is a list of strings.  The list can be empty or the
+  value can be set to nil.
+
+- FILE-TYPE is a symbol among those described in `denote-file-type'.
+
+- SUBDIRECTORY is a string representing the path to either the
+  value of the variable `denote-directory' or a subdirectory
+  thereof.  The subdirectory must exist: Denote will not create
+  it.  If SUBDIRECTORY does not resolve to a valid path, the
+  variable `denote-directory' is used instead.
+
+- DATE is a string representing a date like 2022-06-30 or a date
+  and time like 2022-06-16 14:30.  A nil value or an empty string
+  is interpreted as the `current-time'."
+  (interactive
+   (let ((args (make-vector 5 nil)))
+     (dolist (prompt denote-prompts)
+       (pcase prompt
+         ('title (aset args 0 (denote--title-prompt)))
+         ('keywords (aset args 1 (denote--keywords-prompt)))
+         ('file-type (aset args 2 (denote--file-type-prompt)))
+         ('subdirectory (aset args 3 (denote--subdirs-prompt)))
+         ('date (aset args 4 (denote--date-prompt)))))
+     (append args nil)))
+  (let* ((file-type (denote--file-type-symbol (or file-type denote-file-type)))
+         (date (if (or (null date) (string-empty-p date))
+                   (current-time)
+                 (denote--valid-date date)))
+         (id (format-time-string denote--id-format date))
+         (directory (if (denote--dir-in-denote-directory-p subdirectory)
+                        (file-name-as-directory subdirectory)
+                      (denote-directory))))
+    (denote--barf-duplicate-id id)
+    (denote--prepare-note (or title "") keywords date id directory file-type)
+    (denote--keywords-add-to-history keywords)))
+
+(defvar denote--title-history nil
+  "Minibuffer history of `denote--title-prompt'.")
+
+(defun denote--title-prompt (&optional default-title)
+  "Read file title for `denote'.
+
+Optional DEFAULT-TITLE is used as the default value."
+  (let ((format (if default-title
+                    (format "File title [%s]: " default-title)
+                  "File title: ")))
+    (setq denote-last-title
+          (read-string format nil 'denote--title-history default-title))))
+
+(defvar denote--file-type-history nil
+  "Minibuffer history of `denote--file-type-prompt'.")
+
+(defun denote--file-type-prompt ()
+  "Prompt for `denote-file-type'.
+Note that a non-nil value other than `text', `markdown-yaml', and
+`markdown-toml' falls back to an Org file type.  We use `org'
+here for clarity."
+  (completing-read
+   "Select file type: " '(org markdown-yaml markdown-toml text) nil t
+   nil 'denote--file-type-history))
+
+(defvar denote--date-history nil
+  "Minibuffer history of `denote--date-prompt'.")
+
+(defun denote--date-prompt ()
+  "Prompt for date."
+  (read-string
+   "DATE and TIME for note (e.g. 2022-06-16 14:30): "
+   nil 'denote--date-history))
+
+(defvar denote--subdir-history nil
+  "Minibuffer history of `denote-subdirectory'.")
 
 (defun denote--subdirs-completion-table (dirs)
   "Match DIRS as a completion table."
