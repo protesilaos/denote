@@ -1881,10 +1881,9 @@ the right tool for the job).
 :END:
 
 I have not tested it, but assume that yes, many files will slow down the
-agenda.  Consider looking into one of Denote's alternatives, with
-=org-roam= being the obvious choice ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).
+agenda due to how that works.
 
-Or, if you want my opinion, decouple your longer-term storage from your
+If you want my opinion though, decouple your knowledge base from your
 ephemeral to-do list: Denote (and others) can be used for the former,
 while you let standard Org work splendidly for the latter---that is what
 I do, anyway.
