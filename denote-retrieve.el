@@ -45,10 +45,6 @@
   "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]"
   "Regular expression for date key.")
 
-(defconst denote-retrieve--keywords-front-matter-key-regexp
-  "^\\(?:#\\+\\)?\\(?:tags\\|filetags\\)\\s-*[:=]"
-  "Regular expression for keywords key.")
-
 (defun denote-retrieve--filename-identifier (file)
   "Extract identifier from FILE name."
   (if (file-exists-p file)
