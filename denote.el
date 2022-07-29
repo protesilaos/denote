@@ -781,8 +781,6 @@ When called from Lisp, all arguments are optional.
     (denote--prepare-note (or title "") keywords date id directory file-type)
     (denote--keywords-add-to-history keywords)))
 
-(defalias 'denote-create-note (symbol-function 'denote))
-
 ;;;;; The `denote-type' command
 
 (defvar denote--file-type-history nil
@@ -805,19 +803,6 @@ here for clarity."
    ((symbolp filetype)
     filetype)
    (t (user-error "`%s' is not a symbol or string" filetype))))
-
-;;;###autoload
-(defun denote-type ()
-  "Create note while prompting for a file type.
-
-This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\='(file-type title keywords)."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(file-type title keywords)))
-    (call-interactively #'denote)))
-
-(defalias 'denote-create-note-using-type (symbol-function 'denote-type))
 
 ;;;;; The `denote-date' command
 
@@ -883,22 +868,6 @@ where the former does not read dates without a time component."
       (user-error "`%s' already exists; aborting new note creation" identifier)
     t))
 
-;;;###autoload
-(defun denote-date ()
-  "Create note while prompting for a date.
-
-The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
-that plus the time: 2022-06-16 14:30
-
-This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\='(date title keywords)."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(date title keywords)))
-    (call-interactively #'denote)))
-
-(defalias 'denote-create-note-using-date (symbol-function 'denote-date))
-
 ;;;;; The `denote-subdirectory' command
 
 (defvar denote--subdir-history nil
@@ -932,6 +901,39 @@ is set to \\='(date title keywords)."
          (subdirs (denote--subdirs))
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
+
+;;;;; Convenience functions
+
+(defalias 'denote-create-note (symbol-function 'denote))
+
+;;;###autoload
+(defun denote-type ()
+  "Create note while prompting for a file type.
+
+This is the equivalent to calling `denote' when `denote-prompts'
+is set to \\='(file-type title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(file-type title keywords)))
+    (call-interactively #'denote)))
+
+(defalias 'denote-create-note-using-type (symbol-function 'denote-type))
+
+;;;###autoload
+(defun denote-date ()
+  "Create note while prompting for a date.
+
+The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
+that plus the time: 2022-06-16 14:30
+
+This is the equivalent to calling `denote' when `denote-prompts'
+is set to \\='(date title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote)))
+
+(defalias 'denote-create-note-using-date (symbol-function 'denote-date))
 
 ;;;###autoload
 (defun denote-subdirectory ()
