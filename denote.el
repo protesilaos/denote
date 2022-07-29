@@ -424,8 +424,6 @@ FILE must be an absolute path."
            (string-match-p denote--id-regexp (buffer-name)))
        (string-prefix-p (denote-directory) (expand-file-name default-directory))))
 
-;;;; Keywords
-
 (defun denote--directory-files-recursively (directory)
   "Return expanded files in DIRECTORY recursively."
   (mapcar
@@ -465,6 +463,8 @@ names that are relative to the variable `denote-directory'."
                  (not (string= (file-name-nondirectory (buffer-file-name)) f)))
         f))
     (denote--directory-files))))
+
+;;;; Keywords
 
 (defun denote--extract-keywords-from-path (path)
   "Extract keywords from PATH."
