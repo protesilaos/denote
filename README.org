@@ -1875,6 +1875,30 @@ some ~org-capture~ template to append a new entry to one mega file (I do
 that for my Org agenda, by the way, as I explained before about using
 the right tool for the job).
 
+** Does Denote perform well at scale?
+:PROPERTIES:
+:CUSTOM_ID: h:863f812a-aac7-42ea-83b3-fbbdb58e08d7
+:END:
+
+Denote does not do anything fancy and has no special requirements: it
+uses standard tools to accomplish ordinary tasks.  If Emacs can cope
+with lots of files, then that is all you need to know: Denote will work.
+
+To put this to the test, Peter Prevos is running simulations with R that
+generate large volumes of notes.  You can read the technicalities here:
+<https://lucidmanager.org/productivity/testing-denote-package/>.
+Excerpt:
+
+#+begin_quote
+Using this code I generated ten thousands notes and used this to test
+the Denote package to see it if works at a large scale. This tests shows
+that Prot's approach is perfectly capable of working with thousands of
+notes.
+#+end_quote
+
+Of course, we are always prepared to make refinements to the code, where
+necessary, without compromising on the project's principles.
+
 ** I add TODOs to my files; will the many files slow down the Org agenda?
 :PROPERTIES:
 :CUSTOM_ID: h:63c2f8d4-79ed-4c55-b3ef-e048a05802c0
