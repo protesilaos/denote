@@ -1461,7 +1461,6 @@ Everything is in place to set up the package.
 
 ;; You will not need to `require' all those individually once the
 ;; package is available.
-(require 'denote-retrieve)
 (require 'denote-link)
 
 ;; By default, we fontify backlinks in their bespoke buffer.

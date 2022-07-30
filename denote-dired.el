@@ -172,7 +172,7 @@
 
 ;;; Code:
 
-(require 'denote-retrieve)
+(require 'denote)
 (require 'dired)
 
 (defgroup denote-dired ()
@@ -231,7 +231,7 @@ Return t if the file is renamed, nil otherwise."
       response)))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
-;; that `denote-retrieve--value-title' targets more refined, so that we
+;; that `denote--retrieve-value-title' targets more refined, so that we
 ;; capture eveyrhing at once.
 (defun denote-dired--rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
@@ -239,8 +239,8 @@ The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct new front matter values if
 appropriate."
   (when-let ((denote--edit-front-matter-p file)
-             (old-title (denote-retrieve--value-title file))
-             (old-keywords (denote-retrieve--value-keywords file))
+             (old-title (denote--retrieve-value-title file))
+             (old-keywords (denote--retrieve-value-keywords file))
              (new-title title)
              (new-keywords (denote--file-meta-keywords
                             keywords (denote--filetype-heuristics file))))
@@ -255,11 +255,11 @@ appropriate."
             (save-restriction
               (widen)
               (goto-char (point-min))
-              (re-search-forward denote-retrieve--title-front-matter-key-regexp nil t 1)
+              (re-search-forward denote--retrieve-title-front-matter-key-regexp nil t 1)
               (search-forward old-title nil t 1)
               (replace-match (concat "\\1" new-title) t)
               (goto-char (point-min))
-              (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
+              (re-search-forward denote--retrieve-keywords-front-matter-key-regexp nil t 1)
               (search-forward old-keywords nil t 1)
               (replace-match (concat "\\1" new-keywords) t)))))))
 
@@ -317,7 +317,7 @@ will not---manage such files)."
      (list
       file
       (denote--title-prompt
-       (or (denote-retrieve--value-title file)
+       (or (denote--retrieve-value-title file)
            (file-name-sans-extension (file-name-nondirectory file))))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
@@ -353,7 +353,7 @@ matter, refer to the variables:
      (list
       file
       (denote--title-prompt
-       (or (denote-retrieve--value-title file)
+       (or (denote--retrieve-value-title file)
            (file-name-sans-extension (file-name-nondirectory file))))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
@@ -405,7 +405,7 @@ The operation does the following:
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
                    (id (denote--file-name-id file))
-                   (title (or (denote-retrieve--value-title file)
+                   (title (or (denote--retrieve-value-title file)
                               (file-name-sans-extension
                                (file-name-nondirectory file))))
                    (extension (file-name-extension file t))
@@ -440,7 +440,7 @@ doc string)."
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
-                 (title (or (denote-retrieve--value-title file)
+                 (title (or (denote--retrieve-value-title file)
                             (file-name-sans-extension
                              (file-name-nondirectory file))))
                  (extension (file-name-extension file t))
