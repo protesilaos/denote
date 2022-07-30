@@ -216,20 +216,13 @@ Throw error is FILE is not regular, else return FILE."
             (user-error "Only rename regular files")
           selected-file))))
 
-(defun denote-dired--rename-file (old-name new-name)
-  "Rename file named OLD-NAME to NEW-NAME.
-Update Dired buffers if the file is renamed.
-Return t if the file is renamed, nil otherwise."
+(defun denote-dired--rename-file-prompt (old-name new-name)
+  "Prompt to rename file named OLD-NAME to NEW-NAME."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (let ((response
-           (y-or-n-p
-            (format "Rename %s to %s?"
-                    (propertize (file-name-nondirectory old-name) 'face 'error)
-                    (propertize (file-name-nondirectory new-name) 'face 'success)))))
-      (when response
-        (rename-file old-name new-name nil)
-        (denote--rename-buffer old-name new-name))
-      response)))
+    (y-or-n-p
+     (format "Rename %s to %s?"
+             (propertize (file-name-nondirectory old-name) 'face 'error)
+             (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
 ;; that `denote--retrieve-value-title' targets more refined, so that we
@@ -327,7 +320,8 @@ will not---manage such files)."
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote-dired--rename-file file new-name)
+    (when (denote-dired--rename-file-prompt file new-name)
+      (denote--rename-file file new-name)
       (denote-update-dired-buffers)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
@@ -363,7 +357,8 @@ matter, refer to the variables:
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote-dired--rename-file file new-name)
+    (when (denote-dired--rename-file-prompt file new-name)
+      (denote--rename-file file new-name)
       (denote-update-dired-buffers)
       (denote--add-front-matter new-name title keywords id))))
 
