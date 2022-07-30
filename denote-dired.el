@@ -200,26 +200,6 @@ old name followed by the new one.  This applies to the command
 
 ;;;; File helper functions
 
-(defun denote-dired--file-attributes-time (file)
-  "Return `file-attribute-modification-time' of FILE as identifier."
-  (format-time-string
-   denote--id-format
-   (file-attribute-modification-time (file-attributes file))))
-
-(defun denote-dired--file-name-id (file)
-  "Return FILE identifier, else generate one."
-  (cond
-   ((string-match denote--id-regexp file)
-    (substring file (match-beginning 0) (match-end 0)))
-   ((denote-dired--file-attributes-time file))
-   (t (format-time-string denote--id-format))))
-
-(defun denote-dired--rename-buffer (old-name new-name)
-  "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
-  (when-let ((buffer (find-buffer-visiting old-name)))
-    (with-current-buffer buffer
-      (set-visited-file-name new-name nil t))))
-
 (defun denote-dired--rename-dired-file-or-prompt ()
   "Return Dired file at point, else prompt for one.
 
@@ -247,43 +227,8 @@ Return t if the file is renamed, nil otherwise."
                     (propertize (file-name-nondirectory new-name) 'face 'success)))))
       (when response
         (rename-file old-name new-name nil)
-        (denote-dired--rename-buffer old-name new-name))
+        (denote--rename-buffer old-name new-name))
       response)))
-
-(defun denote-dired-update-dired-buffers ()
-  "Update Dired buffers of variable `denote-directory'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (and (eq major-mode 'dired-mode)
-                  (string-prefix-p (denote-directory)
-                                   (expand-file-name default-directory)))
-         (revert-buffer))))
-   (buffer-list)))
-
-(defun denote-dired--filetype-heuristics (file)
-  "Return likely file type of FILE.
-The return value is for `denote--file-meta-header'."
-  (pcase (file-name-extension file)
-    ("md" (if-let ((title-key (denote-retrieve--value-title file t))
-                   ((string-match-p "title\\s-*=" title-key)))
-              'markdown-toml
-            'markdown-yaml))
-    ("txt" 'text)
-    (_ 'org)))
-
-(defun denote-dired--edit-front-matter-p (file)
-  "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote-dired--rewrite-front-matter': if FILE
-has no front matter, then we abort early instead of trying to
-replace what isn't there."
-  (when-let ((ext (file-name-extension file)))
-    (and (file-regular-p file)
-         (file-writable-p file)
-         (not (denote--file-empty-p file))
-         (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
-         ;; Heuristic to check if this is one of our notes
-         (string= (expand-file-name default-directory) (denote-directory)))))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
 ;; that `denote-retrieve--value-title' targets more refined, so that we
@@ -293,12 +238,12 @@ replace what isn't there."
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct new front matter values if
 appropriate."
-  (when-let ((denote-dired--edit-front-matter-p file)
+  (when-let ((denote--edit-front-matter-p file)
              (old-title (denote-retrieve--value-title file))
              (old-keywords (denote-retrieve--value-keywords file))
              (new-title title)
              (new-keywords (denote--file-meta-keywords
-                            keywords (denote-dired--filetype-heuristics file))))
+                            keywords (denote--filetype-heuristics file))))
       (with-current-buffer (find-file-noselect file)
         (when (y-or-n-p (format
                          "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
@@ -317,41 +262,6 @@ appropriate."
               (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
               (search-forward old-keywords nil t 1)
               (replace-match (concat "\\1" new-keywords) t)))))))
-
-(defun denote-dired--rewrite-keywords-no-question (file keywords)
-  "Rewrite KEYWORDS in FILE outright.
-
-Do the same as `denote-dired--rewrite-front-matter' for keywords,
-but do not for confirmation.
-
-This is for use in `denote-dired-rename-marked-files' or related.
-Those commands ask for confirmation once before performing an
-operation on multiple files."
-  (when-let ((denote-dired--edit-front-matter-p file)
-             (old-keywords (denote-retrieve--value-keywords file))
-             (new-keywords (denote--file-meta-keywords
-                            keywords (denote-dired--filetype-heuristics file))))
-    (with-current-buffer (find-file-noselect file)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (goto-char (point-min))
-          (re-search-forward denote-retrieve--keywords-front-matter-key-regexp nil t 1)
-          (search-forward old-keywords nil t 1)
-          (replace-match (concat "\\1" new-keywords) t))))))
-
-(defun denote-dired--add-front-matter (file title keywords id)
-  "Prepend front matter to FILE if `denote--only-note-p'.
-The TITLE, KEYWORDS and ID are passed from the renaming
-command and are used to construct a new front matter block if
-appropriate."
-  (when-let* (((denote--only-note-p file))
-              (filetype (denote-dired--filetype-heuristics file))
-              (date (denote--date (date-to-time id)))
-              (new-front-matter (denote--file-meta-header title date keywords id filetype)))
-    (with-current-buffer (find-file-noselect file)
-      (goto-char (point-min))
-      (insert new-front-matter))))
 
 ;;;; Renaming commands
 
@@ -411,13 +321,13 @@ will not---manage such files)."
            (file-name-sans-extension (file-name-nondirectory file))))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
-         (id (denote-dired--file-name-id file))
+         (id (denote--file-name-id file))
          (extension (file-name-extension file t))
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-dired--rename-file file new-name)
-      (denote-dired-update-dired-buffers)
+      (denote-update-dired-buffers)
       (denote-dired--rewrite-front-matter new-name title keywords))))
 
 ;;;###autoload
@@ -447,14 +357,14 @@ matter, refer to the variables:
            (file-name-sans-extension (file-name-nondirectory file))))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
-         (id (denote-dired--file-name-id file))
+         (id (denote--file-name-id file))
          (extension (file-name-extension file t))
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-dired--rename-file file new-name)
-      (denote-dired-update-dired-buffers)
-      (denote-dired--add-front-matter new-name title keywords id))))
+      (denote-update-dired-buffers)
+      (denote--add-front-matter new-name title keywords id))))
 
 (define-obsolete-function-alias
   'denote-dired-convert-file-to-denote
@@ -494,7 +404,7 @@ The operation does the following:
         (progn
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
-                   (id (denote-dired--file-name-id file))
+                   (id (denote--file-name-id file))
                    (title (or (denote-retrieve--value-title file)
                               (file-name-sans-extension
                                (file-name-nondirectory file))))
@@ -502,9 +412,9 @@ The operation does the following:
                    (new-name (denote--format-file
                               dir id keywords (denote--sluggify title) extension)))
               (rename-file file new-name)
-              (denote-dired--rename-buffer file new-name)
+              (denote--rename-buffer file new-name)
               (when rewrite
-                (denote-dired--rewrite-keywords-no-question new-name keywords))))
+                (denote--rewrite-keywords new-name keywords))))
           (revert-buffer)))
     (user-error "No marked files; aborting")))
 
@@ -529,7 +439,7 @@ doc string)."
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
-                 (id (denote-dired--file-name-id file))
+                 (id (denote--file-name-id file))
                  (title (or (denote-retrieve--value-title file)
                             (file-name-sans-extension
                              (file-name-nondirectory file))))
@@ -537,8 +447,8 @@ doc string)."
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
             (rename-file file new-name)
-            (denote-dired--rename-buffer file new-name)
-            (denote-dired--add-front-matter new-name title keywords id)))
+            (denote--rename-buffer file new-name)
+            (denote--add-front-matter new-name title keywords id)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
