@@ -149,6 +149,7 @@
 ;;; Code:
 
 (require 'denote)
+(require 'denote-faces)
 
 (defgroup denote-link ()
   "Link facility for Denote."
@@ -384,8 +385,6 @@ Expand `denote-link-backlinks-display-buffer-action'."
   (display-buffer
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
-
-(require 'denote-faces)
 
 (defun denote-link--prepare-backlinks (id files &optional title)
   "Create backlinks' buffer for ID including FILES.

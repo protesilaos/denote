@@ -173,6 +173,7 @@
 ;;; Code:
 
 (require 'denote)
+(require 'denote-faces)
 (require 'dired)
 
 (defgroup denote-dired ()
@@ -453,8 +454,6 @@ doc string)."
     (user-error "No marked files; aborting")))
 
 ;;;; Extra fontification
-
-(require 'denote-faces)
 
 ;;;###autoload
 (define-minor-mode denote-dired-mode
