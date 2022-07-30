@@ -1126,7 +1126,7 @@ appropriate."
 
 (defun denote--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote-dired--rewrite-front-matter': if FILE
+This is relevant for `denote--rewrite-front-matter': if FILE
 has no front matter, then we abort early instead of trying to
 replace what isn't there."
   (when-let ((ext (file-name-extension file)))
@@ -1140,7 +1140,7 @@ replace what isn't there."
 (defun denote--rewrite-keywords (file keywords)
   "Rewrite KEYWORDS in FILE outright.
 
-Do the same as `denote-dired--rewrite-front-matter' for keywords,
+Do the same as `denote--rewrite-front-matter' for keywords,
 but do not ask for confirmation.
 
 This is for use in `denote-dired-rename-marked-files' or related.
@@ -1173,7 +1173,7 @@ old name followed by the new one.  This applies to the command
 
 (require 'dired)
 
-(defun denote-dired--rename-dired-file-or-prompt ()
+(defun denote--rename-dired-file-or-prompt ()
   "Return Dired file at point, else prompt for one.
 
 Throw error is FILE is not regular, else return FILE."
@@ -1188,7 +1188,7 @@ Throw error is FILE is not regular, else return FILE."
             (user-error "Only rename regular files")
           selected-file))))
 
-(defun denote-dired--rename-file-prompt (old-name new-name)
+(defun denote--rename-file-prompt (old-name new-name)
   "Prompt to rename file named OLD-NAME to NEW-NAME."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (y-or-n-p
@@ -1199,7 +1199,7 @@ Throw error is FILE is not regular, else return FILE."
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
 ;; that `denote--retrieve-value-title' targets more refined, so that we
 ;; capture eveyrhing at once.
-(defun denote-dired--rewrite-front-matter (file title keywords)
+(defun denote--rewrite-front-matter (file title keywords)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct new front matter values if
@@ -1277,7 +1277,7 @@ The latter is a convenience we provide, since we already have all
 the requisite mechanisms in place (though Denote does not---and
 will not---manage such files)."
   (interactive
-   (let ((file (denote-dired--rename-dired-file-or-prompt)))
+   (let ((file (denote--rename-dired-file-or-prompt)))
      (list
       file
       (denote--title-prompt
@@ -1290,10 +1290,10 @@ will not---manage such files)."
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote-dired--rename-file-prompt file new-name)
+    (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
       (denote-update-dired-buffers)
-      (denote-dired--rewrite-front-matter new-name title keywords))))
+      (denote--rewrite-front-matter new-name title keywords))))
 
 ;;;###autoload
 (defun denote-dired-rename-file-and-add-front-matter (file title keywords)
@@ -1314,7 +1314,7 @@ matter, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'"
   (interactive
-   (let ((file (denote-dired--rename-dired-file-or-prompt)))
+   (let ((file (denote--rename-dired-file-or-prompt)))
      (list
       file
       (denote--title-prompt
@@ -1327,7 +1327,7 @@ matter, refer to the variables:
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote-dired--rename-file-prompt file new-name)
+    (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
       (denote-update-dired-buffers)
       (denote--add-front-matter new-name title keywords id))))
