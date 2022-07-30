@@ -407,8 +407,7 @@ The operation does the following:
                    (extension (file-name-extension file t))
                    (new-name (denote--format-file
                               dir id keywords (denote--sluggify title) extension)))
-              (rename-file file new-name)
-              (denote--rename-buffer file new-name)
+              (denote--rename-file file new-name)
               (when rewrite
                 (denote--rewrite-keywords new-name keywords))))
           (revert-buffer)))
@@ -442,8 +441,7 @@ doc string)."
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
-            (rename-file file new-name)
-            (denote--rename-buffer file new-name)
+            (denote--rename-file file new-name)
             (denote--add-front-matter new-name title keywords id)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
