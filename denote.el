@@ -1105,10 +1105,11 @@ The return value is for `denote--file-meta-header'."
 (defun denote--rename-file (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME.
 Update Dired buffers if the file is renamed.
-Return non-nil if the file is renamed, nil otherwise."
+Return t if the file is renamed, nil otherwise."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (rename-file old-name new-name nil)
-    (denote--rename-buffer old-name new-name)))
+    (denote--rename-buffer old-name new-name)
+    t))
 
 (defun denote--add-front-matter (file title keywords id)
   "Prepend front matter to FILE if `denote--only-note-p'.
