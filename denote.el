@@ -305,8 +305,6 @@ are described in the doc string of `format-time-string'."
           (string :tag "Custom format for `format-time-string'"))
   :group 'denote)
 
-(make-obsolete 'denote-front-matter-date-format 'denote-date-format "0.2.0")
-
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")

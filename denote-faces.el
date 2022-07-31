@@ -101,11 +101,6 @@ and seconds."
      (7 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
 
-(define-obsolete-variable-alias
-  'denote-faces-file-name-with-subdir-keywords
-  'denote-faces-file-name-keywords-for-backlinks
-  "0.3.0")
-
 (defconst denote-faces-file-name-keywords-for-backlinks
   `((,(concat "^\\(?8:.*/\\)?" denote-faces--file-name-regexp)
      (8 'denote-faces-subdirectory nil t)
