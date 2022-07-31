@@ -174,7 +174,6 @@
 
 (require 'denote)
 (require 'denote-faces)
-(require 'dired)
 
 (defgroup denote-dired ()
   "Integration between Denote and Dired."
