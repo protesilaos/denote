@@ -97,6 +97,7 @@
 
 (require 'seq)
 (require 'xref)
+(require 'dired)
 (eval-when-compile (require 'subr-x))
 
 (defgroup denote ()
@@ -1168,8 +1169,6 @@ old name followed by the new one.  This applies to the command
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
 
 ;;;;; The renaming commands and their prompts
-
-(require 'dired)
 
 (defun denote--rename-dired-file-or-prompt ()
   "Return Dired file at point, else prompt for one.
