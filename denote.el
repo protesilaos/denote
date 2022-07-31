@@ -1414,5 +1414,653 @@ doc string)."
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
+;;;; The Denote faces
+
+(defgroup denote-faces ()
+  "Faces for Denote."
+  :group 'denote)
+
+(defface denote-faces-subdirectory
+  '((t :inherit bold))
+  "Face for subdirectory of file name.
+This should only ever needed in the backlinks' buffer (or
+equivalent), not in Dired."
+  :group 'denote-faces)
+
+(defface denote-faces-date
+  '((t :inherit font-lock-variable-name-face))
+  "Face for file name date in Dired buffers.
+This is the part of the identifier that covers the year, month,
+and day."
+  :group 'denote-faces)
+
+(defface denote-faces-time
+  '((t :inherit denote-faces-date))
+  "Face for file name time in Dired buffers.
+This is the part of the identifier that covers the hours, minutes,
+and seconds."
+  :group 'denote-faces)
+
+(defface denote-faces-title
+  '((t ))
+  "Face for file name title in Dired buffers."
+  :group 'denote-faces)
+
+(defface denote-faces-extension
+  '((t :inherit shadow))
+  "Face for file extension type in Dired buffers."
+  :group 'denote-faces)
+
+(defface denote-faces-keywords
+  '((t :inherit font-lock-builtin-face))
+  "Face for file name keywords in Dired buffers."
+  :group 'denote-faces)
+
+(defface denote-faces-delimiter
+  '((((class color) (min-colors 88) (background light))
+     :foreground "gray70")
+    (((class color) (min-colors 88) (background dark))
+     :foreground "gray30")
+    (t :inherit shadow))
+  "Face for file name delimiters in Dired buffers."
+  :group 'denote-faces)
+
+;; For character classes, evaluate: (info "(elisp) Char Classes")
+(defvar denote-faces--file-name-regexp
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+          "\\(?:\\(?3:--\\)\\(?4:[[:alnum:][:nonascii:]-]*\\)\\)?"
+          "\\(?:\\(?5:__\\)\\(?6:[[:alnum:][:nonascii:]_-]*\\)\\)?"
+          "\\(?7:\\..*\\)?$")
+  "Regexp of file names for fontification.")
+
+(defconst denote-faces-file-name-keywords
+  `((,(concat " " denote-faces--file-name-regexp)
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-delimiter nil t)
+     (6 'denote-faces-keywords nil t)
+     (7 'denote-faces-extension nil t )))
+  "Keywords for fontification of file names.")
+
+(defconst denote-faces-file-name-keywords-for-backlinks
+  `((,(concat "^\\(?8:.*/\\)?" denote-faces--file-name-regexp)
+     (8 'denote-faces-subdirectory nil t)
+     (1 'denote-faces-date)
+     (2 'denote-faces-time)
+     (3 'denote-faces-delimiter nil t)
+     (4 'denote-faces-title nil t)
+     (5 'denote-faces-delimiter nil t)
+     (6 'denote-faces-keywords nil t)
+     (7 'denote-faces-extension nil t )))
+  "Keywords for fontification of file names in the backlinks buffer.")
+
+;;;; Fontification in Dired
+
+(defgroup denote-dired ()
+  "Integration between Denote and Dired."
+  :group 'denote)
+
+(defcustom denote-dired-directories
+  ;; We use different ways to specify a path for demo purposes.
+  (list denote-directory
+        ;; (thread-last denote-directory (expand-file-name "attachments"))
+        (expand-file-name "~/Documents/vlog"))
+  "List of directories where `denote-dired-mode' should apply to."
+  :type '(repeat directory)
+  :group 'denote-dired)
+
+;;;###autoload
+(define-minor-mode denote-dired-mode
+  "Fontify all Denote-style file names in Dired."
+  :global nil
+  :group 'denote-dired
+  (if denote-dired-mode
+      (font-lock-add-keywords nil denote-faces-file-name-keywords t)
+    (font-lock-remove-keywords nil denote-faces-file-name-keywords))
+  (font-lock-flush (point-min) (point-max)))
+
+(defun denote-dired--modes-dirs-as-dirs ()
+  "Return `denote-dired-directories' as directories.
+The intent is to basically make sure that however a path is
+written, it is always returned as a directory."
+  (mapcar
+   (lambda (dir)
+     (file-name-as-directory (file-truename dir)))
+   denote-dired-directories))
+
+;;;###autoload
+(defun denote-dired-mode-in-directories ()
+  "Enable `denote-dired-mode' in `denote-dired-directories'.
+Add this function to `dired-mode-hook'."
+  (when (member (file-truename default-directory) (denote-dired--modes-dirs-as-dirs))
+    (denote-dired-mode 1)))
+
+;;;; The linking facility
+
+(defgroup denote-link ()
+  "Link facility for Denote."
+  :group 'denote)
+
+;;;;; User options
+
+(defcustom denote-link-fontify-backlinks t
+  "When non-nil, apply faces to files in the backlinks' buffer."
+  :type 'boolean
+  :group 'denote-link)
+
+(defcustom denote-link-backlinks-display-buffer-action
+  '((display-buffer-reuse-window display-buffer-below-selected)
+    (window-height . fit-window-to-buffer))
+  "The action used to display the current file's backlinks buffer.
+
+The value has the form (FUNCTION . ALIST), where FUNCTION is
+either an \"action function\", a list thereof, or possibly an
+empty list.  ALIST is a list of \"action alist\" which may be
+omitted (or be empty).
+
+Sample configuration to display the buffer in a side window on
+the left of the Emacs frame:
+
+    (setq denote-link-backlinks-display-buffer-action
+          (quote ((display-buffer-reuse-window
+                   display-buffer-in-side-window)
+                  (side . left)
+                  (slot . 99)
+                  (window-width . 0.3))))
+
+See Info node `(elisp) Displaying Buffers' for more details
+and/or the documentation string of `display-buffer'."
+  :type '(cons (choice (function :tag "Display Function")
+                       (repeat :tag "Display Functions" function))
+               alist)
+  :group 'denote-link)
+
+;;;;; Link to note
+
+;; Arguments are: FILE-ID FILE-TITLE
+(defconst denote-link--format-org "[[denote:%s][%s]]"
+  "Format of Org link to note.")
+
+(defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
+  "Format of Markdown link to note.")
+
+(defconst denote-link--format-id-only "[[denote:%s]]"
+  "Format of identifier-only link to note.")
+
+(defconst denote-link--regexp-org
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
+
+(defconst denote-link--regexp-markdown
+  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
+
+(defconst denote-link--regexp-plain
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]]"))
+
+(defun denote-link--file-type-format (current-file id-only)
+  "Return link format based on CURRENT-FILE format.
+With non-nil ID-ONLY, use the generic link format without a
+title."
+  ;; Includes backup files.  Maybe we can remove them?
+  (let ((current-file-ext (file-name-extension current-file)))
+    (cond
+     (id-only denote-link--format-id-only)
+     ((string= current-file-ext "md")
+      denote-link--format-markdown)
+     ;; Plain text also uses [[denote:ID][TITLE]]
+     (t denote-link--format-org))))
+
+(defun denote-link--file-type-regexp (file)
+  "Return link regexp based on FILE format."
+  (pcase (file-name-extension file)
+    ("md" denote-link--regexp-markdown)
+    (_ denote-link--regexp-org)))
+
+(defun denote-link--format-link (file pattern)
+  "Prepare link to FILE using PATTERN."
+  (let ((file-id (denote--retrieve-filename-identifier file))
+        (file-title (unless (string= pattern denote-link--format-id-only)
+                      (denote--retrieve-value-title file))))
+    (format pattern file-id file-title)))
+
+;;;###autoload
+(defun denote-link (target &optional id-only)
+  "Create link to TARGET note in variable `denote-directory'.
+With optional ID-ONLY, such as a universal prefix
+argument (\\[universal-argument]), insert links with just the
+identifier and no further description.  In this case, the link
+format is always [[denote:IDENTIFIER]]."
+  (interactive (list (denote--retrieve-read-file-prompt) current-prefix-arg))
+  (let ((beg (point)))
+    (insert
+     (denote-link--format-link
+      target
+      (denote-link--file-type-format (buffer-file-name) id-only)))
+    (unless (derived-mode-p 'org-mode)
+      (make-button beg (point) 'type 'denote-link-button))))
+
+(defalias 'denote-link-insert-link (symbol-function 'denote-link))
+
+(defun denote-link--collect-identifiers (regexp)
+  "Return collection of identifiers in buffer matching REGEXP."
+  (let (matches)
+    (save-excursion
+      (goto-char (point-min))
+      (while (or (re-search-forward regexp nil t)
+                 (re-search-forward denote-link--regexp-plain nil t))
+        (push (match-string-no-properties 1) matches)))
+    matches))
+
+(defun denote-link--expand-identifiers (regexp)
+  "Expend identifiers matching REGEXP into file paths."
+  (let ((files (denote--directory-files))
+        (found-files))
+    (dolist (file files)
+      (dolist (i (denote-link--collect-identifiers regexp))
+        (when (string-prefix-p i (file-name-nondirectory file))
+          (push file found-files))))
+    found-files))
+
+(defvar denote-link--find-file-history nil
+  "History for `denote-link-find-file'.")
+
+(defun denote-link--find-file-prompt (files)
+  "Prompt for linked file among FILES."
+  (completing-read "Find linked file "
+                   (denote--completion-table 'file files)
+                   nil t
+                   nil 'denote-link--find-file-history))
+
+;; TODO 2022-06-14: Do we need to add any sort of extension to better
+;; integrate with Embark?  For the minibuffer interaction it is not
+;; necessary, but maybe it can be done to immediately recognise the
+;; identifiers are links to files?
+
+;;;###autoload
+(defun denote-link-find-file ()
+  "Use minibuffer completion to visit linked file."
+  (interactive)
+  (if-let* ((regexp (denote-link--file-type-regexp (buffer-file-name)))
+            (files (denote-link--expand-identifiers regexp)))
+      (find-file (denote-link--find-file-prompt files))
+    (user-error "No links found in the current buffer")))
+
+;;;;; Link buttons
+
+;; Evaluate: (info "(elisp) Button Properties")
+;;
+;; Button can provide a help-echo function as well, but I think we might
+;; not need it.
+(define-button-type 'denote-link-button
+  'follow-link t
+  'action #'denote-link--find-file-at-button)
+
+(autoload 'thing-at-point-looking-at "thingatpt")
+
+(defun denote-link--link-at-point-string ()
+  "Return identifier at point."
+  (when (or (thing-at-point-looking-at denote-link--regexp-plain)
+            (thing-at-point-looking-at denote-link--regexp-markdown)
+            (thing-at-point-looking-at denote-link--regexp-org)
+            ;; Meant to handle the case where a link is broken by
+            ;; `fill-paragraph' into two lines, in which case it
+            ;; buttonizes only the "denote:ID" part.  Example:
+            ;;
+            ;; [[denote:20220619T175212][This is a
+            ;; test]]
+            ;;
+            ;; Maybe there is a better way?
+            (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
+    (match-string-no-properties 0)))
+
+(defun denote-link--id-from-string (string)
+  "Extract identifier from STRING."
+  (replace-regexp-in-string
+   (concat ".*denote:" "\\(" denote--id-regexp "\\)" ".*")
+   "\\1" string))
+
+;; NOTE 2022-06-15: I add this as a variable for advanced users who may
+;; prefer something else.  If there is demand for it, we can make it a
+;; defcustom, but I think it would be premature at this stage.
+(defvar denote-link-buton-action #'find-file-other-window
+  "Action for Denote buttons.")
+
+(defun denote-link--find-file-at-button (button)
+  "Visit file referenced by BUTTON."
+  (let* ((id (denote-link--id-from-string
+              (buffer-substring-no-properties
+               (button-start button)
+               (button-end button))))
+         (file (denote--get-note-path-by-id id)))
+    (funcall denote-link-buton-action file)))
+
+;;;###autoload
+(defun denote-link-buttonize-buffer (&optional beg end)
+  "Make denote: links actionable buttons in the current buffer.
+
+Add this to `find-file-hook'.  It will only work with Denote
+notes and will not do anything in `org-mode' buffers, as buttons
+already work there.  If you do not use Markdown or plain text,
+then you do not need this.
+
+When called from Lisp, with optional BEG and END as buffer
+positions, limit the process to the region in-between."
+  (interactive)
+  (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
+    (save-excursion
+      (goto-char (or beg (point-min)))
+      (while (re-search-forward denote--id-regexp end t)
+        (when-let ((string (denote-link--link-at-point-string))
+                   (beg (match-beginning 0))
+                   (end (match-end 0)))
+          (make-button beg end 'type 'denote-link-button))))))
+
+;;;;; Backlinks' buffer
+
+(define-button-type 'denote-link-backlink-button
+  'follow-link t
+  'action #'denote-link--backlink-find-file
+  'face nil)            ; we use this face though we style it later
+
+(defun denote-link--backlink-find-file (button)
+  "Action for BUTTON to `find-file'."
+  (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
+
+(defun denote-link--display-buffer (buf)
+  "Run `display-buffer' on BUF.
+Expand `denote-link-backlinks-display-buffer-action'."
+  (display-buffer
+   buf
+   `(,@denote-link-backlinks-display-buffer-action)))
+
+(defun denote-link--prepare-backlinks (id files &optional title)
+  "Create backlinks' buffer for ID including FILES.
+Use optional TITLE for a prettier heading."
+  (let ((inhibit-read-only t)
+        (buf (format "*denote-backlinks to %s*" id)))
+    (with-current-buffer (get-buffer-create buf)
+      (erase-buffer)
+      (special-mode)
+      (goto-char (point-min))
+      (when-let* ((title)
+                  (heading (format "Backlinks to %S (%s)" title id))
+                  (l (length heading)))
+        (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
+      (mapc (lambda (f)
+              (insert f)
+              (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
+              (newline))
+            files)
+      (goto-char (point-min))
+      (when denote-link-fontify-backlinks
+        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
+    (denote-link--display-buffer buf)))
+
+;;;###autoload
+(defun denote-link-backlinks ()
+  "Produce a buffer with files linking to current note.
+Each file is a clickable/actionable button that visits the
+referenced entry.  Files are fontified if the user option
+`denote-link-fontify-backlinks' is non-nil.
+
+The placement of the backlinks' buffer is controlled by the user
+option `denote-link-backlinks-display-buffer-action'.  By
+default, it will show up below the current window."
+  (interactive)
+  (let* ((default-directory (denote-directory))
+         (file (buffer-file-name))
+         (id (denote--retrieve-filename-identifier file))
+         (title (denote--retrieve-value-title file)))
+    (if-let ((files (denote--retrieve-proces-grep id)))
+        (denote-link--prepare-backlinks id files title)
+      (user-error "No links to the current note"))))
+
+(defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
+
+;;;;; Add links matching regexp
+
+(defvar denote-link--links-to-files nil
+  "String of `denote-link-add-links-matching-keyword'.")
+
+(defvar denote-link--prepare-links-format "- %s\n"
+  "Format specifiers for `denote-link-add-links'.")
+
+;; NOTE 2022-06-16: There is no need to overwhelm the user with options,
+;; though I expect someone to want to change the sort order.
+(defvar denote-link-add-links-sort nil
+  "Add REVERSE to `sort-lines' of `denote-link-add-links' when t.")
+
+(defun denote-link--prepare-links (files current-file id-only)
+  "Prepare links to FILES from CURRENT-FILE.
+When ID-ONLY is non-nil, use a generic link format.  See
+`denote-link--file-type-format'."
+  (setq denote-link--links-to-files
+        (with-temp-buffer
+          (mapc (lambda (file)
+                  (insert
+                   (format
+                    denote-link--prepare-links-format
+                    (denote-link--format-link
+                     file
+                     (denote-link--file-type-format current-file id-only)))))
+                files)
+          (sort-lines denote-link-add-links-sort (point-min) (point-max))
+          (buffer-string))))
+
+(defvar denote-link--add-links-history nil
+  "Minibuffer history for `denote-link-add-links'.")
+
+;;;###autoload
+(defun denote-link-add-links (regexp &optional id-only)
+  "Insert links to all notes matching REGEXP.
+Use this command to reference multiple files at once.
+Particularly useful for the creation of metanotes (read the
+manual for more on the matter).
+
+Optional ID-ONLY has the same meaning as in `denote-link': it
+inserts links with just the identifier."
+  (interactive
+   (list
+    (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
+    current-prefix-arg))
+  (let* ((default-directory (denote-directory))
+         (current-file (buffer-file-name)))
+    (if-let ((files (denote--directory-files-matching-regexp regexp)))
+        (let ((beg (point)))
+          (insert (denote-link--prepare-links files current-file id-only))
+          (unless (derived-mode-p 'org-mode)
+            (denote-link-buttonize-buffer beg (point))))
+      (user-error "No links matching `%s'" regexp))))
+
+(defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
+
+;;;;; Links from Dired marks
+
+;; NOTE 2022-07-21: I don't think we need a history for this one.
+(defun denote-link--buffer-prompt (buffers)
+  "Select buffer from BUFFERS visiting Denote notes."
+  (completing-read
+   "Select note buffer: "
+   (denote--completion-table 'buffer buffers)
+   nil t))
+
+(declare-function dired-get-marked-files "dired" (&optional localp arg filter distinguish-one-marked error))
+
+(defun denote-link--map-over-notes ()
+  "Return list of `denote--only-note-p' from Dired marked items."
+  (delq nil
+        (mapcar
+	     (lambda (f)
+           (when (and (denote--only-note-p f)
+                      (denote--dir-in-denote-directory-p default-directory))
+             f))
+         (dired-get-marked-files))))
+
+;;;###autoload
+(defun denote-link-dired-marked-notes (files buffer &optional id-only)
+  "Insert Dired marked FILES as links in BUFFER.
+
+FILES are Denote notes, meaning that they have our file-naming
+scheme, are writable/regular files, and use the appropriate file
+type extension (per `denote-file-type').  Furthermore, the marked
+files need to be inside the variable `denote-directory' or one of
+its subdirectories.  No other file is recognised (the list of
+marked files ignores whatever does not count as a note for our
+purposes).
+
+The BUFFER is one which visits a Denote note file.  If there are
+multiple buffers, prompt with completion for one among them.  If
+there isn't one, throw an error.
+
+With optional ID-ONLY as a prefix argument, insert links with
+just the identifier (same principle as with `denote-link').
+
+This command is meant to be used from a Dired buffer."
+  (interactive
+   (list
+    (denote-link--map-over-notes)
+    (let ((buffers (denote--buffer-file-names)))
+      (get-buffer
+       (cond
+        ((null buffers)
+         (user-error "No buffers visiting Denote notes"))
+        ((eq (length buffers) 1)
+         (car buffers))
+        (t
+         (denote-link--buffer-prompt buffers)))))
+    current-prefix-arg)
+   dired-mode)
+  (if (null files)
+      (user-error "No note files to link to")
+    (when (y-or-n-p (format "Create links at point in %s?" buffer))
+      (with-current-buffer buffer
+        (insert (denote-link--prepare-links files (buffer-file-name) id-only))
+        (denote-link-buttonize-buffer)))))
+
+;;;;; Register `denote:' custom Org hyperlink
+
+(declare-function org-link-open-as-file "ol" (path arg))
+
+(defun denote-link--ol-resolve-link-to-target (link &optional path-id)
+  "Resolve LINK into the appropriate target.
+With optional PATH-ID return a cons cell consisting of the path
+and the identifier."
+  (let* ((search (and (string-match "::\\(.*\\)\\'" link)
+                      (match-string 1 link)))
+         (id (if (and (stringp search) (not (string-empty-p search)))
+                 (substring link 0 (match-beginning 0))
+               link))
+         (path (denote--get-note-path-by-id id)))
+    (cond
+     (path-id
+      (cons (format "%s" path) (format "%s" id)))
+     ((and (stringp search) (not (string-empty-p search)))
+      (concat path "::" search))
+     (path))))
+
+(defun denote-link-ol-follow (link)
+  "Find file of type `denote:' matching LINK.
+LINK is the identifier of the note, optionally followed by a
+search option akin to that of standard Org `file:' link types.
+Read Info node `(org) Search Options'.
+
+Uses the function `denote-directory' to establish the path to the
+file."
+  (org-link-open-as-file
+   (denote-link--ol-resolve-link-to-target link)
+   nil))
+
+(defun denote-link-ol-complete ()
+  "Like `denote-link' but for Org integration.
+This lets the user complete a link through the `org-insert-link'
+interface by first selecting the `denote:' hyperlink type."
+  (concat
+   "denote:"
+   (denote--retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
+
+(defun denote-link-ol-export (link description format)
+  "Export a `denote:' link from Org files.
+The LINK, DESCRIPTION, and FORMAT are handled by the export
+backend."
+  (let* ((path-id (denote-link--ol-resolve-link-to-target link :path-id))
+         (path (file-name-nondirectory (car path-id)))
+         (p (file-name-sans-extension path))
+         (id (cdr path-id))
+         (desc (or description (concat "denote:" id))))
+    (cond
+     ((eq format 'html) (format "<a target=\"_blank\" href=\"%s.html\">%s</a>" p desc))
+     ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
+     ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
+     ((eq format 'ascii) (format "[%s] <denote:%s>" desc path)) ; NOTE 2022-06-16: May be tweaked further
+     ((eq format 'md) (format "[%s](%s.md)" desc p))
+     (t path))))
+
+;; The `eval-after-load' part with the quoted lambda is adapted from
+;; Elfeed: <https://github.com/skeeto/elfeed/>.
+
+;;;###autoload
+(eval-after-load 'org
+  `(funcall
+    ;; The extra quote below is necessary because uncompiled closures
+    ;; do not evaluate to themselves. The quote is harmless for
+    ;; byte-compiled function objects.
+    ',(lambda ()
+        (with-no-warnings
+          (org-link-set-parameters
+           "denote"
+           :follow #'denote-link-ol-follow
+           :complete #'denote-link-ol-complete
+           :export #'denote-link-ol-export)))))
+
+;;;; Glue code for org-capture
+
+(defgroup denote-org-capture ()
+  "Integration between Denote and Org Capture."
+  :group 'denote)
+
+(defcustom denote-org-capture-specifiers "%l\n%i\n%?"
+  "String with format specifiers for `org-capture-templates'.
+Check that variable's documentation for the details.
+
+The string can include arbitrary text.  It is appended to new
+notes via the `denote-org-capture' function.  Every new note has
+the standard front matter we define."
+  :type 'string
+  :group 'denote-org-capture)
+
+;;;###autoload
+(defun denote-org-capture ()
+  "Create new note through `org-capture-templates'.
+Use this as a function that returns the path to the new file.
+The file is populated with Denote's front matter.  It can then be
+expanded with the usual specifiers or strings that
+`org-capture-templates' supports.
+
+Note that this function ignores the `denote-file-type': it always
+sets the Org file extension for the created note to ensure that
+the capture process works as intended, especially for the desired
+output of the `denote-org-capture-specifiers' (which can include
+arbitrary text).
+
+Consult the manual for template samples."
+  (let ((title (denote--title-prompt))
+        (keywords (denote--keywords-prompt))
+        (denote-file-type nil)) ; we enforce the .org extension for `org-capture'
+    (denote--path title keywords)
+    (setq denote-last-front-matter (denote--file-meta-header
+                                    title (denote--date nil) keywords
+                                    (format-time-string denote--id-format nil)))
+    (denote--keywords-add-to-history denote-last-keywords)
+    (concat denote-last-front-matter denote-org-capture-specifiers)))
+
+(defun denote-org-capture-delete-empty-file ()
+  "Delete file if capture with `denote-org-capture' is aborted."
+  (when-let* ((file denote-last-path)
+              ((denote--file-empty-p file)))
+    (delete-file denote-last-path)))
+
+(add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
+
 (provide 'denote)
 ;;; denote.el ends here

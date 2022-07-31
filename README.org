@@ -304,7 +304,6 @@ template.  Such as:
 
 #+begin_src emacs-lisp
 (with-eval-after-load 'org-capture
-  (require 'denote-org-capture)
   (add-to-list 'org-capture-templates
                '("n" "New note (with Denote)" plain
                  (file denote-last-path)
@@ -1015,7 +1014,6 @@ There are two ways to set the mode.  Either use it for all directories,
 which probably is not needed:
 
 #+begin_src emacs-lisp
-(require 'denote-dired)
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 #+end_src
 
@@ -1025,8 +1023,6 @@ Or configure the user option ~denote-dired-directories~ and then set up
 the function ~denote-dired-mode-in-directories~:
 
 #+begin_src emacs-lisp
-(require 'denote-dired)
-
 ;; We use different ways to specify a path for demo purposes.
 (setq denote-dired-directories
       (list denote-directory
@@ -1459,10 +1455,6 @@ Everything is in place to set up the package.
 
 (setq denote-date-format nil) ; read doc string
 
-;; You will not need to `require' all those individually once the
-;; package is available.
-(require 'denote-link)
-
 ;; By default, we fontify backlinks in their bespoke buffer.
 (setq denote-link-fontify-backlinks t)
 
@@ -1473,7 +1465,6 @@ Everything is in place to set up the package.
 ;; right away)
 (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
 
-(require 'denote-dired)
 (setq denote-dired-rename-expert nil)
 
 ;; We use different ways to specify a path for demo purposes.
@@ -1527,7 +1518,6 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-and-add-front-matters))
 
 (with-eval-after-load 'org-capture
-  (require 'denote-org-capture)
   (setq denote-org-capture-specifiers "%l\n%i\n%?")
   (add-to-list 'org-capture-templates
                '("n" "New note (with denote.el)" plain
