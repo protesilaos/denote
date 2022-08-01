@@ -1343,7 +1343,7 @@ will probably like its =consult-notes= extension.  It uses the familiar
 mechanisms of Consult to filter searches via a prefix key.  For example:
 
 #+begin_src emacs-lisp
-(setq consult-notes-data-dirs
+(setq consult-notes-sources
       `(("Notes"  ?n ,denote-directory)
         ("Books"  ?b "~/Documents/books")))
 #+end_src
@@ -1351,6 +1351,11 @@ mechanisms of Consult to filter searches via a prefix key.  For example:
 With the above, =M-x consult-notes= will list the files in those two
 directories.  If you type =n= and space, it narrows the list to just the
 notes, while =b= does the same for books.
+
+To search all your notes with grep (or ripgrep if installed -- see
+=consult-notes-use-rg= variable) use the command
+=consult-notes-search-in-all-notes=. This will employ grep/ripgrep for searching
+terms in all the directories set in =consult-notes-sources=.
 
 Note that =consult-notes= is in its early stages of development.  Expect
 improvements in the near future (written on 2022-06-22 16:48 +0300).
