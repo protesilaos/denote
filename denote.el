@@ -588,9 +588,7 @@ If optional KEY is non-nil, return the key instead."
 
 (defun denote--retrieve-files-in-output (files)
   "Return list of FILES from `find' output."
-  (delq nil (mapcar (lambda (f)
-                      (when (denote--only-note-p f) f))
-                    files)))
+  (seq-filter (lambda (f) (denote--only-note-p f)) files))
 
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
