@@ -670,19 +670,19 @@ treatment)."
         (denote--format-markdown-keywords kw)
       (mapconcat #'downcase kw "  "))))
 
-;; TODO 2022-07-29: For now, for Org files, this functions only supports
-;; keywords separated with 2 spaces (as created by
-;; `denote--file-meta-keywords'), but we should try to handle all valid
-;; Org syntaxes.
 (defun denote--extract-keywords-from-front-matter (file &optional type)
   "Extract keywords from front matter of FILE with TYPE.
 This is the reverse operation of `denote--file-meta-keywords'."
   (let ((fm-keywords (denote--retrieve-value-keywords file)))
-    (if (or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-        (split-string
-         (string-trim-right (string-trim-left fm-keywords "\\[") "\\]")
-         ", " t "\s*\"\s*")
-      (split-string fm-keywords "  " t " "))))
+    (cond
+     ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
+      (split-string
+       (string-trim-right (string-trim-left fm-keywords "\\[") "\\]")
+       ", " t "\s*\"\s*"))
+     ((eq type 'text)
+      (split-string fm-keywords "  " t " "))
+     (t
+      (split-string fm-keywords "\\([:]\\|\s\s\\)" t "\\([:]\\|\s\\)")))))
 
 (defvar denote-toml-front-matter
   "+++
