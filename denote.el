@@ -1121,18 +1121,29 @@ appropriate."
       (goto-char (point-min))
       (insert new-front-matter))))
 
+(defun denote--file-match-p (regexp file)
+  "Return t if REGEXP matches in the FILE."
+  (with-current-buffer (find-file-noselect file)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (re-search-forward regexp nil t 1)))))
+
 (defun denote--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote--rewrite-front-matter': if FILE
-has no front matter, then we abort early instead of trying to
-replace what isn't there."
+This is relevant for `denote--rewrite-front-matter'. We can edit
+the front matter if it contains a \"title\" line and a \"tags\"
+line (the exact syntax depending on the file type)."
   (when-let ((ext (file-name-extension file)))
     (and (file-regular-p file)
          (file-writable-p file)
          (not (denote--file-empty-p file))
          (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
          ;; Heuristic to check if this is one of our notes
-         (string= (expand-file-name default-directory) (denote-directory)))))
+         (string-prefix-p (denote-directory) (expand-file-name default-directory))
+         (denote--file-match-p denote--retrieve-title-front-matter-key-regexp file)
+         (denote--file-match-p denote--retrieve-keywords-front-matter-key-regexp file))))
 
 (defun denote--rewrite-keywords (file keywords)
   "Rewrite KEYWORDS in FILE outright.
@@ -1143,8 +1154,7 @@ but do not ask for confirmation.
 This is for use in `denote-dired-rename-marked-files' or related.
 Those commands ask for confirmation once before performing an
 operation on multiple files."
-  (when-let ((denote--edit-front-matter-p file)
-             (old-keywords (denote--retrieve-value-keywords file))
+  (when-let ((old-keywords (denote--retrieve-value-keywords file))
              (new-keywords (denote--file-meta-keywords
                             keywords (denote--filetype-heuristics file))))
     (with-current-buffer (find-file-noselect file)
@@ -1199,8 +1209,7 @@ Throw error is FILE is not regular, else return FILE."
 The FILE, TITLE, and KEYWORDS are passed from the renaming
 command and are used to construct new front matter values if
 appropriate."
-  (when-let ((denote--edit-front-matter-p file)
-             (old-title (denote--retrieve-value-title file))
+  (when-let ((old-title (denote--retrieve-value-title file))
              (old-keywords (denote--retrieve-value-keywords file))
              (new-title title)
              (new-keywords (denote--file-meta-keywords
@@ -1225,7 +1234,7 @@ appropriate."
               (replace-match (concat "\\1" new-keywords) t)))))))
 
 ;;;###autoload
-(defun denote-dired-rename-file (file title keywords)
+(defun denote-rename-file (file title keywords)
   "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
@@ -1262,8 +1271,17 @@ to double-check the effect).  The rewrite of the FILE and
 KEYWORDS in the front matter should not affect the rest of the
 block.
 
-If the file doesn't have front matter, skip this step (see the
-command `denote-dired-rename-file-and-add-front-matter').
+If the file doesn't have front matter, add one at the top of the
+file without asking.
+
+Front matter is added only when the file is one of the supported
+file types (per `denote-file-type').  For per-file-type front
+matter, refer to the variables:
+
+- `denote-org-front-matter'
+- `denote-text-front-matter'
+- `denote-toml-front-matter'
+- `denote-yaml-front-matter'
 
 This command is intended to (i) rename existing Denote notes
 while updating their title and keywords in the front matter, (ii)
@@ -1288,44 +1306,19 @@ will not---manage such files)."
     (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
       (denote-update-dired-buffers)
-      (denote--rewrite-front-matter new-name title keywords))))
+      (if (denote--edit-front-matter-p new-name)
+          (denote--rewrite-front-matter new-name title keywords)
+        (denote--add-front-matter new-name title keywords id)))))
 
-;;;###autoload
-(defun denote-dired-rename-file-and-add-front-matter (file title keywords)
-  "Rename FILE and unconditionally add front matter.
+(define-obsolete-function-alias
+  'denote-dired-rename-file-and-add-front-matter
+  'denote-rename-file
+  "0.5.0")
 
-This command has the same modalities of interaction as
-`denote-dired-rename-file' in terms of the FILE, TITLE, and
-KEYWORDS prompts, except it always inserts front matter at the
-start of the file.  It does not check if any front matter is
-already present.
-
-Front matter is added only when the file is one of the supported
-file types (per `denote-file-type').  For per-file-type front
-matter, refer to the variables:
-
-- `denote-org-front-matter'
-- `denote-text-front-matter'
-- `denote-toml-front-matter'
-- `denote-yaml-front-matter'"
-  (interactive
-   (let ((file (denote--rename-dired-file-or-prompt)))
-     (list
-      file
-      (denote--title-prompt
-       (or (denote--retrieve-value-title file)
-           (file-name-sans-extension (file-name-nondirectory file))))
-      (denote--keywords-prompt))))
-  (let* ((dir (file-name-directory file))
-         (id (denote--file-name-id file))
-         (extension (file-name-extension file t))
-         (new-name (denote--format-file
-                    dir id keywords (denote--sluggify title) extension))
-         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote--rename-file-prompt file new-name)
-      (denote--rename-file file new-name)
-      (denote-update-dired-buffers)
-      (denote--add-front-matter new-name title keywords id))))
+(define-obsolete-function-alias
+  'denote-dired-rename-file
+  'denote-rename-file
+  "0.5.0")
 
 (define-obsolete-function-alias
   'denote-dired-convert-file-to-denote
@@ -1373,7 +1366,8 @@ The operation does the following:
                    (new-name (denote--format-file
                               dir id keywords (denote--sluggify title) extension)))
               (denote--rename-file file new-name)
-              (when rewrite
+              (when (and rewrite
+                         (denote--edit-front-matter-p new-name))
                 (denote--rewrite-keywords new-name keywords))))
           (revert-buffer)))
     (user-error "No marked files; aborting")))
