@@ -682,9 +682,16 @@ This is how it looks for Org mode (when ~denote-file-type~ is nil):
 #+begin_example
 #+title:      This is a sample note
 #+date:       [2022-06-30 Thu 16:09]
-#+filetags:   denote  testing
+#+filetags:   :denote:testing:
 #+identifier: 20220630T160934
 #+end_example
+
+[ The format of the =#+filetags= has been revised as part of
+  {{{development-version}}}.  Before, we would separate multiple entries
+  with two spaces, which is technically correct though not what Org
+  users are familiar with.  We now separate tags with a colon, per the
+  Org manual.  The previous approach still works though and Denote will
+  continue to support it internally, where relevant. ]
 
 For Markdown with YAML (~denote-file-type~ has the =markdown-yaml=
 value), the front matter looks like this:
