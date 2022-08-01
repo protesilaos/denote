@@ -1353,11 +1353,11 @@ improvements in the near future (written on 2022-06-22 16:48 +0300).
 :CUSTOM_ID: h:fad3eb08-ddc7-43e4-ba28-210d89668037
 :END:
 
-Emacs a built-in library for treating a directory tree as a "project".
-This means that the contents of this tree are seen as part of the same
-set, so commands like ~project-switch-to-buffer~ (=C-x p b= by default)
-will only consider buffers in the current project (e.g. three notes that
-are currently being visited).
+Emacs has a built-in library for treating a directory tree as a
+"project".  This means that the contents of this tree are seen as part
+of the same set, so commands like ~project-switch-to-buffer~ (=C-x p b=
+by default) will only consider buffers in the current project
+(e.g. three notes that are currently being visited).
 
 Normally, a "project" is a directory tree whose root is under version
 control.  For our purposes, all you need is to navigate to the
@@ -1974,7 +1974,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Contributions to code or the manual :: Benjamin Kästner, Damien
   Cassou, Jack Baty, Jean-Philippe Gagné Guay, Kaushal Modi, Kyle Meyer,
-  Peter Prevos, Philip Kaludercic, Stefan Monnier.
+  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
