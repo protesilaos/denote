@@ -656,6 +656,12 @@ which include the starting dot or the return value of
                               (format "%S" (downcase k)))
                             keywords ", ")))
 
+(defun denote--format-org-keywords (keywords)
+  "Quote, downcase, and colon-separate elements in KEYWORDS."
+  (format ":%s:" (mapconcat (lambda (k)
+                              (downcase k))
+                            keywords ":")))
+
 (defun denote--file-meta-keywords (keywords &optional type)
   "Prepare KEYWORDS for inclusion in the file's front matter.
 Parse the output of `denote--keywords-prompt', using `downcase'
@@ -666,9 +672,13 @@ With optional TYPE, format the keywords accordingly (this might
 be `toml' or, in the future, some other spec that needss special
 treatment)."
   (let ((kw (denote--sluggify-keywords keywords)))
-    (if (or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-        (denote--format-markdown-keywords kw)
-      (mapconcat #'downcase kw "  "))))
+    (cond
+     ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
+      (denote--format-markdown-keywords kw))
+     ((eq type 'text)
+      (mapconcat #'downcase kw "  "))
+     (t
+      (denote--format-org-keywords kw)))))
 
 (defun denote--extract-keywords-from-front-matter (file &optional type)
   "Extract keywords from front matter of FILE with TYPE.
