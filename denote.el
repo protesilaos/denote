@@ -1343,53 +1343,20 @@ The operation does the following:
 - a prompt is asked once for the KEYWORDS field and the input is
   applied to all file names;
 
-- if the file is recognized as a Denote note, rewrite its front
-  matter to include the new keywords.  A confirmation to carry
-  out this step is performed once at the outset.  Note that the
-  affected buffers are not saved.  The user can thus check them
-  to confirm that the new front matter does not cause any
+- if the file is recognized as a Denote note, add a front matter
+  or rewrite it to include the new keywords. A confirmation to
+  carry out this step is performed once at the outset. Note that
+  the affected buffers are not saved. The user can thus check
+  them to confirm that the new front matter does not cause any
   problems (e.g. with the command `diff-buffer-with-file').
   Multiple buffers can be saved with `save-some-buffers' (read
-  its doc string)."
-  (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files))
-           (keywords (denote--keywords-prompt)))
-      (let ((rewrite (yes-or-no-p "Rewrite front matter of keywords, if relevant (buffers are not saved)?")))
-        (progn
-          (dolist (file marks)
-            (let* ((dir (file-name-directory file))
-                   (id (denote--file-name-id file))
-                   (title (or (denote--retrieve-value-title file)
-                              (file-name-sans-extension
-                               (file-name-nondirectory file))))
-                   (extension (file-name-extension file t))
-                   (new-name (denote--format-file
-                              dir id keywords (denote--sluggify title) extension)))
-              (denote--rename-file file new-name)
-              (when (and rewrite
-                         (denote--edit-front-matter-p new-name))
-                (denote--rewrite-keywords new-name keywords))))
-          (revert-buffer)))
-    (user-error "No marked files; aborting")))
-
-;;;###autoload
-(defun denote-dired-rename-marked-files-and-add-front-matters ()
-  "Like `denote-dired-rename-marked-files' but add front matter.
-
-The additon of front matter takes place only if the given file
-has the appropriate file type extension (per the user option
-`denote-file-type').
-
-Buffers are not saved.  The user can thus check them to confirm
-that the new front matter does not cause any problems (e.g. by
-invoking the command `diff-buffer-with-file').
-
-Multiple buffers can be saved with `save-some-buffers' (read its
-doc string)."
+  its doc string). The addition of front matter takes place only
+  if the given file has the appropriate file type extension (per
+  the user option `denote-file-type')."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files))
            (keywords (denote--keywords-prompt))
-           ((yes-or-no-p "Add front matter to all relevant files (buffers are not saved)?")))
+           ((yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")))
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
@@ -1401,9 +1368,16 @@ doc string)."
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
             (denote--rename-file file new-name)
-            (denote--add-front-matter new-name title keywords id)))
+            (if (denote--edit-front-matter-p new-name)
+                (denote--rewrite-keywords new-name keywords)
+              (denote--add-front-matter new-name title keywords id))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
+
+(define-obsolete-function-alias
+  'denote-dired-rename-marked-files-and-add-front-matter
+  'denote-dired-rename-marked-files
+  "0.5.0")
 
 ;;;; The Denote faces
 
