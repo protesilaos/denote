@@ -255,11 +255,11 @@ If nil, show the keywords in their given order."
 Words are automatically separated by a hyphen when using the
 `denote' command or related.  The hyphen is the only legal
 character---no spaces, no other characters.  If, for example, the
-user types <word1+word2> or <word1 word2>, it is converted to
+user types <word1_word2> or <word1 word2>, it is converted to
 <word1-word2>.
 
 When nil, do not allow keywords to consist of multiple words.
-Reduce them to a single word, such as by turning <word1+word2> or
+Reduce them to a single word, such as by turning <word1_word2> or
 <word1 word2> into <word1word2>."
   :group 'denote
   :type 'boolean)
@@ -324,9 +324,9 @@ are described in the doc string of `format-time-string'."
 (defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
   "Regular expression to match supported Denote extensions.")
 
-(defconst denote--punctuation-regexp "[][{}!@#$%^&*()_=+'\"?,.\|;:~`‘’“”/]*"
+(defconst denote--punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
   "Punctionation that is removed from file names.
-We consider those characters illigal for our purposes.")
+We consider those characters illegal for our purposes.")
 
 (defvar denote-punctuation-excluded-extra-regexp nil
   "Additional punctuation that is removed from file names.
@@ -366,14 +366,14 @@ things accordingly.")
    "" str))
 
 (defun denote--slug-hyphenate (str)
-  "Replace spaces with hyphens in STR.
+  "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
 trailing hyphen."
   (replace-regexp-in-string
    "-$" ""
    (replace-regexp-in-string
     "-\\{2,\\}" "-"
-    (replace-regexp-in-string "--+\\|\s+" "-" str))))
+    (replace-regexp-in-string "_\\|\s+" "-" str))))
 
 (defun denote--sluggify (str)
   "Make STR an appropriate slug for file names and related."
