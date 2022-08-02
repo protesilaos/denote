@@ -639,16 +639,12 @@ which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
         (ext (or extension (denote--file-extension)))
-        (empty-title (string-empty-p title-slug)))
-    (cond
-     ((and keywords title-slug (not empty-title))
-      (format "%s%s--%s__%s%s" path id title-slug kws ext))
-     ((and keywords empty-title)
-      (format "%s%s__%s%s" path id kws ext))
-     ((and title-slug (not empty-title))
-      (format "%s%s--%s%s" path id title-slug ext))
-     (t
-      (format "%s%s%s" path id ext)))))
+        (file-name (concat path id)))
+    (when (and title-slug (not (string-empty-p title-slug)))
+      (setq file-name (concat file-name "--" title-slug)))
+    (when keywords
+      (setq file-name (concat file-name "__" kws)))
+    (concat file-name ext)))
 
 (defun denote--format-markdown-keywords (keywords)
   "Quote, downcase, and comma-separate elements in KEYWORDS."
