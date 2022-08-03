@@ -454,15 +454,12 @@ names that are relative to the variable `denote-directory'."
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP."
-  (delq
-   nil
-   (mapcar
-    (lambda (f)
-      (when (and (denote--only-note-p f)
-                 (string-match-p regexp f)
-                 (not (string= (file-name-nondirectory (buffer-file-name)) f)))
-        f))
-    (denote--directory-files))))
+  (seq-filter
+   (lambda (f)
+     (and (denote--only-note-p f)
+          (string-match-p regexp f)
+          (not (string= (file-name-nondirectory (buffer-file-name)) f))))
+   (denote--directory-files)))
 
 ;;;; Keywords
 
