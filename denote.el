@@ -887,10 +887,9 @@ where the former does not read dates without a time component."
                  (concat "\\`" identifier))))))
 
 (defun denote--barf-duplicate-id (identifier)
-  "Throw a user-error if IDENTIFIER already exists else return t."
-  (if (denote--id-exists-p identifier)
-      (user-error "`%s' already exists; aborting new note creation" identifier)
-    t))
+  "Throw a user-error if IDENTIFIER already exists."
+  (when (denote--id-exists-p identifier)
+    (user-error "`%s' already exists; aborting new note creation" identifier)))
 
 (defun denote--subdirs ()
   "Return list of subdirectories in variable `denote-directory'."
