@@ -1298,8 +1298,7 @@ will not---manage such files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-value-title file)
-           (file-name-sans-extension (file-name-nondirectory file))))
+       (or (denote--retrieve-value-title file) (file-name-base file)))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1366,8 +1365,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (title (or (denote--retrieve-value-title file)
-                            (file-name-sans-extension
-                             (file-name-nondirectory file))))
+                            (file-name-base file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
