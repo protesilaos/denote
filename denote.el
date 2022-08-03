@@ -454,15 +454,12 @@ names that are relative to the variable `denote-directory'."
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP."
-  (delq
-   nil
-   (mapcar
-    (lambda (f)
-      (when (and (denote--only-note-p f)
-                 (string-match-p regexp f)
-                 (not (string= (file-name-nondirectory (buffer-file-name)) f)))
-        f))
-    (denote--directory-files))))
+  (seq-filter
+   (lambda (f)
+     (and (denote--only-note-p f)
+          (string-match-p regexp f)
+          (not (string= (file-name-nondirectory (buffer-file-name)) f))))
+   (denote--directory-files)))
 
 ;;;; Keywords
 
@@ -588,9 +585,7 @@ If optional KEY is non-nil, return the key instead."
 
 (defun denote--retrieve-files-in-output (files)
   "Return list of FILES from `find' output."
-  (delq nil (mapcar (lambda (f)
-                      (when (denote--only-note-p f) f))
-                    files)))
+  (seq-filter (lambda (f) (denote--only-note-p f)) files))
 
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
@@ -639,16 +634,12 @@ which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
         (ext (or extension (denote--file-extension)))
-        (empty-title (string-empty-p title-slug)))
-    (cond
-     ((and keywords title-slug (not empty-title))
-      (format "%s%s--%s__%s%s" path id title-slug kws ext))
-     ((and keywords empty-title)
-      (format "%s%s__%s%s" path id kws ext))
-     ((and title-slug (not empty-title))
-      (format "%s%s--%s%s" path id title-slug ext))
-     (t
-      (format "%s%s%s" path id ext)))))
+        (file-name (concat path id)))
+    (when (and title-slug (not (string-empty-p title-slug)))
+      (setq file-name (concat file-name "--" title-slug)))
+    (when keywords
+      (setq file-name (concat file-name "__" kws)))
+    (concat file-name ext)))
 
 (defun denote--format-markdown-keywords (keywords)
   "Quote, downcase, and comma-separate elements in KEYWORDS."
@@ -896,10 +887,9 @@ where the former does not read dates without a time component."
                  (concat "\\`" identifier))))))
 
 (defun denote--barf-duplicate-id (identifier)
-  "Throw a user-error if IDENTIFIER already exists else return t."
-  (if (denote--id-exists-p identifier)
-      (user-error "`%s' already exists; aborting new note creation" identifier)
-    t))
+  "Throw a user-error if IDENTIFIER already exists."
+  (when (denote--id-exists-p identifier)
+    (user-error "`%s' already exists; aborting new note creation" identifier)))
 
 (defun denote--subdirs ()
   "Return list of subdirectories in variable `denote-directory'."
@@ -1304,8 +1294,7 @@ will not---manage such files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-value-title file)
-           (file-name-sans-extension (file-name-nondirectory file))))
+       (or (denote--retrieve-value-title file) (file-name-base file)))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1372,8 +1361,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (title (or (denote--retrieve-value-title file)
-                            (file-name-sans-extension
-                             (file-name-nondirectory file))))
+                            (file-name-base file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
@@ -1864,13 +1852,11 @@ inserts links with just the identifier."
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote--only-note-p' from Dired marked items."
-  (delq nil
-        (mapcar
-	     (lambda (f)
-           (when (and (denote--only-note-p f)
-                      (denote--dir-in-denote-directory-p default-directory))
-             f))
-         (dired-get-marked-files))))
+  (seq-filter
+   (lambda (f)
+     (and (denote--only-note-p f)
+          (denote--dir-in-denote-directory-p default-directory)))
+   (dired-get-marked-files)))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
