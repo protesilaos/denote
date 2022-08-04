@@ -750,15 +750,15 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 
 Optional FILETYPE is one of the values of `denote-file-type',
 else that variable is used."
-  (let ((kw-space (denote--file-meta-keywords keywords))
-        (kw-md (denote--file-meta-keywords keywords 'md)))
-    ;; TODO 2022-07-27: Rewrite this (and/or related) to avoid
-    ;; duplication with the markdown flavours.
+  (let ((kw-space (denote--file-meta-keywords keywords 'text))
+        (kw-md (denote--file-meta-keywords keywords 'md))
+        (kw-colon (denote--file-meta-keywords keywords)))
+    ;; TODO 2022-08-04: Rewrite this.
     (pcase (or filetype denote-file-type)
       ('markdown-toml (format denote-toml-front-matter title date kw-md id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
       ('text (format denote-text-front-matter title date kw-space id denote-text-front-matter-delimiter))
-      (_ (format denote-org-front-matter title date kw-space id)))))
+      (_ (format denote-org-front-matter title date kw-colon id)))))
 
 (defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.
