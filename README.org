@@ -796,6 +796,12 @@ case the user needs it.
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
+#+vindex: denote-faces-link
+Links are styled with the ~denote-faces-link~ face [part of
+{{{development-version}}}], which looks exactly like an ordinary link by
+default.  This is just a convenience for the user/theme in case they
+want =denote:= links to remain distinct from other links.
+
 ** Insert links matching a regexp
 :PROPERTIES:
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
