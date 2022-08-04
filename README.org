@@ -1039,7 +1039,7 @@ the function ~denote-dired-mode-in-directories~:
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 #+end_src
 
-The faces we define are:
+The faces we define for this purpose are:
 
 #+vindex: denote-faces-date
 #+vindex: denote-faces-delimiter
