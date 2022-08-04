@@ -1132,7 +1132,7 @@ appropriate."
 
 (defun denote--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote--rewrite-front-matter'. We can edit
+This is relevant for `denote--rewrite-front-matter'.  We can edit
 the front matter if it contains a \"title\" line and a \"tags\"
 line (the exact syntax depending on the file type)."
   (when-let ((ext (file-name-extension file)))
@@ -1343,13 +1343,13 @@ The operation does the following:
   applied to all file names;
 
 - if the file is recognized as a Denote note, add a front matter
-  or rewrite it to include the new keywords. A confirmation to
-  carry out this step is performed once at the outset. Note that
-  the affected buffers are not saved. The user can thus check
+  or rewrite it to include the new keywords.  A confirmation to
+  carry out this step is performed once at the outset.  Note that
+  the affected buffers are not saved.  The user can thus check
   them to confirm that the new front matter does not cause any
   problems (e.g. with the command `diff-buffer-with-file').
   Multiple buffers can be saved with `save-some-buffers' (read
-  its doc string). The addition of front matter takes place only
+  its doc string).  The addition of front matter takes place only
   if the given file has the appropriate file type extension (per
   the user option `denote-file-type')."
   (interactive nil dired-mode)
@@ -1382,7 +1382,6 @@ The operation does the following:
 (defgroup denote-faces ()
   "Faces for Denote."
   :group 'denote)
-
 
 (defface denote-faces-link '((t :inherit link))
   "Face used to style Denote links in the buffer."
