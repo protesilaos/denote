@@ -1383,6 +1383,11 @@ The operation does the following:
   "Faces for Denote."
   :group 'denote)
 
+
+(defface denote-faces-link '((t :inherit link))
+  "Face used to style Denote links in the buffer."
+  :group 'denote-faces)
+
 (defface denote-faces-subdirectory
   '((t :inherit bold))
   "Face for subdirectory of file name.
@@ -1657,6 +1662,7 @@ format is always [[denote:IDENTIFIER]]."
 ;; not need it.
 (define-button-type 'denote-link-button
   'follow-link t
+  'face 'denote-faces-link
   'action #'denote-link--find-file-at-button)
 
 (autoload 'thing-at-point-looking-at "thingatpt")
@@ -1971,6 +1977,7 @@ backend."
           (org-link-set-parameters
            "denote"
            :follow #'denote-link-ol-follow
+           :face 'denote-faces-link
            :complete #'denote-link-ol-complete
            :export #'denote-link-ol-export)))))
 
