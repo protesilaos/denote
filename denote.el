@@ -671,19 +671,11 @@ treatment)."
      (t
       (denote--format-org-keywords kw)))))
 
-(defun denote--extract-keywords-from-front-matter (file &optional type)
-  "Extract keywords from front matter of FILE with TYPE.
+(defun denote--front-matter-keywords-to-list (file)
+  "Return keywords from front matter of FILE as list of strings.
 This is the reverse operation of `denote--format-front-matter-keywords'."
-  (let ((fm-keywords (denote--retrieve-value-keywords file)))
-    (cond
-     ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-      (split-string
-       (string-trim-right (string-trim-left fm-keywords "\\[") "\\]")
-       ", " t "\s*\"\s*"))
-     ((eq type 'text)
-      (split-string fm-keywords "  " t " "))
-     (t
-      (split-string fm-keywords "\\([:]\\|\s\s\\)" t "\\([:]\\|\s\\)")))))
+  (let ((keywords (denote--retrieve-value-keywords file)))
+    (split-string keywords "[:,\s]+" t "[][ \"']+")))
 
 (defvar denote-toml-front-matter
   "+++
@@ -1390,8 +1382,7 @@ typos and the like."
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
   (if-let* ((title (denote--retrieve-value-title file))
-            (keywords (denote--extract-keywords-from-front-matter
-                       file (denote--filetype-heuristics file)))
+            (keywords (denote--front-matter-keywords-to-list file))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1441,8 +1432,7 @@ their respective front matter."
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (title (denote--retrieve-value-title file))
-                 (keywords (denote--extract-keywords-from-front-matter
-                            file (denote--filetype-heuristics file)))
+                 (keywords (denote--front-matter-keywords-to-list file))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
