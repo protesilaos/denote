@@ -1377,7 +1377,7 @@ Ask for confirmation, showing the difference between the old and
 the new file names.
 
 The identifier of the file, if any, is never modified even if it
-is edited in the front matter: Denote consider the file name to
+is edited in the front matter: Denote considers the file name to
 be the source of truth in this case, to avoid potential breakage
 with typos and the like."
   (interactive (list (buffer-file-name)))
