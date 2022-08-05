@@ -1006,7 +1006,7 @@ here for clarity."
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
 
-;;;;; Convenience functions
+;;;;; Convenience commands as `denote' variants
 
 (defalias 'denote-create-note (symbol-function 'denote))
 
