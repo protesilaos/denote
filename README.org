@@ -490,6 +490,8 @@ not---manage such files).
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
 
+[ Updated as part of {{{development-version}}} ]
+
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
 Dired to conform with our file-naming scheme.  The operation does the
@@ -507,26 +509,15 @@ following:
 - a prompt is asked once for the =KEYWORDS= field and the input is
   applied to all file names;
 
-- if the file is recognized as a Denote note, its front matter is
-  rewritten to include the new keywords.  A confirmation to carry out
-  this step is performed once at the outset.  Note that the affected
-  buffers are not saved.  The user can thus check them to confirm that
-  the new front matter does not cause any problems (e.g. with the
-  command ~diff-buffer-with-file~).  Multiple buffers can be saved with
-  ~save-some-buffers~ (read its doc string).
-
-#+findex: denote-dired-rename-marked-files-and-add-front-matters
-The command ~denote-dired-rename-marked-files-and-add-front-matters~ is
-like ~denote-dired-rename-marked-files~ but also adds front matter.  The
-additon of front matter takes place only if the file has the appropriate
-file type extension (per the user option ~denote-file-type~).
-
-Buffers are not saved.  The user can thus check them to confirm that the
-new front matter does not cause any problems (e.g. by invoking the
-command ~diff-buffer-with-file~).
-
-Multiple buffers can be saved with ~save-some-buffers~ (read its doc
-string).
+- if the file is recognized as a Denote note, this command adds or
+  rewrites front matter to include the new keywords.  A confirmation to
+  carry out this step is performed once at the outset.  Note that the
+  affected buffers are not saved.  The user can thus check them to
+  confirm that the new front matter does not cause any problems
+  (e.g. with the command ~diff-buffer-with-file~).  Multiple buffers can
+  be saved with ~save-some-buffers~ (read its doc string).  The addition
+  of front matter takes place only if the given file has the appropriate
+  file type extension (per the user option ~denote-file-type~).
 
 * The file-naming scheme
 :PROPERTIES:
@@ -1521,8 +1512,7 @@ Everything is in place to set up the package.
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
   (define-key map (kbd "C-c C-d C-i") #'denote-link-dired-marked-notes)
-  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files)
-  (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-and-add-front-matters))
+  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files))
 
 (with-eval-after-load 'org-capture
   (setq denote-org-capture-specifiers "%l\n%i\n%?")
