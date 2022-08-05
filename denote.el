@@ -1375,6 +1375,25 @@ The operation does the following:
   'denote-dired-rename-marked-files
   "0.5.0")
 
+;;;###autoload
+(defun denote-reverse-rename-file (file)
+  "Rename current FILE using its front matter as input.
+This basically is the inverse of `denote-rename-file'"
+  (interactive (list (buffer-file-name)))
+  (when (buffer-modified-p)
+    (user-error "Save buffer before proceeding"))
+  (if-let* ((title (denote--retrieve-value-title file))
+            (keywords (denote--front-matter-keywords-to-list (denote--retrieve-value-keywords file)))
+            (extension (file-name-extension file t))
+            (id (denote--file-name-id file))
+            (dir (file-name-directory file))
+            (new-name (denote--format-file
+                       dir id keywords (denote--sluggify title) extension)))
+      (progn
+        (denote--rename-file file new-name)
+        (denote-update-dired-buffers))
+    (user-error "No front matter for title, identifier, and/or keywords")))
+
 ;;;; The Denote faces
 
 (defgroup denote-faces ()
