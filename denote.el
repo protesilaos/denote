@@ -1382,10 +1382,10 @@ Ask for confirmation, showing the difference between the old and
 the new file names.  Refrain from performing the operation if the
 buffer has unsaved changes.
 
-The identifier of the file, if any, is never modified even if it
-is edited in the front matter: Denote considers the file name to
-be the source of truth in this case, to avoid potential breakage
-with typos and the like."
+Never modify the identifier of the FILE, if any, even if it is
+edited in the front matter.  Denote considers the file name to be
+the source of truth in this case to avoid potential breakage with
+typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
