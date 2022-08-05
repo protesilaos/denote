@@ -1403,11 +1403,35 @@ typos and the like."
     (user-error "No front matter for title and/or keywords")))
 
 ;;;###autoload
-(defun denote-rename-marked-files-using-front-matter ()
-  "Rename marked files using the information in their front matter.
+(defun denote-dired-rename-marked-files-using-front-matter ()
+  "Rename marked files in Dired using their front matter as input.
+Marked files must count as notes for the purposes of Denote,
+which means that they at least have an identifier in their file
+name and use a supported file type, per `denote-file-type'.
+Files that do not meet this criterion are ignored.
 
-This command can be used to synchronize multiple file names with
-the content of the file's front matter."
+The operation does the following:
+
+- the title in the front matter becomes the TITLE component of
+  the file name, with hyphenation per Denote's file-naming
+  scheme;
+
+- the keywords in the front matter are used for the KEYWORDS
+  component of the file name and are processed accordingly, if
+  needed;
+
+- the identifier remains unchanged in the file name even if it is
+  modified in the front matter (this is done to avoid breakage
+  caused by typos and the like).
+
+NOTE that files must be saved, because Denote reads from the
+underlying file, not a modified buffer (this is done to avoid
+potential mistakes).  The return value of a modified buffer is
+the one prior to the modification, i.e. the one already written
+on disk.
+
+This command is useful for synchronizing multiple file names with
+their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
                    (lambda (file) (denote--only-note-p file))
