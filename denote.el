@@ -1166,34 +1166,6 @@ operation on multiple files."
           (search-forward old-keywords nil t 1)
           (replace-match (concat "\\1" new-keywords) t))))))
 
-(make-obsolete 'denote-dired-rename-expert nil "0.5.0")
-(make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
-
-;;;;; The renaming commands and their prompts
-
-(defun denote--rename-dired-file-or-prompt ()
-  "Return Dired file at point, else prompt for one.
-
-Throw error is FILE is not regular, else return FILE."
-  (or (dired-get-filename nil t)
-      (let* ((file (buffer-file-name))
-             (format (if file
-                         (format "Rename file Denote-style [%s]: " file)
-                       "Rename file Denote-style: "))
-             (selected-file (read-file-name format nil file t nil)))
-        (if (or (file-directory-p selected-file)
-                (not (file-regular-p selected-file)))
-            (user-error "Only rename regular files")
-          selected-file))))
-
-(defun denote--rename-file-prompt (old-name new-name)
-  "Prompt to rename file named OLD-NAME to NEW-NAME."
-  (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (y-or-n-p
-     (format "Rename %s to %s?"
-             (propertize (file-name-nondirectory old-name) 'face 'error)
-             (propertize (file-name-nondirectory new-name) 'face 'success)))))
-
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
 ;; that `denote--retrieve-value-title' targets more refined, so that we
 ;; capture eveyrhing at once.
@@ -1225,6 +1197,34 @@ appropriate."
               (re-search-forward denote--retrieve-keywords-front-matter-key-regexp nil t 1)
               (search-forward old-keywords nil t 1)
               (replace-match (concat "\\1" new-keywords) t)))))))
+
+(make-obsolete 'denote-dired-rename-expert nil "0.5.0")
+(make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
+
+;;;;; The renaming commands and their prompts
+
+(defun denote--rename-dired-file-or-prompt ()
+  "Return Dired file at point, else prompt for one.
+
+Throw error is FILE is not regular, else return FILE."
+  (or (dired-get-filename nil t)
+      (let* ((file (buffer-file-name))
+             (format (if file
+                         (format "Rename file Denote-style [%s]: " file)
+                       "Rename file Denote-style: "))
+             (selected-file (read-file-name format nil file t nil)))
+        (if (or (file-directory-p selected-file)
+                (not (file-regular-p selected-file)))
+            (user-error "Only rename regular files")
+          selected-file))))
+
+(defun denote--rename-file-prompt (old-name new-name)
+  "Prompt to rename file named OLD-NAME to NEW-NAME."
+  (unless (string= (expand-file-name old-name) (expand-file-name new-name))
+    (y-or-n-p
+     (format "Rename %s to %s?"
+             (propertize (file-name-nondirectory old-name) 'face 'error)
+             (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
 ;;;###autoload
 (defun denote-rename-file (file title keywords)
