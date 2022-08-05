@@ -1169,11 +1169,6 @@ operation on multiple files."
 (make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
 
-(defun denote--front-matter-keywords-to-list (keywords)
-  "Return string of KEYWORDS as a list of strings.
-This is the inverse of `denote--format-front-matter-keywords'."
-  (split-string keywords "[:,\s]+" t "[][ \"']+"))
-
 ;;;;; The renaming commands and their prompts
 
 (defun denote--rename-dired-file-or-prompt ()
@@ -1376,14 +1371,15 @@ The operation does the following:
   "0.5.0")
 
 ;;;###autoload
-(defun denote-reverse-rename-file (file)
+(defun denote-rename-file-using-front-matter (file)
   "Rename current FILE using its front matter as input.
 This basically is the inverse of `denote-rename-file'"
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
   (if-let* ((title (denote--retrieve-value-title file))
-            (keywords (denote--front-matter-keywords-to-list (denote--retrieve-value-keywords file)))
+            (keywords (denote--extract-keywords-from-front-matter
+                       file (denote--filetype-heuristics file)))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1392,7 +1388,31 @@ This basically is the inverse of `denote-rename-file'"
       (progn
         (denote--rename-file file new-name)
         (denote-update-dired-buffers))
-    (user-error "No front matter for title, identifier, and/or keywords")))
+    (user-error "No front matter for title and/or keywords")))
+
+;;;###autoload
+(defun denote-rename-marked-files-using-front-matter ()
+  "Rename marked files using the information in their front matter.
+
+This command can be used to synchronize multiple file names with
+the content of the file's front matter."
+  (interactive nil dired-mode)
+  (if-let ((marks (seq-filter
+                   (lambda (file) (denote--only-note-p file))
+                   (dired-get-marked-files))))
+      (progn
+        (dolist (file marks)
+          (let* ((dir (file-name-directory file))
+                 (id (denote--file-name-id file))
+                 (title (denote--retrieve-value-title file))
+                 (keywords (denote--extract-keywords-from-front-matter
+                            file (denote--filetype-heuristics file)))
+                 (extension (file-name-extension file t))
+                 (new-name (denote--format-file
+                            dir id keywords (denote--sluggify title) extension)))
+            (denote--rename-file file new-name)))
+        (revert-buffer))
+    (user-error "No marked files; aborting")))
 
 ;;;; The Denote faces
 
