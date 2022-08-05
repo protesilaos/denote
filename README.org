@@ -578,6 +578,45 @@ edited in the front matter: Denote considers the file name to be the
 source of truth in this case, to avoid potential breakage with typos and
 the like.
 
+** Rename multiple files based on their front matter
+:PROPERTIES:
+:CUSTOM_ID: h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8
+:END:
+
+[ Part of {{{development-version}}} ]
+
+#+findex: denote-dired-rename-marked-files-using-front-matter
+As already noted, Denote can rename a file based on the data in its
+front matter ([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).  The
+command ~denote-dired-rename-marked-files-using-front-matter~ extends
+this principle to a batch operation which applies to all marked files in
+Dired.
+
+Marked files must count as notes for the purposes of Denote, which means
+that they at least have an identifier in their file name and use a
+supported file type, per ~denote-file-type~.  Files that do not meet
+this criterion are ignored.
+
+The operation does the following:
+
+- the title in the front matter becomes the =TITLE= component of the
+  file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]);
+
+- the keywords in the front matter are used for the =KEYWORDS= component
+  of the file name and are processed accordingly, if needed;
+
+- the identifier remains unchanged in the file name even if it is
+  modified in the front matter (this is done to avoid breakage caused by
+  typos and the like).
+
+NOTE that files must be saved, because Denote reads from the underlying
+file, not a modified buffer (this is done to avoid potential mistakes).
+The return value of a modified buffer is the one prior to the
+modification, i.e. the one already written on disk.
+
+This command is useful for synchronizing multiple file names with their
+respective front matter.
+
 * The file-naming scheme
 :PROPERTIES:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
@@ -1574,7 +1613,8 @@ Everything is in place to set up the package.
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
   (define-key map (kbd "C-c C-d C-i") #'denote-link-dired-marked-notes)
-  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files))
+  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files)
+  (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-using-front-matter))
 
 (with-eval-after-load 'org-capture
   (setq denote-org-capture-specifiers "%l\n%i\n%?")
