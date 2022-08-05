@@ -796,11 +796,20 @@ case the user needs it.
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
+[ The following two faces are part of {{{development-version}}} ]
+
 #+vindex: denote-faces-link
-Links are styled with the ~denote-faces-link~ face [part of
-{{{development-version}}}], which looks exactly like an ordinary link by
-default.  This is just a convenience for the user/theme in case they
-want =denote:= links to remain distinct from other links.
+Links are styled with the ~denote-faces-link~ face, which looks exactly
+like an ordinary link by default.  This is just a convenience for the
+user/theme in case they want =denote:= links to remain distinct from
+other links.
+
+#+vindex: denote-faces-broken-link
+In Org files, broken links get the ~denote-faces-broken-link~ if the
+linked identifier does not resolve to a file path with a note.  The
+ability to use distinct faces for such a scenario is a feature of Org,
+which is not available in other supported file types that use Emacs'
+generic button mechanism.
 
 ** Insert links matching a regexp
 :PROPERTIES:

@@ -1387,6 +1387,12 @@ The operation does the following:
   "Face used to style Denote links in the buffer."
   :group 'denote-faces)
 
+(defface denote-faces-broken-link '((t :inherit (error link)))
+  "Face used to style Denote broken links in the buffer.
+This only works in Org files, as Emacs' generic buttons do not
+provide a facility that uses a face based on certain conditions."
+  :group 'denote-faces)
+
 (defface denote-faces-subdirectory
   '((t :inherit bold))
   "Face for subdirectory of file name.
@@ -1937,6 +1943,14 @@ file."
    (denote-link--ol-resolve-link-to-target link)
    nil))
 
+(defun denote-link-ol-face (link)
+  "Return appropriate face for LINK.
+If the LINK resolves to a note, use `denote-faces-link', else
+return `denote-faces-broken-link'."
+  (if (denote-link--ol-resolve-link-to-target link)
+      'denote-faces-link
+    'denote-faces-broken-link))
+
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
@@ -1976,7 +1990,7 @@ backend."
           (org-link-set-parameters
            "denote"
            :follow #'denote-link-ol-follow
-           :face 'denote-faces-link
+           :face #'denote-link-ol-face
            :complete #'denote-link-ol-complete
            :export #'denote-link-ol-export)))))
 
