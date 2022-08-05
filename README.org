@@ -491,6 +491,40 @@ latter is a convenience we provide, since we already have all the
 requisite mechanisms in place (though Denote does not---and will
 not---manage such files).
 
+** Rename multiple files at once
+:PROPERTIES:
+:CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
+:END:
+
+[ Updated as part of {{{development-version}}} ]
+
+#+findex: denote-dired-rename-marked-files
+The ~denote-dired-rename-marked-files~ command renames marked files in
+Dired to conform with our file-naming scheme.  The operation does the
+following:
+
+- the file's existing file name is retained and becomes the =TITLE=
+  field, per Denote's file-naming scheme;
+
+- the =TITLE= is sluggified and downcased, per our conventions;
+
+- an identifier is prepended to the =TITLE=;
+
+- the file's extension is retained;
+
+- a prompt is asked once for the =KEYWORDS= field and the input is
+  applied to all file names;
+
+- if the file is recognized as a Denote note, this command adds or
+  rewrites front matter to include the new keywords.  A confirmation to
+  carry out this step is performed once at the outset.  Note that the
+  affected buffers are not saved.  The user can thus check them to
+  confirm that the new front matter does not cause any problems
+  (e.g. with the command ~diff-buffer-with-file~).  Multiple buffers can
+  be saved with ~save-some-buffers~ (read its doc string).  The addition
+  of front matter takes place only if the given file has the appropriate
+  file type extension (per the user option ~denote-file-type~).
+
 ** Rename a single file based on its front matter
 :PROPERTIES:
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
@@ -543,40 +577,6 @@ The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the
 source of truth in this case, to avoid potential breakage with typos and
 the like.
-
-** Rename multiple files at once
-:PROPERTIES:
-:CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
-:END:
-
-[ Updated as part of {{{development-version}}} ]
-
-#+findex: denote-dired-rename-marked-files
-The ~denote-dired-rename-marked-files~ command renames marked files in
-Dired to conform with our file-naming scheme.  The operation does the
-following:
-
-- the file's existing file name is retained and becomes the =TITLE=
-  field, per Denote's file-naming scheme;
-
-- the =TITLE= is sluggified and downcased, per our conventions;
-
-- an identifier is prepended to the =TITLE=;
-
-- the file's extension is retained;
-
-- a prompt is asked once for the =KEYWORDS= field and the input is
-  applied to all file names;
-
-- if the file is recognized as a Denote note, this command adds or
-  rewrites front matter to include the new keywords.  A confirmation to
-  carry out this step is performed once at the outset.  Note that the
-  affected buffers are not saved.  The user can thus check them to
-  confirm that the new front matter does not cause any problems
-  (e.g. with the command ~diff-buffer-with-file~).  Multiple buffers can
-  be saved with ~save-some-buffers~ (read its doc string).  The addition
-  of front matter takes place only if the given file has the appropriate
-  file type extension (per the user option ~denote-file-type~).
 
 * The file-naming scheme
 :PROPERTIES:
