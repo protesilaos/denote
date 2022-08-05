@@ -653,7 +653,7 @@ which include the starting dot or the return value of
                               (downcase k))
                             keywords ":")))
 
-(defun denote--file-meta-keywords (keywords &optional type)
+(defun denote--format-front-matter-keywords (keywords &optional type)
   "Prepare KEYWORDS for inclusion in the file's front matter.
 Parse the output of `denote--keywords-prompt', using `downcase'
 on the keywords and separating them by two spaces.  A single
@@ -673,7 +673,7 @@ treatment)."
 
 (defun denote--extract-keywords-from-front-matter (file &optional type)
   "Extract keywords from front matter of FILE with TYPE.
-This is the reverse operation of `denote--file-meta-keywords'."
+This is the reverse operation of `denote--format-front-matter-keywords'."
   (let ((fm-keywords (denote--retrieve-value-keywords file)))
     (cond
      ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
@@ -742,7 +742,7 @@ and do not use any empty line before it.
 These help ensure consistency and might prove useful if we need
 to operate on the front matter as a whole.")
 
-(defun denote--file-meta-header (title date keywords id &optional filetype)
+(defun denote--format-front-matter (title date keywords id &optional filetype)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
@@ -750,15 +750,15 @@ TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 
 Optional FILETYPE is one of the values of `denote-file-type',
 else that variable is used."
-  (let ((kw-md (denote--file-meta-keywords keywords 'md)))
+  (let ((kw-md (denote--format-front-matter-keywords keywords 'md)))
     (pcase (or filetype denote-file-type)
       ('markdown-toml (format denote-toml-front-matter title date kw-md id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
       ('text (format denote-text-front-matter title date
-                     (denote--file-meta-keywords keywords 'text)
+                     (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date
-                 (denote--file-meta-keywords keywords) id)))))
+                 (denote--format-front-matter-keywords keywords) id)))))
 
 (defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.
@@ -815,7 +815,7 @@ should be valid for note creation."
          (denote-file-type file-type)
          (path (denote--path title keywords default-directory id))
          (buffer (find-file path))
-         (header (denote--file-meta-header
+         (header (denote--format-front-matter
                   title (denote--date date) keywords
                   (format-time-string denote--id-format date)
                   file-type)))
@@ -1061,7 +1061,7 @@ This is equivalent to calling `denote' when `denote-prompts' is set to
 
 (defun denote--filetype-heuristics (file)
   "Return likely file type of FILE.
-The return value is for `denote--file-meta-header'."
+The return value is for `denote--format-front-matter'."
   (pcase (file-name-extension file)
     ("md" (if-let ((title-key (denote--retrieve-value-title file t))
                    ((string-match-p "title\\s-*=" title-key)))
@@ -1116,7 +1116,7 @@ appropriate."
   (when-let* (((denote--only-note-p file))
               (filetype (denote--filetype-heuristics file))
               (date (denote--date (date-to-time id)))
-              (new-front-matter (denote--file-meta-header title date keywords id filetype)))
+              (new-front-matter (denote--format-front-matter title date keywords id filetype)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -1155,7 +1155,7 @@ This is for use in `denote-dired-rename-marked-files' or related.
 Those commands ask for confirmation once before performing an
 operation on multiple files."
   (when-let ((old-keywords (denote--retrieve-value-keywords file))
-             (new-keywords (denote--file-meta-keywords
+             (new-keywords (denote--format-front-matter-keywords
                             keywords (denote--filetype-heuristics file))))
     (with-current-buffer (find-file-noselect file)
       (save-excursion
@@ -1212,7 +1212,7 @@ appropriate."
   (when-let ((old-title (denote--retrieve-value-title file))
              (old-keywords (denote--retrieve-value-keywords file))
              (new-title title)
-             (new-keywords (denote--file-meta-keywords
+             (new-keywords (denote--format-front-matter-keywords
                             keywords (denote--filetype-heuristics file))))
       (with-current-buffer (find-file-noselect file)
         (when (y-or-n-p (format
@@ -2015,7 +2015,7 @@ Consult the manual for template samples."
         (keywords (denote--keywords-prompt))
         (denote-file-type nil)) ; we enforce the .org extension for `org-capture'
     (denote--path title keywords)
-    (setq denote-last-front-matter (denote--file-meta-header
+    (setq denote-last-front-matter (denote--format-front-matter
                                     title (denote--date nil) keywords
                                     (format-time-string denote--id-format nil)))
     (denote--keywords-add-to-history denote-last-keywords)
