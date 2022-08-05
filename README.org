@@ -471,13 +471,6 @@ front matter at the top of it and leaves the buffer unsaved for further
 inspection.
 
 This command is intended to (i) rename existing Denote notes while
-updating their title and keywords in the front matter, (ii) rename files
-that can benefit from Denote's file-naming scheme.  The latter is a
-convenience we provide, since we already have all the requisite
-mechanisms in place (Denote does not and will not manage such files
-though). ([[#h:322fefee-6412-487d-bdad-9bd862f0423a][Rename file and add front matter]]).
-
-This command is intended to (i) rename existing Denote notes while
 updating their title and keywords in the front matter, (ii) convert
 existing supported file types to Denote notes, and (ii) rename non-note
 files (e.g. PDF) that can benefit from Denote's file-naming scheme.  The
