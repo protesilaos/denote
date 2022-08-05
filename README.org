@@ -491,6 +491,59 @@ latter is a convenience we provide, since we already have all the
 requisite mechanisms in place (though Denote does not---and will
 not---manage such files).
 
+** Rename a single file based on its front matter
+:PROPERTIES:
+:CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
+:END:
+
+[ Part of {{{development-version}}} ]
+
+#+findex: denote-rename-file-using-front-matter
+In the previous section, we covered the more general mechanism of the
+command ~denote-rename-file~ ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).  There is also a
+way to have the same outcome by making Denote read the data in the
+current file's front matter and use it to construct/update the file
+name.  The command for this is ~denote-rename-file-using-front-matter~.
+It is only relevant for files that (i) are among the supported file
+types, per ~denote-file-type~, and (ii) have the requisite front matter
+in place.
+
+Suppose you have an =.org= file with this front matter ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]):
+
+#+begin_example
+#+title:      My sample note file
+#+date:       [2022-08-05 Fri 13:10]
+#+filetags:   :testing:
+#+identifier: 20220805T131044
+#+end_example
+
+Its file name reflects this information:
+
+: 20220805T131044--my-sample-note-file__testing.org
+
+You want to change its title and keywords manually, so you modify it thus:
+
+#+begin_example
+#+title:      My modified sample note file
+#+date:       [2022-08-05 Fri 13:10]
+#+filetags:   :testing:denote:emacs:
+#+identifier: 20220805T131044
+#+end_example
+
+The file name still shows the old title and keywords.  So after saving
+the buffer, you invoke ~denote-rename-file-using-front-matter~ and it
+updates the file name to:
+
+: 20220805T131044--my-modified-sample-note-file__testing_denote_emacs.org
+
+The renaming is subject to a "yes or no" prompt that shows the old and
+new names, just so the user is certain about the change.
+
+The identifier of the file, if any, is never modified even if it is
+edited in the front matter: Denote considers the file name to be the
+source of truth in this case, to avoid potential breakage with typos and
+the like.
+
 ** Rename multiple files at once
 :PROPERTIES:
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
@@ -1513,10 +1566,10 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n I") #'denote-link-add-links)
   (define-key map (kbd "C-c n l") #'denote-link-find-file) ; "list" links
   (define-key map (kbd "C-c n b") #'denote-link-backlinks)
-  ;; Note that `denote-rename-file' can work from any context, not
-  ;; just Dired bufffers.  That is why we bind it here to the
-  ;; `global-map'.
-  (define-key map (kbd "C-c n r") #'denote-rename-file))
+  ;; Note that `denote-rename-file' can work from any context, not just
+  ;; Dired bufffers.  That is why we bind it here to the `global-map'.
+  (define-key map (kbd "C-c n r") #'denote-rename-file)
+  (define-key map (kbd "C-c n R") #'denote-rename-file-using-front-matter))
 
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
