@@ -2078,9 +2078,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
-  Jack Baty, Kaushal Modi, M. Hadi Timachi, Paul van Gelder, Peter
-  Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Ypot,
-  hpgisler, pRot0ta1p.
+  Hanspeter Gisler, Jack Baty, Kaushal Modi, M. Hadi Timachi, Paul van
+  Gelder, Peter Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck,
+  Taoufik, Ypot, hpgisler, pRot0ta1p.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
