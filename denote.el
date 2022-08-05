@@ -1166,14 +1166,7 @@ operation on multiple files."
           (search-forward old-keywords nil t 1)
           (replace-match (concat "\\1" new-keywords) t))))))
 
-(defcustom denote-dired-rename-expert nil
-  "If t, renaming a file doesn't ask for confirmation.
-The confiration is asked via a `y-or-n-p' prompt which shows the
-old name followed by the new one.  This applies to the command
-`denote-dired-rename-file'."
-  :type 'boolean
-  :group 'denote-dired)
-
+(make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
 
 ;;;;; The renaming commands and their prompts
@@ -1253,8 +1246,7 @@ prompt.
 
 As a final step after the FILE, TITLE, and KEYWORDS prompts, ask
 for confirmation, showing the difference between old and new file
-names.  If `denote-dired-rename-expert' is non-nil, conduct the
-renaming operation outright---no question asked!
+names.
 
 The file type extension (e.g. .pdf) is read from the underlying
 file and is preserved through the renaming process.  Files that

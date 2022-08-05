@@ -448,10 +448,6 @@ For example:
 Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
 #+end_example
 
-#+vindex: denote-dired-rename-expert
-However, if the user option ~denote-dired-rename-expert~ is non-nil, the
-command conducts the renaming operation outright---no questions asked!
-
 The file type extension (e.g. =.pdf=) is read from the underlying file
 and is preserved through the renaming process.  Files that have no
 extension are simply left without one.
@@ -1491,8 +1487,6 @@ Everything is in place to set up the package.
 ;; If you use Markdown or plain text files (Org renders links as buttons
 ;; right away)
 (add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-
-(setq denote-dired-rename-expert nil)
 
 ;; We use different ways to specify a path for demo purposes.
 (setq denote-dired-directories
