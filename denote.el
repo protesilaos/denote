@@ -1373,7 +1373,13 @@ The operation does the following:
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file)
   "Rename current FILE using its front matter as input.
-The identifier of the file (if any) is never modified."
+Ask for confirmation, showing the difference between the old and
+the new file names.
+
+The identifier of the file, if any, is never modified even if it
+is edited in the front matter: Denote consider the file name to
+be the source of truth in this case, to avoid potential breakage
+with typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
