@@ -1373,7 +1373,7 @@ The operation does the following:
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file)
   "Rename current FILE using its front matter as input.
-This basically is the inverse of `denote-rename-file'"
+The identifier of the file (if any) is never modified."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
