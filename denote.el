@@ -1169,6 +1169,11 @@ operation on multiple files."
 (make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
 
+(defun denote--front-matter-keywords-to-list (keywords)
+  "Return string of KEYWORDS as a list of strings.
+This is the inverse of `denote--format-front-matter-keywords'."
+  (split-string keywords "[:,\s]+" t "[][ \"']+"))
+
 ;;;;; The renaming commands and their prompts
 
 (defun denote--rename-dired-file-or-prompt ()
