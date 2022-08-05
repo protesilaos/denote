@@ -1385,7 +1385,7 @@ The identifier of the file (if any) is never modified."
             (dir (file-name-directory file))
             (new-name (denote--format-file
                        dir id keywords (denote--sluggify title) extension)))
-      (progn
+      (when (denote--rename-file-prompt file new-name)
         (denote--rename-file file new-name)
         (denote-update-dired-buffers))
     (user-error "No front matter for title and/or keywords")))
