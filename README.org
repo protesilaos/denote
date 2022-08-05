@@ -650,6 +650,9 @@ insert single words at the relevant prompts.
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
 :END:
 
+[ The format of the Org and Markdown+YAML filetags/tags has been revised
+  as part of {{{development-version}}} ]
+
 Notes have their own "front matter".  This is a block of data at the top
 of the file, with no empty lines between the entries, which is
 automatically generated at the creation of a new note.  The front matter
@@ -680,7 +683,7 @@ value), the front matter looks like this:
 ---
 title:      "This is a sample note"
 date:       2022-06-30T16:09:58+03:00
-tags:       denote  testing
+tags:       ["denote", "testing"]
 identifier: "20220630T160958"
 ---
 #+end_example
