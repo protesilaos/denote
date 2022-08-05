@@ -1240,15 +1240,15 @@ modification time.  If such attribute cannot be found, the
 identifier falls back to the `current-time'.
 
 The default TITLE is retrieved from a line starting with a title
-field in the file's contents, depending on the given file type.
-Else, the file name is used as a default value at the minibuffer
-prompt.
+field in the file's contents, depending on the given file
+type (e.g. #+title for Org).  Else, the file name is used as a
+default value at the minibuffer prompt.
 
 As a final step after the FILE, TITLE, and KEYWORDS prompts, ask
 for confirmation, showing the difference between old and new file
 names.
 
-The file type extension (e.g. .pdf) is read from the underlying
+The file type extension (like .txt) is read from the underlying
 file and is preserved through the renaming process.  Files that
 have no extension are simply left without one.
 
@@ -1263,12 +1263,11 @@ to double-check the effect).  The rewrite of the FILE and
 KEYWORDS in the front matter should not affect the rest of the
 block.
 
-If the file doesn't have front matter, add one at the top of the
-file without asking.
+If the file doesn't have front matter but is among the supported
+file types (per `denote-file-type'), add front matter at the top
+of it and leave the buffer unsaved for further inspection.
 
-Front matter is added only when the file is one of the supported
-file types (per `denote-file-type').  For per-file-type front
-matter, refer to the variables:
+For per-file-type front matter, refer to the variables:
 
 - `denote-org-front-matter'
 - `denote-text-front-matter'
@@ -1277,10 +1276,12 @@ matter, refer to the variables:
 
 This command is intended to (i) rename existing Denote notes
 while updating their title and keywords in the front matter, (ii)
-rename files that can benefit from Denote's file-naming scheme.
-The latter is a convenience we provide, since we already have all
-the requisite mechanisms in place (though Denote does not---and
-will not---manage such files)."
+convert existing supported file types to Denote notes, and (ii)
+rename non-note files (e.g. PDF) that can benefit from Denote's
+file-naming scheme.  The latter is a convenience we provide,
+since we already have all the requisite mechanisms in
+place (though Denote does not---and will not---manage such
+files)."
   (interactive
    (let ((file (denote--rename-dired-file-or-prompt)))
      (list

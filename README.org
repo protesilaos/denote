@@ -423,9 +423,9 @@ them.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
-#+findex: denote-dired-rename-file
-The ~denote-dired-rename-file~ command renames a file and updates
-existing front matter if appropriate.
+#+findex: denote-rename-file
+The ~denote-rename-file~ command renames a file and updates existing
+front matter if appropriate.
 
 If in Dired, the =FILE= to be renamed is the one at point, else the
 command prompts with minibuffer completion for a target file.
@@ -445,10 +445,10 @@ for confirmation, showing the difference between old and new file names.
 For example:
 
 #+begin_example
-Rename sample.pdf to 20220612T052900--my-sample-title__testing.pdf? (y or n)
+Rename sample.txt to 20220612T052900--my-sample-title__testing.txt? (y or n)
 #+end_example
 
-The file type extension (e.g. =.pdf=) is read from the underlying file
+The file type extension (e.g. =.txt=) is read from the underlying file
 and is preserved through the renaming process.  Files that have no
 extension are simply left without one.
 
@@ -463,8 +463,10 @@ underlying buffer is not saved, so consider invoking
 =FILE= and =KEYWORDS= in the front matter should not affect the rest of
 the block.
 
-If the file doesn't have front matter, the command skips this step (see
-the command ~denote-dired-rename-file-and-add-front-matter~).
+If the file doesn't have front matter but is among the supported file
+types (per ~denote-file-type~), the ~denote-rename-file~ command adds
+front matter at the top of it and leaves the buffer unsaved for further
+inspection.
 
 This command is intended to (i) rename existing Denote notes while
 updating their title and keywords in the front matter, (ii) rename files
@@ -473,30 +475,13 @@ convenience we provide, since we already have all the requisite
 mechanisms in place (Denote does not and will not manage such files
 though). ([[#h:322fefee-6412-487d-bdad-9bd862f0423a][Rename file and add front matter]]).
 
-The ~denote-dired-rename-file~ command is intended to (i) rename
-existing Denote notes while updating their front matter, (ii) rename
-files that can benefit from Denote's file-naming scheme.  The latter is
-a convenience we provide, since we already have all the requisite
-mechanisms in place (though Denote does not---and will not---manage such
-files).
-
-** Rename file and add front matter
-:PROPERTIES:
-:CUSTOM_ID: h:322fefee-6412-487d-bdad-9bd862f0423a
-:END:
-
-#+findex: denote-dired-rename-file-and-add-front-matter
-The command ~denote-dired-rename-file-and-add-front-matter~ has the same
-modalities of interaction as the ~denote-dired-rename-file~ command
-([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).  The difference is that it unconditionally
-inserts front matter at the start of a file.
-
-This command is thus suitable for a workflow where an existing writable
-file needs to be converted into a Denote-style note.  Whereas the other
-command does not insert front matter if one doesn't already exist.
-
-Front matter is added when the file type extension is among the
-supported ones (per ~denote-file-type~).
+This command is intended to (i) rename existing Denote notes while
+updating their title and keywords in the front matter, (ii) convert
+existing supported file types to Denote notes, and (ii) rename non-note
+files (e.g. PDF) that can benefit from Denote's file-naming scheme.  The
+latter is a convenience we provide, since we already have all the
+requisite mechanisms in place (though Denote does not---and will
+not---manage such files).
 
 ** Rename multiple files at once
 :PROPERTIES:
@@ -1526,11 +1511,10 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n I") #'denote-link-add-links)
   (define-key map (kbd "C-c n l") #'denote-link-find-file) ; "list" links
   (define-key map (kbd "C-c n b") #'denote-link-backlinks)
-  ;; Note that `denote-dired-rename-file' can work from any context, not
+  ;; Note that `denote-rename-file' can work from any context, not
   ;; just Dired bufffers.  That is why we bind it here to the
   ;; `global-map'.
-  (define-key map (kbd "C-c n r") #'denote-dired-rename-file)
-  (define-key map (kbd "C-c n R") #'denote-dired-rename-file-and-add-front-matter))
+  (define-key map (kbd "C-c n r") #'denote-rename-file))
 
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
