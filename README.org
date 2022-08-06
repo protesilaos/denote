@@ -876,29 +876,34 @@ With those granted, below are some examples.  The approach is the same
 for all variables.
 
 #+begin_src emacs-lisp
-;; Change the order
-(setq denote-yaml-front-matter
-  "---
-title:      %1$S
-tags:       %3$s
-date:       %2$s
-identifier: %4$S
----\n\n")
+;; Like the default, but upcase the entries
+(setq denote-org-front-matter
+  "#+TITLE:      %s
+#+DATE:       %s
+#+FILETAGS:   %s
+#+IDENTIFIER: %s
+\n")
+
+;; Change the order (notice the %N$s notation)
+(setq denote-org-front-matter
+  "#+title:      %1$s
+#+filetags:   %3$s
+#+date:       %2$s
+#+identifier: %4$s
+\n")
 
 ;; Remove the date
-(setq denote-yaml-front-matter
-  "---
-title:      %1$S
-tags:       %3$s
-identifier: %4$S
----\n\n")
+(setq denote-org-front-matter
+  "#+title:      %1$s
+#+filetags:   %3$s
+#+identifier: %4$s
+\n")
 
 ;; Remove the date and the identifier
-(setq denote-yaml-front-matter
-  "---
-title:      %1$S
-tags:       %3$s
----\n\n")
+(setq denote-org-front-matter
+  "#+title:      %1$s
+#+filetags:   %3$s
+\n")
 #+end_src
 
 Note that ~setq~ has a global effect: it affects the creation of all new
