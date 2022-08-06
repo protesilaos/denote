@@ -1124,9 +1124,13 @@ appropriate."
 
 (defun denote--edit-front-matter-p (file)
   "Test if FILE should be subject to front matter rewrite.
-This is relevant for `denote--rewrite-front-matter'.  We can edit
-the front matter if it contains a \"title\" line and a \"tags\"
-line (the exact syntax depending on the file type)."
+This is relevant for operations that insert or rewrite the front
+matter in a Denote note.
+
+For the purposes of this test, FILE is a Denote note when it (i)
+is a regular file, (ii) is writable, (iii) has a supported file
+type extension per `denote-file-type', and (iv) is stored in the
+variable `denote-directory'."
   (when-let ((ext (file-name-extension file)))
     (and (file-regular-p file)
          (file-writable-p file)
@@ -1439,6 +1443,44 @@ their respective front matter."
             (denote--rename-file file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
+
+;;;;; Creation of front matter
+
+;;;###autoload
+(defun denote-add-front-matter (file title keywords)
+  "Insert front matter at the top of FILE.
+
+When called interactively, FILE is the return value of the
+function `buffer-file-name'.  FILE is checked to determine
+whether it is a note for Denote's purposes.
+
+TITLE is a string.  Interactively, it is the user input at the
+minibuffer prompt.
+
+KEYWORDS is a list of strings.  Interactively, it is the user
+input at the minibuffer prompt.  This one supports completion for
+multiple entries, each separated by the `crm-separator' (normally
+a comma).
+
+The purpose of this command is to help the user generate new
+front matter for an existing note (perhaps because the user
+deleted the previous one and could not undo the change).
+
+This command does not rename the file (e.g. to update the
+keywords).  To rename a file by reading its front matter as
+input, use `denote-rename-file-using-front-matter'.
+
+Note that this command is useful only for existing Denote notes.
+If the user needs to convert a generic text file to a Denote
+note, they can use one of the command which first rename the file
+to make it comply with our file-naming scheme and then add the
+relevant front matter."
+  (interactive
+   (list
+    (buffer-file-name)
+    (denote--title-prompt)
+    (denote--keywords-prompt)))
+  (denote--add-front-matter file title keywords (denote--file-name-id file)))
 
 ;;;; The Denote faces
 
