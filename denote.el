@@ -720,19 +720,19 @@ is specific to this variable: it expect a delimiter such as
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
-are an avdanced user who wants to edit this variable to affect
+are an advanced user who wants to edit this variable to affect
 how front matter is produced, consider using something like %2$s
 to control where Nth argument is placed.
 
-Make sure to
+Make sure to:
 
 1. Not use empty lines inside the front matter block.
 
 2. Insert at least one empty line after the front matter block
-and do not use any empty line before it.
+   and do not use any empty line before it.
 
-These help ensure consistency and might prove useful if we need
-to operate on the front matter as a whole.")
+These help with consistency and might prove useful if we ever
+need to operate on the front matter as a whole.")
 
 (defun denote--format-front-matter (title date keywords id &optional filetype)
   "Front matter for new notes.
