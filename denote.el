@@ -1365,10 +1365,10 @@ The operation does the following:
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file)
   "Rename FILE using its front matter as input.
-When called interactively, FILE is the `buffer-file-name' which
-is subsequently inspected for the requisite front matter.  It is
-thus implied that the FILE has a file type that is supported by
-Denote, per `denote-file-type'.
+When called interactively, FILE is the return value of the
+function `buffer-file-name' which is subsequently inspected for
+the requisite front matter.  It is thus implied that the FILE has
+a file type that is supported by Denote, per `denote-file-type'.
 
 Ask for confirmation, showing the difference between the old and
 the new file names.  Refrain from performing the operation if the
