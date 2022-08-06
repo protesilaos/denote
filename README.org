@@ -820,6 +820,94 @@ If the value is a string, ignore the above and use it instead.  The
 string must include format specifiers for the date.  These are described
 in the doc string of ~format-time-string~..
 
+** Change the front matter format
+:PROPERTIES:
+:CUSTOM_ID: h:7f918854-5ed4-4139-821f-8ee9ba06ad15
+:END:
+
+Per Denote's design principles, the code is hackable.  All front matter
+is stored in variables that are intended for public use.  We do not
+declare those as "user options" because (i) they expect the user to have
+some degree of knowledge in Emacs Lisp and (ii) implement custom code.
+
+[ NOTE for tinkerers: code intended for internal use includes double
+  hyphens in its symbol.  "Internal use" means that it can be changed
+  without warning and with no further reference in the change log.  Do
+  not use any of it without understanding the consequences. ]
+
+The variables which hold the front matter format are:
+
+#+vindex: denote-org-front-matter
+- ~denote-org-front-matter~
+
+#+vindex: denote-text-front-matter
+- ~denote-text-front-matter~
+
+#+vindex: denote-toml-front-matter
+- ~denote-toml-front-matter~
+
+#+vindex: denote-yaml-front-matter
+- ~denote-yaml-front-matter~
+
+These variables hold a string with specifiers that are used by the
+~format~ function.  The formatting operation passes four arguments (five
+in the case of ~denote-text-front-matter~ as noted in its doc string)
+which include the values of the given entries.  The doc string of
+~denote-org-front-matter~ describes the technicalities:
+
+#+begin_quote
+The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you are an
+advanced user who wants to edit this variable to affect how front matter
+is produced, consider using something like %2$s to control where Nth
+argument is placed.
+
+Make sure to:
+
+1. Not use empty lines inside the front matter block.
+
+2. Insert at least one empty line after the front matter block and do
+   not use any empty line before it.
+
+These help with consistency and might prove useful if we ever need to
+operate on the front matter as a whole.
+#+end_quote
+
+With those granted, below are some examples.  The approach is the same
+for all variables.
+
+#+begin_src emacs-lisp
+;; Change the order
+(setq denote-yaml-front-matter
+  "---
+title:      %1$S
+tags:       %3$s
+date:       %2$s
+identifier: %4$S
+---\n\n")
+
+;; Remove the date
+(setq denote-yaml-front-matter
+  "---
+title:      %1$S
+tags:       %3$s
+identifier: %4$S
+---\n\n")
+
+;; Remove the date and the identifier
+(setq denote-yaml-front-matter
+  "---
+title:      %1$S
+tags:       %3$s
+---\n\n")
+#+end_src
+
+Note that ~setq~ has a global effect: it affects the creation of all new
+notes.  Depending on the workflow, it may be preferrable to have a
+custom command which ~let~ binds the different format.  We shall not
+provide examples at this point as this is a more advanced feature and we
+are not yet sure what the user's needs are.  Please provide feedback and
+we shall act accordingly.
+
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
