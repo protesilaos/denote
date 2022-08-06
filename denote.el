@@ -1175,24 +1175,24 @@ appropriate."
              (new-title title)
              (new-keywords (denote--format-front-matter-keywords
                             keywords (denote--filetype-heuristics file))))
-      (with-current-buffer (find-file-noselect file)
-        (when (y-or-n-p (format
-                         "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
-                         (propertize old-title 'face 'error)
-                         (propertize new-title 'face 'success)
-                         (propertize old-keywords 'face 'error)
-                         (propertize new-keywords 'face 'success)))
-          (save-excursion
-            (save-restriction
-              (widen)
-              (goto-char (point-min))
-              (re-search-forward denote--retrieve-title-front-matter-key-regexp nil t 1)
-              (search-forward old-title nil t 1)
-              (replace-match (concat "\\1" new-title) t)
-              (goto-char (point-min))
-              (re-search-forward denote--retrieve-keywords-front-matter-key-regexp nil t 1)
-              (search-forward old-keywords nil t 1)
-              (replace-match (concat "\\1" new-keywords) t)))))))
+    (with-current-buffer (find-file-noselect file)
+      (when (y-or-n-p (format
+                       "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
+                       (propertize old-title 'face 'error)
+                       (propertize new-title 'face 'success)
+                       (propertize old-keywords 'face 'error)
+                       (propertize new-keywords 'face 'success)))
+        (save-excursion
+          (save-restriction
+            (widen)
+            (goto-char (point-min))
+            (re-search-forward denote--retrieve-title-front-matter-key-regexp nil t 1)
+            (search-forward old-title nil t 1)
+            (replace-match (concat "\\1" new-title) t)
+            (goto-char (point-min))
+            (re-search-forward denote--retrieve-keywords-front-matter-key-regexp nil t 1)
+            (search-forward old-keywords nil t 1)
+            (replace-match (concat "\\1" new-keywords) t)))))))
 
 (make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
