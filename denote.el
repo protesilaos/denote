@@ -130,6 +130,7 @@ the function `denote-directory' instead: it returns the path as a
 directory and also checks if a safe local value should be used."
   :group 'denote
   :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
+  :package-version '(denote . "0.1.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
@@ -139,6 +140,7 @@ directory and also checks if a safe local value should be used."
 Also see user options: `denote-allow-multi-word-keywords',
 `denote-infer-keywords', `denote-sort-keywords'."
   :group 'denote
+  :package-version '(denote . "0.1.0")
   :type '(repeat string))
 
 (defcustom denote-infer-keywords t
@@ -163,6 +165,7 @@ are specific to the given silo.
 For advanced Lisp usage, the function `denote-keywords' returns
 the appropriate list of strings."
   :group 'denote
+  :package-version '(denote . "0.1.0")
   :type 'boolean)
 
 (defconst denote--prompt-symbols
@@ -248,6 +251,7 @@ minibuffer prompt.
 
 If nil, show the keywords in their given order."
   :group 'denote
+  :package-version '(denote . "0.1.0")
   :type 'boolean)
 
 (defcustom denote-allow-multi-word-keywords t
@@ -262,6 +266,7 @@ When nil, do not allow keywords to consist of multiple words.
 Reduce them to a single word, such as by turning <word1_word2> or
 <word1 word2> into <word1word2>."
   :group 'denote
+  :package-version '(denote . "0.1.0")
   :type 'boolean)
 
 (defcustom denote-file-type nil
@@ -282,6 +287,7 @@ Any other non-nil value is the same as the default."
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
+  :package-version '(denote . "0.1.0")
   :group 'denote)
 
 (defcustom denote-date-format nil
@@ -304,6 +310,7 @@ are described in the doc string of `format-time-string'."
   :type '(choice
           (const :tag "Use appropiate format for each file type" nil)
           (string :tag "Custom format for `format-time-string'"))
+  :package-version '(denote . "0.2.0")
   :group 'denote)
 
 ;;;; Main variables
@@ -1587,6 +1594,7 @@ and seconds."
         (expand-file-name "~/Documents/vlog"))
   "List of directories where `denote-dired-mode' should apply to."
   :type '(repeat directory)
+  :package-version '(denote . "0.1.0")
   :group 'denote-dired)
 
 ;;;###autoload
@@ -1626,6 +1634,7 @@ Add this function to `dired-mode-hook'."
 (defcustom denote-link-fontify-backlinks t
   "When non-nil, apply faces to files in the backlinks' buffer."
   :type 'boolean
+  :package-version '(denote . "0.1.0")
   :group 'denote-link)
 
 (defcustom denote-link-backlinks-display-buffer-action
@@ -1653,6 +1662,7 @@ and/or the documentation string of `display-buffer'."
   :type '(cons (choice (function :tag "Display Function")
                        (repeat :tag "Display Functions" function))
                alist)
+  :package-version '(denote . "0.1.0")
   :group 'denote-link)
 
 ;;;;; Link to note
@@ -2113,6 +2123,7 @@ The string can include arbitrary text.  It is appended to new
 notes via the `denote-org-capture' function.  Every new note has
 the standard front matter we define."
   :type 'string
+  :package-version '(denote . "0.1.0")
   :group 'denote-org-capture)
 
 ;;;###autoload
