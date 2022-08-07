@@ -371,12 +371,6 @@ This variable is for advanced users who need to extend the
 understanding of what we should be omitting, we will update
 things accordingly.")
 
-(defvar denote-last-path nil "Store last path.")
-(defvar denote-last-title nil "Store last title.")
-(defvar denote-last-keywords nil "Store last keywords.")
-(defvar denote-last-buffer nil "Store last buffer.")
-(defvar denote-last-front-matter nil "Store last front-matter.")
-
 ;;;; File helper functions
 
 (defun denote--completion-table (category candidates)
@@ -540,10 +534,9 @@ In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
 output is sorted with `string-lessp'."
   (let ((choice (denote--keywords-crm (denote-keywords))))
-    (setq denote-last-keywords
-          (if denote-sort-keywords
-              (sort choice #'string-lessp)
-            choice))))
+    (if denote-sort-keywords
+        (sort choice #'string-lessp)
+      choice)))
 
 (defun denote--keywords-combine (keywords)
   "Format KEYWORDS output of `denote--keywords-prompt'."
@@ -792,13 +785,12 @@ else that variable is used."
   "Return path to new file with TITLE and KEYWORDS.
 With optional DIR, use it instead of variable `denote-directory'.
 With optional ID, use it else format the current time."
-  (setq denote-last-path
-        (denote--format-file
-         (or dir (file-name-as-directory (denote-directory)))
-         (or id (format-time-string denote--id-format))
-         (denote--sluggify-keywords keywords)
-         (denote--sluggify title)
-         (denote--file-extension))))
+  (denote--format-file
+   (or dir (file-name-as-directory (denote-directory)))
+   (or id (format-time-string denote--id-format))
+   (denote--sluggify-keywords keywords)
+   (denote--sluggify title)
+   (denote--file-extension)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -849,9 +841,7 @@ and TEMPLATE should be valid for note creation."
                   file-type)))
     (with-current-buffer buffer
       (insert header)
-      (when template (insert template)))
-    (setq denote-last-buffer buffer)
-    (setq denote-last-front-matter header)))
+      (when template (insert template)))))
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
@@ -999,8 +989,7 @@ Optional DEFAULT-TITLE is used as the default value."
   (let ((format (if default-title
                     (format "File title [%s]: " default-title)
                   "File title: ")))
-    (setq denote-last-title
-          (read-string format nil 'denote--title-history default-title))))
+    (read-string format nil 'denote--title-history default-title)))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote--file-type-prompt'.")
@@ -2193,6 +2182,12 @@ the standard front matter we define."
   :package-version '(denote . "0.1.0")
   :group 'denote-org-capture)
 
+(defvar denote-last-path nil "Store last path.")
+(make-obsolete-variable 'denote-last-title nil "0.5.0")
+(make-obsolete-variable 'denote-last-keywords nil "0.5.0")
+(make-obsolete-variable 'denote-last-buffer nil "0.5.0")
+(make-obsolete-variable 'denote-last-front-matter nil "0.5.0")
+
 ;;;###autoload
 (defun denote-org-capture ()
   "Create new note through `org-capture-templates'.
@@ -2208,15 +2203,15 @@ output of the `denote-org-capture-specifiers' (which can include
 arbitrary text).
 
 Consult the manual for template samples."
-  (let ((title (denote--title-prompt))
-        (keywords (denote--keywords-prompt))
-        (denote-file-type nil)) ; we enforce the .org extension for `org-capture'
-    (denote--path title keywords)
-    (setq denote-last-front-matter (denote--format-front-matter
-                                    title (denote--date nil) keywords
-                                    (format-time-string denote--id-format nil)))
-    (denote--keywords-add-to-history denote-last-keywords)
-    (concat denote-last-front-matter denote-org-capture-specifiers)))
+  (let* ((title (denote--title-prompt))
+         (keywords (denote--keywords-prompt))
+         (denote-file-type nil) ; we enforce the .org extension for `org-capture'
+         (front-matter (denote--format-front-matter
+                        title (denote--date nil) keywords
+                        (format-time-string denote--id-format nil))))
+    (setq denote-last-path (denote--path title keywords))
+    (denote--keywords-add-to-history keywords)
+    (concat front-matter denote-org-capture-specifiers)))
 
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
