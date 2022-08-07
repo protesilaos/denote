@@ -987,7 +987,7 @@ here for clarity."
    nil 'denote--date-history))
 
 (defvar denote--subdir-history nil
-  "Minibuffer history of `denote-subdirectory'.")
+  "Minibuffer history of `denote--subdirs-prompt'.")
 
 (defun denote--subdirs-completion-table (dirs)
   "Match DIRS as a completion table."
