@@ -1045,8 +1045,8 @@ is set to \\='(date title keywords)."
 Available candidates include the value of the variable
 `denote-directory' and any subdirectory thereof.
 
-This is equivalent to calling `denote' when `denote-prompts' is set to
-\\='(subdirectory title keywords)."
+This is equivalent to calling `denote' when `denote-prompts' is
+set to \\='(subdirectory title keywords)."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(subdirectory title keywords)))
