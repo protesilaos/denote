@@ -133,11 +133,14 @@ Obligations, Tasks, and Engagements.
 #+findex: denote-org-capture
 #+findex: denote-date
 #+findex: denote-subdirectory
+#+findex: denote-template
 There are five ways to write a note with Denote: invoke the ~denote~,
-~denote-type~, ~denote-date~, ~denote-subdirectory~ commands, or
-leverage the ~org-capture-templates~ by setting up a template which
-calls the function ~denote-org-capture~.  We explain all of those in the
-subsequent sections.
+~denote-type~, ~denote-date~, ~denote-subdirectory~, ~denote-template~
+commands, or leverage the ~org-capture-templates~ by setting up a
+template which calls the function ~denote-org-capture~.  We explain all
+of those in the subsequent sections.
+
+[ The ~denote-template~ is part of {{{development-version}}} ]
 
 ** Standard note creation
 :PROPERTIES:
@@ -212,6 +215,12 @@ The value is a list of symbols, which includes any of the following:
   like 2022-06-16 or a date plus time: 2022-06-16 14:30.  Without the
   =date= prompt, the ~denote~ command uses the ~current-time~.
 
+- =template=: Prompts for a KEY among the ~denote-templates~.  The value
+  of that KEY is used to populate the new note with content, which is
+  added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
+
+  [ The =template= is part of {{{development-version}}} ]
+
 The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.  The
@@ -239,6 +248,73 @@ interactive actions that do not change the default behaviour of the
 ~denote~ command, users can invoke these convenience commands:
 ~denote-type~, ~denote-subdirectory~, ~denote-date~.  They are described
 in the subsequent section ([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
+
+*** The ~denote-templates~ option
+:PROPERTIES:
+:CUSTOM_ID: h:f635a490-d29e-4608-9372-7bd13b34d56c
+:END:
+
+[ Part of {{{development-version}}} ]
+
+#+vindex: denote-templates
+The user option ~denote-templates~ is an alist of content templates for
+new notes.  A template is arbitrary text that Denote will add to a newly
+created note right below the front matter.
+
+Templates are expressed as a =(KEY . STRING)= association.
+
+- The =KEY= is the name which identifies the template.  It is an
+  arbitrary symbol, such as =report=, =memo=, =statement=.
+
+- The =STRING= is ordinary text that Denote will insert as-is.  It can
+  contain newline characters to add spacing.  Below we show some
+  concrete examples.
+
+The user can choose a template either by invoking the command
+~denote-template~ or by changing the user option ~denote-prompts~ to
+always prompt for a template when calling the ~denote~ command.
+
+[[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]].
+
+[[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]].
+
+Templates can be written directly as one large string.  For example (the
+=\n= character is read as a newline):
+
+#+begin_src emacs-lisp
+(setq denote-templates
+      '((report . "* Some heading\n\n* Another heading")
+        (memo . "* Some heading
+
+,* Another heading
+
+")))
+#+end_src
+
+Long strings may be easier to type but interpret indentation literally.
+Also, they do not scale well.  A better way is to use some Elisp code to
+construct the string.  This would typically be the ~concat~ function,
+which joins multiple strings into one.  The following is the same as the
+previous example:
+
+#+begin_src emacs-lisp
+(setq denote-templates
+      `((report . "* Some heading\n\n* Another heading")
+        (memo . ,(concat "* Some heading"
+                         "\n\n"
+                         "* Another heading"
+                         "\n\n"))))
+#+end_src
+
+Notice that to evaluate a function inside of an alist we use the
+backtick to quote the alist (NOT the straight quote) and then prepend a
+comma to the expression that should be evaluated.  The ~concat~ form
+here is not sensitive to indentation, so it is easier to adjust for
+legibility.
+
+DEV NOTE: We do not provide more examples at this point, though feel
+welcome to ask for help if the information provided herein is not
+sufficient.  We shall expand the manual accordingly.
 
 *** Convenience commands for note creation
 :PROPERTIES:
@@ -291,6 +367,20 @@ commands for note creation:
   #+findex: denote-create-note-in-subdirectory
   The ~denote-create-note-in-subdirectory~ is a more descriptive alias
   of ~denote-subdirectory~.
+
+  [ Templates are part of {{{development-version}}} ]
+
++ Create note and add a template :: The ~denote-template~ command
+  creates a new note and inserts the specified template below the front
+  matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).  Available candidates for
+  templates are specified in the user option ~denote-templates~.
+
+  This is equivalent to calling ~denote~ when ~denote-prompts~ is
+  set to ='(template title keywords)=.
+
+  #+findex: denote-create-note-with-template
+  The ~denote-create-note-with-template~ is an alias of the command
+  ~denote-template~, meant to help with discoverability.
 
 ** Create note using Org capture
 :PROPERTIES:
@@ -1673,6 +1763,10 @@ Everything is in place to set up the package.
 (setq denote-file-type nil) ; Org is the default, set others here
 (setq denote-prompts '(title keywords))
 
+;; Read this manual for how to specify `denote-templates'.  We do not
+;; include an example here to avoid potential confusion.
+
+
 ;; We allow multi-word keywords by default.  The author's personal
 ;; preference is for single-word keywords for a more rigid workflow.
 (setq denote-allow-multi-word-keywords t)
@@ -1719,6 +1813,7 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n N") #'denote-type)
   (define-key map (kbd "C-c n d") #'denote-date)
   (define-key map (kbd "C-c n s") #'denote-subdirectory)
+  (define-key map (kbd "C-c n t") #'denote-template)
   ;; If you intend to use Denote with a variety of file types, it is
   ;; easier to bind the link-related commands to the `global-map', as
   ;; shown here.  Otherwise follow the same pattern for `org-mode-map',

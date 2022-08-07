@@ -204,6 +204,10 @@ The value is a list of symbols, which includes any of the following:
   Without the `date' prompt, the `denote' command uses the
   `current-time'.
 
+- `template': Prompts for a KEY among `denote-templates'.  The
+  value of that KEY is used to populate the new note with
+  content, which is added after the front matter.
+
 The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.
@@ -233,6 +237,7 @@ behaviour of the `denote' command, users can invoke these
 convenience commands: `denote-type', `denote-subdirectory',
 `denote-date'."
   :group 'denote
+  :package-version '(denote . "0.5.0")
   :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
@@ -240,7 +245,8 @@ convenience commands: `denote-type', `denote-subdirectory',
                      (const :tag "Keywords" keywords)
                      (const :tag "Date" date)
                      (const :tag "File type extension" file-type)
-                     (const :tag "Subdirectory" subdirectory))))
+                     (const :tag "Subdirectory" subdirectory)
+                     (const :tag "Template" template))))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
@@ -311,6 +317,29 @@ are described in the doc string of `format-time-string'."
           (const :tag "Use appropiate format for each file type" nil)
           (string :tag "Custom format for `format-time-string'"))
   :package-version '(denote . "0.2.0")
+  :group 'denote)
+
+(defcustom denote-templates nil
+  "Alist of content templates for new notes.
+A template is arbitrary text that Denote will add to a newly
+created note right below the front matter.
+
+Templates are expressed as a (KEY . STRING) association.
+
+- The KEY is the name which identifies the template.  It is an
+  arbitrary symbol, such as `report', `memo', `statement'.
+
+- The STRING is ordinary text that Denote will insert as-is.  It
+  can contain newline characters to add spacing.  The manual of
+  Denote contains examples on how to use the `concat' function,
+  beside writing a generic string.
+
+The user can choose a template either by invoking the command
+`denote-template' or by changing the user option `denote-prompts'
+to always prompt for a template when calling the `denote'
+command."
+  :type '(alist :key-type symbol :value-type string)
+  :package-version '(denote . "0.5.0")
   :group 'denote)
 
 ;;;; Main variables
@@ -906,7 +935,7 @@ where the former does not read dates without a time component."
 ;;;;; The `denote' command and its prompts
 
 ;;;###autoload
-(defun denote (&optional title keywords file-type subdirectory date)
+(defun denote (&optional title keywords file-type subdirectory date template)
   "Create a new note with the appropriate metadata and file name.
 
 When called interactively, the metadata and file name are prompted
@@ -929,16 +958,21 @@ When called from Lisp, all arguments are optional.
 
 - DATE is a string representing a date like 2022-06-30 or a date
   and time like 2022-06-16 14:30.  A nil value or an empty string
-  is interpreted as the `current-time'."
+  is interpreted as the `current-time'.
+
+- TEMPLATE is a symbol which represents the key of a cons cell in
+  the user option `denote-template'.  The value of that key is
+  inserted to the newly created buffer after the front matter."
   (interactive
-   (let ((args (make-vector 5 nil)))
+   (let ((args (make-vector 6 nil)))
      (dolist (prompt denote-prompts)
        (pcase prompt
          ('title (aset args 0 (denote--title-prompt)))
          ('keywords (aset args 1 (denote--keywords-prompt)))
          ('file-type (aset args 2 (denote--file-type-prompt)))
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
-         ('date (aset args 4 (denote--date-prompt)))))
+         ('date (aset args 4 (denote--date-prompt)))
+         ('template (aset args 5 (denote--template-prompt)))))
      (append args nil)))
   (let* ((file-type (denote--file-type-symbol (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
@@ -947,9 +981,14 @@ When called from Lisp, all arguments are optional.
          (id (format-time-string denote--id-format date))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
-                      (denote-directory))))
+                      (denote-directory)))
+         (template (if (stringp template) template (alist-get template denote-templates))))
     (denote--barf-duplicate-id id)
     (denote--prepare-note (or title "") keywords date id directory file-type)
+    (when template
+      (with-current-buffer (get-file-buffer denote-last-path)
+        (goto-char (point-max))
+        (insert template)))
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil
@@ -1005,6 +1044,19 @@ here for clarity."
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
 
+(defvar denote--template-history nil
+  "Minibuffer history of `denote--template-prompt'.")
+
+(defun denote--template-prompt ()
+  "Prompt for template KEY from `denote-templates'."
+  (let ((templates denote-templates))
+    (alist-get
+     (intern
+      (completing-read
+       "Select template KEY: " (mapcar #'car templates)
+       nil t nil 'denote--template-history))
+     templates)))
+
 ;;;;; Convenience commands as `denote' variants
 
 (defalias 'denote-create-note (symbol-function 'denote))
@@ -1053,6 +1105,23 @@ set to \\='(subdirectory title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-in-subdirectory (symbol-function 'denote-subdirectory))
+
+;;;###autoload
+(defun denote-template ()
+  "Create note while prompting for a template.
+
+Available candidates include the keys in the `denote-templates'
+alist.  The value of the selected key is inserted in the newly
+created note after the front matter.
+
+This is equivalent to calling `denote' when `denote-prompts' is
+set to \\='(template title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(template title keywords)))
+    (call-interactively #'denote)))
+
+(defalias 'denote-create-note-with-template (symbol-function 'denote-template))
 
 ;;;; Note modification
 
