@@ -834,11 +834,11 @@ With optional DATE, use it else use the current one."
      (t
       (denote--date-org-timestamp date)))))
 
-(defun denote--prepare-note (title keywords date id directory file-type)
+(defun denote--prepare-note (title keywords date id directory file-type template)
   "Prepare a new note file.
 
-Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, and FILE-TYPE
-should be valid for note creation."
+Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
+and TEMPLATE should be valid for note creation."
   (let* ((default-directory directory)
          (denote-file-type file-type)
          (path (denote--path title keywords default-directory id))
@@ -847,7 +847,9 @@ should be valid for note creation."
                   title (denote--date date) keywords
                   (format-time-string denote--id-format date)
                   file-type)))
-    (with-current-buffer buffer (insert header))
+    (with-current-buffer buffer
+      (insert header)
+      (when template (insert template)))
     (setq denote-last-buffer buffer)
     (setq denote-last-front-matter header)))
 
@@ -961,7 +963,7 @@ When called from Lisp, all arguments are optional.
   is interpreted as the `current-time'.
 
 - TEMPLATE is a symbol which represents the key of a cons cell in
-  the user option `denote-template'.  The value of that key is
+  the user option `denote-templates'.  The value of that key is
   inserted to the newly created buffer after the front matter."
   (interactive
    (let ((args (make-vector 6 nil)))
@@ -984,11 +986,7 @@ When called from Lisp, all arguments are optional.
                       (denote-directory)))
          (template (if (stringp template) template (alist-get template denote-templates))))
     (denote--barf-duplicate-id id)
-    (denote--prepare-note (or title "") keywords date id directory file-type)
-    (when template
-      (with-current-buffer (get-file-buffer denote-last-path)
-        (goto-char (point-max))
-        (insert template)))
+    (denote--prepare-note (or title "") keywords date id directory file-type template)
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil
