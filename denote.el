@@ -1961,9 +1961,6 @@ default, it will show up below the current window."
 
 ;;;;; Add links matching regexp
 
-(defvar denote-link--links-to-files nil
-  "String of `denote-link-add-links-matching-keyword'.")
-
 (defvar denote-link--prepare-links-format "- %s\n"
   "Format specifiers for `denote-link-add-links'.")
 
@@ -1976,18 +1973,17 @@ default, it will show up below the current window."
   "Prepare links to FILES from CURRENT-FILE.
 When ID-ONLY is non-nil, use a generic link format.  See
 `denote-link--file-type-format'."
-  (setq denote-link--links-to-files
-        (with-temp-buffer
-          (mapc (lambda (file)
-                  (insert
-                   (format
-                    denote-link--prepare-links-format
-                    (denote-link--format-link
-                     file
-                     (denote-link--file-type-format current-file id-only)))))
-                files)
-          (sort-lines denote-link-add-links-sort (point-min) (point-max))
-          (buffer-string))))
+  (with-temp-buffer
+    (mapc (lambda (file)
+            (insert
+             (format
+              denote-link--prepare-links-format
+              (denote-link--format-link
+               file
+               (denote-link--file-type-format current-file id-only)))))
+          files)
+    (sort-lines denote-link-add-links-sort (point-min) (point-max))
+    (buffer-string)))
 
 (defvar denote-link--add-links-history nil
   "Minibuffer history for `denote-link-add-links'.")
