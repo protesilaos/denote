@@ -895,11 +895,10 @@ where the former does not read dates without a time component."
 ;; notes within fractions of a second).
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
-  (or (seq-some (lambda (file)
-                  (string-match-p (concat "\\`" identifier) file))
-                (denote--buffer-file-names))
-      (denote--directory-files-matching-regexp
-       (concat "\\`" identifier))))
+  (seq-some (lambda (file)
+              (string-prefix-p identifier (file-name-nondirectory file)))
+            (concat (denote--directory-files :absolute)
+                    (denote--buffer-file-names))))
 
 (defun denote--barf-duplicate-id (identifier)
   "Throw a user-error if IDENTIFIER already exists."
