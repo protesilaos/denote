@@ -868,16 +868,13 @@ where the former does not read dates without a time component."
 
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
-  (mapcar
-   (lambda (name)
-     (file-name-nondirectory name))
-   (seq-filter
-    (lambda (name) (denote--only-note-p name))
-    (delq nil
-          (mapcar
-           (lambda (buf)
-             (buffer-file-name buf))
-           (buffer-list))))))
+  (seq-filter
+   (lambda (name) (denote--only-note-p name))
+   (delq nil
+         (mapcar
+          (lambda (buf)
+            (buffer-file-name buf))
+          (buffer-list)))))
 
 ;; This should only be relevant for `denote-date', otherwise the
 ;; identifier is always unique (we trust that no-one writes multiple
@@ -2005,10 +2002,13 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (completing-read
-   "Select note buffer: "
-   (denote--completion-table 'buffer buffers)
-   nil t))
+  (let ((buffer-file-names (mapcar
+                            (lambda (name) (file-name-nondirectory name))
+                            buffers)))
+    (completing-read
+     "Select note buffer: "
+     (denote--completion-table 'buffer buffer-file-names)
+     nil t)))
 
 (declare-function dired-get-marked-files "dired" (&optional localp arg filter distinguish-one-marked error))
 
@@ -2043,15 +2043,15 @@ This command is meant to be used from a Dired buffer."
   (interactive
    (list
     (denote-link--map-over-notes)
-    (let ((buffers (denote--buffer-file-names)))
-      (get-buffer
+    (let ((file-names (denote--buffer-file-names)))
+      (find-file
        (cond
-        ((null buffers)
+        ((null file-names)
          (user-error "No buffers visiting Denote notes"))
-        ((eq (length buffers) 1)
-         (car buffers))
+        ((eq (length file-names) 1)
+         (car file-names))
         (t
-         (denote-link--buffer-prompt buffers)))))
+         (denote-link--buffer-prompt file-names)))))
     current-prefix-arg)
    dired-mode)
   (if (null files)
