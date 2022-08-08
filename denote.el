@@ -454,32 +454,21 @@ FILE must be an absolute path."
            (string-match-p denote--id-regexp (buffer-name)))
        (string-prefix-p (denote-directory) (expand-file-name default-directory))))
 
-(defun denote--directory-files-recursively (directory)
-  "Return expanded files in DIRECTORY recursively."
+(defun denote--directory-files ()
+  "List expanded note files."
   (mapcar
    (lambda (s) (expand-file-name s))
    (seq-remove
     (lambda (f)
       (not (denote--only-note-p f)))
-    (directory-files-recursively directory directory-files-no-dot-files-regexp t))))
-
-(defun denote--directory-files (&optional absolute)
-  "List note files.
-If optional ABSOLUTE, show full paths, else only show base file
-names that are relative to the variable `denote-directory'."
-  (let ((files (denote--directory-files-recursively (denote-directory))))
-    (if absolute
-        files
-      (mapcar
-       (lambda (s) (denote--file-name-relative-to-denote-directory s))
-       files))))
+    (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
 (defun denote--get-note-path-by-id (id)
   "Return the absolute path of ID note in variable `denote-directory'."
   (seq-find
    (lambda (f)
      (string-prefix-p id (file-name-nondirectory f)))
-   (denote--directory-files :absolute)))
+   (denote--directory-files)))
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP.
@@ -489,7 +478,7 @@ variable `denote-directory'."
    (lambda (f)
      (and (denote--only-note-p f)
           (string-match-p regexp (denote--file-name-relative-to-denote-directory f))))
-   (denote--directory-files :absolute)))
+   (denote--directory-files)))
 
 ;;;; Keywords
 
@@ -620,7 +609,7 @@ If optional KEY is non-nil, return the key instead."
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
   (xref--alistify
-   (xref-matches-in-files identifier (denote--directory-files :absolute))
+   (xref-matches-in-files identifier (denote--directory-files))
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
@@ -897,7 +886,7 @@ where the former does not read dates without a time component."
   "Return non-nil if IDENTIFIER already exists."
   (seq-some (lambda (file)
               (string-prefix-p identifier (file-name-nondirectory file)))
-            (concat (denote--directory-files :absolute)
+            (concat (denote--directory-files)
                     (denote--buffer-file-names))))
 
 (defun denote--barf-duplicate-id (identifier)
@@ -1805,10 +1794,13 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (completing-read "Find linked file "
-                   (denote--completion-table 'file files)
-                   nil t
-                   nil 'denote-link--find-file-history))
+  (let ((file-names (mapcar
+                     (lambda (f) (denote--file-name-relative-to-denote-directory f))
+                     files)))
+    (completing-read "Find linked file "
+                     (denote--completion-table 'file file-names)
+                     nil t
+                     nil 'denote-link--find-file-history)))
 
 ;; TODO 2022-06-14: Do we need to add any sort of extension to better
 ;; integrate with Embark?  For the minibuffer interaction it is not
