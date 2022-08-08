@@ -467,8 +467,7 @@ FILE must be an absolute path."
   "List note files.
 If optional ABSOLUTE, show full paths, else only show base file
 names that are relative to the variable `denote-directory'."
-  (let* ((default-directory (denote-directory))
-         (files (denote--directory-files-recursively default-directory)))
+  (let ((files (denote--directory-files-recursively (denote-directory))))
     (if absolute
         files
       (mapcar
@@ -636,8 +635,7 @@ Parse `denote--retrieve-xrefs'."
 
 (defun denote--retrieve-proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (let* ((default-directory (denote-directory))
-         (file (denote--file-name-relative-to-denote-directory (buffer-file-name))))
+  (let ((file (denote--file-name-relative-to-denote-directory (buffer-file-name))))
     (denote--retrieve-files-in-output
      (delete file (denote--retrieve-files-in-xrefs
                    (denote--retrieve-xrefs identifier))))))
@@ -831,9 +829,8 @@ With optional DATE, use it else use the current one."
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 and TEMPLATE should be valid for note creation."
-  (let* ((default-directory directory)
-         (denote-file-type file-type)
-         (path (denote--path title keywords default-directory id))
+  (let* ((denote-file-type file-type)
+         (path (denote--path title keywords directory id))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date) keywords
@@ -1200,7 +1197,7 @@ variable `denote-directory'."
          (not (denote--file-empty-p file))
          (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
          ;; Heuristic to check if this is one of our notes
-         (string-prefix-p (denote-directory) (expand-file-name default-directory))
+         (string-prefix-p (denote-directory) (expand-file-name file))
          (denote--file-match-p denote--retrieve-title-front-matter-key-regexp file)
          (denote--file-match-p denote--retrieve-keywords-front-matter-key-regexp file))))
 
@@ -1953,8 +1950,7 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (let* ((default-directory (denote-directory))
-         (file (buffer-file-name))
+  (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (title (denote--retrieve-value-title file)))
     (if-let ((files (denote--retrieve-proces-grep id)))
@@ -2009,8 +2005,7 @@ inserts links with just the identifier."
    (list
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
-  (let* ((default-directory (denote-directory))
-         (current-file (buffer-file-name)))
+  (let ((current-file (buffer-file-name)))
     (if-let ((files (denote--directory-files-matching-regexp regexp)))
         (let ((beg (point)))
           (insert (denote-link--prepare-links files current-file id-only))
