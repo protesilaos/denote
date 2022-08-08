@@ -895,13 +895,9 @@ where the former does not read dates without a time component."
   "Return list of subdirectories in variable `denote-directory'."
   (seq-remove
    (lambda (filename)
-     ;; TODO 2022-07-03: Generalise for all VC backends.  Which ones?
-     ;;
-     ;; TODO 2022-07-03: Maybe it makes sense to also allow the user to
-     ;; specify a blocklist of directories that should always be
-     ;; excluded?
-     (or (string-match-p "\\.git" filename)
-         (not (file-directory-p filename))))
+     (or (not (file-directory-p filename))
+         (string-match-p "\\`\\." (denote--file-name-relative-to-denote-directory filename))
+         (string-match-p "/\\." (denote--file-name-relative-to-denote-directory filename))))
    (directory-files-recursively (denote-directory) ".*" t t)))
 
 ;;;;; The `denote' command and its prompts
