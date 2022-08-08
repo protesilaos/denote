@@ -894,14 +894,11 @@ where the former does not read dates without a time component."
 ;; notes within fractions of a second).
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
-  (let ((current-buffer-name (when (buffer-file-name)
-                               (file-name-nondirectory (buffer-file-name)))))
-    (or (seq-some (lambda (file)
-                    (string-match-p (concat "\\`" identifier) file))
-                  (delete current-buffer-name (denote--buffer-file-names)))
-        (delete current-buffer-name
-                (denote--directory-files-matching-regexp
-                 (concat "\\`" identifier))))))
+  (or (seq-some (lambda (file)
+                  (string-match-p (concat "\\`" identifier) file))
+                (denote--buffer-file-names))
+      (denote--directory-files-matching-regexp
+       (concat "\\`" identifier))))
 
 (defun denote--barf-duplicate-id (identifier)
   "Throw a user-error if IDENTIFIER already exists."
@@ -2002,7 +1999,7 @@ inserts links with just the identifier."
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
   (let ((current-file (buffer-file-name)))
-    (if-let ((files (denote--directory-files-matching-regexp regexp)))
+    (if-let ((files (delete current-file (denote--directory-files-matching-regexp regexp))))
         (let ((beg (point)))
           (insert (denote-link--prepare-links files current-file id-only))
           (unless (derived-mode-p 'org-mode)
