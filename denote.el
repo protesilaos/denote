@@ -879,7 +879,7 @@ where the former does not read dates without a time component."
   "Return non-nil if IDENTIFIER already exists."
   (seq-some (lambda (file)
               (string-prefix-p identifier (file-name-nondirectory file)))
-            (concat (denote--directory-files)
+            (append (denote--directory-files)
                     (denote--buffer-file-names))))
 
 (defun denote--barf-duplicate-id (identifier)
