@@ -621,7 +621,7 @@ Parse `denote--retrieve-xrefs'."
    (delete-dups (mapcar #'car xrefs))
    #'string-lessp))
 
-(defun denote--retrieve-proces-grep (identifier)
+(defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (denote--retrieve-files-in-output
    (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
@@ -1844,8 +1844,10 @@ format is always [[denote:IDENTIFIER]]."
 ;; NOTE 2022-06-15: I add this as a variable for advanced users who may
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
-(defvar denote-link-buton-action #'find-file-other-window
+(defvar denote-link-button-action #'find-file-other-window
   "Action for Denote buttons.")
+
+(make-obsolete-variable 'denote-link-buton-action 'denote-link-button-action "0.5.0")
 
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
@@ -1854,7 +1856,7 @@ format is always [[denote:IDENTIFIER]]."
                (button-start button)
                (button-end button))))
          (file (denote--get-note-path-by-id id)))
-    (funcall denote-link-buton-action file)))
+    (funcall denote-link-button-action file)))
 
 ;;;###autoload
 (defun denote-link-buttonize-buffer (&optional beg end)
@@ -1886,7 +1888,7 @@ positions, limit the process to the region in-between."
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
-  (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
+  (funcall denote-link-button-action (buffer-substring (button-start button) (button-end button))))
 
 (defun denote-link--display-buffer (buf)
   "Run `display-buffer' on BUF.
@@ -1943,7 +1945,7 @@ default, it will show up below the current window."
   (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (title (denote--retrieve-value-title file)))
-    (if-let ((files (denote--retrieve-proces-grep id)))
+    (if-let ((files (denote--retrieve-process-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
 
