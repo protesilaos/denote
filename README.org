@@ -2302,6 +2302,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
 
+Special thanks to Jean-Philippe Gagné Guay for the numerous
+contributions to the code base.
+
 * GNU Free Documentation License
 :PROPERTIES:
 :APPENDIX: t
