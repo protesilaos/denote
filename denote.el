@@ -454,41 +454,30 @@ FILE must be an absolute path."
            (string-match-p denote--id-regexp (buffer-name)))
        (string-prefix-p (denote-directory) (expand-file-name default-directory))))
 
-(defun denote--directory-files-recursively (directory)
-  "Return expanded files in DIRECTORY recursively."
+(defun denote--directory-files ()
+  "List expanded note files."
   (mapcar
    (lambda (s) (expand-file-name s))
    (seq-remove
     (lambda (f)
       (not (denote--only-note-p f)))
-    (directory-files-recursively directory directory-files-no-dot-files-regexp t))))
-
-(defun denote--directory-files (&optional absolute)
-  "List note files.
-If optional ABSOLUTE, show full paths, else only show base file
-names that are relative to the variable `denote-directory'."
-  (let* ((default-directory (denote-directory))
-         (files (denote--directory-files-recursively default-directory)))
-    (if absolute
-        files
-      (mapcar
-       (lambda (s) (denote--file-name-relative-to-denote-directory s))
-       files))))
+    (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
 (defun denote--get-note-path-by-id (id)
   "Return the absolute path of ID note in variable `denote-directory'."
   (seq-find
    (lambda (f)
      (string-prefix-p id (file-name-nondirectory f)))
-   (denote--directory-files :absolute)))
+   (denote--directory-files)))
 
 (defun denote--directory-files-matching-regexp (regexp)
-  "Return list of files matching REGEXP."
+  "Return list of files matching REGEXP.
+The match is performed against the file name relative to the
+variable `denote-directory'."
   (seq-filter
    (lambda (f)
      (and (denote--only-note-p f)
-          (string-match-p regexp f)
-          (not (string= (file-name-nondirectory (buffer-file-name)) f))))
+          (string-match-p regexp (denote--file-name-relative-to-denote-directory f))))
    (denote--directory-files)))
 
 ;;;; Keywords
@@ -620,7 +609,7 @@ If optional KEY is non-nil, return the key instead."
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
   (xref--alistify
-   (xref-matches-in-files identifier (denote--directory-files :absolute))
+   (xref-matches-in-files identifier (denote--directory-files))
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
@@ -628,19 +617,14 @@ The xrefs are returned as an alist."
   "Return sorted file names sans directory from XREFS.
 Parse `denote--retrieve-xrefs'."
   (sort
-   (delete-dups
-    (mapcar (lambda (x)
-              (denote--file-name-relative-to-denote-directory (car x)))
-            xrefs))
+   (delete-dups (mapcar #'car xrefs))
    #'string-lessp))
 
 (defun denote--retrieve-proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (let* ((default-directory (denote-directory))
-         (file (denote--file-name-relative-to-denote-directory (buffer-file-name))))
-    (denote--retrieve-files-in-output
-     (delete file (denote--retrieve-files-in-xrefs
-                   (denote--retrieve-xrefs identifier))))))
+  (denote--retrieve-files-in-output
+   (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
+                               (denote--retrieve-xrefs identifier)))))
 
 ;;;; New note
 
@@ -831,9 +815,8 @@ With optional DATE, use it else use the current one."
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 and TEMPLATE should be valid for note creation."
-  (let* ((default-directory directory)
-         (denote-file-type file-type)
-         (path (denote--path title keywords default-directory id))
+  (let* ((denote-file-type file-type)
+         (path (denote--path title keywords directory id))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date) keywords
@@ -881,30 +864,23 @@ where the former does not read dates without a time component."
 
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
-  (mapcar
-   (lambda (name)
-     (file-name-nondirectory name))
-   (seq-filter
-    (lambda (name) (denote--only-note-p name))
-    (delq nil
-          (mapcar
-           (lambda (buf)
-             (buffer-file-name buf))
-           (buffer-list))))))
+  (seq-filter
+   (lambda (name) (denote--only-note-p name))
+   (delq nil
+         (mapcar
+          (lambda (buf)
+            (buffer-file-name buf))
+          (buffer-list)))))
 
 ;; This should only be relevant for `denote-date', otherwise the
 ;; identifier is always unique (we trust that no-one writes multiple
 ;; notes within fractions of a second).
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
-  (let ((current-buffer-name (when (buffer-file-name)
-                               (file-name-nondirectory (buffer-file-name)))))
-    (or (seq-some (lambda (file)
-                    (string-match-p (concat "\\`" identifier) file))
-                  (delete current-buffer-name (denote--buffer-file-names)))
-        (delete current-buffer-name
-                (denote--directory-files-matching-regexp
-                 (concat "\\`" identifier))))))
+  (seq-some (lambda (file)
+              (string-prefix-p identifier (file-name-nondirectory file)))
+            (concat (denote--directory-files)
+                    (denote--buffer-file-names))))
 
 (defun denote--barf-duplicate-id (identifier)
   "Throw a user-error if IDENTIFIER already exists."
@@ -915,13 +891,9 @@ where the former does not read dates without a time component."
   "Return list of subdirectories in variable `denote-directory'."
   (seq-remove
    (lambda (filename)
-     ;; TODO 2022-07-03: Generalise for all VC backends.  Which ones?
-     ;;
-     ;; TODO 2022-07-03: Maybe it makes sense to also allow the user to
-     ;; specify a blocklist of directories that should always be
-     ;; excluded?
-     (or (string-match-p "\\.git" filename)
-         (not (file-directory-p filename))))
+     (or (not (file-directory-p filename))
+         (string-match-p "\\`\\." (denote--file-name-relative-to-denote-directory filename))
+         (string-match-p "/\\." (denote--file-name-relative-to-denote-directory filename))))
    (directory-files-recursively (denote-directory) ".*" t t)))
 
 ;;;;; The `denote' command and its prompts
@@ -1200,7 +1172,7 @@ variable `denote-directory'."
          (not (denote--file-empty-p file))
          (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
          ;; Heuristic to check if this is one of our notes
-         (string-prefix-p (denote-directory) (expand-file-name default-directory))
+         (string-prefix-p (denote-directory) (expand-file-name file))
          (denote--file-match-p denote--retrieve-title-front-matter-key-regexp file)
          (denote--file-match-p denote--retrieve-keywords-front-matter-key-regexp file))))
 
@@ -1811,10 +1783,13 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (completing-read "Find linked file "
-                   (denote--completion-table 'file files)
-                   nil t
-                   nil 'denote-link--find-file-history))
+  (let ((file-names (mapcar
+                     (lambda (f) (denote--file-name-relative-to-denote-directory f))
+                     files)))
+    (completing-read "Find linked file "
+                     (denote--completion-table 'file file-names)
+                     nil t
+                     nil 'denote-link--find-file-history)))
 
 ;; TODO 2022-06-14: Do we need to add any sort of extension to better
 ;; integrate with Embark?  For the minibuffer interaction it is not
@@ -1925,6 +1900,7 @@ Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
         (buf (format "*denote-backlinks to %s*" id)))
     (with-current-buffer (get-buffer-create buf)
+      (setq-local default-directory (denote-directory))
       (erase-buffer)
       (special-mode)
       (goto-char (point-min))
@@ -1933,7 +1909,7 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
-              (insert f)
+              (insert (denote--file-name-relative-to-denote-directory f))
               (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
               (newline))
             files)
@@ -1953,8 +1929,7 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (let* ((default-directory (denote-directory))
-         (file (buffer-file-name))
+  (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (title (denote--retrieve-value-title file)))
     (if-let ((files (denote--retrieve-proces-grep id)))
@@ -1964,9 +1939,6 @@ default, it will show up below the current window."
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
 
 ;;;;; Add links matching regexp
-
-(defvar denote-link--links-to-files nil
-  "String of `denote-link-add-links-matching-keyword'.")
 
 (defvar denote-link--prepare-links-format "- %s\n"
   "Format specifiers for `denote-link-add-links'.")
@@ -1980,18 +1952,17 @@ default, it will show up below the current window."
   "Prepare links to FILES from CURRENT-FILE.
 When ID-ONLY is non-nil, use a generic link format.  See
 `denote-link--file-type-format'."
-  (setq denote-link--links-to-files
-        (with-temp-buffer
-          (mapc (lambda (file)
-                  (insert
-                   (format
-                    denote-link--prepare-links-format
-                    (denote-link--format-link
-                     file
-                     (denote-link--file-type-format current-file id-only)))))
-                files)
-          (sort-lines denote-link-add-links-sort (point-min) (point-max))
-          (buffer-string))))
+  (with-temp-buffer
+    (mapc (lambda (file)
+            (insert
+             (format
+              denote-link--prepare-links-format
+              (denote-link--format-link
+               file
+               (denote-link--file-type-format current-file id-only)))))
+          files)
+    (sort-lines denote-link-add-links-sort (point-min) (point-max))
+    (buffer-string)))
 
 (defvar denote-link--add-links-history nil
   "Minibuffer history for `denote-link-add-links'.")
@@ -2009,9 +1980,8 @@ inserts links with just the identifier."
    (list
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
-  (let* ((default-directory (denote-directory))
-         (current-file (buffer-file-name)))
-    (if-let ((files (denote--directory-files-matching-regexp regexp)))
+  (let ((current-file (buffer-file-name)))
+    (if-let ((files (delete current-file (denote--directory-files-matching-regexp regexp))))
         (let ((beg (point)))
           (insert (denote-link--prepare-links files current-file id-only))
           (unless (derived-mode-p 'org-mode)
@@ -2025,10 +1995,13 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (completing-read
-   "Select note buffer: "
-   (denote--completion-table 'buffer buffers)
-   nil t))
+  (let ((buffer-file-names (mapcar
+                            (lambda (name) (file-name-nondirectory name))
+                            buffers)))
+    (completing-read
+     "Select note buffer: "
+     (denote--completion-table 'buffer buffer-file-names)
+     nil t)))
 
 (declare-function dired-get-marked-files "dired" (&optional localp arg filter distinguish-one-marked error))
 
@@ -2063,15 +2036,15 @@ This command is meant to be used from a Dired buffer."
   (interactive
    (list
     (denote-link--map-over-notes)
-    (let ((buffers (denote--buffer-file-names)))
-      (get-buffer
+    (let ((file-names (denote--buffer-file-names)))
+      (find-file
        (cond
-        ((null buffers)
+        ((null file-names)
          (user-error "No buffers visiting Denote notes"))
-        ((eq (length buffers) 1)
-         (car buffers))
+        ((eq (length file-names) 1)
+         (car file-names))
         (t
-         (denote-link--buffer-prompt buffers)))))
+         (denote-link--buffer-prompt file-names)))))
     current-prefix-arg)
    dired-mode)
   (if (null files)
