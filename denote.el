@@ -655,35 +655,17 @@ which include the starting dot or the return value of
       (setq file-name (concat file-name "__" kws)))
     (concat file-name ext)))
 
-(defun denote--format-markdown-keywords (keywords)
-  "Quote, downcase, and comma-separate elements in KEYWORDS."
-  (format "[%s]" (mapconcat (lambda (k)
-                              (format "%S" (downcase k)))
-                            keywords ", ")))
-
-(defun denote--format-org-keywords (keywords)
-  "Quote, downcase, and colon-separate elements in KEYWORDS."
-  (format ":%s:" (mapconcat (lambda (k)
-                              (downcase k))
-                            keywords ":")))
-
-(defun denote--format-front-matter-keywords (keywords &optional type)
-  "Prepare KEYWORDS for inclusion in the file's front matter.
-Parse the output of `denote--keywords-prompt', using `downcase'
-on the keywords and separating them by two spaces.  A single
-keyword is just downcased.
-
-With optional TYPE, format the keywords accordingly (this might
-be `toml' or, in the future, some other spec that needss special
-treatment)."
-  (let ((kw (denote--sluggify-keywords keywords)))
+(defun denote--format-front-matter-keywords (keywords type)
+  "Format KEYWORDS according to TYPE for the file's front matter.
+Keywords are downcased."
+  (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
     (cond
      ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-      (denote--format-markdown-keywords kw))
+      (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) kw ", ")))
      ((eq type 'text)
-      (mapconcat #'downcase kw "  "))
-     (t
-      (denote--format-org-keywords kw)))))
+      (string-join kw "  "))
+     ((eq type 'org)
+      (format ":%s:" (string-join kw ":"))))))
 
 (defun denote--front-matter-keywords-to-list (file)
   "Return keywords from front matter of FILE as list of strings.
@@ -764,7 +746,7 @@ else that variable is used."
                      (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
       (_ (format denote-org-front-matter title date
-                 (denote--format-front-matter-keywords keywords) id)))))
+                 (denote--format-front-matter-keywords keywords 'org) id)))))
 
 (defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.
