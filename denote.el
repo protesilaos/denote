@@ -617,18 +617,14 @@ The xrefs are returned as an alist."
   "Return sorted file names sans directory from XREFS.
 Parse `denote--retrieve-xrefs'."
   (sort
-   (delete-dups
-    (mapcar (lambda (x)
-              (denote--file-name-relative-to-denote-directory (car x)))
-            xrefs))
+   (delete-dups (mapcar #'car xrefs))
    #'string-lessp))
 
 (defun denote--retrieve-proces-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (let ((file (denote--file-name-relative-to-denote-directory (buffer-file-name))))
-    (denote--retrieve-files-in-output
-     (delete file (denote--retrieve-files-in-xrefs
-                   (denote--retrieve-xrefs identifier))))))
+  (denote--retrieve-files-in-output
+   (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
+                               (denote--retrieve-xrefs identifier)))))
 
 ;;;; New note
 
@@ -1912,7 +1908,7 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
-              (insert f)
+              (insert (denote--file-name-relative-to-denote-directory f))
               (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
               (newline))
             files)
