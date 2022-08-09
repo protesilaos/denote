@@ -1895,6 +1895,16 @@ Expand `denote-link-backlinks-display-buffer-action'."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
+(defvar denote-backlink-mode-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m "n" #'forward-button)
+    (define-key m "p" #'backward-button)
+    m)
+  "Keymap for `denote-backlink-mode'.")
+
+(define-derived-mode denote-backlink-mode special-mode "Backlinks"
+  "Major mode for backlinks buffers.")
+
 (defun denote-link--prepare-backlinks (id files &optional title)
   "Create backlinks' buffer for ID including FILES.
 Use optional TITLE for a prettier heading."
@@ -1903,7 +1913,7 @@ Use optional TITLE for a prettier heading."
     (with-current-buffer (get-buffer-create buf)
       (setq-local default-directory (denote-directory))
       (erase-buffer)
-      (special-mode)
+      (denote-backlink-mode)
       (goto-char (point-min))
       (when-let* ((title)
                   (heading (format "Backlinks to %S (%s)" title id))
