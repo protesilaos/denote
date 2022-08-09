@@ -1900,6 +1900,7 @@ Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
         (buf (format "*denote-backlinks to %s*" id)))
     (with-current-buffer (get-buffer-create buf)
+      (setq-local default-directory (denote-directory))
       (erase-buffer)
       (special-mode)
       (goto-char (point-min))
