@@ -1232,6 +1232,16 @@ Reproducing it here for the sake of convenience:
         (window-width . 0.3)))
 #+end_src
 
+[ The ~denote-backlink-mode~ is part of {{{development-version}}} ]
+
+#+findex: denote-backlink-mode
+#+vindex: denote-backlink-mode-map
+The backlinks' buffer runs the major-mode ~denote-backlink-mode~, which
+is derived from ~special-mode~.  It binds keys to move between links
+with =n= (next) and =p= (previous).  These are stored in the
+~denote-backlink-mode-map~ (use =M-x describe-mode= (=C-h m=) in an
+unfamiliar buffer to learn more about it).
+
 Note that the backlinking facility uses Emacs' built-in Xref
 infrastructure.  On some operating systems, the user may need to add
 certain executables to the relevant environment variable.
