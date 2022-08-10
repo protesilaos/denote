@@ -1617,7 +1617,9 @@ and seconds."
 
 ;;;###autoload
 (define-minor-mode denote-dired-mode
-  "Fontify all Denote-style file names in Dired."
+  "Fontify all Denote-style file names.
+Add this or `denote-dired-mode-in-directories' to
+`dired-mode-hook'."
   :global nil
   :group 'denote-dired
   (if denote-dired-mode
