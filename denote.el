@@ -1613,6 +1613,7 @@ and seconds."
   "List of directories where `denote-dired-mode' should apply to."
   :type '(repeat directory)
   :package-version '(denote . "0.1.0")
+  :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
 ;;;###autoload
