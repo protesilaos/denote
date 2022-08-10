@@ -726,23 +726,21 @@ Make sure to:
 These help with consistency and might prove useful if we ever
 need to operate on the front matter as a whole.")
 
-(defun denote--format-front-matter (title date keywords id &optional filetype)
+(defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
- provided by `denote'.
-
-Optional FILETYPE is one of the values of `denote-file-type',
-else that variable is used."
+provided by `denote'. FILETYPE is one of the values of
+`denote-file-type'."
   (let ((kw-md (denote--format-front-matter-keywords keywords 'md)))
-    (pcase (or filetype denote-file-type)
+    (pcase filetype
       ('markdown-toml (format denote-toml-front-matter title date kw-md id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
       ('text (format denote-text-front-matter title date
                      (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
-      (_ (format denote-org-front-matter title date
-                 (denote--format-front-matter-keywords keywords 'org) id)))))
+      ('org (format denote-org-front-matter title date
+                    (denote--format-front-matter-keywords keywords 'org) id)))))
 
 (defun denote--path (title keywords &optional dir id)
   "Return path to new file with TITLE and KEYWORDS.
@@ -2169,10 +2167,9 @@ arbitrary text).
 Consult the manual for template samples."
   (let* ((title (denote--title-prompt))
          (keywords (denote--keywords-prompt))
-         (denote-file-type nil) ; we enforce the .org extension for `org-capture'
          (front-matter (denote--format-front-matter
                         title (denote--date nil) keywords
-                        (format-time-string denote--id-format nil))))
+                        (format-time-string denote--id-format nil) 'org)))
     (setq denote-last-path (denote--path title keywords))
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
