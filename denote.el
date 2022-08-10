@@ -976,6 +976,8 @@ here for clarity."
 (defvar denote--subdir-history nil
   "Minibuffer history of `denote--subdirs-prompt'.")
 
+;; Making it a completion table is useful for packages that read the
+;; metadata, such as `marginalia' and `embark'.
 (defun denote--subdirs-completion-table (dirs)
   "Match DIRS as a completion table."
   (let* ((def (car denote--subdir-history))
