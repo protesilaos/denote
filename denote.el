@@ -1143,7 +1143,7 @@ appropriate."
       (goto-char (point-min))
       (insert new-front-matter))))
 
-(defun denote--file-match-p (regexp file)
+(defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
   (with-current-buffer (find-file-noselect file)
     (save-excursion
@@ -1168,8 +1168,8 @@ variable `denote-directory'."
          (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
          ;; Heuristic to check if this is one of our notes
          (string-prefix-p (denote-directory) (expand-file-name file))
-         (denote--file-match-p denote--retrieve-title-front-matter-key-regexp file)
-         (denote--file-match-p denote--retrieve-keywords-front-matter-key-regexp file))))
+         (denote--regexp-in-file-p denote--retrieve-title-front-matter-key-regexp file)
+         (denote--regexp-in-file-p denote--retrieve-keywords-front-matter-key-regexp file))))
 
 (defun denote--rewrite-keywords (file keywords)
   "Rewrite KEYWORDS in FILE outright.
