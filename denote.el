@@ -781,7 +781,7 @@ provided by `denote'.  FILETYPE is one of the values of
       ('text (format denote-text-front-matter title date
                      (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
-      (_ (format denote-org-front-matter title date
+      ('org (format denote-org-front-matter title date
                  (denote--format-front-matter-keywords keywords 'org) id)))))
 
 (defun denote--path (title keywords dir id file-type)
@@ -844,14 +844,15 @@ and TEMPLATE should be valid for note creation."
                               (expand-file-name directory)))
     directory))
 
-(defun denote--file-type-symbol (filetype)
-  "Return FILETYPE as a symbol."
-  (cond
-   ((stringp filetype)
-    (intern filetype))
-   ((symbolp filetype)
-    filetype)
-   (t (user-error "`%s' is not a symbol or string" filetype))))
+(defun denote--valid-file-type (filetype)
+  "Return a valid filetype given the argument FILETYPE."
+  (unless (or (symbolp filetype) (stringp filetype))
+    (user-error "`%s' is not a symbol or string" filetype))
+  (when (stringp filetype)
+    (setq filetype (intern filetype)))
+  (if (memq filetype '(text org markdown-toml markdown-yaml))
+      filetype
+    'org))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
@@ -951,7 +952,7 @@ When called from Lisp, all arguments are optional.
          ('template (aset args 5 (denote--template-prompt)))))
      (append args nil)))
   (let* ((title (or title ""))
-         (file-type (denote--file-type-symbol (or file-type denote-file-type)))
+         (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
