@@ -2204,5 +2204,48 @@ Consult the manual for template samples."
 
 (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
+;;;; For the migration of old Org filetags
+
+(defun denote--migrate-org-files ()
+  "Return list of Org files in variable `denote-directory'."
+  (seq-remove
+   (lambda (file)
+     (not (string= (file-name-extension file) "org")))
+   (denote--directory-files)))
+
+;;;###autoload
+(defun denote-migrate-old-org-filetags ()
+  "Rewrite Org filetags' value as colon-separated.
+
+Change the filetags from:
+
+    #+filetags:   one  two
+
+To the standard format of:
+
+    #+filetags:  :one:two:
+
+A single tags chnages from TAG to :TAG:.
+
+Denote used to format filetags with two spaces between them, but
+this is not fully supported by Org.  The colon-separated entries
+are the rule.
+
+The rewrite DOES NOT SAVE BUFFERS.  The user is expected to
+review the changes, such as by using `diff-buffer-with-file'.
+Multiple buffers can be saved with `save-some-buffers' (check its
+doc string).
+
+This command is provided for the convenience of the user.  It
+shall be deprecated and eventually removed from future versions
+of Denote.  Written on 2022-08-10 for version 0.5.0."
+  (interactive)
+  (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
+             (files (denote--migrate-org-files)))
+    (dolist (file files)
+      (when-let* ((kw (denote--front-matter-keywords-to-list file))
+                  ((denote--edit-front-matter-p file)))
+        (denote--rewrite-keywords file kw)))))
+
 (provide 'denote)
 ;;; denote.el ends here
