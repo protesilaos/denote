@@ -677,17 +677,14 @@ Parse `denote--retrieve-xrefs'."
   "Format file name.
 PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
 `denote' or equivalent: they will all be converted into a single
-string.  EXTENSION is the file type extension, either a string
-which include the starting dot or the return value of
-`denote--file-extension'."
+string.  EXTENSION is the file type extension, as a string."
   (let ((kws (denote--keywords-combine keywords))
-        (ext (or extension (denote--file-extension denote-file-type)))
         (file-name (concat path id)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
     (when keywords
       (setq file-name (concat file-name "__" kws)))
-    (concat file-name ext)))
+    (concat file-name extension)))
 
 (defun denote--format-front-matter-keywords (keywords type)
   "Format KEYWORDS according to TYPE for the file's front matter.
