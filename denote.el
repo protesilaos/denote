@@ -2206,11 +2206,12 @@ Consult the manual for template samples."
 
 ;;;; For the migration of old Org filetags
 
-(defun denote--migrate-org-files ()
-  "Return list of Org files in variable `denote-directory'."
+(defun denote--migrate-type-files (type)
+  "Return list of TYPE files in variable `denote-directory'.
+TYPE is a string which matches the `file-name-extension'."
   (seq-remove
    (lambda (file)
-     (not (string= (file-name-extension file) "org")))
+     (not (string= (file-name-extension file) type)))
    (denote--directory-files)))
 
 ;;;###autoload
@@ -2241,7 +2242,7 @@ shall be deprecated and eventually removed from future versions
 of Denote.  Written on 2022-08-10 for version 0.5.0."
   (interactive)
   (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
-             (files (denote--migrate-org-files)))
+             (files (denote--migrate-type-files "org")))
     (dolist (file files)
       (when-let* ((kw (denote--front-matter-keywords-to-list file))
                   ((denote--edit-front-matter-p file)))
