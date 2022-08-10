@@ -1527,22 +1527,19 @@ This only works in Org files, as Emacs' generic buttons do not
 provide a facility that uses a face based on certain conditions."
   :group 'denote-faces)
 
-(defface denote-faces-subdirectory
-  '((t :inherit bold))
+(defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
 This should only ever needed in the backlinks' buffer (or
 equivalent), not in Dired."
   :group 'denote-faces)
 
-(defface denote-faces-date
-  '((t :inherit font-lock-variable-name-face))
+(defface denote-faces-date '((t :inherit font-lock-variable-name-face))
   "Face for file name date in Dired buffers.
 This is the part of the identifier that covers the year, month,
 and day."
   :group 'denote-faces)
 
-(defface denote-faces-time
-  '((t :inherit denote-faces-date))
+(defface denote-faces-time '((t :inherit denote-faces-date))
   "Face for file name time in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
@@ -1553,13 +1550,11 @@ and seconds."
   "Face for file name title in Dired buffers."
   :group 'denote-faces)
 
-(defface denote-faces-extension
-  '((t :inherit shadow))
+(defface denote-faces-extension '((t :inherit shadow))
   "Face for file extension type in Dired buffers."
   :group 'denote-faces)
 
-(defface denote-faces-keywords
-  '((t :inherit font-lock-builtin-face))
+(defface denote-faces-keywords '((t :inherit font-lock-builtin-face))
   "Face for file name keywords in Dired buffers."
   :group 'denote-faces)
 
