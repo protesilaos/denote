@@ -446,11 +446,16 @@ FILE must be an absolute path."
               ((string-prefix-p dir file-name)))
     (substring-no-properties file-name (length dir))))
 
+(defun denote--default-dir-has-denote-prefix ()
+  "Test `default-directory' for variable `denote-directory' prefix."
+  (string-prefix-p (denote-directory)
+                   (expand-file-name default-directory)))
+
 (defun denote--current-file-is-note-p ()
   "Return non-nil if current file likely is a Denote note."
   (and (or (string-match-p denote--id-regexp (buffer-file-name))
            (string-match-p denote--id-regexp (buffer-name)))
-       (string-prefix-p (denote-directory) (expand-file-name default-directory))))
+       (denote--default-dir-has-denote-prefix)))
 
 (defun denote--directory-files ()
   "List expanded note files."
@@ -1108,8 +1113,7 @@ The return value is for `denote--format-front-matter'."
    (lambda (buf)
      (with-current-buffer buf
        (when (and (eq major-mode 'dired-mode)
-                  (string-prefix-p (denote-directory)
-                                   (expand-file-name default-directory)))
+                  (denote--default-dir-has-denote-prefix))
          (revert-buffer))))
    (buffer-list)))
 
