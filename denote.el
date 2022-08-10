@@ -807,10 +807,10 @@ and TEMPLATE should be valid for note creation."
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
-  (when-let* ((dir directory)
-              ((string-prefix-p (expand-file-name (denote-directory))
-                                (expand-file-name dir))))
-    dir))
+  (when (and directory
+             (string-prefix-p (denote-directory)
+                              (expand-file-name directory)))
+    directory))
 
 (defun denote--file-type-symbol (filetype)
   "Return FILETYPE as a symbol."
