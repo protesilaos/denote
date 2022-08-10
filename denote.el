@@ -685,6 +685,10 @@ This is the reverse operation of `denote--format-front-matter-keywords'."
   (let ((keywords (denote--retrieve-value-keywords file)))
     (split-string keywords "[:,\s]+" t "[][ \"']+")))
 
+;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
+;; tweaks to them need to be done with care.  Though there is demand for
+;; modifying the front matter, so perhaps we should reconsider.
+
 (defvar denote-toml-front-matter
   "+++
 title      = %S
