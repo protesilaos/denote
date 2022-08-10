@@ -1928,7 +1928,7 @@ default, it will show up below the current window."
 ;; NOTE 2022-06-16: There is no need to overwhelm the user with options,
 ;; though I expect someone to want to change the sort order.
 (defvar denote-link-add-links-sort nil
-  "Add REVERSE to `sort-lines' of `denote-link-add-links' when t.")
+  "When t, add REVERSE to `sort-lines' of `denote-link-add-links'.")
 
 (defun denote-link--prepare-links (files current-file id-only)
   "Prepare links to FILES from CURRENT-FILE.
