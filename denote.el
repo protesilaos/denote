@@ -1781,10 +1781,10 @@ format is always [[denote:IDENTIFIER]]."
   (let ((file-names (mapcar (lambda (f)
                               (denote--file-name-relative-to-denote-directory f))
                             files)))
-    (completing-read "Find linked file "
-                     (denote--completion-table 'file file-names)
-                     nil t
-                     nil 'denote-link--find-file-history)))
+    (completing-read
+     "Find linked file "
+     (denote--completion-table 'file file-names)
+     nil t nil 'denote-link--find-file-history)))
 
 ;; TODO 2022-06-14: Do we need to add any sort of extension to better
 ;; integrate with Embark?  For the minibuffer interaction it is not
@@ -2005,7 +2005,8 @@ inserts links with just the identifier."
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
   (let ((buffer-file-names (mapcar
-                            (lambda (name) (file-name-nondirectory name))
+                            (lambda (name)
+                              (file-name-nondirectory name))
                             buffers)))
     (completing-read
      "Select note buffer: "
