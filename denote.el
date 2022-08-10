@@ -1898,6 +1898,8 @@ Expand `denote-link-backlinks-display-buffer-action'."
     m)
   "Keymap for `denote-backlink-mode'.")
 
+;; TODO 2022-08-10: In some places we have "backlink" and in others
+;; "backlinks".  We need to address this inconsistency.
 (define-derived-mode denote-backlink-mode special-mode "Backlinks"
   "Major mode for backlinks buffers.")
 
