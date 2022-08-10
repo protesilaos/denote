@@ -730,7 +730,7 @@ need to operate on the front matter as a whole.")
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
-provided by `denote'. FILETYPE is one of the values of
+provided by `denote'.  FILETYPE is one of the values of
 `denote-file-type'."
   (let ((kw-md (denote--format-front-matter-keywords keywords 'md)))
     (pcase filetype
@@ -753,17 +753,17 @@ provided by `denote'. FILETYPE is one of the values of
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote--date-rfc3339 (date)
-  "Format date using the RFC3339 specification."
+  "Format DATE using the RFC3339 specification."
   (replace-regexp-in-string
    "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
    (format-time-string "%FT%T%z" date)))
 
 (defun denote--date-org-timestamp (date)
-  "Format date using the Org inactive timestamp notation."
+  "Format DATE using the Org inactive timestamp notation."
   (format-time-string "[%F %a %R]" date))
 
 (defun denote--date-iso-8601 (date)
-  "Format date according to ISO 8601 standard."
+  "Format DATE according to ISO 8601 standard."
   (format-time-string "%F" date))
 
 (defun denote--date (date file-type)
