@@ -669,7 +669,7 @@ which include the starting dot or the return value of
 
 (defun denote--format-front-matter-keywords (keywords type)
   "Format KEYWORDS according to TYPE for the file's front matter.
-Keywords are downcased."
+Apply `downcase' to KEYWORDS."
   (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
     (cond
      ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
