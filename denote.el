@@ -2013,8 +2013,6 @@ inserts links with just the identifier."
      (denote--completion-table 'buffer buffer-file-names)
      nil t)))
 
-(declare-function dired-get-marked-files "dired" (&optional localp arg filter distinguish-one-marked error))
-
 (defun denote-link--map-over-notes ()
   "Return list of `denote--only-note-p' from Dired marked items."
   (seq-filter
