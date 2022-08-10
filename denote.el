@@ -1778,9 +1778,9 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (let ((file-names (mapcar
-                     (lambda (f) (denote--file-name-relative-to-denote-directory f))
-                     files)))
+  (let ((file-names (mapcar (lambda (f)
+                              (denote--file-name-relative-to-denote-directory f))
+                            files)))
     (completing-read "Find linked file "
                      (denote--completion-table 'file file-names)
                      nil t
