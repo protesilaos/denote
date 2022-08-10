@@ -835,7 +835,7 @@ and TEMPLATE should be valid for note creation."
                   file-type)))
     (with-current-buffer buffer
       (insert header)
-      (when template (insert template)))))
+      (insert template))))
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
@@ -950,7 +950,8 @@ When called from Lisp, all arguments are optional.
          ('date (aset args 4 (denote--date-prompt)))
          ('template (aset args 5 (denote--template-prompt)))))
      (append args nil)))
-  (let* ((file-type (denote--file-type-symbol (or file-type denote-file-type)))
+  (let* ((title (or title ""))
+         (file-type (denote--file-type-symbol (or file-type denote-file-type)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
@@ -958,9 +959,11 @@ When called from Lisp, all arguments are optional.
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
                       (denote-directory)))
-         (template (if (stringp template) template (alist-get template denote-templates))))
+         (template (if (stringp template)
+                       template
+                     (or (alist-get template denote-templates) ""))))
     (denote--barf-duplicate-id id)
-    (denote--prepare-note (or title "") keywords date id directory file-type template)
+    (denote--prepare-note title keywords date id directory file-type template)
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil
