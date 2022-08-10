@@ -1519,45 +1519,53 @@ relevant front matter."
 
 (defface denote-faces-link '((t :inherit link))
   "Face used to style Denote links in the buffer."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.5.0"))
 
 (defface denote-faces-broken-link '((t :inherit (error link)))
   "Face used to style Denote broken links in the buffer.
 This only works in Org files, as Emacs' generic buttons do not
 provide a facility that uses a face based on certain conditions."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.5.0"))
 
 (defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
 This should only ever needed in the backlinks' buffer (or
 equivalent), not in Dired."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.2.0"))
 
 (defface denote-faces-date '((t :inherit font-lock-variable-name-face))
   "Face for file name date in Dired buffers.
 This is the part of the identifier that covers the year, month,
 and day."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 (defface denote-faces-time '((t :inherit denote-faces-date))
   "Face for file name time in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 ;; TODO 2022-08-10: I believe a nil value has the same effect, though
 ;; there is no pressing need to test this.
 (defface denote-faces-title '((t ))
   "Face for file name title in Dired buffers."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 (defface denote-faces-extension '((t :inherit shadow))
   "Face for file extension type in Dired buffers."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 (defface denote-faces-keywords '((t :inherit font-lock-builtin-face))
   "Face for file name keywords in Dired buffers."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 (defface denote-faces-delimiter
   '((((class color) (min-colors 88) (background light))
@@ -1566,7 +1574,8 @@ and seconds."
      :foreground "gray30")
     (t :inherit shadow))
   "Face for file name delimiters in Dired buffers."
-  :group 'denote-faces)
+  :group 'denote-faces
+  :package-version '(denote . "0.1.0"))
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 (defvar denote-faces--file-name-regexp
