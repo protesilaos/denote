@@ -627,9 +627,9 @@ Parse `denote--retrieve-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote--file-extension ()
-  "Return file type extension based on `denote-file-type'."
-  (pcase denote-file-type
+(defun denote--file-extension (file-type)
+  "Return file type extension based on FILE-TYPE."
+  (pcase file-type
     ('markdown-toml ".md")
     ('markdown-yaml ".md")
     ('text ".txt")
@@ -643,7 +643,7 @@ string.  EXTENSION is the file type extension, either a string
 which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
-        (ext (or extension (denote--file-extension)))
+        (ext (or extension (denote--file-extension denote-file-type)))
         (file-name (concat path id)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
@@ -742,16 +742,13 @@ provided by `denote'. FILETYPE is one of the values of
       ('org (format denote-org-front-matter title date
                     (denote--format-front-matter-keywords keywords 'org) id)))))
 
-(defun denote--path (title keywords &optional dir id)
-  "Return path to new file with TITLE and KEYWORDS.
-With optional DIR, use it instead of variable `denote-directory'.
-With optional ID, use it else format the current time."
+(defun denote--path (title keywords dir id file-type)
+  "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
   (denote--format-file
-   (or dir (file-name-as-directory (denote-directory)))
-   (or id (format-time-string denote--id-format))
+   dir id
    (denote--sluggify-keywords keywords)
    (denote--sluggify title)
-   (denote--file-extension)))
+   (denote--file-extension file-type)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -792,8 +789,7 @@ With optional DATE, use it else use the current one."
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 and TEMPLATE should be valid for note creation."
-  (let* ((denote-file-type file-type)
-         (path (denote--path title keywords directory id))
+  (let* ((path (denote--path title keywords directory id file-type))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date) keywords
@@ -2170,7 +2166,10 @@ Consult the manual for template samples."
          (front-matter (denote--format-front-matter
                         title (denote--date nil) keywords
                         (format-time-string denote--id-format nil) 'org)))
-    (setq denote-last-path (denote--path title keywords))
+    (setq denote-last-path
+          (denote--path title keywords
+                        (file-name-as-directory (denote-directory))
+                        (format-time-string denote--id-format) 'org))
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
