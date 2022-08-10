@@ -752,34 +752,34 @@ provided by `denote'. FILETYPE is one of the values of
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
-(defun denote--date-rfc3339 (&optional date)
+(defun denote--date-rfc3339 (date)
   "Format date using the RFC3339 specification.
-With optional DATE, use it else use the current one."
+If DATE is nil, use the current date."
   (replace-regexp-in-string
    "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
    (format-time-string "%FT%T%z" date)))
 
-(defun denote--date-org-timestamp (&optional date)
+(defun denote--date-org-timestamp (date)
   "Format date using the Org inactive timestamp notation.
-With optional DATE, use it else use the current one."
+If DATE is nil, use the current date."
   (format-time-string "[%F %a %R]" date))
 
-(defun denote--date-iso-8601 (&optional date)
+(defun denote--date-iso-8601 (date)
   "Format date according to ISO 8601 standard.
-With optional DATE, use it else use the current one."
+If DATE is nil, use the current date."
   (format-time-string "%F" date))
 
-(defun denote--date (&optional date)
-  "Expand the date for a new note's front matter.
-With optional DATE, use it else use the current one."
+(defun denote--date (date file-type)
+  "Expand the DATE in an appropriate format for FILE-TYPE.
+If DATE is nil, use the current date."
   (let ((format denote-date-format))
     (cond
      ((stringp format)
       (format-time-string format date))
-     ((or (eq denote-file-type 'markdown-toml)
-          (eq denote-file-type 'markdown-yaml))
+     ((or (eq file-type 'markdown-toml)
+          (eq file-type 'markdown-yaml))
       (denote--date-rfc3339 date))
-     ((eq denote-file-type 'text)
+     ((eq file-type 'text)
       (denote--date-iso-8601 date))
      (t
       (denote--date-org-timestamp date)))))
@@ -792,7 +792,7 @@ and TEMPLATE should be valid for note creation."
   (let* ((path (denote--path title keywords directory id file-type))
          (buffer (find-file path))
          (header (denote--format-front-matter
-                  title (denote--date date) keywords
+                  title (denote--date date file-type) keywords
                   (format-time-string denote--id-format date)
                   file-type)))
     (with-current-buffer buffer
@@ -1115,7 +1115,7 @@ command and are used to construct a new front matter block if
 appropriate."
   (when-let* (((denote--only-note-p file))
               (filetype (denote--filetype-heuristics file))
-              (date (denote--date (date-to-time id)))
+              (date (denote--date (date-to-time id) filetype))
               (new-front-matter (denote--format-front-matter title date keywords id filetype)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
@@ -2164,7 +2164,7 @@ Consult the manual for template samples."
   (let* ((title (denote--title-prompt))
          (keywords (denote--keywords-prompt))
          (front-matter (denote--format-front-matter
-                        title (denote--date nil) keywords
+                        title (denote--date nil 'org) keywords
                         (format-time-string denote--id-format nil) 'org)))
     (setq denote-last-path
           (denote--path title keywords
