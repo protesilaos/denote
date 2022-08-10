@@ -169,10 +169,6 @@ the appropriate list of strings."
   :package-version '(denote . "0.1.0")
   :type 'boolean)
 
-(defconst denote--prompt-symbols
-  '(title keywords date file-type subdirectory)
-  "List of symbols representing `denote' prompts.")
-
 (defcustom denote-prompts '(title keywords)
   "Specify the prompts of the `denote' command for interactive use.
 
@@ -621,7 +617,7 @@ Parse `denote--retrieve-xrefs'."
    (delete-dups (mapcar #'car xrefs))
    #'string-lessp))
 
-(defun denote--retrieve-proces-grep (identifier)
+(defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (denote--retrieve-files-in-output
    (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
@@ -631,9 +627,9 @@ Parse `denote--retrieve-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote--file-extension ()
-  "Return file type extension based on `denote-file-type'."
-  (pcase denote-file-type
+(defun denote--file-extension (file-type)
+  "Return file type extension based on FILE-TYPE."
+  (pcase file-type
     ('markdown-toml ".md")
     ('markdown-yaml ".md")
     ('text ".txt")
@@ -647,7 +643,7 @@ string.  EXTENSION is the file type extension, either a string
 which include the starting dot or the return value of
 `denote--file-extension'."
   (let ((kws (denote--keywords-combine keywords))
-        (ext (or extension (denote--file-extension)))
+        (ext (or extension (denote--file-extension denote-file-type)))
         (file-name (concat path id)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
@@ -655,35 +651,17 @@ which include the starting dot or the return value of
       (setq file-name (concat file-name "__" kws)))
     (concat file-name ext)))
 
-(defun denote--format-markdown-keywords (keywords)
-  "Quote, downcase, and comma-separate elements in KEYWORDS."
-  (format "[%s]" (mapconcat (lambda (k)
-                              (format "%S" (downcase k)))
-                            keywords ", ")))
-
-(defun denote--format-org-keywords (keywords)
-  "Quote, downcase, and colon-separate elements in KEYWORDS."
-  (format ":%s:" (mapconcat (lambda (k)
-                              (downcase k))
-                            keywords ":")))
-
-(defun denote--format-front-matter-keywords (keywords &optional type)
-  "Prepare KEYWORDS for inclusion in the file's front matter.
-Parse the output of `denote--keywords-prompt', using `downcase'
-on the keywords and separating them by two spaces.  A single
-keyword is just downcased.
-
-With optional TYPE, format the keywords accordingly (this might
-be `toml' or, in the future, some other spec that needss special
-treatment)."
-  (let ((kw (denote--sluggify-keywords keywords)))
+(defun denote--format-front-matter-keywords (keywords type)
+  "Format KEYWORDS according to TYPE for the file's front matter.
+Keywords are downcased."
+  (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
     (cond
      ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-      (denote--format-markdown-keywords kw))
+      (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) kw ", ")))
      ((eq type 'text)
-      (mapconcat #'downcase kw "  "))
-     (t
-      (denote--format-org-keywords kw)))))
+      (string-join kw "  "))
+     ((eq type 'org)
+      (format ":%s:" (string-join kw ":"))))))
 
 (defun denote--front-matter-keywords-to-list (file)
   "Return keywords from front matter of FILE as list of strings.
@@ -748,34 +726,29 @@ Make sure to:
 These help with consistency and might prove useful if we ever
 need to operate on the front matter as a whole.")
 
-(defun denote--format-front-matter (title date keywords id &optional filetype)
+(defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
 
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
- provided by `denote'.
-
-Optional FILETYPE is one of the values of `denote-file-type',
-else that variable is used."
+provided by `denote'. FILETYPE is one of the values of
+`denote-file-type'."
   (let ((kw-md (denote--format-front-matter-keywords keywords 'md)))
-    (pcase (or filetype denote-file-type)
+    (pcase filetype
       ('markdown-toml (format denote-toml-front-matter title date kw-md id))
       ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
       ('text (format denote-text-front-matter title date
                      (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
-      (_ (format denote-org-front-matter title date
-                 (denote--format-front-matter-keywords keywords) id)))))
+      ('org (format denote-org-front-matter title date
+                    (denote--format-front-matter-keywords keywords 'org) id)))))
 
-(defun denote--path (title keywords &optional dir id)
-  "Return path to new file with TITLE and KEYWORDS.
-With optional DIR, use it instead of variable `denote-directory'.
-With optional ID, use it else format the current time."
+(defun denote--path (title keywords dir id file-type)
+  "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
   (denote--format-file
-   (or dir (file-name-as-directory (denote-directory)))
-   (or id (format-time-string denote--id-format))
+   dir id
    (denote--sluggify-keywords keywords)
    (denote--sluggify title)
-   (denote--file-extension)))
+   (denote--file-extension file-type)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -816,8 +789,7 @@ With optional DATE, use it else use the current one."
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 and TEMPLATE should be valid for note creation."
-  (let* ((denote-file-type file-type)
-         (path (denote--path title keywords directory id))
+  (let* ((path (denote--path title keywords directory id file-type))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date) keywords
@@ -829,10 +801,10 @@ and TEMPLATE should be valid for note creation."
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return DIRECTORY if in variable `denote-directory', else nil."
-  (when-let* ((dir directory)
-              ((string-prefix-p (expand-file-name (denote-directory))
-                                (expand-file-name dir))))
-    dir))
+  (when (and directory
+             (string-prefix-p (denote-directory)
+                              (expand-file-name directory)))
+    directory))
 
 (defun denote--file-type-symbol (filetype)
   "Return FILETYPE as a symbol."
@@ -1844,8 +1816,10 @@ format is always [[denote:IDENTIFIER]]."
 ;; NOTE 2022-06-15: I add this as a variable for advanced users who may
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
-(defvar denote-link-buton-action #'find-file-other-window
+(defvar denote-link-button-action #'find-file-other-window
   "Action for Denote buttons.")
+
+(make-obsolete-variable 'denote-link-buton-action 'denote-link-button-action "0.5.0")
 
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
@@ -1854,7 +1828,7 @@ format is always [[denote:IDENTIFIER]]."
                (button-start button)
                (button-end button))))
          (file (denote--get-note-path-by-id id)))
-    (funcall denote-link-buton-action file)))
+    (funcall denote-link-button-action file)))
 
 ;;;###autoload
 (defun denote-link-buttonize-buffer (&optional beg end)
@@ -1886,7 +1860,7 @@ positions, limit the process to the region in-between."
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
-  (funcall denote-link-buton-action (buffer-substring (button-start button) (button-end button))))
+  (funcall denote-link-button-action (buffer-substring (button-start button) (button-end button))))
 
 (defun denote-link--display-buffer (buf)
   "Run `display-buffer' on BUF.
@@ -1943,7 +1917,7 @@ default, it will show up below the current window."
   (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (title (denote--retrieve-value-title file)))
-    (if-let ((files (denote--retrieve-proces-grep id)))
+    (if-let ((files (denote--retrieve-process-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
 
@@ -2189,11 +2163,13 @@ arbitrary text).
 Consult the manual for template samples."
   (let* ((title (denote--title-prompt))
          (keywords (denote--keywords-prompt))
-         (denote-file-type nil) ; we enforce the .org extension for `org-capture'
          (front-matter (denote--format-front-matter
                         title (denote--date nil) keywords
-                        (format-time-string denote--id-format nil))))
-    (setq denote-last-path (denote--path title keywords))
+                        (format-time-string denote--id-format nil) 'org)))
+    (setq denote-last-path
+          (denote--path title keywords
+                        (file-name-as-directory (denote-directory))
+                        (format-time-string denote--id-format) 'org))
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
