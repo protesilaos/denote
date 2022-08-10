@@ -2209,10 +2209,16 @@ Consult the manual for template samples."
 (defun denote--migrate-type-files (type)
   "Return list of TYPE files in variable `denote-directory'.
 TYPE is a string which matches the `file-name-extension'."
-  (seq-remove
-   (lambda (file)
-     (not (string= (file-name-extension file) type)))
-   (denote--directory-files)))
+  (delq nil
+        (mapcar
+         (lambda (file)
+           (when-let* ((value (denote--retrieve-value-keywords file))
+                       ((string-match-p "\s\s" value)))
+             file))
+         (seq-remove
+          (lambda (file)
+            (not (string= (file-name-extension file) type)))
+          (denote--directory-files)))))
 
 ;;;###autoload
 (defun denote-migrate-old-org-filetags ()
