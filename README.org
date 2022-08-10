@@ -752,7 +752,7 @@ written as =word1word2=.
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
 though the user option ~denote-file-type~ provides support for Markdown
 with YAML or TOML variants (=.md= which runs ~markdown-mode~) and plain
-text (=.txt= via ~text-mode~).  Consult its doc string for the minutia.
+text (=.txt= via ~text-mode~).  Consult its doc string for the minutiae.
 While files end in the =.org= extension by default, the Denote code base
 does not actually depend on org.el and/or its accoutrements.
 
