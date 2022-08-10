@@ -1545,8 +1545,9 @@ This is the part of the identifier that covers the hours, minutes,
 and seconds."
   :group 'denote-faces)
 
-(defface denote-faces-title
-  '((t ))
+;; TODO 2022-08-10: I believe a nil value has the same effect, though
+;; there is no pressing need to test this.
+(defface denote-faces-title '((t ))
   "Face for file name title in Dired buffers."
   :group 'denote-faces)
 
