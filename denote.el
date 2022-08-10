@@ -583,26 +583,40 @@ If optional KEY is non-nil, return the key instead."
 (defun denote--retrieve-value-title (file &optional key)
   "Return title value from FILE.
 If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search file denote--retrieve-title-front-matter-key-regexp key))
+  (denote--retrieve-search
+   file
+   denote--retrieve-title-front-matter-key-regexp
+   key))
 
 (defun denote--retrieve-value-date (file &optional key)
   "Return date value from FILE.
 If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search file denote--retrieve-date-front-matter-key-regexp key))
+  (denote--retrieve-search
+   file
+   denote--retrieve-date-front-matter-key-regexp
+   key))
 
 (defun denote--retrieve-value-keywords (file &optional key)
   "Return keywords value from FILE.
 If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search file denote--retrieve-keywords-front-matter-key-regexp key))
+  (denote--retrieve-search
+   file
+   denote--retrieve-keywords-front-matter-key-regexp
+   key))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil nil nil
-                  (lambda (f) (or (denote--only-note-p f) (file-directory-p f)))))
+                  (lambda (f)
+                    (or (denote--only-note-p f)
+                        (file-directory-p f)))))
 
 (defun denote--retrieve-files-in-output (files)
   "Return list of FILES from `find' output."
-  (seq-filter (lambda (f) (denote--only-note-p f)) files))
+  (seq-filter
+   (lambda (f)
+     (denote--only-note-p f))
+   files))
 
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
