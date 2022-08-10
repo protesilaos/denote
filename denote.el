@@ -36,7 +36,7 @@
 ;;    (info "(denote) Top")
 ;;
 ;; What follows is a general overview of its core core design
-;; principles:
+;; principles (again: please read the manual for the technicalities):
 ;;
 ;; * Predictability :: File names must follow a consistent and
 ;;   descriptive naming convention (see the manual's "The file-naming
