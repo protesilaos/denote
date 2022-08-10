@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.4.0
-#+macro:                 release-date 2022-07-25
-#+macro:                 development-version 0.5.0-dev
+#+macro:                 stable-version 0.5.0
+#+macro:                 release-date 2022-08-10
+#+macro:                 development-version 0.6.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -140,8 +140,6 @@ commands, or leverage the ~org-capture-templates~ by setting up a
 template which calls the function ~denote-org-capture~.  We explain all
 of those in the subsequent sections.
 
-[ The ~denote-template~ is part of {{{development-version}}} ]
-
 ** Standard note creation
 :PROPERTIES:
 :CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
@@ -219,8 +217,6 @@ The value is a list of symbols, which includes any of the following:
   of that KEY is used to populate the new note with content, which is
   added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
 
-  [ The =template= is part of {{{development-version}}} ]
-
 The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.  The
@@ -253,8 +249,6 @@ in the subsequent section ([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenienc
 :PROPERTIES:
 :CUSTOM_ID: h:f635a490-d29e-4608-9372-7bd13b34d56c
 :END:
-
-[ Part of {{{development-version}}} ]
 
 #+vindex: denote-templates
 The user option ~denote-templates~ is an alist of content templates for
@@ -367,8 +361,6 @@ commands for note creation:
   #+findex: denote-create-note-in-subdirectory
   The ~denote-create-note-in-subdirectory~ is a more descriptive alias
   of ~denote-subdirectory~.
-
-  [ Templates are part of {{{development-version}}} ]
 
 + Create note and add a template :: The ~denote-template~ command
   creates a new note and inserts the specified template below the front
@@ -524,8 +516,6 @@ all the mechanisms to facilitate the task of renaming them.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
-[ Updated as part of {{{development-version}}} ]
-
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate.
@@ -584,8 +574,6 @@ not---manage such files).
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
 
-[ Updated as part of {{{development-version}}} ]
-
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
 Dired to conform with our file-naming scheme.  The operation does the
@@ -617,8 +605,6 @@ following:
 :PROPERTIES:
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
 :END:
-
-[ Part of {{{development-version}}} ]
 
 #+findex: denote-rename-file-using-front-matter
 In the previous section, we covered the more general mechanism of the
@@ -670,8 +656,6 @@ the like.
 :PROPERTIES:
 :CUSTOM_ID: h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8
 :END:
-
-[ Part of {{{development-version}}} ]
 
 #+findex: denote-dired-rename-marked-files-using-front-matter
 As already noted, Denote can rename a file based on the data in its
@@ -830,9 +814,6 @@ insert single words at the relevant prompts.
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
 :END:
 
-[ The format of the Org and Markdown+YAML filetags/tags has been revised
-  as part of {{{development-version}}} ]
-
 Notes have their own "front matter".  This is a block of data at the top
 of the file, with no empty lines between the entries, which is
 automatically generated at the creation of a new note.  The front matter
@@ -848,13 +829,6 @@ This is how it looks for Org mode (when ~denote-file-type~ is nil):
 #+filetags:   :denote:testing:
 #+identifier: 20220630T160934
 #+end_example
-
-[ The format of the =#+filetags= has been revised as part of
-  {{{development-version}}}.  Before, we would separate multiple entries
-  with two spaces, which is technically correct though not what Org
-  users are familiar with.  We now separate tags with a colon, per the
-  Org manual.  The previous approach still works though and Denote will
-  continue to support it internally, where relevant. ]
 
 For Markdown with YAML (~denote-file-type~ has the =markdown-yaml=
 value), the front matter looks like this:
@@ -1006,8 +980,6 @@ we shall act accordingly.
 :CUSTOM_ID: h:54b48277-e0e5-4188-ad54-ef3db3b7e772
 :END:
 
-[ Part of {{{development-version}}} ]
-
 #+findex: denote-add-front-matter
 Sometimes the user needs to produce new front matter for an existing
 note.  Perhaps because they accidentally deleted a line and could not
@@ -1082,8 +1054,6 @@ case the user needs it.
 
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
-
-[ The following two faces are part of {{{development-version}}} ]
 
 #+vindex: denote-faces-link
 Links are styled with the ~denote-faces-link~ face, which looks exactly
@@ -1231,8 +1201,6 @@ Reproducing it here for the sake of convenience:
         (slot . 99)
         (window-width . 0.3)))
 #+end_src
-
-[ The ~denote-backlink-mode~ is part of {{{development-version}}} ]
 
 #+findex: denote-backlink-mode
 #+vindex: denote-backlink-mode-map
