@@ -764,8 +764,8 @@ provided by `denote'.  FILETYPE is one of the values of
       ('text (format denote-text-front-matter title date
                      (denote--format-front-matter-keywords keywords 'text)
                      id denote-text-front-matter-delimiter))
-      ('org (format denote-org-front-matter title date
-                    (denote--format-front-matter-keywords keywords 'org) id)))))
+      (_ (format denote-org-front-matter title date
+                 (denote--format-front-matter-keywords keywords 'org) id)))))
 
 (defun denote--path (title keywords dir id file-type)
   "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
