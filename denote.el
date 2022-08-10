@@ -169,10 +169,6 @@ the appropriate list of strings."
   :package-version '(denote . "0.1.0")
   :type 'boolean)
 
-(defconst denote--prompt-symbols
-  '(title keywords date file-type subdirectory)
-  "List of symbols representing `denote' prompts.")
-
 (defcustom denote-prompts '(title keywords)
   "Specify the prompts of the `denote' command for interactive use.
 
