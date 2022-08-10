@@ -787,8 +787,7 @@ provided by `denote'.  FILETYPE is one of the values of
   (format-time-string "%F" date))
 
 (defun denote--date (date file-type)
-  "Expand the DATE in an appropriate format for FILE-TYPE.
-If DATE is nil, use the current date."
+  "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
      ((stringp format)
