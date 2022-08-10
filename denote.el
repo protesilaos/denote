@@ -2248,5 +2248,36 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
                   ((denote--edit-front-matter-p file)))
         (denote--rewrite-keywords file kw)))))
 
+;;;###autoload
+(defun denote-migrate-old-markdown-yaml-tags ()
+  "Rewrite Markdown YAML tags value as comma-separated strings.
+
+Change the tags from:
+
+    tags:   one  two
+
+To the standard format of:
+
+    tags:  [\"one\", \"two\"]
+
+Denote used to format filetags with two spaces between them, but
+this is not supported by YAML.
+
+The rewrite DOES NOT SAVE BUFFERS.  The user is expected to
+review the changes, such as by using `diff-buffer-with-file'.
+Multiple buffers can be saved with `save-some-buffers' (check its
+doc string).
+
+This command is provided for the convenience of the user.  It
+shall be deprecated and eventually removed from future versions
+of Denote.  Written on 2022-08-10 for version 0.5.0."
+  (interactive)
+  (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
+             (files (denote--migrate-type-files "md")))
+    (dolist (file files)
+      (when-let* ((kw (denote--front-matter-keywords-to-list file))
+                  ((denote--edit-front-matter-p file)))
+        (denote--rewrite-keywords file kw)))))
+
 (provide 'denote)
 ;;; denote.el ends here
