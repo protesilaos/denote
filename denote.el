@@ -1656,6 +1656,7 @@ Add this function to `dired-mode-hook'."
   "When non-nil, apply faces to files in the backlinks' buffer."
   :type 'boolean
   :package-version '(denote . "0.1.0")
+  :link '(info-link "(denote) The backlinks' buffer")
   :group 'denote-link)
 
 (defcustom denote-link-backlinks-display-buffer-action
