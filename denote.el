@@ -671,7 +671,7 @@ Parse `denote--retrieve-xrefs'."
     ('markdown-toml ".md")
     ('markdown-yaml ".md")
     ('text ".txt")
-    (_ ".org")))
+    ('org ".org")))
 
 (defun denote--format-file (path id keywords title-slug extension)
   "Format file name.
