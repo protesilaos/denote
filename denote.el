@@ -861,9 +861,10 @@ where the former does not read dates without a time component."
             (buffer-file-name buf))
           (buffer-list)))))
 
-;; This should only be relevant for `denote-date', otherwise the
-;; identifier is always unique (we trust that no-one writes multiple
-;; notes within fractions of a second).
+;; In normal usage, this should only be relevant for `denote-date',
+;; otherwise the identifier is always unique (we trust that no-one
+;; writes multiple notes within fractions of a second).  Though the
+;; `denote' command does call `denote--barf-duplicate-id'.
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
   (seq-some (lambda (file)
