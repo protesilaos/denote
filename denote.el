@@ -687,7 +687,7 @@ Apply `downcase' to KEYWORDS."
 (defun denote--front-matter-keywords-to-list (file)
   "Return keywords from front matter of FILE as list of strings.
 This is the reverse operation of `denote--format-front-matter-keywords'."
-  (let ((keywords (denote--retrieve-value-keywords file)))
+  (when-let ((keywords (denote--retrieve-value-keywords file)))
     (split-string keywords "[:,\s]+" t "[][ \"']+")))
 
 ;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
