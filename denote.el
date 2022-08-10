@@ -489,11 +489,12 @@ variable `denote-directory'."
       (split-string kws "_"))))
 
 (defun denote--inferred-keywords ()
-  "Extract keywords from `denote--directory-files'."
-  (delete-dups
-   (mapcan (lambda (p)
-             (denote--extract-keywords-from-path p))
-           (denote--directory-files))))
+  "Extract keywords from `denote--directory-files'.
+This function returns duplicates.  The `denote-keywords' is the
+one that doesn't."
+  (mapcan (lambda (p)
+            (denote--extract-keywords-from-path p))
+          (denote--directory-files)))
 
 (defun denote-keywords ()
   "Return appropriate list of keyword candidates.
