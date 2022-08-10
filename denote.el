@@ -131,7 +131,7 @@ the function `denote-directory' instead: it returns the path as a
 directory and also checks if a safe local value should be used."
   :group 'denote
   :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "0.5.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
