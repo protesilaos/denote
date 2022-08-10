@@ -337,6 +337,7 @@ to always prompt for a template when calling the `denote'
 command."
   :type '(alist :key-type symbol :value-type string)
   :package-version '(denote . "0.5.0")
+  :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
 ;;;; Main variables
