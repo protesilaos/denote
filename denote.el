@@ -591,9 +591,8 @@ output is sorted with `string-lessp'."
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
-(defun denote--retrieve-search (file key-regexp &optional key)
-  "Return value of KEY-REGEXP key in current buffer from FILE.
-If optional KEY is non-nil, return the key instead."
+(defun denote--retrieve-search (file key-regexp)
+  "Return value of KEY-REGEXP key in current buffer from FILE."
   ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
   ;; reminder.  See TODO comment above `denote--only-note-p'
   (when (or (denote--writable-and-supported-p file)
@@ -605,28 +604,24 @@ If optional KEY is non-nil, return the key instead."
           (widen)
           (goto-char (point-min))
           (when (re-search-forward key-regexp nil t 1)
-            (if key
-                (match-string-no-properties 0)
-              (let ((trims "[ \t\n\r\"']+"))
-                (string-trim
-                 (buffer-substring-no-properties (point) (point-at-eol))
-                 trims trims)))))))))
+            (let ((trims "[ \t\n\r\"']+"))
+              (string-trim
+               (buffer-substring-no-properties (point) (point-at-eol))
+               trims trims))))))))
 
-(defun denote--retrieve-value-title (file &optional key file-type)
+(defun denote--retrieve-value-title (file file-type)
   "Return title value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
   (denote--retrieve-search
    file
-   (denote--title-key-regexp file-type)
-   key))
+   (denote--title-key-regexp file-type)))
 
-(defun denote--retrieve-value-keywords (file &optional key file-type)
+(defun denote--retrieve-value-keywords (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
   (denote--retrieve-search
    file
-   (denote--keywords-key-regexp file-type)
-   key))
+   (denote--keywords-key-regexp file-type)))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
@@ -704,7 +699,7 @@ Apply `downcase' to KEYWORDS."
   "Return keywords from front matter of FILE as list of strings.
 FILE-TYPE is used to retrieve the keywords. This is the reverse
 operation of `denote--format-front-matter-keywords'."
-  (when-let ((keywords (denote--retrieve-value-keywords file nil file-type)))
+  (when-let ((keywords (denote--retrieve-value-keywords file file-type)))
     (split-string keywords "[:,\s]+" t "[][ \"']+")))
 
 ;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
@@ -1198,7 +1193,7 @@ but do not ask for confirmation.
 This is for use in `denote-dired-rename-marked-files' or related.
 Those commands ask for confirmation once before performing an
 operation on multiple files."
-  (when-let ((old-keywords (denote--retrieve-value-keywords file nil file-type))
+  (when-let ((old-keywords (denote--retrieve-value-keywords file file-type))
              (new-keywords (denote--format-front-matter-keywords
                             keywords (denote--filetype-heuristics file))))
     (with-current-buffer (find-file-noselect file)
@@ -1218,8 +1213,8 @@ operation on multiple files."
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
 renaming command and are used to construct new front matter
 values if appropriate."
-  (when-let ((old-title (denote--retrieve-value-title file nil file-type))
-             (old-keywords (denote--retrieve-value-keywords file nil file-type))
+  (when-let ((old-title (denote--retrieve-value-title file file-type))
+             (old-keywords (denote--retrieve-value-keywords file file-type))
              (new-title title)
              (new-keywords (denote--format-front-matter-keywords
                             keywords (denote--filetype-heuristics file))))
@@ -1331,7 +1326,7 @@ files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-value-title file nil file-type) (file-name-base file)))
+       (or (denote--retrieve-value-title file file-type) (file-name-base file)))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1399,7 +1394,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (or (denote--retrieve-value-title file nil file-type)
+                 (title (or (denote--retrieve-value-title file file-type)
                             (file-name-base file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
@@ -1436,7 +1431,7 @@ typos and the like."
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
   (if-let* ((file-type (denote--filetype-heuristics file))
-            (title (denote--retrieve-value-title file nil file-type))
+            (title (denote--retrieve-value-title file file-type))
             (keywords (denote--front-matter-keywords-to-list file file-type))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
@@ -1487,7 +1482,7 @@ their respective front matter."
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (denote--retrieve-value-title file nil file-type))
+                 (title (denote--retrieve-value-title file file-type))
                  (keywords (denote--front-matter-keywords-to-list file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
@@ -1766,7 +1761,7 @@ title."
   (let* ((file-id (denote--retrieve-filename-identifier file))
          (file-type (denote--filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
-                       (denote--retrieve-value-title file nil file-type))))
+                       (denote--retrieve-value-title file file-type))))
     (format pattern file-id file-title)))
 
 ;;;###autoload
@@ -1975,7 +1970,7 @@ default, it will show up below the current window."
   (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (file-type (denote--filetype-heuristics file))
-         (title (denote--retrieve-value-title file nil file-type)))
+         (title (denote--retrieve-value-title file file-type)))
     (if-let ((files (denote--retrieve-process-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
@@ -2249,7 +2244,7 @@ FILE-TYPE is the symbol file-type."
         (mapcar
          (lambda (file)
            (when-let* ((value (denote--retrieve-value-keywords
-                               file nil file-type))
+                               file file-type))
                        ((string-match-p "\s\s" value)))
              file))
          (seq-remove
