@@ -447,9 +447,9 @@ trailing hyphen."
 
 (defun denote--writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
-  (and (file-regular-p file-name)
-       (file-writable-p file-name)
-       (denote--file-supported-extension-p file-name)))
+  (and (file-regular-p file)
+       (file-writable-p file)
+       (denote--file-supported-extension-p file)))
 
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return file name of FILE relative to the variable `denote-directory'.
