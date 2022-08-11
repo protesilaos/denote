@@ -1171,15 +1171,12 @@ For the purposes of this test, FILE is a Denote note when it (i)
 is a regular file, (ii) is writable, (iii) has a supported file
 type extension per `denote-file-type', and (iv) is stored in the
 variable `denote-directory'."
-  (when-let ((ext (file-name-extension file)))
-    (and (file-regular-p file)
-         (file-writable-p file)
-         (not (denote--file-empty-p file))
-         (string-match-p "\\(md\\|org\\|txt\\)\\'" ext)
-         ;; Heuristic to check if this is one of our notes
-         (string-prefix-p (denote-directory) (expand-file-name file))
-         (denote--regexp-in-file-p denote--retrieve-title-front-matter-key-regexp file)
-         (denote--regexp-in-file-p denote--retrieve-keywords-front-matter-key-regexp file))))
+  (and (denote--writable-and-supported-p file)
+       (not (denote--file-empty-p file))
+       ;; Heuristic to check if this is one of our notes
+       (string-prefix-p (denote-directory) (expand-file-name file)) ; FIXME 2022-08-11: Why do we need this?
+       (denote--regexp-in-file-p denote--retrieve-title-front-matter-key-regexp file)
+       (denote--regexp-in-file-p denote--retrieve-keywords-front-matter-key-regexp file)))
 
 (defun denote--rewrite-keywords (file keywords)
   "Rewrite KEYWORDS in FILE outright.
