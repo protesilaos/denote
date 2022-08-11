@@ -1150,15 +1150,14 @@ Update Dired buffers if the file is renamed."
     (rename-file old-name new-name nil)
     (denote--rename-buffer old-name new-name)))
 
-(defun denote--add-front-matter (file title keywords id)
+(defun denote--add-front-matter (file title keywords id file-type)
   "Prepend front matter to FILE if `denote--only-note-p'.
-The TITLE, KEYWORDS and ID are passed from the renaming
-command and are used to construct a new front matter block if
-appropriate."
+The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
+renaming command and are used to construct a new front matter
+block if appropriate."
   (when-let* (((denote--only-note-p file))
-              (filetype (denote--filetype-heuristics file))
-              (date (denote--date (date-to-time id) filetype))
-              (new-front-matter (denote--format-front-matter title date keywords id filetype)))
+              (date (denote--date (date-to-time id) file-type))
+              (new-front-matter (denote--format-front-matter title date keywords id file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -1346,7 +1345,7 @@ files)."
       (denote-update-dired-buffers)
       (if (denote--edit-front-matter-p new-name file-type)
           (denote--rewrite-front-matter new-name title keywords file-type)
-        (denote--add-front-matter new-name title keywords id)))))
+        (denote--add-front-matter new-name title keywords id file-type)))))
 
 (define-obsolete-function-alias
   'denote-dired-rename-file-and-add-front-matter
@@ -1408,7 +1407,7 @@ The operation does the following:
             (denote--rename-file file new-name)
             (if (denote--edit-front-matter-p new-name file-type)
                 (denote--rewrite-keywords new-name keywords file-type)
-              (denote--add-front-matter new-name title keywords id))))
+              (denote--add-front-matter new-name title keywords id file-type))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
@@ -1533,7 +1532,8 @@ relevant front matter."
     (buffer-file-name)
     (denote--title-prompt)
     (denote--keywords-prompt)))
-  (denote--add-front-matter file title keywords (denote--file-name-id file)))
+  (denote--add-front-matter file title keywords (denote--file-name-id file)
+                            (denote--filetype-heuristics file)))
 
 ;;;; The Denote faces
 
