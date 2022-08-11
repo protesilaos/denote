@@ -425,6 +425,9 @@ trailing hyphen."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
+;; TODO 2022-08-11: In light of `denote--writable-and-supported-p', we
+;; should either harden `denote--only-note-p' to also check for a
+;; `denote-directory' or decide how to merge the two functions.
 (defun denote--only-note-p (file)
   "Make sure FILE is an actual Denote note."
   (let ((file-name (file-name-nondirectory file)))
@@ -435,6 +438,7 @@ trailing hyphen."
                                  "\\(.gpg\\)?"
                                  "\\'")
                          file-name)
+         ;; Can this ever be t given the above?
          (not (string-match-p "[#~]\\'" file)))))
 
 (defun denote--file-supported-extension-p (file)
