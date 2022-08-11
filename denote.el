@@ -437,6 +437,10 @@ trailing hyphen."
                          file-name)
          (not (string-match-p "[#~]\\'" file)))))
 
+(defun denote--file-supported-extension-p (file)
+  "Return non-nil if FILE has supported extension."
+  (string-match-p (format "%s\\(.gpg\\)?\\'" denote--extension-regexp) file))
+
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return file name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
