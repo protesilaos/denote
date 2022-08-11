@@ -557,17 +557,9 @@ output is sorted with `string-lessp'."
 
 ;;;; Front matter or content retrieval functions
 
-(defconst denote--retrieve-id-front-matter-key-regexp
-  "^.?.?\\b\\(?:identifier\\)\\s-*[:=]"
-  "Regular expression for identifier key.")
-
 (defconst denote--retrieve-title-front-matter-key-regexp
   "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]"
   "Regular expression for title key.")
-
-(defconst denote--retrieve-date-front-matter-key-regexp
-  "^\\(?:#\\+\\)?\\(?:date\\)\\s-*[:=]"
-  "Regular expression for date key.")
 
 (defconst denote--retrieve-keywords-front-matter-key-regexp
   "^\\(?:#\\+\\)?\\(?:tags\\|filetags\\)\\s-*[:=]"
@@ -608,14 +600,6 @@ If optional KEY is non-nil, return the key instead."
   (denote--retrieve-search
    file
    denote--retrieve-title-front-matter-key-regexp
-   key))
-
-(defun denote--retrieve-value-date (file &optional key)
-  "Return date value from FILE.
-If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search
-   file
-   denote--retrieve-date-front-matter-key-regexp
    key))
 
 (defun denote--retrieve-value-keywords (file &optional key)
