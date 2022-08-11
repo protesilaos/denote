@@ -1165,7 +1165,8 @@ appropriate."
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
-  (with-current-buffer (find-file-noselect file)
+  (with-temp-buffer
+    (insert-file-contents file)
     (save-excursion
       (save-restriction
         (widen)
