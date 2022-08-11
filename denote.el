@@ -584,7 +584,10 @@ output is sorted with `string-lessp'."
 (defun denote--retrieve-search (file key-regexp &optional key)
   "Return value of KEY-REGEXP key in current buffer from FILE.
 If optional KEY is non-nil, return the key instead."
-  (when (denote--only-note-p file)
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
     (with-temp-buffer
       (insert-file-contents file)
       (save-excursion
