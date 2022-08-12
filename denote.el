@@ -1473,7 +1473,8 @@ This command is useful for synchronizing multiple file names with
 their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
-                   (lambda (file) (denote--only-note-p file))
+                   (lambda (file)
+                     (denote--writable-and-supported-p file))
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
