@@ -568,25 +568,145 @@ output is sorted with `string-lessp'."
           (add-to-history 'denote--keyword-history kw))
         (delete-dups keywords)))
 
-;;;; Front matter or content retrieval functions
+;;;; File types
+
+(defvar denote--toml-front-matter
+  "+++
+title      = %s
+date       = %s
+tags       = %s
+identifier = %S
++++\n\n"
+  "TOML front matter.")
+
+(defvar denote--yaml-front-matter
+  "---
+title:      %s
+date:       %s
+tags:       %s
+identifier: %S
+---\n\n"
+  "YAML front matter.")
+
+(defvar denote--text-front-matter
+  "title:      %s
+date:       %s
+tags:       %s
+identifier: %s
+---------------------------\n\n"
+  "Plain text front matter.")
+
+(defvar denote--org-front-matter
+  "#+title:      %s
+#+date:       %s
+#+filetags:   %s
+#+identifier: %s
+\n"
+  "Org front matter.")
+
+(defun denote--surround-with-quotes (s)
+  "Surround string S with quotes."
+  (format "%S" s))
+
+(defun denote--trim-whitespace (s)
+  "Trim whitespace around string S."
+  (let ((trims "[ \t\n\r]+"))
+    (string-trim s trims trims)))
+
+(defun denote--trim-quotes (s)
+  "Trim quotes around string S."
+  (let ((trims "[\"']+"))
+    (string-trim s trims trims)))
+
+(defun denote--trim-whitespace-then-quotes (s)
+  "Trim whitespace then quotes around string S."
+  (denote--trim-quotes (denote--trim-whitespace s)))
+
+(defun denote--format-keywords-for-md-front-matter (keywords)
+  "Format front matter KEYWORDS for markdown file type."
+  (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) keywords ", ")))
+
+(defun denote--format-keywords-for-text-front-matter (keywords)
+  "Format front matter KEYWORDS for text file type."
+  (string-join keywords "  "))
+
+(defun denote--format-keywords-for-org-front-matter (keywords)
+  "Format front matter KEYWORDS for org file type."
+  (format ":%s:" (string-join keywords ":")))
+
+(defun denote--extract-keywords-from-front-matter (keywords-string)
+  "Extract keywords list from front matter KEYWORDS-STRING."
+  (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
+
+(defun denote--file-extension (file-type)
+  "Return file type extension based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml ".md")
+    ('markdown-yaml ".md")
+    ('text ".txt")
+    ('org ".org")))
+
+(defun denote--front-matter (file-type)
+  "Return front matter based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml denote--toml-front-matter)
+    ('markdown-yaml denote--yaml-front-matter)
+    ('text denote--text-front-matter)
+    ('org denote--org-front-matter)))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
-         "^title\\s-*:")
-        ((eq file-type 'org)
-         "^#\\+title\\s-*:")
-        ((eq file-type 'markdown-toml)
-         "^title\\s-*=")))
+  (pcase file-type
+    ('markdown-toml "^title\\s-*=")
+    ('markdown-yaml "^title\\s-*:")
+    ('text "^title\\s-*:")
+    ('org "^#\\+title\\s-*:")))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
-         "^tags\\s-*:")
-        ((eq file-type 'org)
-         "^#\\+filetags\\s-*:")
-        ((eq file-type 'markdown-toml)
-         "^tags\\s-*=")))
+  (pcase file-type
+    ('markdown-toml "^tags\\s-*=")
+    ('markdown-yaml "^tags\\s-*:")
+    ('text "^tags\\s-*:")
+    ('org "^#\\+filetags\\s-*:")))
+
+(defun denote--title-value-function (file-type)
+  "Function to convert the title string to a front matter title.
+Based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml #'denote--surround-with-quotes)
+    ('markdown-yaml #'denote--surround-with-quotes)
+    ('text #'identity)
+    ('org #'identity)))
+
+(defun denote--title-value-reverse-function (file-type)
+  "Function to convert a front matter title to the title string.
+Based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml #'denote--trim-whitespace-then-quotes)
+    ('markdown-yaml #'denote--trim-whitespace-then-quotes)
+    ('text #'denote--trim-whitespace)
+    ('org #'denote--trim-whitespace)))
+
+(defun denote--keywords-value-function (file-type)
+  "Function to convert the keywords string to a front matter keywords.
+Based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml #'denote--format-keywords-for-md-front-matter)
+    ('markdown-yaml #'denote--format-keywords-for-md-front-matter)
+    ('text #'denote--format-keywords-for-text-front-matter)
+    ('org #'denote--format-keywords-for-org-front-matter)))
+
+(defun denote--keywords-value-reverse-function (file-type)
+  "Function to convert a front matter keywords to the keywords list.
+Based on FILE-TYPE."
+  (pcase file-type
+    ('markdown-toml #'denote--extract-keywords-from-front-matter)
+    ('markdown-yaml #'denote--extract-keywords-from-front-matter)
+    ('text #'denote--extract-keywords-from-front-matter)
+    ('org #'denote--extract-keywords-from-front-matter)))
+
+;;;; Front matter or content retrieval functions
 
 (defconst denote--retrieve-title-front-matter-key-regexp
   "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]"
@@ -674,14 +794,6 @@ Parse `denote--retrieve-xrefs'."
 ;;;; New note
 
 ;;;;; Common helpers for new notes
-
-(defun denote--file-extension (file-type)
-  "Return file type extension based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml ".md")
-    ('markdown-yaml ".md")
-    ('text ".txt")
-    ('org ".org")))
 
 (defun denote--format-file (path id keywords title-slug extension)
   "Format file name.
