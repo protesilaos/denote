@@ -1641,6 +1641,11 @@ and seconds."
   :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
+;; FIXME 2022-08-12: Make `denote-dired-mode' actually apply to Dired.
+;; FIXME 2022-08-12: Make `denote-dired-mode' persist after WDired.
+;; FIXME 2022-08-12: Make `denote-dired-mode' work with diredfl.  This
+;; may prove challenging.
+
 ;;;###autoload
 (define-minor-mode denote-dired-mode
   "Fontify all Denote-style file names.
