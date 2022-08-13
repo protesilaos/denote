@@ -446,6 +446,11 @@ trailing hyphen."
          ;; Can this ever be t given the above?
          (not (string-match-p "[#~]\\'" file)))))
 
+(defun denote--file-has-identifier-p (file)
+  "Return non-nil if FILE has a Denote identifier."
+  (let ((file-name (file-name-nondirectory file)))
+    (string-match-p denote--id-regexp (format "\\`%s" file-name))))
+
 (defun denote--file-supported-extension-p (file)
   "Return non-nil if FILE has supported extension."
   (string-match-p (format "%s\\(.gpg\\)?\\'" denote--extension-regexp) file))
@@ -494,11 +499,11 @@ FILE must be an absolute path."
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP.
-The match is performed against the file name relative to the
-variable `denote-directory'."
+Files are those which satisfy `denote--file-has-identifier-p' and
+`denote--file-name-relative-to-denote-directory'."
   (seq-filter
    (lambda (f)
-     (and (denote--only-note-p f)
+     (and (denote--file-has-identifier-p f)
           (string-match-p regexp (denote--file-name-relative-to-denote-directory f))))
    (denote--directory-files)))
 
@@ -632,7 +637,7 @@ If optional KEY is non-nil, return the key instead."
   "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil nil nil
                   (lambda (f)
-                    (or (denote--only-note-p f)
+                    (or (denote--file-has-identifier-p f)
                         (file-directory-p f)))))
 
 (defun denote--retrieve-files-in-output (files)
