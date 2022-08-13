@@ -638,6 +638,68 @@ identifier: %s
   "Extract keywords list from front matter KEYWORDS-STRING."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
+(defvar denote--file-types
+  `((markdown-toml . (".md"
+                      ,denote--toml-front-matter
+                      "^title\\s-*="
+                      denote--surround-with-quotes
+                      denote--trim-whitespace-then-quotes
+                      "^tags\\s-*="
+                      denote--format-keywords-for-md-front-matter
+                      denote--extract-keywords-from-front-matter))
+    (markdown-yaml . (".md"
+                      ,denote--yaml-front-matter
+                      "^title\\s-*:"
+                      denote--surround-with-quotes
+                      denote--trim-whitespace-then-quotes
+                      "^tags\\s-*:"
+                      denote--format-keywords-for-md-front-matter
+                      denote--extract-keywords-from-front-matter))
+    (text . (".txt"
+             ,denote--yaml-front-matter
+             "^title\\s-*:"
+             identity
+             denote--trim-whitespace
+             "^tags\\s-*:"
+             denote--format-keywords-for-text-front-matter
+             denote--extract-keywords-from-front-matter))
+    (org . (".org"
+            ,denote--org-front-matter
+            "^#\\+title\\s-*:"
+            identity
+            denote--trim-whitespace
+            "^#\\+tags\\s-*:"
+            denote--format-keywords-for-text-front-matter
+            denote--extract-keywords-from-front-matter)))
+  "Alist for Denote's file types.
+Each element is of the form (TYPE-SYMB . TYPE-INFO).
+
+TYPE-INFO is a list of 8 elements:
+
+  extension: The file extension, as a string.
+
+  front-matter: The type's front matter, as a string.
+
+  title-key-regexp: The regexp used to retrieve the title line in
+    a file. The first line matching this regexp is considered the
+    title line.
+
+  title-value-function: The function used to format the raw title
+    string for inclusion in the front matter.
+
+  title-value-reverse-function: The function used to retrieve the raw title
+    string from the string in the front matter.
+
+  keywords-key-regexp: The regexp used to retrieve the keywords
+    line in a file. The first line matching this regexp is
+    considered the keywords line.
+
+  keywords-value-function: The function used to format the
+    keywords list for inclusion in the front matter.
+
+  keywords-value-reverse-function: The function used to retrieve
+    the keywords list from the string in the front matter.")
+
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
   (pcase file-type
