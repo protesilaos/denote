@@ -2257,7 +2257,7 @@ Consult the manual for template samples."
 
 (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
-;;;; For the migration of old Org filetags
+;;;; For the migration of old Org filetags/Markdown+YAML tags
 
 (defun denote--migrate-type-files (type file-type)
   "Return list of TYPE files in variable `denote-directory'.
@@ -2333,7 +2333,7 @@ This command is provided for the convenience of the user.  It
 shall be deprecated and eventually removed from future versions
 of Denote.  Written on 2022-08-10 for version 0.5.0."
   (interactive)
-  (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
+  (when-let (((yes-or-no-p "Rewrite tags in Markdown files with YAML header to use lists (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "md" 'markdown-yaml)))
     (dolist (file files)
       (when-let* ((kw (denote--front-matter-keywords-to-list file 'markdown-yaml))
