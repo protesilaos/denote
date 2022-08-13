@@ -2266,10 +2266,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Author/maintainer :: Protesilaos Stavrou.
 
-+ Contributions to code or the manual :: Benjamin Kästner, Colin McLear,
-  Damien Cassou, Jack Baty, Jean-Philippe Gagné Guay, Jürgen Hötzel,
-  Kaushal Modi, Kyle Meyer, Peter Prevos, Philip Kaludercic, Quiliro
-  Ordóñez, Stefan Monnier.
++ Contributions to code or the manual :: Abin Simon, Benjamin Kästner,
+  Colin McLear, Damien Cassou, Jack Baty, Jean-Philippe Gagné Guay,
+  Jürgen Hötzel, Kaushal Modi, Kyle Meyer, Peter Prevos, Philip
+  Kaludercic, Quiliro Ordóñez, Stefan Monnier.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
