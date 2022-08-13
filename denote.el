@@ -2268,7 +2268,10 @@ FILE-TYPE is the symbol file-type."
          (lambda (file)
            (when-let* ((value (denote--retrieve-value-keywords
                                file file-type))
-                       ((string-match-p "\s\s" value)))
+                       ((cond
+                         ((eq file-type 'markdown-yaml) (not (string-match-p "," value)))
+                         ((eq file-type 'org) (not (string-match-p ":" value)))
+                         (t nil))))
              file))
          (seq-remove
           (lambda (file)
