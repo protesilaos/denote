@@ -575,7 +575,7 @@ output is sorted with `string-lessp'."
   (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
          "^title\\s-*:")
         ((eq file-type 'org)
-         "^#+title\\s-*:")
+         "^#\\+title\\s-*:")
         ((eq file-type 'markdown-toml)
          "^title\\s-*=")))
 
@@ -584,7 +584,7 @@ output is sorted with `string-lessp'."
   (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
          "^tags\\s-*:")
         ((eq file-type 'org)
-         "^#+filetags\\s-*:")
+         "^#\\+filetags\\s-*:")
         ((eq file-type 'markdown-toml)
          "^tags\\s-*=")))
 
