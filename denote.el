@@ -1776,13 +1776,17 @@ title."
     ("md" denote-link--regexp-markdown)
     (_ denote-link--regexp-org)))
 
+;; FIXME 2022-08-13: Write this cleanly
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
-  (let* ((file-id (denote--retrieve-filename-identifier file))
-         (file-type (denote--filetype-heuristics file))
-         (file-title (unless (string= pattern denote-link--format-id-only)
-                       (denote--retrieve-value-title file file-type))))
-    (format pattern file-id file-title)))
+  (if (denote--writable-and-supported-p file)
+      (let* ((file-id (denote--retrieve-filename-identifier file))
+             (file-type (denote--filetype-heuristics file))
+             (file-title (unless (string= pattern denote-link--format-id-only)
+                           (denote--retrieve-value-title file file-type))))
+        (format pattern file-id file-title))
+    (format denote-link--format-id-only
+            (denote--retrieve-filename-identifier file))))
 
 ;;;###autoload
 (defun denote-link (target &optional id-only)
