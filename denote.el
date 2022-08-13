@@ -491,7 +491,7 @@ FILE must be an absolute path."
    (lambda (s) (expand-file-name s))
    (seq-remove
     (lambda (f)
-      (not (denote--only-note-p f)))
+      (not (denote--file-has-identifier-p f)))
     (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
 (defun denote--get-note-path-by-id (id)
