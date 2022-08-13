@@ -455,10 +455,14 @@ trailing hyphen."
   "Return non-nil if FILE has supported extension."
   (string-match-p (format "%s\\(.gpg\\)?\\'" denote--extension-regexp) file))
 
+(defun denote--file-regular-writable-p (file)
+  "Return non-nil if FILE is regular and writable."
+  (and (file-regular-p file)
+       (file-writable-p file)))
+
 (defun denote--writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
-  (and (file-regular-p file)
-       (file-writable-p file)
+  (and (denote--file-regular-writable-p file)
        (denote--file-supported-extension-p file)))
 
 (defun denote--file-name-relative-to-denote-directory (file)
