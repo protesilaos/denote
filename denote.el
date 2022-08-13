@@ -702,71 +702,39 @@ TYPE-INFO is a list of 8 elements:
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml ".md")
-    ('markdown-yaml ".md")
-    ('text ".txt")
-    ('org ".org")))
+  (nth 0 (alist-get file-type denote--file-types)))
 
 (defun denote--front-matter (file-type)
   "Return front matter based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml denote--toml-front-matter)
-    ('markdown-yaml denote--yaml-front-matter)
-    ('text denote--text-front-matter)
-    ('org denote--org-front-matter)))
+  (nth 1 (alist-get file-type denote--file-types)))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml "^title\\s-*=")
-    ('markdown-yaml "^title\\s-*:")
-    ('text "^title\\s-*:")
-    ('org "^#\\+title\\s-*:")))
-
-(defun denote--keywords-key-regexp (file-type)
-  "Return the keywords key regexp associated to FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml "^tags\\s-*=")
-    ('markdown-yaml "^tags\\s-*:")
-    ('text "^tags\\s-*:")
-    ('org "^#\\+filetags\\s-*:")))
+  (nth 2 (alist-get file-type denote--file-types)))
 
 (defun denote--title-value-function (file-type)
   "Function to convert the title string to a front matter title.
 Based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml #'denote--surround-with-quotes)
-    ('markdown-yaml #'denote--surround-with-quotes)
-    ('text #'identity)
-    ('org #'identity)))
+  (nth 3 (alist-get file-type denote--file-types)))
 
 (defun denote--title-value-reverse-function (file-type)
   "Function to convert a front matter title to the title string.
 Based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml #'denote--trim-whitespace-then-quotes)
-    ('markdown-yaml #'denote--trim-whitespace-then-quotes)
-    ('text #'denote--trim-whitespace)
-    ('org #'denote--trim-whitespace)))
+  (nth 4 (alist-get file-type denote--file-types)))
+
+(defun denote--keywords-key-regexp (file-type)
+  "Return the keywords key regexp associated to FILE-TYPE."
+  (nth 5 (alist-get file-type denote--file-types)))
 
 (defun denote--keywords-value-function (file-type)
   "Function to convert the keywords string to a front matter keywords.
 Based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml #'denote--format-keywords-for-md-front-matter)
-    ('markdown-yaml #'denote--format-keywords-for-md-front-matter)
-    ('text #'denote--format-keywords-for-text-front-matter)
-    ('org #'denote--format-keywords-for-org-front-matter)))
+  (nth 6 (alist-get file-type denote--file-types)))
 
 (defun denote--keywords-value-reverse-function (file-type)
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml #'denote--extract-keywords-from-front-matter)
-    ('markdown-yaml #'denote--extract-keywords-from-front-matter)
-    ('text #'denote--extract-keywords-from-front-matter)
-    ('org #'denote--extract-keywords-from-front-matter)))
+  (nth 7 (alist-get file-type denote--file-types)))
 
 ;;;; Front matter or content retrieval functions
 
