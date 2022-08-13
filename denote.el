@@ -507,8 +507,7 @@ Files are those which satisfy `denote--file-has-identifier-p' and
 `denote--file-name-relative-to-denote-directory'."
   (seq-filter
    (lambda (f)
-     (and (denote--file-has-identifier-p f)
-          (string-match-p regexp (denote--file-name-relative-to-denote-directory f))))
+     (string-match-p regexp (denote--file-name-relative-to-denote-directory f)))
    (denote--directory-files)))
 
 ;;;; Keywords
