@@ -743,10 +743,11 @@ Based on FILE-TYPE."
 Based on FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
 
-(defun denote--get-title-line-from-front-matter (file-type)
+(defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
-Does not contains the newline."
-  (let ((front-matter (denote--front-matter file-type))
+Format TITLE in the title line. The returned line does not
+contain the newline."
+  (let ((front-matter (denote--format-front-matter title "" nil "" file-type))
         (key-regexp (denote--title-key-regexp file-type)))
     (with-temp-buffer
       (insert front-matter)
@@ -754,10 +755,11 @@ Does not contains the newline."
       (when (re-search-forward key-regexp nil t 1)
         (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
-(defun denote--get-keywords-line-from-front-matter (file-type)
+(defun denote--get-keywords-line-from-front-matter (keywords file-type)
   "Retrieve keywords line from front matter based on FILE-TYPE.
-Does not contain the newline."
-  (let ((front-matter (denote--front-matter file-type))
+Format KEYWORDS in the keywords line. The returned line does not
+contain the newline."
+  (let ((front-matter (denote--format-front-matter "" "" keywords "" file-type))
         (key-regexp (denote--keywords-key-regexp file-type)))
     (with-temp-buffer
       (insert front-matter)
@@ -1325,8 +1327,7 @@ operation on multiple files."
         (goto-char (point-min))
         (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
           (goto-char (point-at-bol))
-          (insert (format (denote--get-keywords-line-from-front-matter file-type)
-                          (denote--format-front-matter-keywords keywords file-type)))
+          (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (point-at-eol)))))))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
@@ -1339,10 +1340,8 @@ renaming command and are used to construct new front matter
 values if appropriate."
   (when-let* ((old-title-line (denote--retrieve-title-line file file-type))
               (old-keywords-line (denote--retrieve-keywords-line file file-type))
-              (new-title-line (format (denote--get-title-line-from-front-matter file-type)
-                                      (denote--format-front-matter-title title file-type)))
-              (new-keywords-line (format (denote--get-keywords-line-from-front-matter file-type)
-                                         (denote--format-front-matter-keywords keywords file-type))))
+              (new-title-line (denote--get-title-line-from-front-matter title file-type))
+              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
       (when (y-or-n-p (format
                        "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
