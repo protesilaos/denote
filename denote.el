@@ -878,13 +878,6 @@ Apply `downcase' to KEYWORDS."
   (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
     (funcall (denote--keywords-value-function file-type) kw)))
 
-(defun denote--front-matter-keywords-to-list (file file-type)
-  "Return keywords from front matter of FILE as list of strings.
-FILE-TYPE is used to retrieve the keywords. This is the reverse
-operation of `denote--format-front-matter-keywords'."
-  (when-let ((keywords (denote--retrieve-value-keywords file file-type)))
-    (split-string keywords "[:,\s]+" t "[][ \"']+")))
-
 (make-obsolete-variable 'denote-text-front-matter-delimiter nil "0.6.0")
 
 (defun denote--format-front-matter (title date keywords id filetype)
@@ -1565,7 +1558,7 @@ typos and the like."
     (user-error "Save buffer before proceeding"))
   (if-let* ((file-type (denote--filetype-heuristics file))
             (title (denote--retrieve-value-title file file-type))
-            (keywords (denote--front-matter-keywords-to-list file file-type))
+            (keywords (denote--retrieve-value-keywords file file-type))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1617,7 +1610,7 @@ their respective front matter."
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
                  (title (denote--retrieve-value-title file file-type))
-                 (keywords (denote--front-matter-keywords-to-list file file-type))
+                 (keywords (denote--retrieve-value-keywords file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
@@ -2428,7 +2421,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "org" 'org)))
     (dolist (file files)
-      (when-let* ((kw (denote--front-matter-keywords-to-list file 'org))
+      (when-let* ((kw (denote--retrieve-value-keywords file 'org))
                   ((denote--edit-front-matter-p file 'org)))
         (denote--rewrite-keywords file kw 'org)))))
 
@@ -2459,7 +2452,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite tags in Markdown files with YAML header to use lists (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "md" 'markdown-yaml)))
     (dolist (file files)
-      (when-let* ((kw (denote--front-matter-keywords-to-list file 'markdown-yaml))
+      (when-let* ((kw (denote--retrieve-value-keywords file 'markdown-yaml))
                   ((denote--edit-front-matter-p file 'markdown-yaml)))
         (denote--rewrite-keywords file kw 'markdown-yaml)))))
 
