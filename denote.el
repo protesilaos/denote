@@ -775,7 +775,7 @@ Does not contain the newline."
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
-(defun denote--retrieve-value-title (file file-type)
+(defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
   (when (or (denote--writable-and-supported-p file)
             (denote--only-note-p file))
@@ -795,7 +795,7 @@ Does not contain the newline."
       (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
         (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
-(defun denote--retrieve-value-keywords (file file-type)
+(defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
   (when (or (denote--writable-and-supported-p file)
@@ -1329,7 +1329,7 @@ operation on multiple files."
           (delete-region (point) (point-at-eol)))))))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
-;; that `denote--retrieve-value-title' targets more refined, so that we
+;; that `denote--retrieve-title-value' targets more refined, so that we
 ;; capture eveyrhing at once.
 (defun denote--rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-dired-rename-file'.
@@ -1452,7 +1452,7 @@ files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-value-title file file-type) (file-name-base file)))
+       (or (denote--retrieve-title-value file file-type) (file-name-base file)))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1520,7 +1520,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (or (denote--retrieve-value-title file file-type)
+                 (title (or (denote--retrieve-title-value file file-type)
                             (file-name-base file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
@@ -1557,8 +1557,8 @@ typos and the like."
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
   (if-let* ((file-type (denote--filetype-heuristics file))
-            (title (denote--retrieve-value-title file file-type))
-            (keywords (denote--retrieve-value-keywords file file-type))
+            (title (denote--retrieve-title-value file file-type))
+            (keywords (denote--retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1609,8 +1609,8 @@ their respective front matter."
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (denote--retrieve-value-title file file-type))
-                 (keywords (denote--retrieve-value-keywords file file-type))
+                 (title (denote--retrieve-title-value file file-type))
+                 (keywords (denote--retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
@@ -1895,7 +1895,7 @@ title."
       (let* ((file-id (denote--retrieve-filename-identifier file))
              (file-type (denote--filetype-heuristics file))
              (file-title (unless (string= pattern denote-link--format-id-only)
-                           (denote--retrieve-value-title file file-type))))
+                           (denote--retrieve-title-value file file-type))))
         (format pattern file-id file-title))
     (format denote-link--format-id-only
             (denote--retrieve-filename-identifier file))))
@@ -2106,7 +2106,7 @@ default, it will show up below the current window."
   (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (file-type (denote--filetype-heuristics file))
-         (title (denote--retrieve-value-title file file-type)))
+         (title (denote--retrieve-title-value file file-type)))
     (if-let ((files (denote--retrieve-process-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
@@ -2421,7 +2421,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "org" 'org)))
     (dolist (file files)
-      (when-let* ((kw (denote--retrieve-value-keywords file 'org))
+      (when-let* ((kw (denote--retrieve-keywords-value file 'org))
                   ((denote--edit-front-matter-p file 'org)))
         (denote--rewrite-keywords file kw 'org)))))
 
@@ -2452,7 +2452,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite tags in Markdown files with YAML header to use lists (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "md" 'markdown-yaml)))
     (dolist (file files)
-      (when-let* ((kw (denote--retrieve-value-keywords file 'markdown-yaml))
+      (when-let* ((kw (denote--retrieve-keywords-value file 'markdown-yaml))
                   ((denote--edit-front-matter-p file 'markdown-yaml)))
         (denote--rewrite-keywords file kw 'markdown-yaml)))))
 
