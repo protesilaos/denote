@@ -642,7 +642,7 @@ identifier: %s
   "Extract keywords list from front matter KEYWORDS-STRING."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
-(defvar denote--file-types
+(defvar denote-file-types
   ;; If denote-file-type is nil, we use the first element
   ;; of denote-file-types for new note creation, which we want
   ;; to be org by default.
@@ -709,39 +709,39 @@ TYPE-INFO is a list of 8 elements:
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
-  (nth 0 (alist-get file-type denote--file-types)))
+  (nth 0 (alist-get file-type denote-file-types)))
 
 (defun denote--front-matter (file-type)
   "Return front matter based on FILE-TYPE."
-  (nth 1 (alist-get file-type denote--file-types)))
+  (nth 1 (alist-get file-type denote-file-types)))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (nth 2 (alist-get file-type denote--file-types)))
+  (nth 2 (alist-get file-type denote-file-types)))
 
 (defun denote--title-value-function (file-type)
   "Function to convert the title string to a front matter title.
 Based on FILE-TYPE."
-  (nth 3 (alist-get file-type denote--file-types)))
+  (nth 3 (alist-get file-type denote-file-types)))
 
 (defun denote--title-value-reverse-function (file-type)
   "Function to convert a front matter title to the title string.
 Based on FILE-TYPE."
-  (nth 4 (alist-get file-type denote--file-types)))
+  (nth 4 (alist-get file-type denote-file-types)))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (nth 5 (alist-get file-type denote--file-types)))
+  (nth 5 (alist-get file-type denote-file-types)))
 
 (defun denote--keywords-value-function (file-type)
   "Function to convert the keywords string to a front matter keywords.
 Based on FILE-TYPE."
-  (nth 6 (alist-get file-type denote--file-types)))
+  (nth 6 (alist-get file-type denote-file-types)))
 
 (defun denote--keywords-value-reverse-function (file-type)
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
-  (nth 7 (alist-get file-type denote--file-types)))
+  (nth 7 (alist-get file-type denote-file-types)))
 
 (defun denote--get-title-line-from-front-matter (file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
@@ -951,15 +951,15 @@ and TEMPLATE should be valid for note creation."
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype given the argument FILETYPE.
-If none is found, the first element of `denote--file-types' is
+If none is found, the first element of `denote-file-types' is
 returned."
   (unless (or (symbolp filetype) (stringp filetype))
     (user-error "`%s' is not a symbol or string" filetype))
   (when (stringp filetype)
     (setq filetype (intern filetype)))
-  (if (memq filetype (mapcar 'car denote--file-types))
+  (if (memq filetype (mapcar 'car denote-file-types))
       filetype
-    (caar denote--file-types)))
+    (caar denote-file-types)))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
@@ -1217,12 +1217,12 @@ If more than one file type correspond to this file extension,
 use the first file type for which the key-title-kegexp matches
 in the file.
 Else, if nothing works, the file type is assumed to be the first
-in `denote--file-types'."
+in `denote-file-types'."
   (let* ((file-type)
          (extension (file-name-extension file t))
          (types (seq-filter (lambda (type)
                               (string-equal (nth 1 type) extension))
-                            denote--file-types)))
+                            denote-file-types)))
     (if (= (length types) 1)
         (setq file-type types)
       (setq file-type (seq-find
@@ -1230,7 +1230,7 @@ in `denote--file-types'."
                          (denote--regexp-in-file-p (nth 3 type) file))
                        types)))
     (unless file-type
-      (caar denote--file-types))))
+      (caar denote-file-types))))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
