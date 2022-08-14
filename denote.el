@@ -1289,11 +1289,8 @@ block if appropriate."
   "Return t if REGEXP matches in the FILE."
   (with-temp-buffer
     (insert-file-contents file)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (re-search-forward regexp nil t 1)))))
+    (goto-char (point-min))
+    (re-search-forward regexp nil t 1)))
 
 (defun denote--edit-front-matter-p (file file-type)
   "Test if FILE should be subject to front matter rewrite.
