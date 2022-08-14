@@ -886,7 +886,8 @@ Apply `downcase' to KEYWORDS."
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 provided by `denote'.  FILETYPE is one of the values of
 `denote-file-type'."
-  (let ((kws (denote--format-front-matter-keywords keywords filetype)))
+  (let ((title (denote--format-front-matter-title title filetype))
+        (kws (denote--format-front-matter-keywords keywords filetype)))
     (format (denote--front-matter filetype) title date kws id)))
 
 (defun denote--path (title keywords dir id file-type)
