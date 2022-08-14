@@ -2386,11 +2386,11 @@ FILE-TYPE is the symbol file-type."
   (delq nil
         (mapcar
          (lambda (file)
-           (when-let* ((value (denote--retrieve-value-keywords
+           (when-let* ((value (denote--retrieve-keywords-line
                                file file-type))
                        ((cond
                          ((eq file-type 'markdown-yaml) (not (string-match-p "," value)))
-                         ((eq file-type 'org) (not (string-match-p ":" value)))
+                         ((eq file-type 'org) (not (string-match-p " :" value)))
                          (t nil))))
              file))
          (seq-remove
