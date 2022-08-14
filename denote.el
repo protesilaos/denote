@@ -1224,13 +1224,16 @@ in `denote-file-types'."
                               (string-equal (plist-get (cdr type) :extension) extension))
                             denote-file-types)))
     (if (= (length types) 1)
-        (setq file-type types)
-      (setq file-type (seq-find
-                       (lambda (type)
-                         (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
-                       types)))
+        (setq file-type (caar types))
+      (let ((found-type (seq-find
+                         (lambda (type)
+                           (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                         types)))
+        (when found-type
+          (setq file-type (car found-type)))))
     (unless file-type
-      (caar denote-file-types))))
+      (setq file-type (caar denote-file-types)))
+    file-type))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
