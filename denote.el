@@ -646,38 +646,38 @@ identifier: %s
   ;; If denote-file-type is nil, we use the first element
   ;; of denote-file-types for new note creation, which we want
   ;; to be org by default.
-  `((org . (".org"
-            ,denote-org-front-matter
-            "^#\\+title\\s-*:"
-            identity
-            denote--trim-whitespace
-            "^#\\+filetags\\s-*:"
-            denote--format-keywords-for-org-front-matter
-            denote--extract-keywords-from-front-matter))
-    (markdown-toml . (".md"
-                      ,denote-toml-front-matter
-                      "^title\\s-*="
-                      denote--surround-with-quotes
-                      denote--trim-whitespace-then-quotes
-                      "^tags\\s-*="
-                      denote--format-keywords-for-md-front-matter
-                      denote--extract-keywords-from-front-matter))
-    (markdown-yaml . (".md"
-                      ,denote-yaml-front-matter
-                      "^title\\s-*:"
-                      denote--surround-with-quotes
-                      denote--trim-whitespace-then-quotes
-                      "^tags\\s-*:"
-                      denote--format-keywords-for-md-front-matter
-                      denote--extract-keywords-from-front-matter))
-    (text . (".txt"
-             ,denote-yaml-front-matter
-             "^title\\s-*:"
-             identity
-             denote--trim-whitespace
-             "^tags\\s-*:"
-             denote--format-keywords-for-text-front-matter
-             denote--extract-keywords-from-front-matter)))
+  `((org . (:extension ".org"
+            :front-matter ,denote-org-front-matter
+            :title-key-regexp "^#\\+title\\s-*:"
+            :title-value-function identity
+            :title-value-reverse-function denote--trim-whitespace
+            :keywords-key-regexp "^#\\+filetags\\s-*:"
+            :keywords-value-function denote--format-keywords-for-org-front-matter
+            :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (markdown-toml . (:extension ".md"
+                      :front-matter ,denote-toml-front-matter
+                      :title-key-regexp "^title\\s-*="
+                      :title-value-function denote--surround-with-quotes
+                      :title-value-reverse-function denote--trim-whitespace-then-quotes
+                      :keywords-key-regexp "^tags\\s-*="
+                      :keywords-value-function denote--format-keywords-for-md-front-matter
+                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (markdown-yaml . (:extension ".md"
+                      :front-matter ,denote-yaml-front-matter
+                      :title-key-regexp "^title\\s-*:"
+                      :title-value-function denote--surround-with-quotes
+                      :title-value-reverse-function denote--trim-whitespace-then-quotes
+                      :keywords-key-regexp "^tags\\s-*:"
+                      :keywords-value-function denote--format-keywords-for-md-front-matter
+                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (text . (:extension ".txt"
+             :front-matter ,denote-yaml-front-matter
+             :title-key-regexp "^title\\s-*:"
+             :title-value-function identity
+             :title-value-reverse-function denote--trim-whitespace
+             :keywords-key-regexp "^tags\\s-*:"
+             :keywords-value-function denote--format-keywords-for-text-front-matter
+             :keywords-value-reverse-function denote--extract-keywords-from-front-matter)))
   "Alist for Denote's file types.
 Each element is of the form (TYPE-SYMB . TYPE-INFO).
 
@@ -709,39 +709,39 @@ TYPE-INFO is a list of 8 elements:
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
-  (nth 0 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :extension))
 
 (defun denote--front-matter (file-type)
   "Return front matter based on FILE-TYPE."
-  (nth 1 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :front-matter))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (nth 2 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :title-key-regexp))
 
 (defun denote--title-value-function (file-type)
   "Function to convert the title string to a front matter title.
 Based on FILE-TYPE."
-  (nth 3 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :title-value-function))
 
 (defun denote--title-value-reverse-function (file-type)
   "Function to convert a front matter title to the title string.
 Based on FILE-TYPE."
-  (nth 4 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :title-value-reverse-function))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (nth 5 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :keywords-key-regexp))
 
 (defun denote--keywords-value-function (file-type)
   "Function to convert the keywords string to a front matter keywords.
 Based on FILE-TYPE."
-  (nth 6 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :keywords-value-function))
 
 (defun denote--keywords-value-reverse-function (file-type)
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
-  (nth 7 (alist-get file-type denote-file-types)))
+  (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
 
 (defun denote--get-title-line-from-front-matter (file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
@@ -1221,13 +1221,13 @@ in `denote-file-types'."
   (let* ((file-type)
          (extension (file-name-extension file t))
          (types (seq-filter (lambda (type)
-                              (string-equal (nth 1 type) extension))
+                              (string-equal (plist-get (cdr type) :extension) extension))
                             denote-file-types)))
     (if (= (length types) 1)
         (setq file-type types)
       (setq file-type (seq-find
                        (lambda (type)
-                         (denote--regexp-in-file-p (nth 3 type) file))
+                         (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
                        types)))
     (unless file-type
       (caar denote-file-types))))
