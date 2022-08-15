@@ -787,6 +787,13 @@ contain the newline."
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
+(defun denote--retrieve-filename-title (file)
+  "Extract title from FILE name."
+  (when (file-exists-p file)
+    (progn
+      (string-match denote--title-regexp file)
+      (match-string 1 file))))
+
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
   ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
@@ -1414,6 +1421,15 @@ Throw error is FILE is not regular, else return FILE."
              (propertize (file-name-nondirectory old-name) 'face 'error)
              (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
+(defun denote--rename-return-title (file type)
+  "Return appropriate title for FILE given its TYPE."
+  (cond
+   ((denote--only-note-p file)
+    (denote--retrieve-title-value file type))
+   ((denote--file-has-identifier-p file)
+    (denote--retrieve-filename-title file))
+   (t (file-name-base file))))
+
 ;;;###autoload
 (defun denote-rename-file (file title keywords)
   "Rename file and update existing front matter if appropriate.
@@ -1476,7 +1492,7 @@ files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-title-value file file-type) (file-name-base file)))
+       (denote--rename-return-title file file-type))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1544,8 +1560,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (or (denote--retrieve-title-value file file-type)
-                            (file-name-base file)))
+                 (title (denote--rename-return-title file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
