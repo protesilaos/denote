@@ -1122,7 +1122,7 @@ When called from Lisp, all arguments are optional.
 (defun denote--title-prompt (&optional default-title)
   "Read file title for `denote'.
 With optional DEFAULT-TITLE use it as the default value."
-  (let ((format (if default-title
+  (let ((format (if (and default-title (not (string-empty-p default-title)))
                     (format "File title [%s]: " default-title)
                   "File title: ")))
     (read-string format nil 'denote--title-history default-title)))
