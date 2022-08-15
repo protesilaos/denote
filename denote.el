@@ -792,11 +792,13 @@ contain the newline."
     (error "Cannot find `%s' as a file" file)))
 
 (defun denote--retrieve-filename-title (file)
-  "Extract title from FILE name."
-  (when (and (file-exists-p file)
-             (denote--file-has-identifier-p file))
-    (string-match denote--title-regexp file)
-    (match-string 1 file)))
+  "Extract title from FILE name, else return `file-name-base'"
+  (if (and (file-exists-p file)
+           (denote--file-has-identifier-p file))
+      (progn
+        (string-match denote--title-regexp file)
+        (match-string 1 file))
+    (file-name-base file)))
 
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
@@ -851,12 +853,9 @@ If optional KEY is non-nil, return the key instead."
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
-  (cond
-   ((denote--only-note-p file)
-    (denote--retrieve-title-value file type))
-   (t (if-let ((title (denote--retrieve-filename-title file)))
-          title
-        (file-name-base file)))))
+  (if (denote--only-note-p file)
+      (denote--retrieve-title-value file type)
+    (denote--retrieve-filename-title file)))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
