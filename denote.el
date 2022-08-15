@@ -1223,6 +1223,13 @@ set to \\='(template title keywords)."
 
 ;;;;; Common helpers for note modifications
 
+(defun denote--file-types-with-extension (extension)
+  "Return only the entries of `denote-file-types' with EXTENSION.
+See the format of `denote-file-types'."
+  (seq-filter (lambda (type)
+                (string-equal (plist-get (cdr type) :extension) extension))
+              denote-file-types))
+
 (defun denote--filetype-heuristics (file)
   "Return likely file type of FILE.
 Use the file extension to detect the file type of the file.
@@ -1233,9 +1240,7 @@ Else, if nothing works, the file type is assumed to be the first
 in `denote-file-types'."
   (let* ((file-type)
          (extension (file-name-extension file t))
-         (types (seq-filter (lambda (type)
-                              (string-equal (plist-get (cdr type) :extension) extension))
-                            denote-file-types)))
+         (types (denote--file-types-with-extension extension)))
     (if (= (length types) 1)
         (setq file-type (caar types))
       (let ((found-type (seq-find
