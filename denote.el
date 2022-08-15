@@ -793,7 +793,8 @@ contain the newline."
 
 (defun denote--retrieve-filename-title (file)
   "Extract title from FILE name."
-  (when (file-exists-p file)
+  (when (and (file-exists-p file)
+             (denote--file-has-identifier-p file))
     (string-match denote--title-regexp file)
     (match-string 1 file)))
 
@@ -853,9 +854,9 @@ If optional KEY is non-nil, return the key instead."
   (cond
    ((denote--only-note-p file)
     (denote--retrieve-title-value file type))
-   ((denote--file-has-identifier-p file)
-    (denote--retrieve-filename-title file))
-   (t (file-name-base file))))
+   (t (if-let ((title (denote--retrieve-filename-title file)))
+          title
+        (file-name-base file)))))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
