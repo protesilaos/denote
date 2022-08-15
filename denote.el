@@ -1004,7 +1004,7 @@ where the former does not read dates without a time component."
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
   (seq-filter
-   (lambda (name) (denote--only-note-p name))
+   #'denote--only-note-p
    (delq nil
          (mapcar
           (lambda (buf)
