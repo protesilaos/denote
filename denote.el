@@ -802,54 +802,38 @@ contain the newline."
 
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (funcall (denote--title-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (point-at-eol)))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+      (funcall (denote--title-value-reverse-function file-type)
+               (buffer-substring-no-properties (point) (point-at-eol))))))
 
 (defun denote--retrieve-title-line (file file-type)
   "Return title line from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
 
 (defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (funcall (denote--keywords-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (point-at-eol)))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+      (funcall (denote--keywords-value-reverse-function file-type)
+               (buffer-substring-no-properties (point) (point-at-eol))))))
 
 (defun denote--retrieve-keywords-line (file file-type)
   "Return keywords line from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
@@ -1591,6 +1575,8 @@ typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
+  (unless (denote--writable-and-supported-p file)
+    (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote--filetype-heuristics file))
             (title (denote--retrieve-title-value file file-type))
             (keywords (denote--retrieve-keywords-value file file-type))
@@ -2134,13 +2120,14 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (let* ((file (buffer-file-name))
-         (id (denote--retrieve-filename-identifier file))
-         (file-type (denote--filetype-heuristics file))
-         (title (denote--retrieve-title-value file file-type)))
-    (if-let ((files (denote--retrieve-process-grep id)))
-        (denote-link--prepare-backlinks id files title)
-      (user-error "No links to the current note"))))
+  (let ((file (buffer-file-name)))
+    (when (denote--writable-and-supported-p file)
+      (let* ((id (denote--retrieve-filename-identifier file))
+             (file-type (denote--filetype-heuristics file))
+             (title (denote--retrieve-title-value file file-type)))
+        (if-let ((files (denote--retrieve-process-grep id)))
+            (denote-link--prepare-backlinks id files title)
+          (user-error "No links to the current note"))))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
 
