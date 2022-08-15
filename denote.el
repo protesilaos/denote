@@ -753,6 +753,10 @@ Based on FILE-TYPE."
              (plist-get (cdr type) :extension))
            denote-file-types)))
 
+(defun denote--file-type-keys ()
+  "Return all `denote-file-type' keys."
+  (delete-dups (mapcar #'car denote-file-types)))
+
 (defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
 Format TITLE in the title line. The returned line does not
