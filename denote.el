@@ -1243,12 +1243,11 @@ in `denote-file-types'."
          (types (denote--file-types-with-extension extension)))
     (if (= (length types) 1)
         (setq file-type (caar types))
-      (let ((found-type (seq-find
-                         (lambda (type)
-                           (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
-                         types)))
-        (when found-type
-          (setq file-type (car found-type)))))
+      (when-let ((found-type (seq-find
+                              (lambda (type)
+                                (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                              types)))
+        (setq file-type (car found-type))))
     (unless file-type
       (setq file-type (caar denote-file-types)))
     file-type))
