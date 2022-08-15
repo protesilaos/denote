@@ -779,6 +779,8 @@ contain the newline."
 
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
   (when (or (denote--writable-and-supported-p file)
             (denote--only-note-p file))
     (with-temp-buffer
@@ -790,7 +792,10 @@ contain the newline."
 
 (defun denote--retrieve-title-line (file file-type)
   "Return title line from FILE according to FILE-TYPE."
-  (when (denote--writable-and-supported-p file)
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
     (with-temp-buffer
       (insert-file-contents file)
       (goto-char (point-min))
@@ -800,6 +805,8 @@ contain the newline."
 (defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
   (when (or (denote--writable-and-supported-p file)
             (denote--only-note-p file))
     (with-temp-buffer
@@ -811,7 +818,10 @@ If optional KEY is non-nil, return the key instead."
 
 (defun denote--retrieve-keywords-line (file file-type)
   "Return keywords line from FILE according to FILE-TYPE."
-  (when (denote--writable-and-supported-p file)
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
     (with-temp-buffer
       (insert-file-contents file)
       (goto-char (point-min))
