@@ -791,7 +791,7 @@ contain the newline."
     (error "Cannot find `%s' as a file" file)))
 
 (defun denote--retrieve-filename-title (file)
-  "Extract title from FILE name, else return `file-name-base'"
+  "Extract title from FILE name, else return `file-name-base'."
   (if (and (file-exists-p file)
            (denote--file-has-identifier-p file))
       (denote--desluggify
