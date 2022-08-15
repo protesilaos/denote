@@ -442,7 +442,7 @@ trailing hyphen."
 (defun denote--file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
   (let ((file-name (file-name-nondirectory file)))
-    (string-match-p denote--id-regexp (format "\\`%s" file-name))))
+    (string-match-p (concat "\\`" denote--id-regexp) file-name)))
 
 (defun denote--file-supported-extension-p (file)
   "Return non-nil if FILE has supported extension."
