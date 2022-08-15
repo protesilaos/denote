@@ -1301,8 +1301,7 @@ Update Dired buffers if the file is renamed."
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
-  (when-let* (((denote--only-note-p file))
-              (date (denote--date (date-to-time id) file-type))
+  (when-let* ((date (denote--date (date-to-time id) file-type))
               (new-front-matter (denote--format-front-matter title date keywords id file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
@@ -1669,8 +1668,9 @@ relevant front matter."
     (buffer-file-name)
     (denote--title-prompt)
     (denote--keywords-prompt)))
-  (denote--add-front-matter file title keywords (denote--file-name-id file)
-                            (denote--filetype-heuristics file)))
+  (when (denote--writable-and-supported-p file)
+    (denote--add-front-matter file title keywords (denote--file-name-id file)
+                              (denote--filetype-heuristics file))))
 
 ;;;; The Denote faces
 
