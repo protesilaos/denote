@@ -848,13 +848,6 @@ If optional KEY is non-nil, return the key instead."
                     (or (denote--file-has-identifier-p f)
                         (file-directory-p f)))))
 
-(defun denote--retrieve-files-in-output (files)
-  "Return list of FILES from `find' output."
-  (seq-filter
-   (lambda (f)
-     (denote--only-note-p f))
-   files))
-
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
@@ -872,7 +865,8 @@ Parse `denote--retrieve-xrefs'."
 
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (denote--retrieve-files-in-output
+  (seq-filter
+   #'denote--only-note-p
    (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
                                (denote--retrieve-xrefs identifier)))))
 
