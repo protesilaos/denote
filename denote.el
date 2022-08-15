@@ -355,9 +355,6 @@ command."
 (defconst denote--keywords-regexp "__\\([[:alnum:][:nonascii:]_-]*\\)"
   "Regular expression to match keywords.")
 
-(defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
-  "Regular expression to match supported Denote extensions.")
-
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
   "Punctionation that is removed from file names.
 We consider those characters illegal for our purposes.")
@@ -439,11 +436,8 @@ trailing hyphen."
     (and (not (file-directory-p file))
          (file-regular-p file)
          (string-prefix-p (denote-directory) (expand-file-name file))
-         (string-match-p (concat "\\`" denote--id-regexp
-                                 ".*" denote--extension-regexp
-                                 "\\(.gpg\\)?"
-                                 "\\'")
-                         file-name))))
+         (string-match-p (concat "\\`" denote--id-regexp) file-name)
+         (denote--file-supported-extension-p file))))
 
 (defun denote--file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
