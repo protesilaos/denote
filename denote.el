@@ -452,7 +452,13 @@ trailing hyphen."
 
 (defun denote--file-supported-extension-p (file)
   "Return non-nil if FILE has supported extension."
-  (string-match-p (format "%s\\(.gpg\\)?\\'" denote--extension-regexp) file))
+  (let* ((extensions (denote--extensions))
+         (valid-extensions (append extensions
+                                   (mapcar (lambda (e) (concat e ".gpg"))
+                                           extensions))))
+    (seq-some
+     (lambda (e) (string-suffix-p e file))
+     valid-extensions)))
 
 (defun denote--file-regular-writable-p (file)
   "Return non-nil if FILE is regular and writable."
@@ -741,6 +747,13 @@ Based on FILE-TYPE."
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
+
+(defun denote--extensions ()
+  "Return all extensions in `denote-file-type'."
+  (delete-dups
+   (mapcar (lambda (type)
+             (plist-get (cdr type) :extension))
+           denote-file-types)))
 
 (defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
