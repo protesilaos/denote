@@ -442,9 +442,7 @@ trailing hyphen."
                                  ".*" denote--extension-regexp
                                  "\\(.gpg\\)?"
                                  "\\'")
-                         file-name)
-         ;; Can this ever be t given the above?
-         (not (string-match-p "[#~]\\'" file)))))
+                         file-name))))
 
 (defun denote--file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
