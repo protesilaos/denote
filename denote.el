@@ -794,9 +794,8 @@ contain the newline."
 (defun denote--retrieve-filename-title (file)
   "Extract title from FILE name."
   (when (file-exists-p file)
-    (progn
-      (string-match denote--title-regexp file)
-      (match-string 1 file))))
+    (string-match denote--title-regexp file)
+    (match-string 1 file)))
 
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
