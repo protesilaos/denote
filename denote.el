@@ -1344,13 +1344,9 @@ relevant for operations that insert or rewrite the front matter
 in a Denote note.
 
 For the purposes of this test, FILE is a Denote note when it (i)
-is a regular file, (ii) is writable, (iii) has a supported file
-type extension per `denote-file-type', and (iv) is stored in the
-variable `denote-directory'."
+is a regular file and (ii) is writable."
   (and (denote--writable-and-supported-p file)
        (not (denote--file-empty-p file))
-       ;; Heuristic to check if this is one of our notes
-       (string-prefix-p (denote-directory) (expand-file-name file)) ; FIXME 2022-08-11: Why do we need this?
        (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
        (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
