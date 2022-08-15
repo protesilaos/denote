@@ -418,6 +418,10 @@ trailing hyphen."
             #'denote--sluggify-and-join)
           keywords))
 
+(defun denote--desluggify (str)
+  "Capitalize and dehyphenate STR, inverting `denote--sluggify'."
+  (capitalize (replace-regexp-in-string "-" " " str)))
+
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
