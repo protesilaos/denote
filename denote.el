@@ -848,6 +848,15 @@ If optional KEY is non-nil, return the key instead."
       (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
         (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
+(defun denote--retrieve-title-or-filename (file type)
+  "Return appropriate title for FILE given its TYPE."
+  (cond
+   ((denote--only-note-p file)
+    (denote--retrieve-title-value file type))
+   ((denote--file-has-identifier-p file)
+    (denote--retrieve-filename-title file))
+   (t (file-name-base file))))
+
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil nil nil
@@ -1424,15 +1433,6 @@ Throw error is FILE is not regular, else return FILE."
              (propertize (file-name-nondirectory old-name) 'face 'error)
              (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
-(defun denote--rename-return-title (file type)
-  "Return appropriate title for FILE given its TYPE."
-  (cond
-   ((denote--only-note-p file)
-    (denote--retrieve-title-value file type))
-   ((denote--file-has-identifier-p file)
-    (denote--retrieve-filename-title file))
-   (t (file-name-base file))))
-
 ;;;###autoload
 (defun denote-rename-file (file title keywords)
   "Rename file and update existing front matter if appropriate.
@@ -1495,7 +1495,7 @@ files)."
      (list
       file
       (denote--title-prompt
-       (denote--rename-return-title file file-type))
+       (denote--retrieve-title-or-filename file file-type))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1563,7 +1563,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (denote--rename-return-title file file-type))
+                 (title (denote--retrieve-title-or-filename file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
