@@ -355,9 +355,6 @@ command."
 (defconst denote--keywords-regexp "__\\([[:alnum:][:nonascii:]_-]*\\)"
   "Regular expression to match keywords.")
 
-(defconst denote--extension-regexp "\\.\\(org\\|md\\|txt\\)"
-  "Regular expression to match supported Denote extensions.")
-
 (defconst denote--punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
   "Punctionation that is removed from file names.
 We consider those characters illegal for our purposes.")
@@ -438,13 +435,9 @@ trailing hyphen."
   (let ((file-name (file-name-nondirectory file)))
     (and (not (file-directory-p file))
          (file-regular-p file)
-         (string-match-p (concat "\\`" denote--id-regexp
-                                 ".*" denote--extension-regexp
-                                 "\\(.gpg\\)?"
-                                 "\\'")
-                         file-name)
-         ;; Can this ever be t given the above?
-         (not (string-match-p "[#~]\\'" file)))))
+         (string-prefix-p (denote-directory) (expand-file-name file))
+         (string-match-p (concat "\\`" denote--id-regexp) file-name)
+         (denote--file-supported-extension-p file))))
 
 (defun denote--file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -453,7 +446,13 @@ trailing hyphen."
 
 (defun denote--file-supported-extension-p (file)
   "Return non-nil if FILE has supported extension."
-  (string-match-p (format "%s\\(.gpg\\)?\\'" denote--extension-regexp) file))
+  (let* ((extensions (denote--extensions))
+         (valid-extensions (append extensions
+                                   (mapcar (lambda (e) (concat e ".gpg"))
+                                           extensions))))
+    (seq-some
+     (lambda (e) (string-suffix-p e file))
+     valid-extensions)))
 
 (defun denote--file-regular-writable-p (file)
   "Return non-nil if FILE is regular and writable."
@@ -742,6 +741,13 @@ Based on FILE-TYPE."
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
+
+(defun denote--extensions ()
+  "Return all extensions in `denote-file-type'."
+  (delete-dups
+   (mapcar (lambda (type)
+             (plist-get (cdr type) :extension))
+           denote-file-types)))
 
 (defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
