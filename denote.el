@@ -1373,9 +1373,6 @@ operation on multiple files."
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (point-at-eol)))))))
 
-;; FIXME 2022-07-25: We should make the underlying regular expressions
-;; that `denote--retrieve-title-value' targets more refined, so that we
-;; capture eveyrhing at once.
 (defun denote--rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
