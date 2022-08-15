@@ -481,7 +481,10 @@ FILE must be an absolute path."
        (denote--default-dir-has-denote-prefix)))
 
 (defun denote--directory-files ()
-  "List expanded note files."
+  "List expanded files in variable `denote-directory'.
+The returned files only need to have an identifier. They may
+include files that are not of a valid file type as specified by
+`denote-file-types'."
   (mapcar
    (lambda (s) (expand-file-name s))
    (seq-remove
