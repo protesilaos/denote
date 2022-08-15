@@ -1343,10 +1343,9 @@ Use FILE-TYPE to look for the front matter lines. This is
 relevant for operations that insert or rewrite the front matter
 in a Denote note.
 
-For the purposes of this test, FILE is a Denote note when it (i)
-is a regular file and (ii) is writable."
-  (and (denote--writable-and-supported-p file)
-       (not (denote--file-empty-p file))
+For the purposes of this test, FILE is a Denote note when it
+contains a title line, a keywords line or both."
+  (and (not (denote--file-empty-p file))
        (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
        (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
@@ -1500,9 +1499,10 @@ files)."
     (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
       (denote-update-dired-buffers)
-      (if (denote--edit-front-matter-p new-name file-type)
-          (denote--rewrite-front-matter new-name title keywords file-type)
-        (denote--add-front-matter new-name title keywords id file-type)))))
+      (when (denote--writable-and-supported-p new-name)
+        (if (denote--edit-front-matter-p new-name file-type)
+            (denote--rewrite-front-matter new-name title keywords file-type)
+          (denote--add-front-matter new-name title keywords id file-type))))))
 
 (define-obsolete-function-alias
   'denote-dired-rename-file-and-add-front-matter
@@ -1561,9 +1561,10 @@ The operation does the following:
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
             (denote--rename-file file new-name)
-            (if (denote--edit-front-matter-p new-name file-type)
-                (denote--rewrite-keywords new-name keywords file-type)
-              (denote--add-front-matter new-name title keywords id file-type))))
+            (when (denote--writable-and-supported-p new-name)
+              (if (denote--edit-front-matter-p new-name file-type)
+                  (denote--rewrite-keywords new-name keywords file-type)
+                (denote--add-front-matter new-name title keywords id file-type)))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
