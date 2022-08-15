@@ -438,6 +438,7 @@ trailing hyphen."
   (let ((file-name (file-name-nondirectory file)))
     (and (not (file-directory-p file))
          (file-regular-p file)
+         (string-prefix-p (denote-directory) (expand-file-name file))
          (string-match-p (concat "\\`" denote--id-regexp
                                  ".*" denote--extension-regexp
                                  "\\(.gpg\\)?"
