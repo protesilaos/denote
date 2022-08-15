@@ -568,33 +568,206 @@ output is sorted with `string-lessp'."
           (add-to-history 'denote--keyword-history kw))
         (delete-dups keywords)))
 
-;;;; Front matter or content retrieval functions
+;;;; File types
+
+;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
+;; tweaks to them need to be done with care.  Though there is demand for
+;; modifying the front matter, so perhaps we should reconsider.
+
+(defvar denote-toml-front-matter
+  "+++
+title      = %s
+date       = %s
+tags       = %s
+identifier = %S
++++\n\n"
+  "TOML front matter.")
+
+(defvar denote-yaml-front-matter
+  "---
+title:      %s
+date:       %s
+tags:       %s
+identifier: %S
+---\n\n"
+  "YAML front matter.")
+
+(defvar denote-text-front-matter
+  "title:      %s
+date:       %s
+tags:       %s
+identifier: %s
+---------------------------\n\n"
+  "Plain text front matter.")
+
+(defvar denote-org-front-matter
+  "#+title:      %s
+#+date:       %s
+#+filetags:   %s
+#+identifier: %s
+\n"
+  "Org front matter.")
+
+(defun denote--surround-with-quotes (s)
+  "Surround string S with quotes."
+  (format "%S" s))
+
+(defun denote--trim-whitespace (s)
+  "Trim whitespace around string S."
+  (let ((trims "[ \t\n\r]+"))
+    (string-trim s trims trims)))
+
+(defun denote--trim-quotes (s)
+  "Trim quotes around string S."
+  (let ((trims "[\"']+"))
+    (string-trim s trims trims)))
+
+(defun denote--trim-whitespace-then-quotes (s)
+  "Trim whitespace then quotes around string S."
+  (denote--trim-quotes (denote--trim-whitespace s)))
+
+(defun denote--format-keywords-for-md-front-matter (keywords)
+  "Format front matter KEYWORDS for markdown file type."
+  (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) keywords ", ")))
+
+(defun denote--format-keywords-for-text-front-matter (keywords)
+  "Format front matter KEYWORDS for text file type."
+  (string-join keywords "  "))
+
+(defun denote--format-keywords-for-org-front-matter (keywords)
+  "Format front matter KEYWORDS for org file type."
+  (format ":%s:" (string-join keywords ":")))
+
+(defun denote--extract-keywords-from-front-matter (keywords-string)
+  "Extract keywords list from front matter KEYWORDS-STRING."
+  (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
+
+(defvar denote-file-types
+  ;; If denote-file-type is nil, we use the first element
+  ;; of denote-file-types for new note creation, which we want
+  ;; to be org by default.
+  `((org . (:extension ".org"
+            :front-matter ,denote-org-front-matter
+            :title-key-regexp "^#\\+title\\s-*:"
+            :title-value-function identity
+            :title-value-reverse-function denote--trim-whitespace
+            :keywords-key-regexp "^#\\+filetags\\s-*:"
+            :keywords-value-function denote--format-keywords-for-org-front-matter
+            :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (markdown-toml . (:extension ".md"
+                      :front-matter ,denote-toml-front-matter
+                      :title-key-regexp "^title\\s-*="
+                      :title-value-function denote--surround-with-quotes
+                      :title-value-reverse-function denote--trim-whitespace-then-quotes
+                      :keywords-key-regexp "^tags\\s-*="
+                      :keywords-value-function denote--format-keywords-for-md-front-matter
+                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (markdown-yaml . (:extension ".md"
+                      :front-matter ,denote-yaml-front-matter
+                      :title-key-regexp "^title\\s-*:"
+                      :title-value-function denote--surround-with-quotes
+                      :title-value-reverse-function denote--trim-whitespace-then-quotes
+                      :keywords-key-regexp "^tags\\s-*:"
+                      :keywords-value-function denote--format-keywords-for-md-front-matter
+                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+    (text . (:extension ".txt"
+             :front-matter ,denote-yaml-front-matter
+             :title-key-regexp "^title\\s-*:"
+             :title-value-function identity
+             :title-value-reverse-function denote--trim-whitespace
+             :keywords-key-regexp "^tags\\s-*:"
+             :keywords-value-function denote--format-keywords-for-text-front-matter
+             :keywords-value-reverse-function denote--extract-keywords-from-front-matter)))
+  "Alist for Denote's file types.
+Each element is of the form (TYPE-SYMB . TYPE-INFO).
+
+TYPE-INFO is a list of 8 elements:
+
+  extension: The file extension, as a string.
+
+  front-matter: The type's front matter, as a string.
+
+  title-key-regexp: The regexp used to retrieve the title line in
+    a file. The first line matching this regexp is considered the
+    title line.
+
+  title-value-function: The function used to format the raw title
+    string for inclusion in the front matter.
+
+  title-value-reverse-function: The function used to retrieve the raw title
+    string from the string in the front matter.
+
+  keywords-key-regexp: The regexp used to retrieve the keywords
+    line in a file. The first line matching this regexp is
+    considered the keywords line.
+
+  keywords-value-function: The function used to format the
+    keywords list for inclusion in the front matter.
+
+  keywords-value-reverse-function: The function used to retrieve
+    the keywords list from the string in the front matter.")
+
+(defun denote--file-extension (file-type)
+  "Return file type extension based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :extension))
+
+(defun denote--front-matter (file-type)
+  "Return front matter based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :front-matter))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
-         "^title\\s-*:")
-        ((eq file-type 'org)
-         "^#\\+title\\s-*:")
-        ((eq file-type 'markdown-toml)
-         "^title\\s-*=")))
+  (plist-get (alist-get file-type denote-file-types) :title-key-regexp))
+
+(defun denote--title-value-function (file-type)
+  "Function to convert the title string to a front matter title.
+Based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :title-value-function))
+
+(defun denote--title-value-reverse-function (file-type)
+  "Function to convert a front matter title to the title string.
+Based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :title-value-reverse-function))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (cond ((or (eq file-type 'markdown-yaml) (eq file-type 'text))
-         "^tags\\s-*:")
-        ((eq file-type 'org)
-         "^#\\+filetags\\s-*:")
-        ((eq file-type 'markdown-toml)
-         "^tags\\s-*=")))
+  (plist-get (alist-get file-type denote-file-types) :keywords-key-regexp))
 
-(defconst denote--retrieve-title-front-matter-key-regexp
-  "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]"
-  "Regular expression for title key.")
+(defun denote--keywords-value-function (file-type)
+  "Function to convert the keywords string to a front matter keywords.
+Based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :keywords-value-function))
 
-(defconst denote--retrieve-keywords-front-matter-key-regexp
-  "^\\(?:#\\+\\)?\\(?:tags\\|filetags\\)\\s-*[:=]"
-  "Regular expression for keywords key.")
+(defun denote--keywords-value-reverse-function (file-type)
+  "Function to convert a front matter keywords to the keywords list.
+Based on FILE-TYPE."
+  (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
+
+(defun denote--get-title-line-from-front-matter (title file-type)
+  "Retrieve title line from front matter based on FILE-TYPE.
+Format TITLE in the title line. The returned line does not
+contain the newline."
+  (let ((front-matter (denote--format-front-matter title "" nil "" file-type))
+        (key-regexp (denote--title-key-regexp file-type)))
+    (with-temp-buffer
+      (insert front-matter)
+      (goto-char (point-min))
+      (when (re-search-forward key-regexp nil t 1)
+        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+
+(defun denote--get-keywords-line-from-front-matter (keywords file-type)
+  "Retrieve keywords line from front matter based on FILE-TYPE.
+Format KEYWORDS in the keywords line. The returned line does not
+contain the newline."
+  (let ((front-matter (denote--format-front-matter "" "" keywords "" file-type))
+        (key-regexp (denote--keywords-key-regexp file-type)))
+    (with-temp-buffer
+      (insert front-matter)
+      (goto-char (point-min))
+      (when (re-search-forward key-regexp nil t 1)
+        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+
+;;;; Front matter or content retrieval functions
 
 (defun denote--retrieve-filename-identifier (file)
   "Extract identifier from FILE name."
@@ -604,37 +777,56 @@ output is sorted with `string-lessp'."
         (match-string 0 file))
     (error "Cannot find `%s' as a file" file)))
 
-(defun denote--retrieve-search (file key-regexp)
-  "Return value of KEY-REGEXP key in current buffer from FILE."
+(defun denote--retrieve-title-value (file file-type)
+  "Return title value from FILE according to FILE-TYPE."
   ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
   ;; reminder.  See TODO comment above `denote--only-note-p'
   (when (or (denote--writable-and-supported-p file)
             (denote--only-note-p file))
     (with-temp-buffer
       (insert-file-contents file)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (goto-char (point-min))
-          (when (re-search-forward key-regexp nil t 1)
-            (let ((trims "[ \t\n\r\"']+"))
-              (string-trim
-               (buffer-substring-no-properties (point) (point-at-eol))
-               trims trims))))))))
+      (goto-char (point-min))
+      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+        (funcall (denote--title-value-reverse-function file-type)
+                 (buffer-substring-no-properties (point) (point-at-eol)))))))
 
-(defun denote--retrieve-value-title (file file-type)
-  "Return title value from FILE according to FILE-TYPE.
-If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search
-   file
-   (denote--title-key-regexp file-type)))
+(defun denote--retrieve-title-line (file file-type)
+  "Return title line from FILE according to FILE-TYPE."
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
-(defun denote--retrieve-value-keywords (file file-type)
+(defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
-  (denote--retrieve-search
-   file
-   (denote--keywords-key-regexp file-type)))
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (funcall (denote--keywords-value-reverse-function file-type)
+                 (buffer-substring-no-properties (point) (point-at-eol)))))))
+
+(defun denote--retrieve-keywords-line (file file-type)
+  "Return keywords line from FILE according to FILE-TYPE."
+  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
+  ;; reminder.  See TODO comment above `denote--only-note-p'
+  (when (or (denote--writable-and-supported-p file)
+            (denote--only-note-p file))
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
@@ -675,14 +867,6 @@ Parse `denote--retrieve-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote--file-extension (file-type)
-  "Return file type extension based on FILE-TYPE."
-  (pcase file-type
-    ('markdown-toml ".md")
-    ('markdown-yaml ".md")
-    ('text ".txt")
-    ('org ".org")))
-
 (defun denote--format-file (path id keywords title-slug extension)
   "Format file name.
 PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
@@ -696,85 +880,17 @@ string.  EXTENSION is the file type extension, as a string."
       (setq file-name (concat file-name "__" kws)))
     (concat file-name extension)))
 
-(defun denote--format-front-matter-keywords (keywords type)
-  "Format KEYWORDS according to TYPE for the file's front matter.
+(defun denote--format-front-matter-title (title file-type)
+  "Format TITLE according to FILE-TYPE for the file's front matter."
+  (funcall (denote--title-value-function file-type) title))
+
+(defun denote--format-front-matter-keywords (keywords file-type)
+  "Format KEYWORDS according to FILE-TYPE for the file's front matter.
 Apply `downcase' to KEYWORDS."
   (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
-    (cond
-     ((or (eq type 'markdown-toml) (eq type 'markdown-yaml) (eq type 'md))
-      (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) kw ", ")))
-     ((eq type 'text)
-      (string-join kw "  "))
-     ((eq type 'org)
-      (format ":%s:" (string-join kw ":"))))))
+    (funcall (denote--keywords-value-function file-type) kw)))
 
-(defun denote--front-matter-keywords-to-list (file file-type)
-  "Return keywords from front matter of FILE as list of strings.
-FILE-TYPE is used to retrieve the keywords. This is the reverse
-operation of `denote--format-front-matter-keywords'."
-  (when-let ((keywords (denote--retrieve-value-keywords file file-type)))
-    (split-string keywords "[:,\s]+" t "[][ \"']+")))
-
-;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
-;; tweaks to them need to be done with care.  Though there is demand for
-;; modifying the front matter, so perhaps we should reconsider.
-
-(defvar denote-toml-front-matter
-  "+++
-title      = %S
-date       = %s
-tags       = %s
-identifier = %S
-+++\n\n"
-  "TOML front matter value for `format'.
-Read `denote-org-front-matter' for the technicalities.")
-
-(defvar denote-yaml-front-matter
-  "---
-title:      %S
-date:       %s
-tags:       %s
-identifier: %S
----\n\n"
-  "YAML front matter value for `format'.
-Read `denote-org-front-matter' for the technicalities.")
-
-(defvar denote-text-front-matter
-  "title:      %s
-date:       %s
-tags:       %s
-identifier: %s
-%s\n\n"
-  "Plain text front matter value for `format'.
-Read `denote-org-front-matter' for the technicalities of the
-first four specifiers this variable accepts.  The fifth specifier
-is specific to this variable: it expect a delimiter such as
-`denote-text-front-matter-delimiter'.")
-
-(defvar denote-text-front-matter-delimiter (make-string 27 ?-)
-  "Final delimiter for plain text front matter.")
-
-(defvar denote-org-front-matter
-  "#+title:      %s
-#+date:       %s
-#+filetags:   %s
-#+identifier: %s
-\n"
-  "Org front matter value for `format'.
-The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
-are an advanced user who wants to edit this variable to affect
-how front matter is produced, consider using something like %2$s
-to control where Nth argument is placed.
-
-Make sure to:
-
-1. Not use empty lines inside the front matter block.
-
-2. Insert at least one empty line after the front matter block
-   and do not use any empty line before it.
-
-These help with consistency and might prove useful if we ever
-need to operate on the front matter as a whole.")
+(make-obsolete-variable 'denote-text-front-matter-delimiter nil "0.6.0")
 
 (defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
@@ -782,15 +898,9 @@ need to operate on the front matter as a whole.")
 TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
 provided by `denote'.  FILETYPE is one of the values of
 `denote-file-type'."
-  (let ((kw-md (denote--format-front-matter-keywords keywords 'md)))
-    (pcase filetype
-      ('markdown-toml (format denote-toml-front-matter title date kw-md id))
-      ('markdown-yaml (format denote-yaml-front-matter title date kw-md id))
-      ('text (format denote-text-front-matter title date
-                     (denote--format-front-matter-keywords keywords 'text)
-                     id denote-text-front-matter-delimiter))
-      ('org (format denote-org-front-matter title date
-                 (denote--format-front-matter-keywords keywords 'org) id)))))
+  (let ((title (denote--format-front-matter-title title filetype))
+        (kws (denote--format-front-matter-keywords keywords filetype)))
+    (format (denote--front-matter filetype) title date kws id)))
 
 (defun denote--path (title keywords dir id file-type)
   "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
@@ -853,14 +963,16 @@ and TEMPLATE should be valid for note creation."
     directory))
 
 (defun denote--valid-file-type (filetype)
-  "Return a valid filetype given the argument FILETYPE."
+  "Return a valid filetype given the argument FILETYPE.
+If none is found, the first element of `denote-file-types' is
+returned."
   (unless (or (symbolp filetype) (stringp filetype))
     (user-error "`%s' is not a symbol or string" filetype))
   (when (stringp filetype)
     (setq filetype (intern filetype)))
-  (if (memq filetype '(text org markdown-toml markdown-yaml))
+  (if (memq filetype (mapcar 'car denote-file-types))
       filetype
-    'org))
+    (caar denote-file-types)))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
@@ -1111,15 +1223,34 @@ set to \\='(template title keywords)."
 
 ;;;;; Common helpers for note modifications
 
+(defun denote--file-types-with-extension (extension)
+  "Return only the entries of `denote-file-types' with EXTENSION.
+See the format of `denote-file-types'."
+  (seq-filter (lambda (type)
+                (string-equal (plist-get (cdr type) :extension) extension))
+              denote-file-types))
+
 (defun denote--filetype-heuristics (file)
   "Return likely file type of FILE.
-The return value is for `denote--format-front-matter'."
-  (pcase (file-name-extension file)
-    ("md" (if (denote--regexp-in-file-p "^title\\s-*" file)
-              'markdown-toml
-            'markdown-yaml))
-    ("txt" 'text)
-    (_ 'org)))
+Use the file extension to detect the file type of the file.
+If more than one file type correspond to this file extension,
+use the first file type for which the key-title-kegexp matches
+in the file.
+Else, if nothing works, the file type is assumed to be the first
+in `denote-file-types'."
+  (let* ((file-type)
+         (extension (file-name-extension file t))
+         (types (denote--file-types-with-extension extension)))
+    (if (= (length types) 1)
+        (setq file-type (caar types))
+      (when-let ((found-type (seq-find
+                              (lambda (type)
+                                (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                              types)))
+        (setq file-type (car found-type))))
+    (unless file-type
+      (setq file-type (caar denote-file-types)))
+    file-type))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
@@ -1174,11 +1305,8 @@ block if appropriate."
   "Return t if REGEXP matches in the FILE."
   (with-temp-buffer
     (insert-file-contents file)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (re-search-forward regexp nil t 1)))))
+    (goto-char (point-min))
+    (re-search-forward regexp nil t 1)))
 
 (defun denote--edit-front-matter-p (file file-type)
   "Test if FILE should be subject to front matter rewrite.
@@ -1195,7 +1323,7 @@ variable `denote-directory'."
        ;; Heuristic to check if this is one of our notes
        (string-prefix-p (denote-directory) (expand-file-name file)) ; FIXME 2022-08-11: Why do we need this?
        (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
-       (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)))
+       (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
 (defun denote--rewrite-keywords (file keywords file-type)
   "Rewrite KEYWORDS in FILE outright according to FILE-TYPE.
@@ -1206,49 +1334,48 @@ but do not ask for confirmation.
 This is for use in `denote-dired-rename-marked-files' or related.
 Those commands ask for confirmation once before performing an
 operation on multiple files."
-  (when-let ((old-keywords (denote--retrieve-value-keywords file file-type))
-             (new-keywords (denote--format-front-matter-keywords
-                            keywords (denote--filetype-heuristics file))))
-    (with-current-buffer (find-file-noselect file)
-      (save-excursion
-        (save-restriction
-          (widen)
-          (goto-char (point-min))
-          (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-          (search-forward old-keywords nil t 1)
-          (replace-match (concat "\\1" new-keywords) t))))))
+  (with-current-buffer (find-file-noselect file)
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+          (goto-char (point-at-bol))
+          (insert (denote--get-keywords-line-from-front-matter keywords file-type))
+          (delete-region (point) (point-at-eol)))))))
 
 ;; FIXME 2022-07-25: We should make the underlying regular expressions
-;; that `denote--retrieve-value-title' targets more refined, so that we
+;; that `denote--retrieve-title-value' targets more refined, so that we
 ;; capture eveyrhing at once.
 (defun denote--rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
 renaming command and are used to construct new front matter
 values if appropriate."
-  (when-let ((old-title (denote--retrieve-value-title file file-type))
-             (old-keywords (denote--retrieve-value-keywords file file-type))
-             (new-title title)
-             (new-keywords (denote--format-front-matter-keywords
-                            keywords (denote--filetype-heuristics file))))
+  (when-let* ((old-title-line (denote--retrieve-title-line file file-type))
+              (old-keywords-line (denote--retrieve-keywords-line file file-type))
+              (new-title-line (denote--get-title-line-from-front-matter title file-type))
+              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
       (when (y-or-n-p (format
                        "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
-                       (propertize old-title 'face 'error)
-                       (propertize new-title 'face 'success)
-                       (propertize old-keywords 'face 'error)
-                       (propertize new-keywords 'face 'success)))
+                       (propertize old-title-line 'face 'error)
+                       (propertize new-title-line 'face 'success)
+                       (propertize old-keywords-line 'face 'error)
+                       (propertize new-keywords-line 'face 'success)))
         (save-excursion
           (save-restriction
             (widen)
             (goto-char (point-min))
             (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-            (search-forward old-title nil t 1)
-            (replace-match (concat "\\1" new-title) t)
+            (goto-char (point-at-bol))
+            (insert new-title-line)
+            (delete-region (point) (point-at-eol))
             (goto-char (point-min))
             (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-            (search-forward old-keywords nil t 1)
-            (replace-match (concat "\\1" new-keywords) t)))))))
+            (goto-char (point-at-bol))
+            (insert new-keywords-line)
+            (delete-region (point) (point-at-eol))))))))
 
 (make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
@@ -1339,7 +1466,7 @@ files)."
      (list
       file
       (denote--title-prompt
-       (or (denote--retrieve-value-title file file-type) (file-name-base file)))
+       (or (denote--retrieve-title-value file file-type) (file-name-base file)))
       (denote--keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
@@ -1407,7 +1534,7 @@ The operation does the following:
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (or (denote--retrieve-value-title file file-type)
+                 (title (or (denote--retrieve-title-value file file-type)
                             (file-name-base file)))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
@@ -1444,8 +1571,8 @@ typos and the like."
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
   (if-let* ((file-type (denote--filetype-heuristics file))
-            (title (denote--retrieve-value-title file file-type))
-            (keywords (denote--front-matter-keywords-to-list file file-type))
+            (title (denote--retrieve-title-value file file-type))
+            (keywords (denote--retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1496,8 +1623,8 @@ their respective front matter."
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (denote--retrieve-value-title file file-type))
-                 (keywords (denote--front-matter-keywords-to-list file file-type))
+                 (title (denote--retrieve-title-value file file-type))
+                 (keywords (denote--retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
@@ -1782,7 +1909,7 @@ title."
       (let* ((file-id (denote--retrieve-filename-identifier file))
              (file-type (denote--filetype-heuristics file))
              (file-title (unless (string= pattern denote-link--format-id-only)
-                           (denote--retrieve-value-title file file-type))))
+                           (denote--retrieve-title-value file file-type))))
         (format pattern file-id file-title))
     (format denote-link--format-id-only
             (denote--retrieve-filename-identifier file))))
@@ -1993,7 +2120,7 @@ default, it will show up below the current window."
   (let* ((file (buffer-file-name))
          (id (denote--retrieve-filename-identifier file))
          (file-type (denote--filetype-heuristics file))
-         (title (denote--retrieve-value-title file file-type)))
+         (title (denote--retrieve-title-value file file-type)))
     (if-let ((files (denote--retrieve-process-grep id)))
         (denote-link--prepare-backlinks id files title)
       (user-error "No links to the current note"))))
@@ -2266,11 +2393,11 @@ FILE-TYPE is the symbol file-type."
   (delq nil
         (mapcar
          (lambda (file)
-           (when-let* ((value (denote--retrieve-value-keywords
+           (when-let* ((value (denote--retrieve-keywords-line
                                file file-type))
                        ((cond
                          ((eq file-type 'markdown-yaml) (not (string-match-p "," value)))
-                         ((eq file-type 'org) (not (string-match-p ":" value)))
+                         ((eq file-type 'org) (not (string-match-p " :" value)))
                          (t nil))))
              file))
          (seq-remove
@@ -2308,7 +2435,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "org" 'org)))
     (dolist (file files)
-      (when-let* ((kw (denote--front-matter-keywords-to-list file 'org))
+      (when-let* ((kw (denote--retrieve-keywords-value file 'org))
                   ((denote--edit-front-matter-p file 'org)))
         (denote--rewrite-keywords file kw 'org)))))
 
@@ -2339,7 +2466,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite tags in Markdown files with YAML header to use lists (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "md" 'markdown-yaml)))
     (dolist (file files)
-      (when-let* ((kw (denote--front-matter-keywords-to-list file 'markdown-yaml))
+      (when-let* ((kw (denote--retrieve-keywords-value file 'markdown-yaml))
                   ((denote--edit-front-matter-p file 'markdown-yaml)))
         (denote--rewrite-keywords file kw 'markdown-yaml)))))
 
