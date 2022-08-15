@@ -2099,16 +2099,16 @@ Expand `denote-link-backlinks-display-buffer-action'."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
-(defvar denote-backlink-mode-map
+(defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
     (define-key m "n" #'forward-button)
     (define-key m "p" #'backward-button)
     m)
-  "Keymap for `denote-backlink-mode'.")
+  "Keymap for `denote-backlinks-mode'.")
 
-;; TODO 2022-08-10: In some places we have "backlink" and in others
-;; "backlinks".  We need to address this inconsistency.
-(define-derived-mode denote-backlink-mode special-mode "Backlinks"
+(make-obsolete-variable 'denote-backlink-mode-map 'denote-backlinks-mode-map "0.6.0")
+
+(define-derived-mode denote-backlinks-mode special-mode "Backlinks"
   "Major mode for backlinks buffers.")
 
 (defun denote-link--prepare-backlinks (id files &optional title)
@@ -2119,7 +2119,7 @@ Use optional TITLE for a prettier heading."
     (with-current-buffer (get-buffer-create buf)
       (setq-local default-directory (denote-directory))
       (erase-buffer)
-      (denote-backlink-mode)
+      (denote-backlinks-mode)
       (goto-char (point-min))
       (when-let* ((title)
                   (heading (format "Backlinks to %S (%s)" title id))
