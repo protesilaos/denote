@@ -645,38 +645,42 @@ identifier: %s
   ;; If denote-file-type is nil, we use the first element
   ;; of denote-file-types for new note creation, which we want
   ;; to be org by default.
-  `((org . (:extension ".org"
-            :front-matter ,denote-org-front-matter
-            :title-key-regexp "^#\\+title\\s-*:"
-            :title-value-function identity
-            :title-value-reverse-function denote--trim-whitespace
-            :keywords-key-regexp "^#\\+filetags\\s-*:"
-            :keywords-value-function denote--format-keywords-for-org-front-matter
-            :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
-    (markdown-toml . (:extension ".md"
-                      :front-matter ,denote-toml-front-matter
-                      :title-key-regexp "^title\\s-*="
-                      :title-value-function denote--surround-with-quotes
-                      :title-value-reverse-function denote--trim-whitespace-then-quotes
-                      :keywords-key-regexp "^tags\\s-*="
-                      :keywords-value-function denote--format-keywords-for-md-front-matter
-                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
-    (markdown-yaml . (:extension ".md"
-                      :front-matter ,denote-yaml-front-matter
-                      :title-key-regexp "^title\\s-*:"
-                      :title-value-function denote--surround-with-quotes
-                      :title-value-reverse-function denote--trim-whitespace-then-quotes
-                      :keywords-key-regexp "^tags\\s-*:"
-                      :keywords-value-function denote--format-keywords-for-md-front-matter
-                      :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
-    (text . (:extension ".txt"
-             :front-matter ,denote-yaml-front-matter
-             :title-key-regexp "^title\\s-*:"
-             :title-value-function identity
-             :title-value-reverse-function denote--trim-whitespace
-             :keywords-key-regexp "^tags\\s-*:"
-             :keywords-value-function denote--format-keywords-for-text-front-matter
-             :keywords-value-reverse-function denote--extract-keywords-from-front-matter)))
+  `((org
+     :extension ".org"
+     :front-matter ,denote-org-front-matter
+     :title-key-regexp "^#\\+title\\s-*:"
+     :title-value-function identity
+     :title-value-reverse-function denote--trim-whitespace
+     :keywords-key-regexp "^#\\+filetags\\s-*:"
+     :keywords-value-function denote--format-keywords-for-org-front-matter
+     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+    (markdown-toml
+     :extension ".md"
+     :front-matter ,denote-toml-front-matter
+     :title-key-regexp "^title\\s-*="
+     :title-value-function denote--surround-with-quotes
+     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :keywords-key-regexp "^tags\\s-*="
+     :keywords-value-function denote--format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+    (markdown-yaml
+     :extension ".md"
+     :front-matter ,denote-yaml-front-matter
+     :title-key-regexp "^title\\s-*:"
+     :title-value-function denote--surround-with-quotes
+     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :keywords-key-regexp "^tags\\s-*:"
+     :keywords-value-function denote--format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+    (text
+     :extension ".txt"
+     :front-matter ,denote-yaml-front-matter
+     :title-key-regexp "^title\\s-*:"
+     :title-value-function identity
+     :title-value-reverse-function denote--trim-whitespace
+     :keywords-key-regexp "^tags\\s-*:"
+     :keywords-value-function denote--format-keywords-for-text-front-matter
+     :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
   "Alist for Denote's file types.
 Each element is of the form (TYPE-SYMB . TYPE-INFO).
 
