@@ -799,10 +799,10 @@ contain the newline."
   "Extract title from FILE name, else return `file-name-base'"
   (if (and (file-exists-p file)
            (denote--file-has-identifier-p file))
-      (let ((file-title (progn
-                          (string-match denote--title-regexp file)
-                          (match-string 1 file))))
-             (capitalize (replace-regexp-in-string "-" " " file-title)))
+      (denote--desluggify
+       (progn
+         (string-match denote--title-regexp file)
+         (match-string 1 file)))
     (file-name-base file)))
 
 (defun denote--retrieve-title-value (file file-type)
