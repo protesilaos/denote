@@ -1345,8 +1345,7 @@ in a Denote note.
 
 For the purposes of this test, FILE is a Denote note when it
 contains a title line, a keywords line or both."
-  (and (not (denote--file-empty-p file))
-       (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
+  (and (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
        (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
 (defun denote--rewrite-keywords (file keywords file-type)
