@@ -426,14 +426,6 @@ trailing hyphen."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
-;; TODO 2022-08-11: In light of `denote--writable-and-supported-p', we
-;; should either harden `denote--only-note-p' to also check for a
-;; `denote-directory' or decide how to merge the two functions.  I think
-;; hardening this one is more appropriate.
-;;
-;; There are two different needs:
-;; - When converting a file to Denote, we need relaxed conditionality.
-;; = When we truly need a  "note", we have to be more strict.
 (defun denote--only-note-p (file)
   "Make sure FILE is an actual Denote note."
   (let ((file-name (file-name-nondirectory file)))
@@ -489,9 +481,12 @@ FILE must be an absolute path."
        (denote--default-dir-has-denote-prefix)))
 
 (defun denote--directory-files ()
-  "List expanded note files."
+  "List expanded files in variable `denote-directory'.
+The returned files only need to have an identifier. They may
+include files that are not of a valid file type as specified by
+`denote-file-types'."
   (mapcar
-   (lambda (s) (expand-file-name s))
+   #'expand-file-name
    (seq-remove
     (lambda (f)
       (not (denote--file-has-identifier-p f)))
@@ -527,8 +522,7 @@ Files are those which satisfy `denote--file-has-identifier-p' and
   "Extract keywords from `denote--directory-files'.
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
-  (mapcan (lambda (p)
-            (denote--extract-keywords-from-path p))
+  (mapcan #'denote--extract-keywords-from-path
           (denote--directory-files)))
 
 (defun denote-keywords ()
@@ -796,7 +790,7 @@ contain the newline."
     (error "Cannot find `%s' as a file" file)))
 
 (defun denote--retrieve-filename-title (file)
-  "Extract title from FILE name, else return `file-name-base'"
+  "Extract title from FILE name, else return `file-name-base'."
   (if (and (file-exists-p file)
            (denote--file-has-identifier-p file))
       (denote--desluggify
@@ -807,54 +801,38 @@ contain the newline."
 
 (defun denote--retrieve-title-value (file file-type)
   "Return title value from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (funcall (denote--title-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (point-at-eol)))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+      (funcall (denote--title-value-reverse-function file-type)
+               (buffer-substring-no-properties (point) (point-at-eol))))))
 
 (defun denote--retrieve-title-line (file file-type)
   "Return title line from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
 
 (defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
 If optional KEY is non-nil, return the key instead."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (funcall (denote--keywords-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (point-at-eol)))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+      (funcall (denote--keywords-value-reverse-function file-type)
+               (buffer-substring-no-properties (point) (point-at-eol))))))
 
 (defun denote--retrieve-keywords-line (file file-type)
   "Return keywords line from FILE according to FILE-TYPE."
-  ;; NOTE 2022-08-11: The `or' is superfluous, but I am keeping it as a
-  ;; reminder.  See TODO comment above `denote--only-note-p'
-  (when (or (denote--writable-and-supported-p file)
-            (denote--only-note-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (goto-char (point-min))
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
@@ -868,13 +846,6 @@ If optional KEY is non-nil, return the key instead."
                   (lambda (f)
                     (or (denote--file-has-identifier-p f)
                         (file-directory-p f)))))
-
-(defun denote--retrieve-files-in-output (files)
-  "Return list of FILES from `find' output."
-  (seq-filter
-   (lambda (f)
-     (denote--only-note-p f))
-   files))
 
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
@@ -893,7 +864,8 @@ Parse `denote--retrieve-xrefs'."
 
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (denote--retrieve-files-in-output
+  (seq-filter
+   #'denote--only-note-p
    (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
                                (denote--retrieve-xrefs identifier)))))
 
@@ -1031,11 +1003,10 @@ where the former does not read dates without a time component."
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
   (seq-filter
-   (lambda (name) (denote--only-note-p name))
+   #'denote--only-note-p
    (delq nil
          (mapcar
-          (lambda (buf)
-            (buffer-file-name buf))
+          #'buffer-file-name
           (buffer-list)))))
 
 ;; In normal usage, this should only be relevant for `denote-date',
@@ -1328,8 +1299,7 @@ Update Dired buffers if the file is renamed."
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
-  (when-let* (((denote--only-note-p file))
-              (date (denote--date (date-to-time id) file-type))
+  (when-let* ((date (denote--date (date-to-time id) file-type))
               (new-front-matter (denote--format-front-matter title date keywords id file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
@@ -1348,15 +1318,9 @@ Use FILE-TYPE to look for the front matter lines. This is
 relevant for operations that insert or rewrite the front matter
 in a Denote note.
 
-For the purposes of this test, FILE is a Denote note when it (i)
-is a regular file, (ii) is writable, (iii) has a supported file
-type extension per `denote-file-type', and (iv) is stored in the
-variable `denote-directory'."
-  (and (denote--writable-and-supported-p file)
-       (not (denote--file-empty-p file))
-       ;; Heuristic to check if this is one of our notes
-       (string-prefix-p (denote-directory) (expand-file-name file)) ; FIXME 2022-08-11: Why do we need this?
-       (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
+For the purposes of this test, FILE is a Denote note when it
+contains a title line, a keywords line or both."
+  (and (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
        (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
 (defun denote--rewrite-keywords (file keywords file-type)
@@ -1378,9 +1342,6 @@ operation on multiple files."
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (point-at-eol)))))))
 
-;; FIXME 2022-07-25: We should make the underlying regular expressions
-;; that `denote--retrieve-title-value' targets more refined, so that we
-;; capture eveyrhing at once.
 (defun denote--rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-dired-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
@@ -1512,9 +1473,10 @@ files)."
     (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
       (denote-update-dired-buffers)
-      (if (denote--edit-front-matter-p new-name file-type)
-          (denote--rewrite-front-matter new-name title keywords file-type)
-        (denote--add-front-matter new-name title keywords id file-type)))))
+      (when (denote--writable-and-supported-p new-name)
+        (if (denote--edit-front-matter-p new-name file-type)
+            (denote--rewrite-front-matter new-name title keywords file-type)
+          (denote--add-front-matter new-name title keywords id file-type))))))
 
 (define-obsolete-function-alias
   'denote-dired-rename-file-and-add-front-matter
@@ -1573,9 +1535,10 @@ The operation does the following:
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
             (denote--rename-file file new-name)
-            (if (denote--edit-front-matter-p new-name file-type)
-                (denote--rewrite-keywords new-name keywords file-type)
-              (denote--add-front-matter new-name title keywords id file-type))))
+            (when (denote--writable-and-supported-p new-name)
+              (if (denote--edit-front-matter-p new-name file-type)
+                  (denote--rewrite-keywords new-name keywords file-type)
+                (denote--add-front-matter new-name title keywords id file-type)))))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 
@@ -1603,6 +1566,8 @@ typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
     (user-error "Save buffer before proceeding"))
+  (unless (denote--writable-and-supported-p file)
+    (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote--filetype-heuristics file))
             (title (denote--retrieve-title-value file file-type))
             (keywords (denote--retrieve-keywords-value file file-type))
@@ -1648,8 +1613,7 @@ This command is useful for synchronizing multiple file names with
 their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
-                   (lambda (file)
-                     (denote--writable-and-supported-p file))
+                   #'denote--writable-and-supported-p
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
@@ -1701,8 +1665,9 @@ relevant front matter."
     (buffer-file-name)
     (denote--title-prompt)
     (denote--keywords-prompt)))
-  (denote--add-front-matter file title keywords (denote--file-name-id file)
-                            (denote--filetype-heuristics file)))
+  (when (denote--writable-and-supported-p file)
+    (denote--add-front-matter file title keywords (denote--file-name-id file)
+                              (denote--filetype-heuristics file))))
 
 ;;;; The Denote faces
 
@@ -1986,8 +1951,7 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (let ((file-names (mapcar (lambda (f)
-                              (denote--file-name-relative-to-denote-directory f))
+  (let ((file-names (mapcar #'denote--file-name-relative-to-denote-directory
                             files)))
     (completing-read
      "Find linked file "
@@ -2099,16 +2063,16 @@ Expand `denote-link-backlinks-display-buffer-action'."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
-(defvar denote-backlink-mode-map
+(defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
     (define-key m "n" #'forward-button)
     (define-key m "p" #'backward-button)
     m)
-  "Keymap for `denote-backlink-mode'.")
+  "Keymap for `denote-backlinks-mode'.")
 
-;; TODO 2022-08-10: In some places we have "backlink" and in others
-;; "backlinks".  We need to address this inconsistency.
-(define-derived-mode denote-backlink-mode special-mode "Backlinks"
+(make-obsolete-variable 'denote-backlink-mode-map 'denote-backlinks-mode-map "0.6.0")
+
+(define-derived-mode denote-backlinks-mode special-mode "Backlinks"
   "Major mode for backlinks buffers.")
 
 (defun denote-link--prepare-backlinks (id files &optional title)
@@ -2119,7 +2083,7 @@ Use optional TITLE for a prettier heading."
     (with-current-buffer (get-buffer-create buf)
       (setq-local default-directory (denote-directory))
       (erase-buffer)
-      (denote-backlink-mode)
+      (denote-backlinks-mode)
       (goto-char (point-min))
       (when-let* ((title)
                   (heading (format "Backlinks to %S (%s)" title id))
@@ -2146,13 +2110,14 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (let* ((file (buffer-file-name))
-         (id (denote--retrieve-filename-identifier file))
-         (file-type (denote--filetype-heuristics file))
-         (title (denote--retrieve-title-value file file-type)))
-    (if-let ((files (denote--retrieve-process-grep id)))
-        (denote-link--prepare-backlinks id files title)
-      (user-error "No links to the current note"))))
+  (let ((file (buffer-file-name)))
+    (when (denote--writable-and-supported-p file)
+      (let* ((id (denote--retrieve-filename-identifier file))
+             (file-type (denote--filetype-heuristics file))
+             (title (denote--retrieve-title-value file file-type)))
+        (if-let ((files (denote--retrieve-process-grep id)))
+            (denote-link--prepare-backlinks id files title)
+          (user-error "No links to the current note"))))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
 
@@ -2213,10 +2178,8 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar
-                            (lambda (name)
-                              (file-name-nondirectory name))
-                            buffers)))
+  (let ((buffer-file-names (mapcar #'file-name-nondirectory
+                                   buffers)))
     (completing-read
      "Select note buffer: "
      (denote--completion-table 'buffer buffer-file-names)
