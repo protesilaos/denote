@@ -2075,6 +2075,8 @@ Expand `denote-link-backlinks-display-buffer-action'."
 (define-derived-mode denote-backlinks-mode special-mode "Backlinks"
   "Major mode for backlinks buffers.")
 
+(make-obsolete-variable 'denote-backlink-mode 'denote-backlinks-mode "0.6.0")
+
 (defun denote-link--prepare-backlinks (id files &optional title)
   "Create backlinks' buffer for ID including FILES.
 Use optional TITLE for a prettier heading."
