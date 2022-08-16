@@ -486,7 +486,7 @@ The returned files only need to have an identifier. They may
 include files that are not of a valid file type as specified by
 `denote-file-types'."
   (mapcar
-   (lambda (s) (expand-file-name s))
+   #'expand-file-name
    (seq-remove
     (lambda (f)
       (not (denote--file-has-identifier-p f)))
@@ -522,8 +522,7 @@ Files are those which satisfy `denote--file-has-identifier-p' and
   "Extract keywords from `denote--directory-files'.
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
-  (mapcan (lambda (p)
-            (denote--extract-keywords-from-path p))
+  (mapcan #'denote--extract-keywords-from-path
           (denote--directory-files)))
 
 (defun denote-keywords ()
@@ -1007,8 +1006,7 @@ where the former does not read dates without a time component."
    #'denote--only-note-p
    (delq nil
          (mapcar
-          (lambda (buf)
-            (buffer-file-name buf))
+          #'buffer-file-name
           (buffer-list)))))
 
 ;; In normal usage, this should only be relevant for `denote-date',
@@ -1615,8 +1613,7 @@ This command is useful for synchronizing multiple file names with
 their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
-                   (lambda (file)
-                     (denote--writable-and-supported-p file))
+                   #'denote--writable-and-supported-p
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
@@ -1954,8 +1951,7 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (let ((file-names (mapcar (lambda (f)
-                              (denote--file-name-relative-to-denote-directory f))
+  (let ((file-names (mapcar #'denote--file-name-relative-to-denote-directory
                             files)))
     (completing-read
      "Find linked file "
@@ -2182,10 +2178,8 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar
-                            (lambda (name)
-                              (file-name-nondirectory name))
-                            buffers)))
+  (let ((buffer-file-names (mapcar #'file-name-nondirectory
+                                   buffers)))
     (completing-read
      "Select note buffer: "
      (denote--completion-table 'buffer buffer-file-names)
