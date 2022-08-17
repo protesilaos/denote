@@ -672,7 +672,7 @@ identifier: %s
      :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
     (text
      :extension ".txt"
-     :front-matter ,denote-yaml-front-matter
+     :front-matter ,denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function identity
      :title-value-reverse-function denote--trim-whitespace
