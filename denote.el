@@ -316,6 +316,16 @@ are described in the doc string of `format-time-string'."
   :package-version '(denote . "0.2.0")
   :group 'denote)
 
+(defcustom denote-date-prompt-use-org-read-date nil
+  "Whether to use `org-read-date' in date prompts.
+
+If non-nil, use `org-read-date'.
+
+If nil, input the date as a string, as described in `denote'."
+  :group 'denote
+  :package-version '(denote . "0.6.0")
+  :type 'boolean)
+
 (defcustom denote-templates nil
   "Alist of content templates for new notes.
 A template is arbitrary text that Denote will add to a newly
@@ -1120,9 +1130,11 @@ here for clarity."
 
 (defun denote--date-prompt ()
   "Prompt for date."
-  (read-string
-   "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-   nil 'denote--date-history))
+  (if denote-date-prompt-use-org-read-date
+      (format-time-string "%Y-%m-%d %H:%M:%S" (org-read-date nil t))
+    (read-string
+     "DATE and TIME for note (e.g. 2022-06-16 14:30): "
+     nil 'denote--date-history)))
 
 (defvar denote--subdir-history nil
   "Minibuffer history of `denote--subdirs-prompt'.")
