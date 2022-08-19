@@ -1131,7 +1131,11 @@ here for clarity."
 (defun denote--date-prompt ()
   "Prompt for date."
   (if denote-date-prompt-use-org-read-date
-      (format-time-string "%Y-%m-%d %H:%M:%S" (org-read-date nil t))
+      (let* ((org-time (org-read-date nil t))
+             (current-seconds (string-to-number
+                               (format-time-string "%S" (current-time))))
+             (time (time-add org-time current-seconds)))
+        (format-time-string "%Y-%m-%d %H:%M:%S" time))
     (read-string
      "DATE and TIME for note (e.g. 2022-06-16 14:30): "
      nil 'denote--date-history)))
