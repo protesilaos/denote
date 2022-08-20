@@ -1131,10 +1131,13 @@ here for clarity."
 (defun denote--date-prompt ()
   "Prompt for date."
   (if denote-date-prompt-use-org-read-date
-      (let* ((org-time (org-read-date nil t))
-             (current-seconds (string-to-number
-                               (format-time-string "%S" (current-time))))
-             (time (time-add org-time current-seconds)))
+      (let* ((time (org-read-date nil t))
+             (org-time-seconds (format-time-string "%S" time))
+             (cur-time-seconds (format-time-string "%S" (current-time))))
+        ;; When the user does not input a time, org-read-date defaults to 00 for seconds.
+        ;; When the seconds are 00, we add the current seconds to avoid identifier collisions.
+        (when (string-equal "00" org-time-seconds)
+          (setq time (time-add time (string-to-number cur-time-seconds))))
         (format-time-string "%Y-%m-%d %H:%M:%S" time))
     (read-string
      "DATE and TIME for note (e.g. 2022-06-16 14:30): "
