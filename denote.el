@@ -1128,9 +1128,12 @@ here for clarity."
 (defvar denote--date-history nil
   "Minibuffer history of `denote--date-prompt'.")
 
+(declare-function org-read-date "org" &optional with-time to-time from-string prompt default-time default-input inactive)
+
 (defun denote--date-prompt ()
   "Prompt for date."
-  (if denote-date-prompt-use-org-read-date
+  (if (and denote-date-prompt-use-org-read-date
+           (require 'org nil :no-error))
       (let* ((time (org-read-date nil t))
              (org-time-seconds (format-time-string "%S" time))
              (cur-time-seconds (format-time-string "%S" (current-time))))
