@@ -316,6 +316,16 @@ are described in the doc string of `format-time-string'."
   :package-version '(denote . "0.2.0")
   :group 'denote)
 
+(defcustom denote-date-prompt-use-org-read-date nil
+  "Whether to use `org-read-date' in date prompts.
+
+If non-nil, use `org-read-date'.
+
+If nil, input the date as a string, as described in `denote'."
+  :group 'denote
+  :package-version '(denote . "0.6.0")
+  :type 'boolean)
+
 (defcustom denote-templates nil
   "Alist of content templates for new notes.
 A template is arbitrary text that Denote will add to a newly
@@ -1118,11 +1128,23 @@ here for clarity."
 (defvar denote--date-history nil
   "Minibuffer history of `denote--date-prompt'.")
 
+(declare-function org-read-date "org" &optional with-time to-time from-string prompt default-time default-input inactive)
+
 (defun denote--date-prompt ()
   "Prompt for date."
-  (read-string
-   "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-   nil 'denote--date-history))
+  (if (and denote-date-prompt-use-org-read-date
+           (require 'org nil :no-error))
+      (let* ((time (org-read-date nil t))
+             (org-time-seconds (format-time-string "%S" time))
+             (cur-time-seconds (format-time-string "%S" (current-time))))
+        ;; When the user does not input a time, org-read-date defaults to 00 for seconds.
+        ;; When the seconds are 00, we add the current seconds to avoid identifier collisions.
+        (when (string-equal "00" org-time-seconds)
+          (setq time (time-add time (string-to-number cur-time-seconds))))
+        (format-time-string "%Y-%m-%d %H:%M:%S" time))
+    (read-string
+     "DATE and TIME for note (e.g. 2022-06-16 14:30): "
+     nil 'denote--date-history)))
 
 (defvar denote--subdir-history nil
   "Minibuffer history of `denote--subdirs-prompt'.")
