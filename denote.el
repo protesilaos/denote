@@ -403,9 +403,9 @@ things accordingly.")
 (defun denote--slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
-trailing hyphen."
+leading and trailing hyphen."
   (replace-regexp-in-string
-   "-$" ""
+   "^-\\|-$" ""
    (replace-regexp-in-string
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
