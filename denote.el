@@ -199,7 +199,8 @@ The value is a list of symbols, which includes any of the following:
 - `date': Prompts for the date of the new note.  It will expect
   an input like 2022-06-16 or a date plus time: 2022-06-16 14:30.
   Without the `date' prompt, the `denote' command uses the
-  `current-time'.
+  `current-time'.  (To leverage the more sophisticated Org
+  method, see the `denote-date-prompt-use-org-read-date'.)
 
 - `template': Prompts for a KEY among `denote-templates'.  The
   value of that KEY is used to populate the new note with
