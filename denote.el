@@ -319,9 +319,11 @@ are described in the doc string of `format-time-string'."
 (defcustom denote-date-prompt-use-org-read-date nil
   "Whether to use `org-read-date' in date prompts.
 
-If non-nil, use `org-read-date'.
+If non-nil, use `org-read-date'.  If nil, input the date as a
+string, as described in `denote'.
 
-If nil, input the date as a string, as described in `denote'."
+This option is relevant when `denote-prompts' includes a `date'
+and/or when the user invokes the command `denote-date'."
   :group 'denote
   :package-version '(denote . "0.6.0")
   :type 'boolean)
