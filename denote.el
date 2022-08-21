@@ -492,7 +492,7 @@ FILE must be an absolute path."
 
 (defun denote--directory-files ()
   "List expanded files in variable `denote-directory'.
-The returned files only need to have an identifier. They may
+The returned files only need to have an identifier.  They may
 include files that are not of a valid file type as specified by
 `denote-file-types'."
   (mapcar
@@ -699,7 +699,7 @@ TYPE-INFO is a list of 8 elements:
   front-matter: The type's front matter, as a string.
 
   title-key-regexp: The regexp used to retrieve the title line in
-    a file. The first line matching this regexp is considered the
+    a file.  The first line matching this regexp is considered the
     title line.
 
   title-value-function: The function used to format the raw title
@@ -709,7 +709,7 @@ TYPE-INFO is a list of 8 elements:
     string from the string in the front matter.
 
   keywords-key-regexp: The regexp used to retrieve the keywords
-    line in a file. The first line matching this regexp is
+    line in a file.  The first line matching this regexp is
     considered the keywords line.
 
   keywords-value-function: The function used to format the
@@ -767,7 +767,7 @@ Based on FILE-TYPE."
 
 (defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
-Format TITLE in the title line. The returned line does not
+Format TITLE in the title line.  The returned line does not
 contain the newline."
   (let ((front-matter (denote--format-front-matter title "" nil "" file-type))
         (key-regexp (denote--title-key-regexp file-type)))
@@ -779,7 +779,7 @@ contain the newline."
 
 (defun denote--get-keywords-line-from-front-matter (keywords file-type)
   "Retrieve keywords line from front matter based on FILE-TYPE.
-Format KEYWORDS in the keywords line. The returned line does not
+Format KEYWORDS in the keywords line.  The returned line does not
 contain the newline."
   (let ((front-matter (denote--format-front-matter "" "" keywords "" file-type))
         (key-regexp (denote--keywords-key-regexp file-type)))
@@ -1336,7 +1336,7 @@ block if appropriate."
 
 (defun denote--edit-front-matter-p (file file-type)
   "Test if FILE should be subject to front matter rewrite.
-Use FILE-TYPE to look for the front matter lines. This is
+Use FILE-TYPE to look for the front matter lines.  This is
 relevant for operations that insert or rewrite the front matter
 in a Denote note.
 
