@@ -213,6 +213,8 @@ The value is a list of symbols, which includes any of the following:
   like 2022-06-16 or a date plus time: 2022-06-16 14:30.  Without the
   =date= prompt, the ~denote~ command uses the ~current-time~.
 
+  [[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]].
+
 - =template=: Prompts for a KEY among the ~denote-templates~.  The value
   of that KEY is used to populate the new note with content, which is
   added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
@@ -344,6 +346,8 @@ commands for note creation:
   while prompting for a date.  The date can be in YEAR-MONTH-DAY
   notation like =2022-06-30= or that plus the time: =2022-06-16 14:30=.
 
+  [[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]].
+
   This is the equivalent to calling ~denote~ when ~denote-prompts~ is
   set to ='(date title keywords)=.
 
@@ -373,6 +377,23 @@ commands for note creation:
   #+findex: denote-create-note-with-template
   The ~denote-create-note-with-template~ is an alias of the command
   ~denote-template~, meant to help with discoverability.
+
+*** The ~denote-date-prompt-use-org-read-date~ option
+:PROPERTIES:
+:CUSTOM_ID: h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63
+:END:
+
+[ Part of {{{development-version}}} ]
+
+By default, Denote uses its own simple prompt for date or date+time
+input ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).  This is done when the
+~denote-prompts~ option includes a =date= symbol and/or when the user
+invokes the ~denote-date~ command.
+
+#+vindex: denote-date-prompt-use-org-read-date
+Users who want to benefit from the more advanced date selection method
+that is common in interactions with Org mode, can set the user option
+~denote-date-prompt-use-org-read-date~ to a non-nil value.
 
 ** Create note using Org capture
 :PROPERTIES:
@@ -1740,6 +1761,11 @@ Everything is in place to set up the package.
 (setq denote-sort-keywords t)
 (setq denote-file-type nil) ; Org is the default, set others here
 (setq denote-prompts '(title keywords))
+
+
+;; Pick dates, where relevant, with Org's advanced interface:
+(setq denote-date-prompt-use-org-read-date t)
+
 
 ;; Read this manual for how to specify `denote-templates'.  We do not
 ;; include an example here to avoid potential confusion.
