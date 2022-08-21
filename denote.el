@@ -1128,7 +1128,7 @@ here for clarity."
 (defvar denote--date-history nil
   "Minibuffer history of `denote--date-prompt'.")
 
-(declare-function org-read-date "org" &optional with-time to-time from-string prompt default-time default-input inactive)
+(declare-function org-read-date "org" (&optional with-time to-time from-string prompt default-time default-input inactive))
 
 (defun denote--date-prompt ()
   "Prompt for date."
