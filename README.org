@@ -378,6 +378,70 @@ commands for note creation:
   The ~denote-create-note-with-template~ is an alias of the command
   ~denote-template~, meant to help with discoverability.
 
+**** Write your own convenience commands
+:PROPERTIES:
+:CUSTOM_ID: h:11946562-7eb0-4925-a3b5-92d75f1f5895
+:END:
+
+The convenience commands we provide only cover some basic use-cases
+([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).  The user may require
+combinations that are not covered, such as to prompt for a template and
+for a subdirectory, instead of only one of the two.  To this end, we
+show how to follow the code we use in Denote to write your own variants
+of those commands.
+
+First let's take a look at the definition of one of those commands.
+They all look the same, but we use ~denote-subdirectory~ for this
+example:
+
+#+begin_src emacs-lisp
+(defun denote-subdirectory ()
+  "Create note while prompting for a subdirectory.
+
+Available candidates include the value of the variable
+`denote-directory' and any subdirectory thereof.
+
+This is equivalent to calling `denote' when `denote-prompts' is
+set to '(subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(subdirectory title keywords)))
+    (call-interactively #'denote)))
+#+end_src
+
+The hyphenated word after ~defun~ is the name of the function.  It has
+to be unique.  Then we have the documentation string (or "doc string")
+which is for the user's convenience.
+
+This function is ~interactive~, meaning that it can be called via =M-x=
+or be assigned to a key binding.  Then we have the local binding of the
+~denote-prompts~ to the desired combination ("local" means specific to
+this function without affecting other contexts).  Lastly, it calls the
+standard ~denote~ command interactively, so it uses all the prompts in
+their specified order.
+
+Now let's say we want to have a command that (i) asks for a template and
+(ii) for a subdirectory ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).  All we need to
+do is tweak the ~let~ bound value of ~denote-prompts~ and give our
+command a unique name:
+
+#+begin_src emacs-lisp
+;; Like `denote-subdirectory' but also ask for a template
+(defun denote-subdirectory-with-template ()
+  "Create note while also prompting for a template and subdirectory.
+
+This is equivalent to calling `denote' when `denote-prompts' is
+set to '(template subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(template subdirectory title keywords)))
+    (call-interactively #'denote)))
+#+end_src
+
+The tweaks to ~denote-prompts~ determine how the command will behave
+([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).  Use this paradigm to write your own
+variants which you can then assign to keys or invoke with =M-x=.
+
 *** The ~denote-date-prompt-use-org-read-date~ option
 :PROPERTIES:
 :CUSTOM_ID: h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63
