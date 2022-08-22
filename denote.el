@@ -646,7 +646,9 @@ identifier: %s
 
 (defun denote--format-keywords-for-org-front-matter (keywords)
   "Format front matter KEYWORDS for org file type."
-  (format ":%s:" (string-join keywords ":")))
+  (if keywords
+      (format ":%s:" (string-join keywords ":"))
+    ""))
 
 (defun denote--extract-keywords-from-front-matter (keywords-string)
   "Extract keywords list from front matter KEYWORDS-STRING."
