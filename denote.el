@@ -1553,24 +1553,24 @@ The operation does the following:
   if the given file has the appropriate file type extension (per
   the user option `denote-file-type')."
   (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files))
-           (keywords (denote--keywords-prompt))
-           ((yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")))
-      (progn
-        (dolist (file marks)
-          (let* ((dir (file-name-directory file))
-                 (id (denote--file-name-id file))
-                 (file-type (denote--filetype-heuristics file))
-                 (title (denote--retrieve-title-or-filename file file-type))
-                 (extension (file-name-extension file t))
-                 (new-name (denote--format-file
-                            dir id keywords (denote--sluggify title) extension)))
-            (denote--rename-file file new-name)
-            (when (denote--writable-and-supported-p new-name)
-              (if (denote--edit-front-matter-p new-name file-type)
-                  (denote--rewrite-keywords new-name keywords file-type)
-                (denote--add-front-matter new-name title keywords id file-type)))))
-        (revert-buffer))
+  (if-let ((marks (dired-get-marked-files)))
+      (let ((keywords (denote--keywords-prompt)))
+        (when (yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")
+          (progn
+            (dolist (file marks)
+              (let* ((dir (file-name-directory file))
+                     (id (denote--file-name-id file))
+                     (file-type (denote--filetype-heuristics file))
+                     (title (denote--retrieve-title-or-filename file file-type))
+                     (extension (file-name-extension file t))
+                     (new-name (denote--format-file
+                                dir id keywords (denote--sluggify title) extension)))
+                (denote--rename-file file new-name)
+                (when (denote--writable-and-supported-p new-name)
+                  (if (denote--edit-front-matter-p new-name file-type)
+                      (denote--rewrite-keywords new-name keywords file-type)
+                    (denote--add-front-matter new-name title keywords id file-type)))))
+            (revert-buffer))))
     (user-error "No marked files; aborting")))
 
 (define-obsolete-function-alias
