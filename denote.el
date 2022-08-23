@@ -1084,7 +1084,11 @@ When called from Lisp, all arguments are optional.
    (let ((args (make-vector 6 nil)))
      (dolist (prompt denote-prompts)
        (pcase prompt
-         ('title (aset args 0 (denote--title-prompt)))
+         ('title (aset args 0 (denote--title-prompt
+                               (when (use-region-p)
+                                 (buffer-substring-no-properties
+                                  (region-beginning)
+                                  (region-end))))))
          ('keywords (aset args 1 (denote--keywords-prompt)))
          ('file-type (aset args 2 (denote--file-type-prompt)))
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
