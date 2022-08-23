@@ -145,9 +145,14 @@ of those in the subsequent sections.
 :CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
 :END:
 
-The ~denote~ command will prompt for a title.  Once that is supplied, it
-will ask for keywords.  The resulting note will have a file name as
-already explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
+[ The region as default title is part of {{{development-version}}} ]
+
+The ~denote~ command will prompt for a title.  If a region is active,
+the text of the region becomes the default at the minibuffer prompt
+(meaning that typing =RET= without any input will use the default
+value).  Once the title is supplied, the ~denote~ command will then ask
+for keywords.  The resulting note will have a file name as already
+explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
 
 The file type of the new note is determined by the user option
 ~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
