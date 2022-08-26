@@ -1602,7 +1602,9 @@ the source of truth in this case to avoid potential breakage with
 typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
-    (user-error "Save buffer before proceeding"))
+    (if (y-or-n-p "Would you like to save the buffer?")
+        (save-buffer)
+      (user-error "Save buffer before proceeding")))
   (unless (denote--writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote--filetype-heuristics file))
