@@ -911,7 +911,8 @@ includes the title and keywords (aka "tags" or "filetags", depending on
 the file type) which the user specified at the relevant prompt, as well
 as the date and unique identifier, which are derived automatically.
 
-This is how it looks for Org mode (when ~denote-file-type~ is nil):
+This is how it looks for Org mode (when ~denote-file-type~ is nil or the
+=org= symbol):
 
 #+begin_example
 #+title:      This is a sample note

@@ -277,6 +277,7 @@ Reduce them to a single word, such as by turning <word1_word2> or
   "The file type extension for new notes.
 
 By default (a nil value), the file type is that of Org mode.
+Though the `org' can be specified for the same effect.
 
 When the value is the symbol `markdown-yaml', the file type is
 that of Markdown mode and the front matter uses YAML.  Similarly,
@@ -287,11 +288,12 @@ When the value is `text', the file type is that of Text mode.
 
 Any other non-nil value is the same as the default."
   :type '(choice
-          (const :tag "Org mode (default)" nil)
+          (const :tag "Unspecified (defaults to Org)" nil)
+          (const :tag "Org mode (default)" org)
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "0.6.0")
   :group 'denote)
 
 (defcustom denote-date-format nil
