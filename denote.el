@@ -620,8 +620,9 @@ identifier: %s
 \n"
   "Org front matter.")
 
-(defun denote--surround-with-quotes (s)
-  "Surround string S with quotes."
+(defun denote-surround-with-quotes (s)
+  "Surround string S with quotes.
+This can be used in `denote-file-types' to format front mattter."
   (format "%S" s))
 
 (defun denote-trim-whitespace (s)
@@ -679,7 +680,7 @@ Consult the `denote-file-types' for how this is used."
      :extension ".md"
      :front-matter ,denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function denote--surround-with-quotes
+     :title-value-function denote-surround-with-quotes
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-md-front-matter
@@ -688,7 +689,7 @@ Consult the `denote-file-types' for how this is used."
      :extension ".md"
      :front-matter ,denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
-     :title-value-function denote--surround-with-quotes
+     :title-value-function denote-surround-with-quotes
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*="
      :keywords-value-function denote-format-keywords-for-md-front-matter
