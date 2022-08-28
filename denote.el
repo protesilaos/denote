@@ -669,8 +669,6 @@ Consult the `denote-file-types' for how this is used."
 Consult the `denote-file-types' for how this is used."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
-;; TODO 2022-08-28: Test what happens if `denote-file-type' does not
-;; have a value of `org', `markdown-toml', `markdown-yaml', or `text'.
 (defvar denote-file-types
   ;; If denote-file-type is nil, we use the first element
   ;; of denote-file-types for new note creation, which we want
