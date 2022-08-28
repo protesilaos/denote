@@ -622,8 +622,9 @@ identifier: %s
   "Surround string S with quotes."
   (format "%S" s))
 
-(defun denote--trim-whitespace (s)
-  "Trim whitespace around string S."
+(defun denote-trim-whitespace (s)
+  "Trim whitespace around string S.
+This can be used in `denote-file-types' to format front mattter."
   (let ((trims "[ \t\n\r]+"))
     (string-trim s trims trims)))
 
@@ -632,26 +633,31 @@ identifier: %s
   (let ((trims "[\"']+"))
     (string-trim s trims trims)))
 
-(defun denote--trim-whitespace-then-quotes (s)
-  "Trim whitespace then quotes around string S."
-  (denote--trim-quotes (denote--trim-whitespace s)))
+(defun denote-trim-whitespace-then-quotes (s)
+  "Trim whitespace then quotes around string S.
+This can be used in `denote-file-types' to format front mattter."
+  (denote--trim-quotes (denote-trim-whitespace s)))
 
-(defun denote--format-keywords-for-md-front-matter (keywords)
-  "Format front matter KEYWORDS for markdown file type."
+(defun denote-format-keywords-for-md-front-matter (keywords)
+  "Format front matter KEYWORDS for markdown file type.
+Consult the `denote-file-types' for how this is used."
   (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) keywords ", ")))
 
-(defun denote--format-keywords-for-text-front-matter (keywords)
-  "Format front matter KEYWORDS for text file type."
+(defun denote-format-keywords-for-text-front-matter (keywords)
+  "Format front matter KEYWORDS for text file type.
+Consult the `denote-file-types' for how this is used."
   (string-join keywords "  "))
 
-(defun denote--format-keywords-for-org-front-matter (keywords)
-  "Format front matter KEYWORDS for org file type."
+(defun denote-format-keywords-for-org-front-matter (keywords)
+  "Format front matter KEYWORDS for org file type.
+Consult the `denote-file-types' for how this is used."
   (if keywords
       (format ":%s:" (string-join keywords ":"))
     ""))
 
-(defun denote--extract-keywords-from-front-matter (keywords-string)
-  "Extract keywords list from front matter KEYWORDS-STRING."
+(defun denote-extract-keywords-from-front-matter (keywords-string)
+  "Extract keywords list from front matter KEYWORDS-STRING.
+Consult the `denote-file-types' for how this is used."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
 (defvar denote-file-types
@@ -663,37 +669,37 @@ identifier: %s
      :front-matter ,denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function identity
-     :title-value-reverse-function denote--trim-whitespace
+     :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^#\\+filetags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-org-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-org-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-yaml
      :extension ".md"
      :front-matter ,denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote--surround-with-quotes
-     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-md-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-toml
      :extension ".md"
      :front-matter ,denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
      :title-value-function denote--surround-with-quotes
-     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*="
-     :keywords-value-function denote--format-keywords-for-md-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (text
      :extension ".txt"
      :front-matter ,denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function identity
-     :title-value-reverse-function denote--trim-whitespace
+     :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^tags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-text-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
+     :keywords-value-function denote-format-keywords-for-text-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter))
   "Alist for Denote's file types.
 Each element is of the form (TYPE-SYMB . TYPE-INFO).
 
