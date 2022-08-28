@@ -277,6 +277,7 @@ Reduce them to a single word, such as by turning <word1_word2> or
   "The file type extension for new notes.
 
 By default (a nil value), the file type is that of Org mode.
+Though the `org' can be specified for the same effect.
 
 When the value is the symbol `markdown-yaml', the file type is
 that of Markdown mode and the front matter uses YAML.  Similarly,
@@ -287,11 +288,12 @@ When the value is `text', the file type is that of Text mode.
 
 Any other non-nil value is the same as the default."
   :type '(choice
-          (const :tag "Org mode (default)" nil)
+          (const :tag "Unspecified (defaults to Org)" nil)
+          (const :tag "Org mode (default)" org)
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "0.6.0")
   :group 'denote)
 
 (defcustom denote-date-format nil
@@ -618,12 +620,14 @@ identifier: %s
 \n"
   "Org front matter.")
 
-(defun denote--surround-with-quotes (s)
-  "Surround string S with quotes."
+(defun denote-surround-with-quotes (s)
+  "Surround string S with quotes.
+This can be used in `denote-file-types' to format front mattter."
   (format "%S" s))
 
-(defun denote--trim-whitespace (s)
-  "Trim whitespace around string S."
+(defun denote-trim-whitespace (s)
+  "Trim whitespace around string S.
+This can be used in `denote-file-types' to format front mattter."
   (let ((trims "[ \t\n\r]+"))
     (string-trim s trims trims)))
 
@@ -632,28 +636,41 @@ identifier: %s
   (let ((trims "[\"']+"))
     (string-trim s trims trims)))
 
-(defun denote--trim-whitespace-then-quotes (s)
-  "Trim whitespace then quotes around string S."
-  (denote--trim-quotes (denote--trim-whitespace s)))
+(defun denote-trim-whitespace-then-quotes (s)
+  "Trim whitespace then quotes around string S.
+This can be used in `denote-file-types' to format front mattter."
+  (denote--trim-quotes (denote-trim-whitespace s)))
 
-(defun denote--format-keywords-for-md-front-matter (keywords)
-  "Format front matter KEYWORDS for markdown file type."
+(defun denote-format-keywords-for-md-front-matter (keywords)
+  "Format front matter KEYWORDS for markdown file type.
+KEYWORDS is a list of strings.
+
+Consult the `denote-file-types' for how this is used."
   (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) keywords ", ")))
 
-(defun denote--format-keywords-for-text-front-matter (keywords)
-  "Format front matter KEYWORDS for text file type."
+(defun denote-format-keywords-for-text-front-matter (keywords)
+  "Format front matter KEYWORDS for text file type.
+KEYWORDS is a list of strings.
+
+Consult the `denote-file-types' for how this is used."
   (string-join keywords "  "))
 
-(defun denote--format-keywords-for-org-front-matter (keywords)
-  "Format front matter KEYWORDS for org file type."
+(defun denote-format-keywords-for-org-front-matter (keywords)
+  "Format front matter KEYWORDS for org file type.
+KEYWORDS is a list of strings.
+
+Consult the `denote-file-types' for how this is used."
   (if keywords
       (format ":%s:" (string-join keywords ":"))
     ""))
 
-(defun denote--extract-keywords-from-front-matter (keywords-string)
-  "Extract keywords list from front matter KEYWORDS-STRING."
+(defun denote-extract-keywords-from-front-matter (keywords-string)
+  "Extract keywords list from front matter KEYWORDS-STRING.
+Consult the `denote-file-types' for how this is used."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
+;; TODO 2022-08-28: Test what happens if `denote-file-type' does not
+;; have a value of `org', `markdown-toml', `markdown-yaml', or `text'.
 (defvar denote-file-types
   ;; If denote-file-type is nil, we use the first element
   ;; of denote-file-types for new note creation, which we want
@@ -663,65 +680,77 @@ identifier: %s
      :front-matter ,denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function identity
-     :title-value-reverse-function denote--trim-whitespace
+     :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^#\\+filetags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-org-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-org-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-yaml
      :extension ".md"
      :front-matter ,denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function denote--surround-with-quotes
-     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :title-value-function denote-surround-with-quotes
+     :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-md-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-toml
      :extension ".md"
      :front-matter ,denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
-     :title-value-function denote--surround-with-quotes
-     :title-value-reverse-function denote--trim-whitespace-then-quotes
+     :title-value-function denote-surround-with-quotes
+     :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*="
-     :keywords-value-function denote--format-keywords-for-md-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter)
+     :keywords-value-function denote-format-keywords-for-md-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (text
      :extension ".txt"
      :front-matter ,denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function identity
-     :title-value-reverse-function denote--trim-whitespace
+     :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^tags\\s-*:"
-     :keywords-value-function denote--format-keywords-for-text-front-matter
-     :keywords-value-reverse-function denote--extract-keywords-from-front-matter))
-  "Alist for Denote's file types.
-Each element is of the form (TYPE-SYMB . TYPE-INFO).
+     :keywords-value-function denote-format-keywords-for-text-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter))
+  "Alist of `denote-file-type' and their format properties.
 
-TYPE-INFO is a list of 8 elements:
+Each element is of the form (SYMBOL . PROPERTY-LIST).  SYMBOL is
+one of those specified in `denote-file-type'.
 
-  extension: The file extension, as a string.
+PROPERTY-LIST is a plist that consists of 8 elements:
 
-  front-matter: The type's front matter, as a string.
+- `:extension' which is a string with the file extension
+  including the perion.
 
-  title-key-regexp: The regexp used to retrieve the title line in
-    a file.  The first line matching this regexp is considered the
-    title line.
+- `:front-matter' which is either a string passed to `format' or
+  a variable holding such a string.  The `format' function
+  accepts four arguments, which come from `denote' in this order:
+  TITLE, DATE, KEYWORDS, IDENTIFIER.  Read the doc string of
+  `format' on how to reorder arguments.
 
-  title-value-function: The function used to format the raw title
-    string for inclusion in the front matter.
+- `:title-key-regexp' is a string with the regular expression
+  that is used to retrieve the title line in a file.  The first
+  line matching this regexp is considered the title line.
 
-  title-value-reverse-function: The function used to retrieve the raw title
-    string from the string in the front matter.
+- `:title-value-function' is the function used to format the raw
+  title string for inclusion in the front matter (e.g. to
+  surround it in quotes).  Use the `identity' function if no
+  further processing is required.
 
-  keywords-key-regexp: The regexp used to retrieve the keywords
-    line in a file.  The first line matching this regexp is
-    considered the keywords line.
+- `:title-value-reverse-function' is the function used to
+  retrieve the raw title string from the front matter.  It
+  performs the reverse of `:title-value-reverse-function'.
 
-  keywords-value-function: The function used to format the
-    keywords list for inclusion in the front matter.
+- `:keywords-key-regexp' is a string with the regular expression
+  used to retrieve the keywords' line in the file.  The first
+  line matching this regexp is considered the keywords' line.
 
-  keywords-value-reverse-function: The function used to retrieve
-    the keywords list from the string in the front matter.")
+- `:keywords-value-function' is the function used to format the
+  keywords' list of strings as a single string for inclusion in
+  the front matter.
+
+- `:keywords-value-reverse-function' is the function used to
+  retrieve the keywords' value from the front matter.  It
+  performs the reverse of the `:keywords-value-function'.")
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
