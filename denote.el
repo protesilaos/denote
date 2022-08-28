@@ -709,7 +709,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter))
-  "Alist of `denote-file-type' and specific format properties.
+  "Alist of `denote-file-type' and their format properties.
 
 Each element is of the form (SYMBOL . PROPERTY-LIST).  SYMBOL is
 one of those specified in `denote-file-type'.
