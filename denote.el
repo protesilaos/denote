@@ -703,34 +703,46 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter))
-  "Alist for Denote's file types.
-Each element is of the form (TYPE-SYMB . TYPE-INFO).
+  "Alist of `denote-file-type' and specific format properties.
 
-TYPE-INFO is a list of 8 elements:
+Each element is of the form (SYMBOL . PROPERTY-LIST).  SYMBOL is
+one of those specified in `denote-file-type'.
 
-  extension: The file extension, as a string.
+PROPERTY-LIST is a plist that consists of 8 elements:
 
-  front-matter: The type's front matter, as a string.
+- `:extension' which is a string with the file extension
+  including the perion.
 
-  title-key-regexp: The regexp used to retrieve the title line in
-    a file.  The first line matching this regexp is considered the
-    title line.
+- `:front-matter' which is either a string passed to `format' or
+  a variable holding such a string.  The `format' function
+  accepts four arguments, which come from `denote' in this order:
+  TITLE, DATE, KEYWORDS, IDENTIFIER.  Read the doc string of
+  `format' on how to reorder arguments.
 
-  title-value-function: The function used to format the raw title
-    string for inclusion in the front matter.
+- `:title-key-regexp' is a string with the regular expression
+  that is used to retrieve the title line in a file.  The first
+  line matching this regexp is considered the title line.
 
-  title-value-reverse-function: The function used to retrieve the raw title
-    string from the string in the front matter.
+- `:title-value-function' is the function used to format the raw
+  title string for inclusion in the front matter (e.g. to
+  surround it in quotes).  Use the `identity' function if no
+  further processing is required.
 
-  keywords-key-regexp: The regexp used to retrieve the keywords
-    line in a file.  The first line matching this regexp is
-    considered the keywords line.
+- `:title-value-reverse-function' is the function used to
+  retrieve the raw title string from the front matter.  It
+  performs the reverse of `:title-value-reverse-function'.
 
-  keywords-value-function: The function used to format the
-    keywords list for inclusion in the front matter.
+- `:keywords-key-regexp' is a string with the regular expression
+  used to retrieve the keywords' line in the file.  The first
+  line matching this regexp is considered the keywords' line.
 
-  keywords-value-reverse-function: The function used to retrieve
-    the keywords list from the string in the front matter.")
+- `:keywords-value-function' is the function used to format the
+  keywords' list of strings as a single string for inclusion in
+  the front matter.
+
+- `:keywords-value-reverse-function' is the function used to
+  retrieve the keywords' value from the front matter.  It
+  performs the reverse of the `:keywords-value-function'.")
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
