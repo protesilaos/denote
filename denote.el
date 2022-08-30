@@ -760,35 +760,51 @@ PROPERTY-LIST is a plist that consists of 8 elements:
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :extension))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :extension))
 
 (defun denote--front-matter (file-type)
   "Return front matter based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :front-matter))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :front-matter))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-key-regexp))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :title-key-regexp))
 
 (defun denote--title-value-function (file-type)
   "Convert title string to a front matter title, per FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-value-function))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :title-value-function))
 
 (defun denote--title-value-reverse-function (file-type)
   "Convert front matter title to the title string, per FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-value-reverse-function))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :title-value-reverse-function))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-key-regexp))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :keywords-key-regexp))
 
 (defun denote--keywords-value-function (file-type)
   "Convert keywords' string to front matter keywords, per FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-value-function))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :keywords-value-function))
 
 (defun denote--keywords-value-reverse-function (file-type)
   "Convert front matter keywords to keywords' list, per FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :keywords-value-reverse-function))
 
 (defun denote--extensions ()
   "Return all extensions in `denote-file-type'."
