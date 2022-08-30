@@ -582,14 +582,13 @@ output is sorted with `string-lessp'."
 
 ;;;; File types
 
-(defvar denote-toml-front-matter
-  "+++
-title      = %s
-date       = %s
-tags       = %s
-identifier = %S
-+++\n\n"
-  "TOML front matter.
+(defvar denote-org-front-matter
+  "#+title:      %s
+#+date:       %s
+#+filetags:   %s
+#+identifier: %s
+\n"
+  "Org front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
@@ -606,6 +605,18 @@ It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
+(defvar denote-toml-front-matter
+  "+++
+title      = %s
+date       = %s
+tags       = %s
+identifier = %S
++++\n\n"
+  "TOML front matter.
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
+ID.  Advanced users are advised to consult Info node `(denote)
+Change the front matter format'.")
+
 (defvar denote-text-front-matter
   "title:      %s
 date:       %s
@@ -613,17 +624,6 @@ tags:       %s
 identifier: %s
 ---------------------------\n\n"
   "Plain text front matter.
-It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
-ID.  Advanced users are advised to consult Info node `(denote)
-Change the front matter format'.")
-
-(defvar denote-org-front-matter
-  "#+title:      %s
-#+date:       %s
-#+filetags:   %s
-#+identifier: %s
-\n"
-  "Org front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
