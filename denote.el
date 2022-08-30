@@ -771,13 +771,11 @@ PROPERTY-LIST is a plist that consists of 8 elements:
   (plist-get (alist-get file-type denote-file-types) :title-key-regexp))
 
 (defun denote--title-value-function (file-type)
-  "Function to convert the title string to a front matter title.
-Based on FILE-TYPE."
+  "Convert title string to a front matter title, per FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :title-value-function))
 
 (defun denote--title-value-reverse-function (file-type)
-  "Function to convert a front matter title to the title string.
-Based on FILE-TYPE."
+  "Convert front matter title to the title string, per FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :title-value-reverse-function))
 
 (defun denote--keywords-key-regexp (file-type)
@@ -785,13 +783,11 @@ Based on FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-key-regexp))
 
 (defun denote--keywords-value-function (file-type)
-  "Function to convert the keywords string to a front matter keywords.
-Based on FILE-TYPE."
+  "Convert keywords' string to front matter keywords, per FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-value-function))
 
 (defun denote--keywords-value-reverse-function (file-type)
-  "Function to convert a front matter keywords to the keywords list.
-Based on FILE-TYPE."
+  "Convert front matter keywords to keywords' list, per FILE-TYPE."
   (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
 
 (defun denote--extensions ()
