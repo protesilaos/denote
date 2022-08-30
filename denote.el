@@ -477,7 +477,7 @@ leading and trailing hyphen."
        (denote--file-supported-extension-p file)))
 
 (defun denote--file-name-relative-to-denote-directory (file)
-  "Return file name of FILE relative to the variable `denote-directory'.
+  "Return name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
   (when-let* ((dir (denote-directory))
               ((file-name-absolute-p file))
@@ -497,10 +497,9 @@ FILE must be an absolute path."
        (denote--default-dir-has-denote-prefix)))
 
 (defun denote--directory-files ()
-  "List expanded files in variable `denote-directory'.
-The returned files only need to have an identifier.  They may
-include files that are not of a valid file type as specified by
-`denote-file-types'."
+  "List absolute file paths in variable `denote-directory'.
+The returned files only need to have an identifier.  This may
+include files that are not implied by `denote-file-types'."
   (mapcar
    #'expand-file-name
    (seq-remove
