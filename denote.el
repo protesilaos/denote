@@ -459,7 +459,8 @@ leading and trailing hyphen."
   "Return non-nil if FILE has supported extension."
   (let* ((extensions (denote--extensions))
          (valid-extensions (append extensions
-                                   (mapcar (lambda (e) (concat e ".gpg"))
+                                   (mapcar (lambda (e)
+                                             (concat e ".gpg"))
                                            extensions))))
     (seq-some
      (lambda (e) (string-suffix-p e file))
