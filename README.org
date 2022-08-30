@@ -1002,19 +1002,14 @@ The variables which hold the front matter format are:
 #+vindex: denote-yaml-front-matter
 - ~denote-yaml-front-matter~
 
-These variables hold a string with specifiers that are used by the
-~format~ function.  The formatting operation passes four arguments (five
-in the case of ~denote-text-front-matter~ as noted in its doc string)
-which include the values of the given entries.  The doc string of
-~denote-org-front-matter~ describes the technicalities:
+These variables have a string value with specifiers that are used by the
+~format~ function.  The formatting operation passes four arguments which
+include the values of the given entries.  If you are an advanced user
+who wants to edit this variable to affect how front matter is produced,
+consider using something like =%2$s= to control where the Nth argument
+is placed.
 
-#+begin_quote
-The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you are an
-advanced user who wants to edit this variable to affect how front matter
-is produced, consider using something like %2$s to control where Nth
-argument is placed.
-
-Make sure to:
+When editing the value, make sure to:
 
 1. Not use empty lines inside the front matter block.
 
@@ -1023,7 +1018,6 @@ Make sure to:
 
 These help with consistency and might prove useful if we ever need to
 operate on the front matter as a whole.
-#+end_quote
 
 With those granted, below are some examples.  The approach is the same
 for all variables.
