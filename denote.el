@@ -582,10 +582,6 @@ output is sorted with `string-lessp'."
 
 ;;;; File types
 
-;; TODO 2022-08-10: These are `defvar' and not `defcustom' because
-;; tweaks to them need to be done with care.  Though there is demand for
-;; modifying the front matter, so perhaps we should reconsider.
-
 (defvar denote-toml-front-matter
   "+++
 title      = %s
