@@ -589,7 +589,10 @@ date       = %s
 tags       = %s
 identifier = %S
 +++\n\n"
-  "TOML front matter.")
+  "TOML front matter.
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
+ID.  Advanced users are advised to consult Info node `(denote)
+Change the front matter format'.")
 
 (defvar denote-yaml-front-matter
   "---
@@ -598,7 +601,10 @@ date:       %s
 tags:       %s
 identifier: %S
 ---\n\n"
-  "YAML front matter.")
+  "YAML front matter.
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
+ID.  Advanced users are advised to consult Info node `(denote)
+Change the front matter format'.")
 
 (defvar denote-text-front-matter
   "title:      %s
@@ -606,7 +612,10 @@ date:       %s
 tags:       %s
 identifier: %s
 ---------------------------\n\n"
-  "Plain text front matter.")
+  "Plain text front matter.
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
+ID.  Advanced users are advised to consult Info node `(denote)
+Change the front matter format'.")
 
 (defvar denote-org-front-matter
   "#+title:      %s
@@ -614,7 +623,10 @@ identifier: %s
 #+filetags:   %s
 #+identifier: %s
 \n"
-  "Org front matter.")
+  "Org front matter.
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
+ID.  Advanced users are advised to consult Info node `(denote)
+Change the front matter format'.")
 
 (defun denote-surround-with-quotes (s)
   "Surround string S with quotes.
