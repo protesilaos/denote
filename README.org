@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.5.0
-#+macro:                 release-date 2022-08-10
-#+macro:                 development-version 0.6.0-dev
+#+macro:                 stable-version 0.6.0
+#+macro:                 release-date 2022-08-31
+#+macro:                 development-version 1.0.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -144,8 +144,6 @@ of those in the subsequent sections.
 :PROPERTIES:
 :CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
 :END:
-
-[ The region as default title is part of {{{development-version}}} ]
 
 The ~denote~ command will prompt for a title.  If a region is active,
 the text of the region becomes the default at the minibuffer prompt
@@ -451,8 +449,6 @@ variants which you can then assign to keys or invoke with =M-x=.
 :PROPERTIES:
 :CUSTOM_ID: h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63
 :END:
-
-[ Part of {{{development-version}}} ]
 
 By default, Denote uses its own simple prompt for date or date+time
 input ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).  This is done when the

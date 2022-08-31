@@ -9,6 +9,121 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 0.6.0 on 2022-08-31
+:PROPERTIES:
+:CUSTOM_ID: h:50aba79a-d702-42b4-a2a5-7fa29033f904
+:END:
+
+Denote is in a stable state.  I consider it feature-complete, without
+prejudice to possible refinements to its existing feature set.  The next
+version shall be =1.0.0=.
+
+** User-facing changes
+:PROPERTIES:
+:CUSTOM_ID: h:566a770b-399e-47a6-9aa4-326fd6ade9a7
+:END:
+
++ The Denote linking facility can now link to any file that has the
+  Denote file-naming scheme.  Before, we limited this feature to what we
+  consider "note" files, else the supported plain text formats (per
+  ~denote-file-type~).  Thanks to Peter Prevos for the discussion on the
+  mailing list: <https://lists.sr.ht/~protesilaos/denote/%3C87fsi1m5ze.fsf%40prevos.net%3E>.
+
++ Date prompts may optionally use the familiar Org date-selection
+  mechanism that leverages the calendar.  This feature is subject to the
+  user option ~denote-date-prompt-use-org-read-date~.  A date prompt is
+  used by the ~denote-date~ command or, optionally, by the ~denote~
+  command when the user option ~denote-prompts~ is configured
+  accordingly.  The manual elaborates on the specificities.  Thanks to
+  Jean-Philippe Gagné Guay for the contribution in pull request 97 at
+  the GitHub mirror: <https://github.com/protesilaos/denote/pull/97>.
+
++ Leading empty spaces at the ~denote~ =TITLE= prompt no longer produce
+  hyphens: they are simply ignored to keep file names consistent.
+  Thanks to Peter Prevos for the contribution in pull request 99 at the
+  GitHub mirror: <https://github.com/protesilaos/denote/pull/99>.
+
+  [ Peter has started the process for copyright assignment to the Free
+    Software Foundation, though the total contributions are still within
+    the permitted boundaries. ]
+
++ When linking to files that have no front matter, the link's anchor
+  text (the human-readable part) is derived from the file name =TITLE=
+  component.  We apply a de-hyphenation and capitalisation of its
+  constituent words.  This is not always perfect, but it is better than
+  something like =this-is-the-title=.  Thanks to Peter Prevos for the
+  original idea in pull request 93 at the GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/93>.
+
++ The active region is now used as the default value of the ~denote~
+  command =TITLE= prompt.  The idea behind this Do-What-I-Mean-flavoured
+  patch is to be able to take a note about a subject that appears in a
+  buffer by simply marking it before invoking the ~denote~ command.
+
+  Thanks to Eshel Yaron for the patch: <https://lists.sr.ht/~protesilaos/denote/patches/34870>.
+  It is below the ~15 line threshold that thus requires no copyright
+  assignment to the Free Software Foundation.
+
++ The ~denote-rename-file-using-front-matter~ command now offers to save
+  the buffer if appropriate.  In the past, it would simply produce an
+  error asking the user to save the buffer.  Thanks to Peter Prevos for
+  the contribution in pull request 103 at he GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/103>.
+
++ Fixed the text of the confirmation prompt in the command
+  ~denote-migrate-old-markdown-yaml-tags~.  Thanks to Abin Simon for the
+  patch: <https://lists.sr.ht/~protesilaos/denote/patches/34632>.
+
+  This patchset also fixes (i) how a tag is identified for the purposes
+  of migrating old to new front matter, (ii) the regular expression for
+  Org front matter keywords
+
+  [ The total changes are below the ~15 line threshold and thus do not
+    require copyright assignment to the Free Software Foundation. ]
+
++ Fixed a bug that prevented the creation of new notes.  Thanks to
+  Juergen Hoetzel for the contribution in pull request 84 at the GitHub
+  mirror: <https://github.com/protesilaos/denote/pull/84>.  This was
+  done immediately after the release of version =0.5.0= on 2022-08-10
+  and was provided to users as version =0.5.1=
+
+  [ The change is below the ~15 line threshold. ]
+
+** Internal refinements
+:PROPERTIES:
+:CUSTOM_ID: h:9374b533-faaa-4ab4-b668-f74b5eae7ab5
+:END:
+
+These make the code simpler and more predictable.  As the individual
+changes are not user-facing, I invite interested parties to consult the
+Git log.  Special thanks to Jean-Philippe Gagné Guay for the multiple
+contributions (and relevant discussions) over at the GitHub mirror:
+
+- <https://github.com/protesilaos/denote/pull/88>
+- <https://github.com/protesilaos/denote/pull/89>
+- <https://github.com/protesilaos/denote/pull/91>
+- <https://github.com/protesilaos/denote/pull/94>
+- <https://github.com/protesilaos/denote/pull/101>
+- <https://github.com/protesilaos/denote/pull/102>
+
+[ Jean-Philippe has assigned copyright to the Free Software Foundation.
+  It is required for non-trivial changes. ]
+
+** For advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:c6fc05a2-ff31-4a0c-91a1-f64d2cfd6a16
+:END:
+
+The variable ~denote-file-types~ is an alist of plists which
+substantiates the supported file types (per the user option
+~denote-file-type~).  Properties pertain to the formatting of front
+matter and the retrieval of relevant values.  The doc string of
+~denote-file-types~ explains the details, while the default value uses
+the ancillary functions we define.  Thanks to Jean-Philippe Gagné Guay
+for the relevant contributions in pull request 89 at the GitHub mirror:
+<https://github.com/protesilaos/denote/pull/89>.
+
+
 * Version 0.5.0 on 2022-08-10
 :PROPERTIES:
 :CUSTOM_ID: h:80b9daaa-c3c8-4457-b109-966bb6a99832
