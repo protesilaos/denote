@@ -827,7 +827,7 @@ contain the newline."
       (insert front-matter)
       (goto-char (point-min))
       (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 (defun denote--get-keywords-line-from-front-matter (keywords file-type)
   "Retrieve keywords line from front matter based on FILE-TYPE.
@@ -839,7 +839,7 @@ contain the newline."
       (insert front-matter)
       (goto-char (point-min))
       (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (point-at-bol) (point-at-eol))))))
+        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 ;;;; Front matter or content retrieval functions
 
@@ -868,7 +868,7 @@ contain the newline."
     (goto-char (point-min))
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (funcall (denote--title-value-reverse-function file-type)
-               (buffer-substring-no-properties (point) (point-at-eol))))))
+               (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote--retrieve-title-line (file file-type)
   "Return title line from FILE according to FILE-TYPE."
@@ -876,7 +876,7 @@ contain the newline."
     (insert-file-contents file)
     (goto-char (point-min))
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
+      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote--retrieve-keywords-value (file file-type)
   "Return keywords value from FILE according to FILE-TYPE.
@@ -886,7 +886,7 @@ If optional KEY is non-nil, return the key instead."
     (goto-char (point-min))
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (funcall (denote--keywords-value-reverse-function file-type)
-               (buffer-substring-no-properties (point) (point-at-eol))))))
+               (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote--retrieve-keywords-line (file file-type)
   "Return keywords line from FILE according to FILE-TYPE."
@@ -894,7 +894,7 @@ If optional KEY is non-nil, return the key instead."
     (insert-file-contents file)
     (goto-char (point-min))
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))))
+      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
@@ -1422,9 +1422,9 @@ operation on multiple files."
         (widen)
         (goto-char (point-min))
         (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-          (goto-char (point-at-bol))
+          (goto-char (line-beginning-position))
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
-          (delete-region (point) (point-at-eol)))))))
+          (delete-region (point) (line-end-position)))))))
 
 (defun denote--rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-dired-rename-file'.
@@ -1447,14 +1447,14 @@ values if appropriate."
             (widen)
             (goto-char (point-min))
             (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-            (goto-char (point-at-bol))
+            (goto-char (line-beginning-position))
             (insert new-title-line)
-            (delete-region (point) (point-at-eol))
+            (delete-region (point) (line-end-position))
             (goto-char (point-min))
             (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-            (goto-char (point-at-bol))
+            (goto-char (line-beginning-position))
             (insert new-keywords-line)
-            (delete-region (point) (point-at-eol))))))))
+            (delete-region (point) (line-end-position))))))))
 
 (make-obsolete 'denote-dired-rename-expert nil "0.5.0")
 (make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
@@ -2179,7 +2179,7 @@ Use optional TITLE for a prettier heading."
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
               (insert (denote--file-name-relative-to-denote-directory f))
-              (make-button (point-at-bol) (point-at-eol) :type 'denote-link-backlink-button)
+              (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
               (newline))
             files)
       (goto-char (point-min))
