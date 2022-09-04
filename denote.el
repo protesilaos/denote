@@ -103,7 +103,8 @@
 
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
-  :group 'files)
+  :group 'files
+  :link '(info-link "(denote) Top"))
 
 ;;;; User options
 
