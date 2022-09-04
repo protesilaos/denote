@@ -493,7 +493,8 @@ FILE must be an absolute path."
 
 (defun denote--current-file-is-note-p ()
   "Return non-nil if current file likely is a Denote note."
-  (and (or (string-match-p denote--id-regexp (buffer-file-name))
+  (and (buffer-file-name)
+       (or (string-match-p denote--id-regexp (buffer-file-name))
            (string-match-p denote--id-regexp (buffer-name)))
        (denote--default-dir-has-denote-prefix)))
 
