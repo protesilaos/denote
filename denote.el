@@ -2374,6 +2374,20 @@ interface by first selecting the `denote:' hyperlink type."
    "denote:"
    (denote--retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
 
+(defun denote-link-ol-store()
+  "Handler for `org-store-link' adding support for denote: links."
+  (when (denote--current-file-is-note-p)
+    (let* ((file (buffer-file-name))
+           (file-type (denote--filetype-heuristics file))
+           (file-id (denote--retrieve-filename-identifier file))
+           (file-title (denote--retrieve-title-or-filename file file-type)))
+      
+      (org-link-store-props
+       :type "denote"
+       :description file-title
+       :link (concat "denote:" file-id)))
+    org-store-link-plist))
+
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
 The LINK, DESCRIPTION, and FORMAT are handled by the export
@@ -2407,6 +2421,7 @@ backend."
            :follow #'denote-link-ol-follow
            :face #'denote-link-ol-face
            :complete #'denote-link-ol-complete
+           :store #'denote-link-ol-store
            :export #'denote-link-ol-export)))))
 
 ;;;; Glue code for org-capture
