@@ -2381,7 +2381,7 @@ interface by first selecting the `denote:' hyperlink type."
            (file-type (denote--filetype-heuristics file))
            (file-id (denote--retrieve-filename-identifier file))
            (file-title (denote--retrieve-title-or-filename file file-type)))
-      
+
       (org-link-store-props
        :type "denote"
        :description file-title
