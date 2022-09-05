@@ -2129,6 +2129,12 @@ this.
 When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
   (interactive)
+  ;; TODO 2022-09-05: Perhaps we need a more relaxed check that does not
+  ;; account for the `denote-directory' instead of
+  ;; `denote--current-file-is-note-p'?  For the use-case, see commit
+  ;; a3cc59a.  Basically, a 'denote:' link will work for as long as the
+  ;; target file is in the `denote-directory'.  So why not buttonize
+  ;; those links even from outside the `denote-directory'?
   (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
     (save-excursion
       (goto-char (or beg (point-min)))
