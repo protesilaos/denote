@@ -2355,7 +2355,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Contributions to code or the manual :: Abin Simon, Benjamin Kästner,
   Colin McLear, Damien Cassou, Eshel Yaron, Hilde Rhyne, Jack Baty,
   Jean-Philippe Gagné Guay, Jürgen Hötzel, Kaushal Modi, Kyle Meyer,
-  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier.
+  Marc Fargas, Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan
+  Monnier.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
