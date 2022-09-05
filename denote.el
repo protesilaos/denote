@@ -2058,7 +2058,10 @@ format is always [[denote:IDENTIFIER]]."
   (interactive)
   (if-let* ((regexp (denote-link--file-type-regexp (buffer-file-name)))
             (files (denote-link--expand-identifiers regexp)))
-      (find-file (denote-link--find-file-prompt files))
+      (find-file ; TODO 2022-09-05: Revise for possible refinement
+       (denote--get-note-path-by-id
+        (denote-link--id-from-string
+         (denote-link--find-file-prompt files))))
     (user-error "No links found in the current buffer")))
 
 ;;;;; Link buttons
