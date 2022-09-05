@@ -2121,9 +2121,10 @@ format is always [[denote:IDENTIFIER]]."
   "Make denote: links actionable buttons in the current buffer.
 
 Add this to `find-file-hook'.  It will only work with Denote
-notes and will not do anything in `org-mode' buffers, as buttons
-already work there.  If you do not use Markdown or plain text,
-then you do not need this.
+notes inside the variable `denote-directory' and will not do
+anything in `org-mode' buffers, as buttons already work there.
+If you do not use Markdown or plain text, then you do not need
+this.
 
 When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
