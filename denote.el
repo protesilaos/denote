@@ -2392,6 +2392,9 @@ interface by first selecting the `denote:' hyperlink type."
    "denote:"
    (denote--retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
 
+(declare-function org-link-store-props "ol.el" (&rest plist))
+(defvar org-store-link-plist)
+
 (defun denote-link-ol-store()
   "Handler for `org-store-link' adding support for denote: links."
   (when (denote--current-file-is-note-p)
