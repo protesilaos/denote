@@ -521,14 +521,17 @@ include files that are not implied by `denote-file-types'."
      (string-prefix-p id (file-name-nondirectory f)))
    (denote-directory-files)))
 
-(defun denote--directory-files-matching-regexp (regexp)
-  "Return list of files matching REGEXP.
-Files are those which satisfy `denote--file-has-identifier-p' and
-`denote--file-name-relative-to-denote-directory'."
+(defun denote-directory-files-matching-regexp (regexp)
+  "Return list of files matching REGEXP in `denote-directory-files'."
   (seq-filter
    (lambda (f)
      (string-match-p regexp (denote--file-name-relative-to-denote-directory f)))
    (denote-directory-files)))
+
+(define-obsolete-function-alias
+  'denote--directory-files-matching-regexp
+  'denote-directory-files-matching-regexp
+  "1.0.0")
 
 ;;;; Keywords
 
@@ -2270,7 +2273,7 @@ inserts links with just the identifier."
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
   (let ((current-file (buffer-file-name)))
-    (if-let ((files (delete current-file (denote--directory-files-matching-regexp regexp))))
+    (if-let ((files (delete current-file (denote-directory-files-matching-regexp regexp))))
         (let ((beg (point)))
           (insert (denote-link--prepare-links files current-file id-only))
           (unless (derived-mode-p 'org-mode)
