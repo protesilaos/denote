@@ -1998,20 +1998,30 @@ so far?]
 :END:
 
 Denote should work well for what is described in this manual.  Though we
-can always do better.  These are some of the tasks that are planned for
-the future and which you might want to help with ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+can always do better.  This is a non-exhaustive list with some
+low-priority ideas you may want to help with ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
-This is a non-exhaustive list and you are always welcome to either
-report or work on something else.
+- Support mutually-exclusive sets of tags.  For example, a =home=
+  keyword would preclude =work=.  Personally, I am not a fan of such
+  arrangements there may be a case where something applies to both ends
+  of this prefigured binary.  Though we can think about it.
 
-- [ ] Ensure integration between =denote:= links and Embark.
-- [ ] Add command that expands the identifier in links to a full name.
-- [ ] Add command that rewrites full names in links, if they are invalid.
-- [ ] Consider completion-at-point after =denote:= links.
-- [ ] Support mutually-exclusive sets of tags.
+- Add command that expands the identifier in links to a full file name.
+  This would be useful for some sort of "export" operation where the
+  absolute file path is necessary and where the Denote linking mechanism
+  is not available.
 
-These are just ideas.  We need to consider the pros and cons in each
-case and act accordingly.
+- Add command that rewrites full names in links, if they are invalid.
+  This would complement the renaming mechanism.  Personally, I think old
+  titles in links are not a problem, because they show you what was true
+  at the time and are relevant to their context.  Again though, it is an
+  option worth exploring.
+
+- Ensure integration between =denote:= links and the =embark= package.
+  The idea is to allow Embark to understand the Denote buttons are links
+  to files and correctly infer the absolute path.  I am not sure what a
+  user would want to do with this, but maybe there are some interesting
+  possibilities.
 
 * Alternatives to Denote
 :PROPERTIES:
