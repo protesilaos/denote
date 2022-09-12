@@ -1805,9 +1805,7 @@ and seconds."
   :group 'denote-faces
   :package-version '(denote . "0.1.0"))
 
-;; TODO 2022-08-10: I believe a nil value has the same effect, though
-;; there is no pressing need to test this.
-(defface denote-faces-title '((t ))
+(defface denote-faces-title nil
   "Face for file name title in Dired buffers."
   :group 'denote-faces
   :package-version '(denote . "0.1.0"))
