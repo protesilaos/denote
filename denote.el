@@ -1878,6 +1878,11 @@ and seconds."
   :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
+;; NOTE 2022-09-12: I tried to use the `dired-font-lock-keywords', but
+;; then it overrides the standard Dired faces.  The `diredfl' package
+;; uses that method, though it redefines all Dired faces.  We don't want
+;; to do that.
+
 ;; FIXME 2022-08-12: Make `denote-dired-mode' actually apply to Dired.
 ;; FIXME 2022-08-12: Make `denote-dired-mode' persist after WDired.
 ;; FIXME 2022-08-12: Make `denote-dired-mode' work with diredfl.  This
