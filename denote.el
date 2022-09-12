@@ -2053,11 +2053,6 @@ format is always [[denote:IDENTIFIER]]."
      (denote--completion-table 'file file-names)
      nil t nil 'denote-link--find-file-history)))
 
-;; TODO 2022-06-14: Do we need to add any sort of extension to better
-;; integrate with Embark?  For the minibuffer interaction it is not
-;; necessary, but maybe it can be done to immediately recognise the
-;; identifiers are links to files?
-
 ;;;###autoload
 (defun denote-link-find-file ()
   "Use minibuffer completion to visit linked file."
