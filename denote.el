@@ -498,7 +498,7 @@ FILE must be an absolute path."
            (string-match-p denote--id-regexp (buffer-name)))
        (denote--default-dir-has-denote-prefix)))
 
-(defun denote--directory-files ()
+(defun denote-directory-files ()
   "List absolute file paths in variable `denote-directory'.
 The returned files only need to have an identifier.  This may
 include files that are not implied by `denote-file-types'."
@@ -509,12 +509,17 @@ include files that are not implied by `denote-file-types'."
       (not (denote--file-has-identifier-p f)))
     (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
+(define-obsolete-function-alias
+  'denote--directory-files
+  'denote-directory-files
+  "1.0.0")
+
 (defun denote--get-note-path-by-id (id)
   "Return the absolute path of ID note in variable `denote-directory'."
   (seq-find
    (lambda (f)
      (string-prefix-p id (file-name-nondirectory f)))
-   (denote--directory-files)))
+   (denote-directory-files)))
 
 (defun denote--directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP.
@@ -523,7 +528,7 @@ Files are those which satisfy `denote--file-has-identifier-p' and
   (seq-filter
    (lambda (f)
      (string-match-p regexp (denote--file-name-relative-to-denote-directory f)))
-   (denote--directory-files)))
+   (denote-directory-files)))
 
 ;;;; Keywords
 
@@ -536,11 +541,11 @@ Files are those which satisfy `denote--file-has-identifier-p' and
       (split-string kws "_"))))
 
 (defun denote--inferred-keywords ()
-  "Extract keywords from `denote--directory-files'.
+  "Extract keywords from `denote-directory-files'.
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
   (mapcan #'denote--extract-keywords-from-path
-          (denote--directory-files)))
+          (denote-directory-files)))
 
 (defun denote-keywords ()
   "Return appropriate list of keyword candidates.
@@ -915,7 +920,7 @@ If optional KEY is non-nil, return the key instead."
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
   (xref--alistify
-   (xref-matches-in-files identifier (denote--directory-files))
+   (xref-matches-in-files identifier (denote-directory-files))
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
@@ -1081,7 +1086,7 @@ where the former does not read dates without a time component."
   "Return non-nil if IDENTIFIER already exists."
   (seq-some (lambda (file)
               (string-prefix-p identifier (file-name-nondirectory file)))
-            (append (denote--directory-files)
+            (append (denote-directory-files)
                     (denote--buffer-file-names))))
 
 (defun denote--barf-duplicate-id (identifier)
@@ -2027,7 +2032,7 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--expand-identifiers (regexp)
   "Expend identifiers matching REGEXP into file paths."
-  (let ((files (denote--directory-files))
+  (let ((files (denote-directory-files))
         (found-files))
     (dolist (file files)
       (dolist (i (denote-link--collect-identifiers regexp))
@@ -2511,7 +2516,7 @@ FILE-TYPE is the symbol file-type."
          (seq-remove
           (lambda (file)
             (not (string= (file-name-extension file) type)))
-          (denote--directory-files)))))
+          (denote-directory-files)))))
 
 ;;;###autoload
 (defun denote-migrate-old-org-filetags ()
