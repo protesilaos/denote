@@ -1596,6 +1596,34 @@ Sources for =tmr=:
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
 
+** Create a note with the region's contents
+:PROPERTIES:
+:CUSTOM_ID: h:2f8090f1-50af-4965-9771-d5a91a0a87bd
+:END:
+
+Sometimes it makes sense to gather notes in a single file and later
+review it to make multiple notes out of it.  With the following code,
+the user marks a region and then invokes the command
+~my-denote-create-new-note-from-region~: it prompts for a title and
+keywords and then uses the region's contents to fill in the newly
+created note.
+
+#+begin_src emacs-lisp
+(defun my-denote-create-new-note-from-region (beg end)
+  "Create note whose contents include the text between BEG and END.
+Prompt for title and keywords of the new note."
+  (interactive "r")
+  (if-let (((region-active-p))
+           (text (buffer-substring-no-properties beg end)))
+      (progn
+        (denote (denote--title-prompt) (denote--keywords-prompt))
+        (insert text))
+    (user-error "No region is available")))
+#+end_src
+
+Have a different workflow?  Feel welcome to discuss it in any of our
+official channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+
 ** Narrow the list of files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:ea173a01-69ef-4574-89a7-6e60ede02f13
@@ -2427,7 +2455,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
   Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal Modi, M. Hadi
   Timachi, Paul van Gelder, Peter Prevos, Shreyas Ragavan, Summer Emacs,
-  Sven Seebeck, Taoufik, Ypot, atanasj, hpgisler, pRot0ta1p, sienic.
+  Sven Seebeck, Taoufik, Ypot, atanasj, hpgisler, pRot0ta1p, sienic,
+  sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
