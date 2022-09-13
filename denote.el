@@ -855,11 +855,11 @@ contain the newline."
 
 (defun denote--retrieve-filename-identifier (file)
   "Extract identifier from FILE name."
-  (if (file-exists-p file)
+  (if (denote--file-has-identifier-p file)
       (progn
         (string-match denote--id-regexp file)
         (match-string 0 file))
-    (error "Cannot find `%s' as a file" file)))
+    (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
 (defun denote--retrieve-filename-title (file)
   "Extract title from FILE name, else return `file-name-base'."
