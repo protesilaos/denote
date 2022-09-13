@@ -2070,6 +2070,53 @@ format is always [[denote:IDENTIFIER]]."
          (denote-link--find-file-prompt files))))
     (user-error "No links found in the current buffer")))
 
+;;;###autoload
+(defun denote-link-after-creating (&optional id-only)
+  "Create new note in the background and link to it directly.
+
+Use `denote' interactively to produce the new note.  Its doc
+string explains which prompts will be used and under what
+conditions.
+
+With optional ID-ONLY as a prefix argument create a link that
+consists of just the identifier.  Else try to also include the
+file's title.  This has the same meaning as in `denote-link'.
+
+IMPORTANT NOTE: Normally, `denote' does not save the buffer it
+produces for the new note.  This is a safety precaution to not
+write to disk unless the user wants it (e.g. the user may choose
+to kill the buffer, thus cancelling the creation of the note).
+However, for this command the creation of the note happens in the
+background and the user may miss the step of saving their buffer.
+We thus have to save the buffer in order to (i) establish valid
+links, and (ii) retrieve whatever front matter from the target
+file."
+  (interactive "P")
+  (let (path)
+    (save-window-excursion
+      (call-interactively #'denote)
+      (save-buffer)
+      (setq path (buffer-file-name)))
+    (denote-link path id-only)))
+
+;;;###autoload
+(defun denote-link-or-create (target &optional id-only)
+  "Use `denote-link' on TARGET file, creating it if necessary.
+
+If TARGET file does not exist, call `denote-link-after-creating'
+which runs the `denote' command interactively to create the file.
+The established link will then be targeting that new file.
+
+With optional ID-ONLY as a prefix argument create a link that
+consists of just the identifier.  Else try to also include the
+file's title.  This has the same meaning as in `denote-link'."
+  (interactive (list (denote--retrieve-read-file-prompt) current-prefix-arg))
+  (if (file-exists-p target)
+      (denote-link target id-only)
+    (call-interactively #'denote-link-after-creating)))
+
+(defalias 'denote-link-to-existing-or-new-note (symbol-function 'denote-link-or-create))
+
 ;;;;; Link buttons
 
 ;; Evaluate: (info "(elisp) Button Properties")
