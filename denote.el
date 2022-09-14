@@ -491,7 +491,7 @@ and use one of the extensions implied by `denote-file-type'."
   "1.0.0")
 
 (defun denote-file-has-supported-extension-p (file)
-  "Return non-nil if FILE has supported extension
+  "Return non-nil if FILE has supported extension.
 Also account for the possibility of an added .gpg suffix.
 Supported extensions are those implied by `denote-file-type'."
   (let* ((extensions (denote--extensions))
