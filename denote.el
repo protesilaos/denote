@@ -1186,7 +1186,7 @@ When called from Lisp, all arguments are optional.
                                   (region-beginning)
                                   (region-end))))))
          ('keywords (aset args 1 (denote-keywords-prompt)))
-         ('file-type (aset args 2 (denote--file-type-prompt)))
+         ('file-type (aset args 2 (denote-file-type-prompt)))
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
          ('date (aset args 4 (denote--date-prompt)))
          ('template (aset args 5 (denote--template-prompt)))))
@@ -1225,9 +1225,9 @@ With optional DEFAULT-TITLE use it as the default value."
   "1.0.0")
 
 (defvar denote--file-type-history nil
-  "Minibuffer history of `denote--file-type-prompt'.")
+  "Minibuffer history of `denote-file-type-prompt'.")
 
-(defun denote--file-type-prompt ()
+(defun denote-file-type-prompt ()
   "Prompt for `denote-file-type'.
 Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
@@ -1235,6 +1235,11 @@ here for clarity."
   (completing-read
    "Select file type: " '(org markdown-yaml markdown-toml text) nil t
    nil 'denote--file-type-history))
+
+(define-obsolete-function-alias
+  'denote--file-type-prompt
+  'denote-file-type-prompt
+  "1.0.0")
 
 (defvar denote--date-history nil
   "Minibuffer history of `denote--date-prompt'.")
