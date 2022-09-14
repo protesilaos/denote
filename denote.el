@@ -1202,7 +1202,7 @@ where the former does not read dates without a time component."
 ;; In normal usage, this should only be relevant for `denote-date',
 ;; otherwise the identifier is always unique (we trust that no-one
 ;; writes multiple notes within fractions of a second).  Though the
-;; `denote' command does call `denote--barf-duplicate-id'.
+;; `denote' command does call `denote-barf-duplicate-id'.
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
   (seq-some (lambda (file)
@@ -1210,10 +1210,15 @@ where the former does not read dates without a time component."
             (append (denote-directory-files)
                     (denote--buffer-file-names))))
 
-(defun denote--barf-duplicate-id (identifier)
-  "Throw a user-error if IDENTIFIER already exists."
+(defun denote-barf-duplicate-id (identifier)
+  "Throw a `user-error' if IDENTIFIER already exists."
   (when (denote--id-exists-p identifier)
     (user-error "`%s' already exists; aborting new note creation" identifier)))
+
+(define-obsolete-function-alias
+  'denote--barf-duplicate-id
+  'denote-barf-duplicate-id
+  "1.0.0")
 
 (defun denote--subdirs ()
   "Return list of subdirectories in variable `denote-directory'."
@@ -1282,7 +1287,7 @@ When called from Lisp, all arguments are optional.
          (template (if (stringp template)
                        template
                      (or (alist-get template denote-templates) ""))))
-    (denote--barf-duplicate-id id)
+    (denote-barf-duplicate-id id)
     (denote--prepare-note title keywords date id directory file-type template)
     (denote--keywords-add-to-history keywords)))
 
