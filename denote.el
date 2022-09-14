@@ -1491,12 +1491,16 @@ the file type is assumed to be the first of `denote-file-types'."
     (with-current-buffer buffer
       (set-visited-file-name new-name nil t))))
 
-(defun denote--rename-file (old-name new-name)
-  "Rename file named OLD-NAME to NEW-NAME.
-Update Dired buffers if the file is renamed."
+(defun denote-rename-file-and-buffer (old-name new-name)
+  "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (rename-file old-name new-name nil)
     (denote--rename-buffer old-name new-name)))
+
+(define-obsolete-function-alias
+  'denote--rename-file
+  'denote-rename-file-and-buffer
+  "1.0.0")
 
 (defun denote--add-front-matter (file title keywords id file-type)
   "Prepend front matter to FILE if `denote--only-note-p'.
@@ -1595,13 +1599,18 @@ Throw error is FILE is not regular, else return FILE."
             (user-error "Only rename regular files")
           selected-file))))
 
-(defun denote--rename-file-prompt (old-name new-name)
+(defun denote-rename-file-prompt (old-name new-name)
   "Prompt to rename file named OLD-NAME to NEW-NAME."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (y-or-n-p
      (format "Rename %s to %s?"
              (propertize (file-name-nondirectory old-name) 'face 'error)
              (propertize (file-name-nondirectory new-name) 'face 'success)))))
+
+(define-obsolete-function-alias
+  'denote--rename-file-prompt
+  'denote-rename-file-prompt
+  "1.0.0")
 
 ;;;###autoload
 (defun denote-rename-file (file title keywords)
@@ -1674,8 +1683,8 @@ files)."
          (new-name (denote-format-file-name
                     dir id keywords (denote-sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote--rename-file-prompt file new-name)
-      (denote--rename-file file new-name)
+    (when (denote-rename-file-prompt file new-name)
+      (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
       (when (denote--writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
@@ -1738,7 +1747,7 @@ The operation does the following:
                      (extension (file-name-extension file t))
                      (new-name (denote-format-file-name
                                 dir id keywords (denote-sluggify title) extension)))
-                (denote--rename-file file new-name)
+                (denote-rename-file-and-buffer file new-name)
                 (when (denote--writable-and-supported-p new-name)
                   (if (denote--edit-front-matter-p new-name file-type)
                       (denote--rewrite-keywords new-name keywords file-type)
@@ -1782,8 +1791,8 @@ typos and the like."
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
                        dir id keywords (denote-sluggify title) extension)))
-      (when (denote--rename-file-prompt file new-name)
-        (denote--rename-file file new-name)
+      (when (denote-rename-file-prompt file new-name)
+        (denote-rename-file-and-buffer file new-name)
         (denote-update-dired-buffers))
     (user-error "No front matter for title and/or keywords")))
 
@@ -1831,7 +1840,7 @@ their respective front matter."
                  (extension (file-name-extension file t))
                  (new-name (denote-format-file-name
                             dir id keywords (denote-sluggify title) extension)))
-            (denote--rename-file file new-name)))
+            (denote-rename-file-and-buffer file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
 

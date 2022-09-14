@@ -2105,6 +2105,12 @@ might change them without further notice.
   category (so it works with packages such as ~marginalia~ and
   ~embark~).
 
++ ~denote-rename-file-prompt~ :: Prompt to rename file named =OLD-NAME=
+  to =NEW-NAME=.
+
++ ~denote-rename-file-and-buffer~ :: Rename file named =OLD-NAME= to
+  =NEW-NAME=, updating buffer name.
+
 + ~denote-file-types~ :: Alist of ~denote-file-type~ and their format
   properties.  Each element is of the form =(SYMBOL . PROPERTY-LIST)=.
   =SYMBOL= is one of those specified in ~denote-file-type~.
