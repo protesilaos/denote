@@ -2175,6 +2175,48 @@ might change them without further notice.
      the keywords' value from the front matter.  It performs the reverse
      of the =:keywords-value-function=.
 
++ ~denote-org-front-matter~ :: Variable holding the Org front matter.
+  It is passed to ~format~ with arguments =TITLE=, =DATE=, =KEYWORDS=,
+  =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
++ ~denote-yaml-front-matter~ :: Variable holding the YAML (Markdown)
+  front matter.  It is passed to ~format~ with arguments =TITLE=,
+  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
++ ~denote-toml-front-matter~ :: Variable holding the TOML (Markdown)
+  front matter.  It is passed to ~format~ with arguments =TITLE=,
+  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
++ ~denote-text-front-matter~ :: Variable holding the plain text front
+  matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,
+  =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
++ ~denote-surround-with-quotes~ :: Surround string =S= with quotes.
+  This can be used in ~denote-file-types~ to format front mattter.
+
++ ~denote-trim-whitespace~ :: Trim whitespace around string =S= .  This
+  can be used in ~denote-file-types~ to format front mattter.
+
++ ~denote-trim-whitespace-then-quotes~ :: Trim whitespace then quotes
+  around string =S=.  This can be used in ~denote-file-types~ to format
+  front mattter.
+
++ ~denote-format-keywords-for-md-front-matter~ :: Format front matter
+  =KEYWORDS= for markdown file type.  =KEYWORDS= is a list of strings.
+  Consult the ~denote-file-types~ for how this is used.
+
++ ~denote-format-keywords-for-text-front-matter~ :: Format front matter
+  =KEYWORDS= for text file type.  =KEYWORDS= is a list of strings.
+  Consult the ~denote-file-types~ for how this is used.
+
++ ~denote-format-keywords-for-org-front-matter~ :: Format front matter
+  =KEYWORDS= for org file type.  =KEYWORDS= is a list of strings.
+  Consult the ~denote-file-types~ for how this is used.
+
++ ~denote-extract-keywords-from-front-matter~ :: Format front matter
+  =KEYWORDS= for org file type.  =KEYWORDS= is a list of strings.
+  Consult the ~denote-file-types~ for how this is used.
+
 * Contributing
 :PROPERTIES:
 :CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
