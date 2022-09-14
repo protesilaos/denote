@@ -1388,7 +1388,7 @@ See the format of `denote-file-types'."
                 (string-equal (plist-get (cdr type) :extension) extension))
               denote-file-types))
 
-(defun denote--filetype-heuristics (file)
+(defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
 Use the file extension to detect the file type of the file.
 
@@ -1415,6 +1415,11 @@ the file type is assumed to be the first of `denote-file-types'."
                (setq file-type (car found-type))
              (setq file-type (caar types)))))
     file-type))
+
+(define-obsolete-function-alias
+  'denote--filetype-heuristics
+  'denote-filetype-heuristics
+  "1.0.0")
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
@@ -1616,7 +1621,7 @@ place (though Denote does not---and will not---manage such
 files)."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
-          (file-type (denote--filetype-heuristics file)))
+          (file-type (denote-filetype-heuristics file)))
      (list
       file
       (denote-title-prompt
@@ -1625,7 +1630,7 @@ files)."
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
          (extension (file-name-extension file t))
-         (file-type (denote--filetype-heuristics file))
+         (file-type (denote-filetype-heuristics file))
          (new-name (denote--format-file
                     dir id keywords (denote--sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
@@ -1688,7 +1693,7 @@ The operation does the following:
             (dolist (file marks)
               (let* ((dir (file-name-directory file))
                      (id (denote--file-name-id file))
-                     (file-type (denote--filetype-heuristics file))
+                     (file-type (denote-filetype-heuristics file))
                      (title (denote--retrieve-title-or-filename file file-type))
                      (extension (file-name-extension file t))
                      (new-name (denote--format-file
@@ -1729,7 +1734,7 @@ typos and the like."
       (user-error "Save buffer before proceeding")))
   (unless (denote--writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
-  (if-let* ((file-type (denote--filetype-heuristics file))
+  (if-let* ((file-type (denote-filetype-heuristics file))
             (title (denote-retrieve-title-value file file-type))
             (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
@@ -1780,7 +1785,7 @@ their respective front matter."
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
-                 (file-type (denote--filetype-heuristics file))
+                 (file-type (denote-filetype-heuristics file))
                  (title (denote-retrieve-title-value file file-type))
                  (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
@@ -1828,7 +1833,7 @@ relevant front matter."
     (denote-keywords-prompt)))
   (when (denote--writable-and-supported-p file)
     (denote--add-front-matter file title keywords (denote--file-name-id file)
-                              (denote--filetype-heuristics file))))
+                              (denote-filetype-heuristics file))))
 
 ;;;; The Denote faces
 
@@ -2067,7 +2072,7 @@ title."
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
   (let* ((file-id (denote-retrieve-filename-identifier file))
-         (file-type (denote--filetype-heuristics file))
+         (file-type (denote-filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
                        (denote--retrieve-title-or-filename file file-type))))
     (format pattern file-id file-title)))
@@ -2331,7 +2336,7 @@ default, it will show up below the current window."
   (let ((file (buffer-file-name)))
     (when (denote--writable-and-supported-p file)
       (let* ((id (denote-retrieve-filename-identifier file))
-             (file-type (denote--filetype-heuristics file))
+             (file-type (denote-filetype-heuristics file))
              (title (denote-retrieve-title-value file file-type)))
         (if-let ((files (denote--retrieve-process-grep id)))
             (denote-link--prepare-backlinks id files title)
@@ -2508,7 +2513,7 @@ interface by first selecting the `denote:' hyperlink type."
   "Handler for `org-store-link' adding support for denote: links."
   (when (denote--current-file-is-note-p)
     (let* ((file (buffer-file-name))
-           (file-type (denote--filetype-heuristics file))
+           (file-type (denote-filetype-heuristics file))
            (file-id (denote-retrieve-filename-identifier file))
            (file-title (denote--retrieve-title-or-filename file file-type)))
       (org-link-store-props
