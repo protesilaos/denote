@@ -1180,7 +1180,7 @@ When called from Lisp, all arguments are optional.
    (let ((args (make-vector 6 nil)))
      (dolist (prompt denote-prompts)
        (pcase prompt
-         ('title (aset args 0 (denote--title-prompt
+         ('title (aset args 0 (denote-title-prompt
                                (when (use-region-p)
                                  (buffer-substring-no-properties
                                   (region-beginning)
@@ -1208,9 +1208,9 @@ When called from Lisp, all arguments are optional.
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil
-  "Minibuffer history of `denote--title-prompt'.")
+  "Minibuffer history of `denote-title-prompt'.")
 
-(defun denote--title-prompt (&optional default-title)
+(defun denote-title-prompt (&optional default-title)
   "Read file title for `denote'.
 With optional DEFAULT-TITLE use it as the default value."
   (let* ((def default-title)
@@ -1218,6 +1218,11 @@ With optional DEFAULT-TITLE use it as the default value."
                      (format "File title [%s]: " def)
                    "File title: ")))
     (read-string format nil 'denote--title-history def)))
+
+(define-obsolete-function-alias
+  'denote--title-prompt
+  'denote-title-prompt
+  "1.0.0")
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote--file-type-prompt'.")
@@ -1594,7 +1599,7 @@ files)."
           (file-type (denote--filetype-heuristics file)))
      (list
       file
-      (denote--title-prompt
+      (denote-title-prompt
        (denote--retrieve-title-or-filename file file-type))
       (denote-keywords-prompt))))
   (let* ((dir (file-name-directory file))
@@ -1799,7 +1804,7 @@ relevant front matter."
   (interactive
    (list
     (buffer-file-name)
-    (denote--title-prompt)
+    (denote-title-prompt)
     (denote-keywords-prompt)))
   (when (denote--writable-and-supported-p file)
     (denote--add-front-matter file title keywords (denote--file-name-id file)
@@ -2566,7 +2571,7 @@ output of the `denote-org-capture-specifiers' (which can include
 arbitrary text).
 
 Consult the manual for template samples."
-  (let* ((title (denote--title-prompt))
+  (let* ((title (denote-title-prompt))
          (keywords (denote-keywords-prompt))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
