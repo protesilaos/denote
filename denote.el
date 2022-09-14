@@ -1299,7 +1299,7 @@ Use Org's more advanced date selection utility if the user option
   "Minibuffer history of `denote-template-prompt'.")
 
 (defun denote-template-prompt ()
-  "Prompt for template KEY from `denote-templates'."
+  "Prompt for template key in `denote-templates' and return its value."
   (let ((templates denote-templates))
     (alist-get
      (intern
