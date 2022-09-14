@@ -1189,7 +1189,7 @@ When called from Lisp, all arguments are optional.
          ('file-type (aset args 2 (denote-file-type-prompt)))
          ('subdirectory (aset args 3 (denote-subdirs-prompt)))
          ('date (aset args 4 (denote-date-prompt)))
-         ('template (aset args 5 (denote--template-prompt)))))
+         ('template (aset args 5 (denote-template-prompt)))))
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
@@ -1294,9 +1294,9 @@ here for clarity."
   "1.0.0")
 
 (defvar denote--template-history nil
-  "Minibuffer history of `denote--template-prompt'.")
+  "Minibuffer history of `denote-template-prompt'.")
 
-(defun denote--template-prompt ()
+(defun denote-template-prompt ()
   "Prompt for template KEY from `denote-templates'."
   (let ((templates denote-templates))
     (alist-get
@@ -1305,6 +1305,11 @@ here for clarity."
        "Select template KEY: " (mapcar #'car templates)
        nil t nil 'denote--template-history))
      templates)))
+
+(define-obsolete-function-alias
+  'denote--template-prompt
+  'denote-template-prompt
+  "1.0.0")
 
 ;;;;; Convenience commands as `denote' variants
 
