@@ -569,6 +569,20 @@ value, as explained in its doc string."
   'denote-directory-files
   "1.0.0")
 
+(defun denote-directory-subdirectories ()
+  "Return list of subdirectories in variable `denote-directory'."
+  (seq-remove
+   (lambda (filename)
+     (or (not (file-directory-p filename))
+         (string-match-p "\\`\\." (denote-get-file-name-relative-to-denote-directory filename))
+         (string-match-p "/\\." (denote-get-file-name-relative-to-denote-directory filename))))
+   (directory-files-recursively (denote-directory) ".*" t t)))
+
+(define-obsolete-function-alias
+  'denote--subdirs
+  'denote-directory-subdirectories
+  "1.0.0")
+
 (defun denote-get-path-by-id (id)
   "Return absolute path of ID string in `denote-directory-files'."
   (seq-find
@@ -1220,15 +1234,6 @@ where the former does not read dates without a time component."
   'denote-barf-duplicate-id
   "1.0.0")
 
-(defun denote--subdirs ()
-  "Return list of subdirectories in variable `denote-directory'."
-  (seq-remove
-   (lambda (filename)
-     (or (not (file-directory-p filename))
-         (string-match-p "\\`\\." (denote-get-file-name-relative-to-denote-directory filename))
-         (string-match-p "/\\." (denote-get-file-name-relative-to-denote-directory filename))))
-   (directory-files-recursively (denote-directory) ".*" t t)))
-
 ;;;;; The `denote' command and its prompts
 
 ;;;###autoload
@@ -1372,7 +1377,7 @@ Use Org's more advanced date selection utility if the user option
 The table uses the `file' completion category (so it works with
 packages such as `marginalia' and `embark')."
   (let* ((root (directory-file-name (denote-directory)))
-         (subdirs (denote--subdirs))
+         (subdirs (denote-directory-subdirectories))
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
 

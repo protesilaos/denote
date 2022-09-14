@@ -2038,6 +2038,10 @@ might change them without further notice.
   ~denote-file-type~.  Remember that the ~denote-directory~ accepts a
   directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
++ ~denote-directory-subdirectories~ :: Return list of subdirectories in
+  variable ~denote-directory~.  Note that the ~denote-directory~ accepts
+  a directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+
 + ~denote-directory-files-matching-regexp~ :: Return list of files
   matching =REGEXP= in ~denote-directory-files~.
 
