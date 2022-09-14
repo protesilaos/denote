@@ -473,20 +473,27 @@ and use one of the extensions implied by `denote-file-type'."
          (file-regular-p file)
          (string-prefix-p (denote-directory) (expand-file-name file))
          (string-match-p (concat "\\`" denote--id-regexp) file-name)
-         (denote--file-supported-extension-p file))))
+         (denote-file-has-supported-extension-p file))))
 
 (define-obsolete-function-alias
   'denote--only-note-p
   'denote-file-is-note-p
   "1.0.0")
 
-(defun denote--file-has-identifier-p (file)
+(defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
   (let ((file-name (file-name-nondirectory file)))
     (string-match-p (concat "\\`" denote--id-regexp) file-name)))
 
-(defun denote--file-supported-extension-p (file)
-  "Return non-nil if FILE has supported extension."
+(define-obsolete-function-alias
+  'denote--file-has-identifier-p
+  'denote-file-has-identifier-p
+  "1.0.0")
+
+(defun denote-file-has-supported-extension-p (file)
+  "Return non-nil if FILE has supported extension
+Also account for the possibility of an added .gpg suffix.
+Supported extensions are those implied by `denote-file-type'."
   (let* ((extensions (denote--extensions))
          (valid-extensions (append extensions
                                    (mapcar (lambda (e)
@@ -496,6 +503,11 @@ and use one of the extensions implied by `denote-file-type'."
      (lambda (e) (string-suffix-p e file))
      valid-extensions)))
 
+(define-obsolete-function-alias
+  'denote--file-supported-extension-p
+  'denote-file-has-supported-extension-p
+  "1.0.0")
+
 (defun denote--file-regular-writable-p (file)
   "Return non-nil if FILE is regular and writable."
   (and (file-regular-p file)
@@ -504,7 +516,7 @@ and use one of the extensions implied by `denote-file-type'."
 (defun denote--writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
   (and (denote--file-regular-writable-p file)
-       (denote--file-supported-extension-p file)))
+       (denote-file-has-supported-extension-p file)))
 
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
@@ -537,7 +549,7 @@ value, as explained in its doc string."
    #'expand-file-name
    (seq-remove
     (lambda (f)
-      (not (denote--file-has-identifier-p f)))
+      (not (denote-file-has-identifier-p f)))
     (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
 (define-obsolete-function-alias
@@ -568,7 +580,7 @@ value, as explained in its doc string."
   "Prompt for file with identifier in variable `denote-directory'."
   (read-file-name "Select note: " (denote-directory) nil nil nil
                   (lambda (f)
-                    (or (denote--file-has-identifier-p f)
+                    (or (denote-file-has-identifier-p f)
                         (file-directory-p f)))))
 
 (define-obsolete-function-alias
@@ -905,7 +917,7 @@ contain the newline."
   "Extract identifier from FILE name.
 To only return an existing identifier or create a new one, refer
 to the function `denote-retrieve-or-create-file-identifier'."
-  (if (denote--file-has-identifier-p file)
+  (if (denote-file-has-identifier-p file)
       (progn
         (string-match denote--id-regexp file)
         (match-string 0 file))
@@ -934,7 +946,7 @@ To only return an existing identifier, refer to the function
 (defun denote-retrieve-filename-title (file)
   "Extract title from FILE name, else return `file-name-base'."
   (if (and (file-exists-p file)
-           (denote--file-has-identifier-p file))
+           (denote-file-has-identifier-p file))
       (denote-desluggify
        (progn
          (string-match denote--title-regexp file)

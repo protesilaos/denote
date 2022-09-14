@@ -2021,6 +2021,14 @@ might change them without further notice.
   ~denote-directory~, it must have a Denote identifier in its name, and
   use one of the extensions implied by ~denote-file-type~.
 
++ ~denote-file-has-identifier-p~ :: Return non-nil if FILE has a Denote
+  identifier.
+
++ ~denote-file-has-supported-extension-p~ :: Return non-nil if =FILE=
+  has supported extension.  Also account for the possibility of an added
+  =.gpg= suffix. Supported extensions are those implied by
+  ~denote-file-type~.
+
 + ~denote-directory-files~ :: List absolute file paths in variable
   ~denote-directory~. The returned files only need to have an
   identifier.  This may include files that are not implied by
