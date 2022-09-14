@@ -2015,65 +2015,84 @@ By contradistinction, a "private" form is declared with two hyphens in
 its symbol such as ~denote--file-extension~.  Do not use those as we
 might change them without further notice.
 
+#+findex: denote-file-is-note-p
 + ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an actual Denote
   note.  For our purposes, a note must note be a directory, must satisfy
   ~file-regular-p~, its path must be part of the variable
   ~denote-directory~, it must have a Denote identifier in its name, and
   use one of the extensions implied by ~denote-file-type~.
 
+#+findex: denote-file-has-identifier-p
 + ~denote-file-has-identifier-p~ :: Return non-nil if FILE has a Denote
   identifier.
 
+#+findex: denote-file-has-supported-extension-p
 + ~denote-file-has-supported-extension-p~ :: Return non-nil if =FILE=
   has supported extension.  Also account for the possibility of an added
   =.gpg= suffix. Supported extensions are those implied by
   ~denote-file-type~.
 
+#+findex: denote-file-is-writable-and-supported-p
 + ~denote-file-is-writable-and-supported-p~ :: Return non-nil if =FILE=
   is writable and has supported extension.
 
+#+findex: denote-keywords
 + ~denote-keywords~ :: Return appropriate list of keyword candidates.
   If ~denote-infer-keywords~ is non-nil, infer keywords from existing
   notes and combine them into a list with ~denote-known-keywords~.  Else
   use only the latter ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+
+#+findex: denote-directory
 + ~denote-directory~ (function) :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a
   directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+
+#+findex: denote-directory-files
 + ~denote-directory-files~ :: Return list of absolute file paths in
   variable ~denote-directory~. The returned files only need to have an
   identifier.  This may include files that are not implied by
   ~denote-file-type~.  Remember that the ~denote-directory~ accepts a
   directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
+#+findex: denote-directory-subdirectories
 + ~denote-directory-subdirectories~ :: Return list of subdirectories in
   variable ~denote-directory~.  Note that the ~denote-directory~ accepts
   a directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
+#+findex: denote-directory-files-matching-regexp
 + ~denote-directory-files-matching-regexp~ :: Return list of files
   matching =REGEXP= in ~denote-directory-files~.
 
+#+findex: denote-file-name-relative-to-denote-directory
 + ~denote-file-name-relative-to-denote-directory~ :: Return name of
   =FILE= relative to the variable ~denote-directory~.  =FILE= must be an
   absolute path.
 
+#+findex: denote-get-path-by-id
 + ~denote-get-path-by-id~ :: Return absolute path of =ID= string in
   ~denote-directory-files~.
 
+#+findex: denote-barf-duplicate-id
 + ~denote-barf-duplicate-id~ :: Throw a ~user-error~ if =IDENTIFIER=
   already exists.
 
+#+findex: denote-sluggify
 + ~denote-sluggify~ :: Make =STR= an appropriate slug for file names and
   related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
 
+#+findex: denote-sluggify-and-join
 + ~denote-sluggify-and-join~ :: Sluggify =STR= while joining separate
   words.
 
+#+findex: denote-desluggify
 + ~denote-desluggify~ :: Capitalize and dehyphenate =STR=, inverting
   ~denote-sluggify~.
 
+#+findex: denote-sluggify-keywords
 + ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is a list of
   strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
 
+#+findex: denote-filetype-heuristics
 + ~denote-filetype-heuristics~ :: Return likely file type of =FILE=.
   Use the file extension to detect the file type of the file.
 
@@ -2085,70 +2104,88 @@ might change them without further notice.
   If no file types in ~denote-file-types~ has the file extension, the
   file type is assumed to be the first of ~denote-file-types~.
 
+#+findex: denote-format-file-name
 + ~denote-format-file-name~ :: Format file name.  =PATH=, =ID=,
   =KEYWORDS=, =TITLE-SLUG= are expected to be supplied by ~denote~ or
   equivalent: they will all be converted into a single string.
   =EXTENSION= is the file type extension, as a string.
 
+#+findex: denote-retrieve-filename-identifier
 + ~denote-retrieve-filename-identifier~ :: Extract identifier from
   =FILE= name.  To only return an existing identifier or create a new
   one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
+#+findex: denote-retrieve-or-create-file-identifier
 + ~denote-retrieve-or-create-file-identifier~ :: Extract identifier from
   =FILE= name.  To only return an existing identifier or create a new one,
   refer to the function ~denote-retrieve-or-create-file-identifier~.
 
+#+findex: denote-retrieve-filename-title
 + ~denote-retrieve-filename-title~ :: Extract title from =FILE= name,
   else return ~file-name-base~.
 
+#+findex: denote-retrieve-title-value
 + ~denote-retrieve-title-value~ :: Return title value from =FILE= front
   matter per =FILE-TYPE=.
 
+#+findex: denote-retrieve-title-line
 + ~denote-retrieve-title-line~ :: Return title line from =FILE= front
   matter per =FILE-TYPE=.
 
+#+findex: denote-retrieve-keywords-value
 + ~denote-retrieve-keywords-value~ :: Return keywords value from =FILE=
   front matter per =FILE-TYPE=.
 
+#+findex: denote-retrieve-keywords-line
 + ~denote-retrieve-keywords-line~ :: Return keywords line from =FILE=
   front matter per =FILE-TYPE=.
 
+#+findex: denote-file-prompt
 + ~denote-file-prompt~ :: Prompt for file with identifier in variable
   ~denote-directory~.
 
+#+findex: denote-keywords-prompt
 + ~denote-keywords-prompt~ :: Prompt for one or more keywords.  In the
   case of multiple entries, those are separated by the ~crm-sepator~,
   which typically is a comma.  In such a scenario, the output is sorted
   with ~string-lessp~.
 
+#+findex: denote-title-prompt
 + ~denote-title-prompt~ :: Read file title for ~denote~.  With optional
   =DEFAULT-TITLE= use it as the default value.
 
+#+findex: denote-file-type-prompt
 + ~denote-file-type-prompt~ :: Prompt for ~denote-file-type~.  Note that
   a non-nil value other than ~text~, ~markdown-yaml~, and
   ~markdown-toml~ falls back to an Org file type.  We use ~org~ here for
   clarity.
 
+#+findex: denote-date-prompt
 + ~denote-date-prompt~ :: Prompt for date, expecting =YYYY-MM-DD= or
   that plus =HH:MM= (or =HH:MM:SS=).  Use Org's more advanced date
   selection utility if ~denote-date-prompt-use-org-read-date~ is
   non-nil ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
 
+#+findex: denote-template-prompt
 + ~denote-template-prompt~ :: Prompt for template key in
   ~denote-templates~ and return its value.
 
+#+findex: denote-subdirectory-prompt
 + ~denote-subdirectory-prompt~ :: Prompt for subdirectory of the
   variable ~denote-directory~.  The table uses the ~file~ completion
   category (so it works with packages such as ~marginalia~ and
   ~embark~).
 
+#+findex: denote-rename-file-prompt
 + ~denote-rename-file-prompt~ :: Prompt to rename file named =OLD-NAME=
   to =NEW-NAME=.
 
+#+findex: denote-rename-file-and-buffer
 + ~denote-rename-file-and-buffer~ :: Rename file named =OLD-NAME= to
   =NEW-NAME=, updating buffer name.
 
+#+vindex: denote-file-types
 + ~denote-file-types~ :: Alist of ~denote-file-type~ and their format
   properties.  Each element is of the form =(SYMBOL . PROPERTY-LIST)=.
   =SYMBOL= is one of those specified in ~denote-file-type~.
@@ -2189,44 +2226,55 @@ might change them without further notice.
      the keywords' value from the front matter.  It performs the reverse
      of the =:keywords-value-function=.
 
+#+vindex: denote-org-front-matter
 + ~denote-org-front-matter~ :: Variable holding the Org front matter.
   It is passed to ~format~ with arguments =TITLE=, =DATE=, =KEYWORDS=,
   =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
+#+vindex: denote-yaml-front-matter
 + ~denote-yaml-front-matter~ :: Variable holding the YAML (Markdown)
   front matter.  It is passed to ~format~ with arguments =TITLE=,
   =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
+#+vindex: denote-toml-front-matter
 + ~denote-toml-front-matter~ :: Variable holding the TOML (Markdown)
   front matter.  It is passed to ~format~ with arguments =TITLE=,
   =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
+#+vindex: denote-text-front-matter
 + ~denote-text-front-matter~ :: Variable holding the plain text front
   matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,
   =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
+#+findex: denote-surround-with-quotes
 + ~denote-surround-with-quotes~ :: Surround string =S= with quotes.
   This can be used in ~denote-file-types~ to format front mattter.
 
+#+findex: denote-trim-whitespace
 + ~denote-trim-whitespace~ :: Trim whitespace around string =S= .  This
   can be used in ~denote-file-types~ to format front mattter.
 
+#+findex: denote-trim-whitespace-then-quotes
 + ~denote-trim-whitespace-then-quotes~ :: Trim whitespace then quotes
   around string =S=.  This can be used in ~denote-file-types~ to format
   front mattter.
 
+#+findex: denote-format-keywords-for-md-front-matter
 + ~denote-format-keywords-for-md-front-matter~ :: Format front matter
   =KEYWORDS= for markdown file type.  =KEYWORDS= is a list of strings.
   Consult the ~denote-file-types~ for how this is used.
 
+#+findex: denote-format-keywords-for-text-front-matter
 + ~denote-format-keywords-for-text-front-matter~ :: Format front matter
   =KEYWORDS= for text file type.  =KEYWORDS= is a list of strings.
   Consult the ~denote-file-types~ for how this is used.
 
+#+findex: denote-format-keywords-for-org-front-matter
 + ~denote-format-keywords-for-org-front-matter~ :: Format front matter
   =KEYWORDS= for org file type.  =KEYWORDS= is a list of strings.
   Consult the ~denote-file-types~ for how this is used.
 
+#+findex: denote-extract-keywords-from-front-matter
 + ~denote-extract-keywords-from-front-matter~ :: Format front matter
   =KEYWORDS= for org file type.  =KEYWORDS= is a list of strings.
   Consult the ~denote-file-types~ for how this is used.
