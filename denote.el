@@ -1188,7 +1188,7 @@ When called from Lisp, all arguments are optional.
          ('keywords (aset args 1 (denote-keywords-prompt)))
          ('file-type (aset args 2 (denote-file-type-prompt)))
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
-         ('date (aset args 4 (denote--date-prompt)))
+         ('date (aset args 4 (denote-date-prompt)))
          ('template (aset args 5 (denote--template-prompt)))))
      (append args nil)))
   (let* ((title (or title ""))
@@ -1242,11 +1242,11 @@ here for clarity."
   "1.0.0")
 
 (defvar denote--date-history nil
-  "Minibuffer history of `denote--date-prompt'.")
+  "Minibuffer history of `denote-date-prompt'.")
 
 (declare-function org-read-date "org" (&optional with-time to-time from-string prompt default-time default-input inactive))
 
-(defun denote--date-prompt ()
+(defun denote-date-prompt ()
   "Prompt for date."
   (if (and denote-date-prompt-use-org-read-date
            (require 'org nil :no-error))
@@ -1261,6 +1261,11 @@ here for clarity."
     (read-string
      "DATE and TIME for note (e.g. 2022-06-16 14:30): "
      nil 'denote--date-history)))
+
+(define-obsolete-function-alias
+  'denote--date-prompt
+  'denote-date-prompt
+  "1.0.0")
 
 (defvar denote--subdir-history nil
   "Minibuffer history of `denote--subdirs-prompt'.")
