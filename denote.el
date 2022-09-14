@@ -853,7 +853,7 @@ contain the newline."
 
 ;;;; Front matter or content retrieval functions
 
-(defun denote--retrieve-filename-identifier (file)
+(defun denote-retrieve-filename-identifier (file)
   "Extract identifier from FILE name."
   (if (denote--file-has-identifier-p file)
       (progn
@@ -861,7 +861,12 @@ contain the newline."
         (match-string 0 file))
     (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
-(defun denote--retrieve-filename-title (file)
+(define-obsolete-function-alias
+  'denote--retrieve-filename-identifier
+  'denote-retrieve-filename-identifier
+  "1.0.0")
+
+(defun denote-retrieve-filename-title (file)
   "Extract title from FILE name, else return `file-name-base'."
   (if (and (file-exists-p file)
            (denote--file-has-identifier-p file))
@@ -871,7 +876,12 @@ contain the newline."
          (match-string 1 file)))
     (file-name-base file)))
 
-(defun denote--retrieve-title-value (file file-type)
+(define-obsolete-function-alias
+  'denote--retrieve-filename-title
+  'denote-retrieve-filename-title
+  "1.0.0")
+
+(defun denote-retrieve-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
@@ -880,7 +890,12 @@ contain the newline."
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote--retrieve-title-line (file file-type)
+(define-obsolete-function-alias
+  'denote--retrieve-title-value
+  'denote-retrieve-title-value
+  "1.0.0")
+
+(defun denote-retrieve-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
@@ -888,7 +903,12 @@ contain the newline."
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
-(defun denote--retrieve-keywords-value (file file-type)
+(define-obsolete-function-alias
+  'denote--retrieve-title-line
+  'denote-retrieve-title-line
+  "1.0.0")
+
+(defun denote-retrieve-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
@@ -897,7 +917,12 @@ contain the newline."
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote--retrieve-keywords-line (file file-type)
+(define-obsolete-function-alias
+  'denote--retrieve-keywords-value
+  'denote-retrieve-keywords-value
+  "1.0.0")
+
+(defun denote-retrieve-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
@@ -905,11 +930,16 @@ contain the newline."
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
+(define-obsolete-function-alias
+  'denote--retrieve-keywords-line
+  'denote-retrieve-keywords-line
+  "1.0.0")
+
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
   (if (denote--only-note-p file)
-      (denote--retrieve-title-value file type)
-    (denote--retrieve-filename-title file)))
+      (denote-retrieve-title-value file type)
+    (denote-retrieve-filename-title file)))
 
 (defun denote--retrieve-read-file-prompt ()
   "Prompt for regular file in variable `denote-directory'."
@@ -1441,8 +1471,8 @@ operation on multiple files."
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
 renaming command and are used to construct new front matter
 values if appropriate."
-  (when-let* ((old-title-line (denote--retrieve-title-line file file-type))
-              (old-keywords-line (denote--retrieve-keywords-line file file-type))
+  (when-let* ((old-title-line (denote-retrieve-title-line file file-type))
+              (old-keywords-line (denote-retrieve-keywords-line file file-type))
               (new-title-line (denote--get-title-line-from-front-matter title file-type))
               (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
@@ -1665,8 +1695,8 @@ typos and the like."
   (unless (denote--writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote--filetype-heuristics file))
-            (title (denote--retrieve-title-value file file-type))
-            (keywords (denote--retrieve-keywords-value file file-type))
+            (title (denote-retrieve-title-value file file-type))
+            (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote--file-name-id file))
             (dir (file-name-directory file))
@@ -1716,8 +1746,8 @@ their respective front matter."
           (let* ((dir (file-name-directory file))
                  (id (denote--file-name-id file))
                  (file-type (denote--filetype-heuristics file))
-                 (title (denote--retrieve-title-value file file-type))
-                 (keywords (denote--retrieve-keywords-value file file-type))
+                 (title (denote-retrieve-title-value file file-type))
+                 (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
                             dir id keywords (denote--sluggify title) extension)))
@@ -2001,7 +2031,7 @@ title."
 
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
-  (let* ((file-id (denote--retrieve-filename-identifier file))
+  (let* ((file-id (denote-retrieve-filename-identifier file))
          (file-type (denote--filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
                        (denote--retrieve-title-or-filename file file-type))))
@@ -2265,9 +2295,9 @@ default, it will show up below the current window."
   (interactive)
   (let ((file (buffer-file-name)))
     (when (denote--writable-and-supported-p file)
-      (let* ((id (denote--retrieve-filename-identifier file))
+      (let* ((id (denote-retrieve-filename-identifier file))
              (file-type (denote--filetype-heuristics file))
-             (title (denote--retrieve-title-value file file-type)))
+             (title (denote-retrieve-title-value file file-type)))
         (if-let ((files (denote--retrieve-process-grep id)))
             (denote-link--prepare-backlinks id files title)
           (user-error "No links to the current note"))))))
@@ -2434,7 +2464,7 @@ This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
   (concat
    "denote:"
-   (denote--retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
+   (denote-retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
 
 (declare-function org-link-store-props "ol.el" (&rest plist))
 (defvar org-store-link-plist)
@@ -2444,7 +2474,7 @@ interface by first selecting the `denote:' hyperlink type."
   (when (denote--current-file-is-note-p)
     (let* ((file (buffer-file-name))
            (file-type (denote--filetype-heuristics file))
-           (file-id (denote--retrieve-filename-identifier file))
+           (file-id (denote-retrieve-filename-identifier file))
            (file-title (denote--retrieve-title-or-filename file file-type)))
       (org-link-store-props
        :type "denote"
@@ -2555,7 +2585,7 @@ FILE-TYPE is the symbol file-type."
   (delq nil
         (mapcar
          (lambda (file)
-           (when-let* ((value (denote--retrieve-keywords-line
+           (when-let* ((value (denote-retrieve-keywords-line
                                file file-type))
                        ((cond
                          ((eq file-type 'markdown-yaml) (not (string-match-p "," value)))
@@ -2597,7 +2627,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite filetags in Org files to use colons (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "org" 'org)))
     (dolist (file files)
-      (when-let* ((kw (denote--retrieve-keywords-value file 'org))
+      (when-let* ((kw (denote-retrieve-keywords-value file 'org))
                   ((denote--edit-front-matter-p file 'org)))
         (denote--rewrite-keywords file kw 'org)))))
 
@@ -2628,7 +2658,7 @@ of Denote.  Written on 2022-08-10 for version 0.5.0."
   (when-let (((yes-or-no-p "Rewrite tags in Markdown files with YAML header to use lists (buffers are NOT saved)?"))
              (files (denote--migrate-type-files "md" 'markdown-yaml)))
     (dolist (file files)
-      (when-let* ((kw (denote--retrieve-keywords-value file 'markdown-yaml))
+      (when-let* ((kw (denote-retrieve-keywords-value file 'markdown-yaml))
                   ((denote--edit-front-matter-p file 'markdown-yaml)))
         (denote--rewrite-keywords file kw 'markdown-yaml)))))
 
