@@ -2013,7 +2013,7 @@ change log, a blog post on the maintainer's website, and the like).
 
 By contradistinction, a "private" form is declared with two hyphens in
 its symbol such as ~denote--file-extension~.  Do not use those as we
-might change them without futher notice.
+might change them without further notice.
 
 + ~denote-directory-files~ :: List absolute file paths in variable
   ~denote-directory~. The returned files only need to have an
