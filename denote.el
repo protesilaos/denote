@@ -873,7 +873,9 @@ contain the newline."
 ;;;; Front matter or content retrieval functions
 
 (defun denote-retrieve-filename-identifier (file)
-  "Extract identifier from FILE name."
+  "Extract identifier from FILE name.
+To only return an existing identifier or create a new one, refer
+to the function `denote-retrieve-or-create-file-identifier'."
   (if (denote--file-has-identifier-p file)
       (progn
         (string-match denote--id-regexp file)
@@ -883,6 +885,21 @@ contain the newline."
 (define-obsolete-function-alias
   'denote--retrieve-filename-identifier
   'denote-retrieve-filename-identifier
+  "1.0.0")
+
+(defun denote-retrieve-or-create-file-identifier (file)
+  "Return FILE identifier, else generate one.
+To only return an existing identifier, refer to the function
+`denote-retrieve-filename-identifier'."
+  (cond
+   ((string-match denote--id-regexp file)
+    (substring file (match-beginning 0) (match-end 0)))
+   ((denote--file-attributes-time file))
+   (t (format-time-string denote--id-format))))
+
+(define-obsolete-function-alias
+  'denote--file-name-id
+  'denote-retrieve-or-create-file-identifier
   "1.0.0")
 
 (defun denote-retrieve-filename-title (file)
@@ -1433,14 +1450,6 @@ the file type is assumed to be the first of `denote-file-types'."
    denote--id-format
    (file-attribute-modification-time (file-attributes file))))
 
-(defun denote--file-name-id (file)
-  "Return FILE identifier, else generate one."
-  (cond
-   ((string-match denote--id-regexp file)
-    (substring file (match-beginning 0) (match-end 0)))
-   ((denote--file-attributes-time file))
-   (t (format-time-string denote--id-format))))
-
 (defun denote-update-dired-buffers ()
   "Update Dired buffers of variable `denote-directory'."
   (mapc
@@ -1634,7 +1643,7 @@ files)."
        (denote--retrieve-title-or-filename file file-type))
       (denote-keywords-prompt))))
   (let* ((dir (file-name-directory file))
-         (id (denote--file-name-id file))
+         (id (denote-retrieve-or-create-file-identifier file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote--format-file
@@ -1698,7 +1707,7 @@ The operation does the following:
           (progn
             (dolist (file marks)
               (let* ((dir (file-name-directory file))
-                     (id (denote--file-name-id file))
+                     (id (denote-retrieve-or-create-file-identifier file))
                      (file-type (denote-filetype-heuristics file))
                      (title (denote--retrieve-title-or-filename file file-type))
                      (extension (file-name-extension file t))
@@ -1744,7 +1753,7 @@ typos and the like."
             (title (denote-retrieve-title-value file file-type))
             (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
-            (id (denote--file-name-id file))
+            (id (denote-retrieve-or-create-file-identifier file))
             (dir (file-name-directory file))
             (new-name (denote--format-file
                        dir id keywords (denote--sluggify title) extension)))
@@ -1790,7 +1799,7 @@ their respective front matter."
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
-                 (id (denote--file-name-id file))
+                 (id (denote-retrieve-or-create-file-identifier file))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote-retrieve-title-value file file-type))
                  (keywords (denote-retrieve-keywords-value file file-type))
@@ -1838,8 +1847,10 @@ relevant front matter."
     (denote-title-prompt)
     (denote-keywords-prompt)))
   (when (denote--writable-and-supported-p file)
-    (denote--add-front-matter file title keywords (denote--file-name-id file)
-                              (denote-filetype-heuristics file))))
+    (denote--add-front-matter
+     file title keywords
+     (denote-retrieve-or-create-file-identifier file)
+     (denote-filetype-heuristics file))))
 
 ;;;; The Denote faces
 
