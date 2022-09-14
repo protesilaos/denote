@@ -738,23 +738,20 @@ This can be used in `denote-file-types' to format front mattter."
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
-KEYWORDS is a list of strings.
-
-Consult the `denote-file-types' for how this is used."
+KEYWORDS is a list of strings.  Consult the `denote-file-types'
+for how this is used."
   (format "[%s]" (mapconcat (lambda (k) (format "%S" k)) keywords ", ")))
 
 (defun denote-format-keywords-for-text-front-matter (keywords)
   "Format front matter KEYWORDS for text file type.
-KEYWORDS is a list of strings.
-
-Consult the `denote-file-types' for how this is used."
+KEYWORDS is a list of strings.  Consult the `denote-file-types'
+for how this is used."
   (string-join keywords "  "))
 
 (defun denote-format-keywords-for-org-front-matter (keywords)
   "Format front matter KEYWORDS for org file type.
-KEYWORDS is a list of strings.
-
-Consult the `denote-file-types' for how this is used."
+KEYWORDS is a list of strings.  Consult the `denote-file-types'
+for how this is used."
   (if keywords
       (format ":%s:" (string-join keywords ":"))
     ""))
