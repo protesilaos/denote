@@ -687,7 +687,7 @@ date:       %s
 tags:       %s
 identifier: %S
 ---\n\n"
-  "YAML front matter.
+  "YAML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
@@ -699,7 +699,7 @@ date       = %s
 tags       = %s
 identifier = %S
 +++\n\n"
-  "TOML front matter.
+  "TOML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
