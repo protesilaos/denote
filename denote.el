@@ -881,7 +881,7 @@ contain the newline."
                (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote--retrieve-title-line (file file-type)
-  "Return title line from FILE according to FILE-TYPE."
+  "Return title line from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
