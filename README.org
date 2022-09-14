@@ -2036,7 +2036,13 @@ might change them without further notice.
   file type is assumed to be the first of ~denote-file-types~.
 
 + ~denote-retrieve-filename-identifier~ :: Extract identifier from
-  =FILE= name.
+  =FILE= name.  To only return an existing identifier or create a new
+  one, refer to the ~denote-retrieve-or-create-file-identifier~
+  function.
+
++ ~denote-retrieve-or-create-file-identifier~ :: Extract identifier from
+  =FILE= name.  To only return an existing identifier or create a new one,
+  refer to the function ~denote-retrieve-or-create-file-identifier~.
 
 + ~denote-retrieve-filename-title~ :: Extract title from =FILE= name,
   else return ~file-name-base~.
