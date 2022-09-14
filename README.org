@@ -1624,6 +1624,35 @@ Prompt for title and keywords of the new note."
 Have a different workflow?  Feel welcome to discuss it in any of our
 official channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
+** Split an Org subtree into its own note
+:PROPERTIES:
+:CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd
+:END:
+
+With Org files in particular, it is common to have nested headings which
+could be split off into their own standalone notes.  In Org parlance an
+entry with all its subheadings is a "subtree".  With the following code,
+the user places the point inside the heading they want to split off and
+invokes the command ~my-denote-split-org-subtree~.  It will create a
+note using the heading's text and tags for the new file.  The contents
+of the subtree become the contents of the new note and are removed from
+the old one.
+
+#+begin_src emacs-lisp
+(defun my-denote-split-org-subtree ()
+  "Create new Denote note as an Org file using current Org subtree."
+  (interactive)
+  (let ((text (org-get-entry))
+        (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment))
+        (tags (org-get-tags)))
+    (delete-region (org-entry-beginning-position) (org-entry-end-position))
+    (denote heading tags 'org)
+    (insert text)))
+#+end_src
+
+Have a different workflow?  Feel welcome to discuss it in any of our
+official channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+
 ** Narrow the list of files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:ea173a01-69ef-4574-89a7-6e60ede02f13
