@@ -533,6 +533,18 @@ include files that are not implied by `denote-file-types'."
   'denote-directory-files-matching-regexp
   "1.0.0")
 
+(defun denote-file-prompt ()
+  "Prompt for file with identifier in variable `denote-directory'."
+  (read-file-name "Select note: " (denote-directory) nil nil nil
+                  (lambda (f)
+                    (or (denote--file-has-identifier-p f)
+                        (file-directory-p f)))))
+
+(define-obsolete-function-alias
+  'denote--retrieve-read-file-prompt
+  'denote-file-prompt
+  "1.0.0")
+
 ;;;; Keywords
 
 (defun denote--extract-keywords-from-path (path)
@@ -945,13 +957,6 @@ contain the newline."
   (if (denote--only-note-p file)
       (denote-retrieve-title-value file type)
     (denote-retrieve-filename-title file)))
-
-(defun denote--retrieve-read-file-prompt ()
-  "Prompt for regular file in variable `denote-directory'."
-  (read-file-name "Select note: " (denote-directory) nil nil nil
-                  (lambda (f)
-                    (or (denote--file-has-identifier-p f)
-                        (file-directory-p f)))))
 
 (defun denote--retrieve-xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
@@ -2049,7 +2054,7 @@ With optional ID-ONLY, such as a universal prefix
 argument (\\[universal-argument]), insert links with just the
 identifier and no further description.  In this case, the link
 format is always [[denote:IDENTIFIER]]."
-  (interactive (list (denote--retrieve-read-file-prompt) current-prefix-arg))
+  (interactive (list (denote-file-prompt) current-prefix-arg))
   (let ((beg (point)))
     (insert
      (denote-link--format-link
@@ -2144,7 +2149,7 @@ The established link will then be targeting that new file.
 With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
-  (interactive (list (denote--retrieve-read-file-prompt) current-prefix-arg))
+  (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (file-exists-p target)
       (denote-link target id-only)
     (call-interactively #'denote-link-after-creating)))
@@ -2469,7 +2474,7 @@ This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
   (concat
    "denote:"
-   (denote-retrieve-filename-identifier (denote--retrieve-read-file-prompt))))
+   (denote-retrieve-filename-identifier (denote-file-prompt))))
 
 (declare-function org-link-store-props "ol.el" (&rest plist))
 (defvar org-store-link-plist)
