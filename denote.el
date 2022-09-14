@@ -889,8 +889,7 @@ contain the newline."
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote--retrieve-keywords-value (file file-type)
-  "Return keywords value from FILE according to FILE-TYPE.
-If optional KEY is non-nil, return the key instead."
+  "Return keywords value from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
