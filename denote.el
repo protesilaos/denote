@@ -872,7 +872,7 @@ contain the newline."
     (file-name-base file)))
 
 (defun denote--retrieve-title-value (file file-type)
-  "Return title value from FILE according to FILE-TYPE."
+  "Return title value from FILE front matter per FILE-TYPE."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
