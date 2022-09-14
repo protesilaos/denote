@@ -537,6 +537,8 @@ FILE must be an absolute path."
   'denote-file-name-relative-to-denote-directory
   "1.0.0")
 
+;; TODO 2022-09-14: Do we actually need the following two given the
+;; above predicate functions?
 (defun denote--default-dir-has-denote-prefix ()
   "Test `default-directory' for variable `denote-directory' prefix."
   (string-prefix-p (denote-directory)
