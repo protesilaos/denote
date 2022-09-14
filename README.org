@@ -2361,18 +2361,38 @@ notes.
 Of course, we are always prepared to make refinements to the code, where
 necessary, without compromising on the project's principles.
 
-** I add TODOs to my files; will the many files slow down the Org agenda?
+** I add TODOs to my notes; will many files slow down the Org agenda?
 :PROPERTIES:
 :CUSTOM_ID: h:63c2f8d4-79ed-4c55-b3ef-e048a05802c0
 :END:
 
-I have not tested it, but assume that yes, many files will slow down the
-agenda due to how that works.
+Yes, many files will slow down the agenda due to how that works.  Org
+collects all files specified in the ~org-agenda-files~, searches through
+their contents for timestamped entries, and then loops through all days
+to determine where each entry belongs.  The more days and more files,
+the longer it takes to build the agenda.  Doing this with potentially
+hundreds of files will have a noticeable impact on performance.
 
-If you want my opinion though, decouple your knowledge base from your
-ephemeral to-do list: Denote (and others) can be used for the former,
-while you let standard Org work splendidly for the latter---that is what
-I do, anyway.
+This is not a deficiency of Denote.  It happens with generic Org files.
+The way the agenda is built is heavily favoring the use of a single file
+that holds all your timestamped entries (or at least a few such files).
+Tens or hundreds of files are inefficient for this job.  Plus doing so
+has the side-effect of making Emacs open all those files, which you
+probably do not need.
+
+If you want my opinion though, be more forceful with the separation of
+concerns.  Decouple your knowledge base from your ephemeral to-do list:
+Denote (and others) can be used for the former, while you let standard
+Org work splendidly for the latter---that is what I do, anyway.
+
+Org has a powerful linking facility, whether you use ~org-store-link~ or
+do it via an ~org-capture~ template.  If you want a certain note to be
+associated with a task, just store the task in a single =tasks.org= (or
+however you name it) and link to the relevant context.
+
+Do not mix your knowledge base with your to-do items.  If you need help
+figuring out the specifics of this workflow, you are welcome to ask for
+help in our relevant channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
 ** I want to sort by last modified, why won't Denote let me?
 :PROPERTIES:
