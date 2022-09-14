@@ -570,7 +570,7 @@ existing notes and combine them into a list with
     "File keyword: " keywords
     nil nil nil 'denote--keyword-history)))
 
-(defun denote--keywords-prompt ()
+(defun denote-keywords-prompt ()
   "Prompt for one or more keywords.
 In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
@@ -580,8 +580,13 @@ output is sorted with `string-lessp'."
         (sort choice #'string-lessp)
       choice)))
 
+(define-obsolete-function-alias
+  'denote--keywords-prompt
+  'denote-keywords-prompt
+  "1.0.0")
+
 (defun denote--keywords-combine (keywords)
-  "Format KEYWORDS output of `denote--keywords-prompt'."
+  "Format KEYWORDS output of `denote-keywords-prompt'."
   (mapconcat #'downcase keywords "_"))
 
 (defun denote--keywords-add-to-history (keywords)
@@ -1175,7 +1180,7 @@ When called from Lisp, all arguments are optional.
                                  (buffer-substring-no-properties
                                   (region-beginning)
                                   (region-end))))))
-         ('keywords (aset args 1 (denote--keywords-prompt)))
+         ('keywords (aset args 1 (denote-keywords-prompt)))
          ('file-type (aset args 2 (denote--file-type-prompt)))
          ('subdirectory (aset args 3 (denote--subdirs-prompt)))
          ('date (aset args 4 (denote--date-prompt)))
@@ -1586,7 +1591,7 @@ files)."
       file
       (denote--title-prompt
        (denote--retrieve-title-or-filename file file-type))
-      (denote--keywords-prompt))))
+      (denote-keywords-prompt))))
   (let* ((dir (file-name-directory file))
          (id (denote--file-name-id file))
          (extension (file-name-extension file t))
@@ -1647,7 +1652,7 @@ The operation does the following:
   the user option `denote-file-type')."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote--keywords-prompt)))
+      (let ((keywords (denote-keywords-prompt)))
         (when (yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")
           (progn
             (dolist (file marks)
@@ -1790,7 +1795,7 @@ relevant front matter."
    (list
     (buffer-file-name)
     (denote--title-prompt)
-    (denote--keywords-prompt)))
+    (denote-keywords-prompt)))
   (when (denote--writable-and-supported-p file)
     (denote--add-front-matter file title keywords (denote--file-name-id file)
                               (denote--filetype-heuristics file))))
@@ -2557,7 +2562,7 @@ arbitrary text).
 
 Consult the manual for template samples."
   (let* ((title (denote--title-prompt))
-         (keywords (denote--keywords-prompt))
+         (keywords (denote-keywords-prompt))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
                         (format-time-string denote--id-format nil) 'org)))
