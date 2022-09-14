@@ -1247,7 +1247,9 @@ here for clarity."
 (declare-function org-read-date "org" (&optional with-time to-time from-string prompt default-time default-input inactive))
 
 (defun denote-date-prompt ()
-  "Prompt for date."
+  "Prompt for date, expecting YYYY-MM-DD or that plus HH:MM.
+Use Org's more advanced date selection utility if the user option
+`denote-date-prompt-use-org-read-date' is non-nil."
   (if (and denote-date-prompt-use-org-read-date
            (require 'org nil :no-error))
       (let* ((time (org-read-date nil t))
