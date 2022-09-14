@@ -513,10 +513,15 @@ Supported extensions are those implied by `denote-file-type'."
   (and (file-regular-p file)
        (file-writable-p file)))
 
-(defun denote--writable-and-supported-p (file)
+(defun denote-file-is-writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
   (and (denote--file-regular-writable-p file)
        (denote-file-has-supported-extension-p file)))
+
+(define-obsolete-function-alias
+  'denote--writable-and-supported-p
+  'denote-file-is-writable-and-supported-p
+  "1.0.0")
 
 (defun denote--file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
@@ -1707,7 +1712,7 @@ files)."
     (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
-      (when (denote--writable-and-supported-p new-name)
+      (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
             (denote--rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
@@ -1769,7 +1774,7 @@ The operation does the following:
                      (new-name (denote-format-file-name
                                 dir id keywords (denote-sluggify title) extension)))
                 (denote-rename-file-and-buffer file new-name)
-                (when (denote--writable-and-supported-p new-name)
+                (when (denote-file-is-writable-and-supported-p new-name)
                   (if (denote--edit-front-matter-p new-name file-type)
                       (denote--rewrite-keywords new-name keywords file-type)
                     (denote--add-front-matter new-name title keywords id file-type)))))
@@ -1802,7 +1807,7 @@ typos and the like."
     (if (y-or-n-p "Would you like to save the buffer?")
         (save-buffer)
       (user-error "Save buffer before proceeding")))
-  (unless (denote--writable-and-supported-p file)
+  (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote-filetype-heuristics file))
             (title (denote-retrieve-title-value file file-type))
@@ -1849,7 +1854,7 @@ This command is useful for synchronizing multiple file names with
 their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
-                   #'denote--writable-and-supported-p
+                   #'denote-file-is-writable-and-supported-p
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
@@ -1901,7 +1906,7 @@ relevant front matter."
     (buffer-file-name)
     (denote-title-prompt)
     (denote-keywords-prompt)))
-  (when (denote--writable-and-supported-p file)
+  (when (denote-file-is-writable-and-supported-p file)
     (denote--add-front-matter
      file title keywords
      (denote-retrieve-or-create-file-identifier file)
@@ -2406,7 +2411,7 @@ option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
   (let ((file (buffer-file-name)))
-    (when (denote--writable-and-supported-p file)
+    (when (denote-file-is-writable-and-supported-p file)
       (let* ((id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file))
              (title (denote-retrieve-title-value file file-type)))

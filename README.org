@@ -2029,6 +2029,9 @@ might change them without further notice.
   =.gpg= suffix. Supported extensions are those implied by
   ~denote-file-type~.
 
++ ~denote-file-is-writable-and-supported-p~ :: Return non-nil if =FILE=
+  is writable and has supported extension.
+
 + ~denote-directory-files~ :: List absolute file paths in variable
   ~denote-directory~. The returned files only need to have an
   identifier.  This may include files that are not implied by
