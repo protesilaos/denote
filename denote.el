@@ -1023,7 +1023,7 @@ Parse `denote--retrieve-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote--format-file (path id keywords title-slug extension)
+(defun denote-format-file-name (path id keywords title-slug extension)
   "Format file name.
 PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
 `denote' or equivalent: they will all be converted into a single
@@ -1035,6 +1035,11 @@ string.  EXTENSION is the file type extension, as a string."
     (when keywords
       (setq file-name (concat file-name "__" kws)))
     (concat file-name extension)))
+
+(define-obsolete-function-alias
+  'denote--format-file
+  'denote-format-file-name
+  "1.0.0")
 
 (defun denote--format-front-matter-title (title file-type)
   "Format TITLE according to FILE-TYPE for the file's front matter."
@@ -1060,7 +1065,7 @@ provided by `denote'.  FILETYPE is one of the values of
 
 (defun denote--path (title keywords dir id file-type)
   "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
-  (denote--format-file
+  (denote-format-file-name
    dir id
    (denote-sluggify-keywords keywords)
    (denote-sluggify title)
@@ -1666,7 +1671,7 @@ files)."
          (id (denote-retrieve-or-create-file-identifier file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
-         (new-name (denote--format-file
+         (new-name (denote-format-file-name
                     dir id keywords (denote-sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote--rename-file-prompt file new-name)
@@ -1731,7 +1736,7 @@ The operation does the following:
                      (file-type (denote-filetype-heuristics file))
                      (title (denote--retrieve-title-or-filename file file-type))
                      (extension (file-name-extension file t))
-                     (new-name (denote--format-file
+                     (new-name (denote-format-file-name
                                 dir id keywords (denote-sluggify title) extension)))
                 (denote--rename-file file new-name)
                 (when (denote--writable-and-supported-p new-name)
@@ -1775,7 +1780,7 @@ typos and the like."
             (extension (file-name-extension file t))
             (id (denote-retrieve-or-create-file-identifier file))
             (dir (file-name-directory file))
-            (new-name (denote--format-file
+            (new-name (denote-format-file-name
                        dir id keywords (denote-sluggify title) extension)))
       (when (denote--rename-file-prompt file new-name)
         (denote--rename-file file new-name)
@@ -1824,7 +1829,7 @@ their respective front matter."
                  (title (denote-retrieve-title-value file file-type))
                  (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
-                 (new-name (denote--format-file
+                 (new-name (denote-format-file-name
                             dir id keywords (denote-sluggify title) extension)))
             (denote--rename-file file new-name)))
         (revert-buffer))
