@@ -1992,6 +1992,136 @@ Everything is in place to set up the package.
 ;; `denote-link-or-create'.  You may want to bind them to keys as well.
 #+end_src
 
+* For developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:c916d8c5-540a-409f-b780-6ccbd90e088e
+:END:
+
+[ Part of {{{development-version}}} ]
+
+Denote is in a stable state and can be relied upon as the basis for
+custom extensions.  Further below is a list with the functions or
+variables we provide for public usage.  Those are in addition to all
+user options and commands that are already documented in the various
+sections of this manual.
+
+In this context "public" is any form with single hyphens in its symbol,
+such as ~denote-directory-files~.  We expressly support those, meaning
+that we consider them reliable and commit to documenting any changes in
+their particularities (such as through ~make-obsolete~, a record in the
+change log, a blog post on the maintainer's website, and the like).
+
+By contradistinction, a "private" form is declared with two hyphens in
+its symbol such as ~denote--file-extension~.  Do not use those as we
+might change them without futher notice.
+
++ ~denote-directory-files~ :: List absolute file paths in variable
+  ~denote-directory~. The returned files only need to have an
+  identifier.  This may include files that are not implied by
+  ~denote-file-types~.  Remember that the ~denote-directory~ accepts a
+  directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+
++ ~denote-directory-files-matching-regexp~ :: Return list of files
+  matching =REGEXP= in ~denote-directory-files~.
+
++ ~denote-filetype-heuristics~ :: Return likely file type of =FILE=.
+  Use the file extension to detect the file type of the file.
+
+  If more than one file type correspond to this file extension, use the
+  first file type for which the key-title-kegexp matches in the file or,
+  if none matches, use the first type with this file extension in
+  ~denote-file-type~.
+
+  If no file types in ~denote-file-types~ has the file extension, the
+  file type is assumed to be the first of ~denote-file-types~.
+
++ ~denote-retrieve-filename-identifier~ :: Extract identifier from
+  =FILE= name.
+
++ ~denote-retrieve-filename-title~ :: Extract title from =FILE= name,
+  else return ~file-name-base~.
+
++ ~denote-retrieve-title-value~ :: Return title value from =FILE= front
+  matter per =FILE-TYPE=.
+
++ ~denote-retrieve-title-line~ :: Return title line from =FILE= front
+  matter per =FILE-TYPE=.
+
++ ~denote-retrieve-keywords-value~ :: Return keywords value from =FILE=
+  front matter per =FILE-TYPE=.
+
++ ~denote-retrieve-keywords-line~ :: Return keywords line from =FILE=
+  front matter per =FILE-TYPE=.
+
++ ~denote-file-prompt~ :: Prompt for file with identifier in variable
+  ~denote-directory~.
+
++ ~denote-keywords-prompt~ :: Prompt for one or more keywords.  In the
+  case of multiple entries, those are separated by the ~crm-sepator~,
+  which typically is a comma.  In such a scenario, the output is sorted
+  with ~string-lessp~.
+
++ ~denote-title-prompt~ :: Read file title for ~denote~.  With optional
+  =DEFAULT-TITLE= use it as the default value.
+
++ ~denote-file-type-prompt~ :: Prompt for ~denote-file-type~.  Note that
+  a non-nil value other than ~text~, ~markdown-yaml~, and
+  ~markdown-toml~ falls back to an Org file type.  We use ~org~ here for
+  clarity.
+
++ ~denote-date-prompt~ :: Prompt for date, expecting =YYYY-MM-DD= or
+  that plus =HH:MM= (or =HH:MM:SS=).  Use Org's more advanced date
+  selection utility if ~denote-date-prompt-use-org-read-date~ is
+  non-nil ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
+
++ ~denote-template-prompt~ :: Prompt for template key in
+  ~denote-templates~ and return its value.
+
++ ~denote-subdirectory-prompt~ :: Prompt for subdirectory of the
+  variable ~denote-directory~.  The table uses the ~file~ completion
+  category (so it works with packages such as ~marginalia~ and
+  ~embark~).
+
++ ~denote-file-types~ :: Alist of ~denote-file-type~ and their format
+  properties.  Each element is of the form =(SYMBOL . PROPERTY-LIST)=.
+  =SYMBOL= is one of those specified in ~denote-file-type~.
+
+  =PROPERTY-LIST= is a plist that consists of eight elements:
+
+  1. =:extension= which is a string with the file extension
+     including the perion.
+
+  2. =:front-matter= which is either a string passed to ~format~ or a
+     variable holding such a string.  The ~format~ function accepts four
+     arguments, which come from ~denote~ in this order: =TITLE=, =DATE=,
+     =KEYWORDS=, =IDENTIFIER=.  Read the doc string of ~format~ on how
+     to reorder arguments.
+
+  3. =:title-key-regexp= is a string with the regular expression that is
+     used to retrieve the title line in a file.  The first line matching
+     this regexp is considered the title line.
+
+  4. =:title-value-function= is the function used to format the raw
+     title string for inclusion in the front matter (e.g. to surround it
+     in quotes).  Use the ~identity~ function if no further processing
+     is required.
+
+  5. =:title-value-reverse-function= is the function used to retrieve
+     the raw title string from the front matter.  It performs the
+     reverse of =:title-value-reverse-function=.
+
+  6. =:keywords-key-regexp= is a string with the regular expression used
+     to retrieve the keywords' line in the file.  The first line
+     matching this regexp is considered the keywords' line.
+
+  7. =:keywords-value-function= is the function used to format the
+     keywords' list of strings as a single string for inclusion in the
+     front matter.
+
+  8. =:keywords-value-reverse-function= is the function used to retrieve
+     the keywords' value from the front matter.  It performs the reverse
+     of the =:keywords-value-function=.
+
 * Contributing
 :PROPERTIES:
 :CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
