@@ -416,27 +416,47 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
-(defun denote--sluggify (str)
+(defun denote-sluggify (str)
   "Make STR an appropriate slug for file names and related."
   (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
 
-(defun denote--sluggify-and-join (str)
+(define-obsolete-function-alias
+  'denote--sluggify
+  'denote-sluggify
+  "1.0.0")
+
+(defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
   (downcase
    (replace-regexp-in-string
     "-" ""
     (denote--slug-hyphenate (denote--slug-no-punct str)))))
 
-(defun denote--sluggify-keywords (keywords)
-  "Sluggify KEYWORDS."
+(define-obsolete-function-alias
+  'denote--sluggify-and-join
+  'denote-sluggify-and-join
+  "1.0.0")
+
+(defun denote-sluggify-keywords (keywords)
+  "Sluggify KEYWORDS, which is a list of strings."
   (mapcar (if denote-allow-multi-word-keywords
-              #'denote--sluggify
-            #'denote--sluggify-and-join)
+              #'denote-sluggify
+            #'denote-sluggify-and-join)
           keywords))
 
-(defun denote--desluggify (str)
-  "Capitalize and dehyphenate STR, inverting `denote--sluggify'."
+(define-obsolete-function-alias
+  'denote--sluggify-keywords
+  'denote-sluggify-keywords
+  "1.0.0")
+
+(defun denote-desluggify (str)
+  "Capitalize and dehyphenate STR, inverting `denote-sluggify'."
   (capitalize (replace-regexp-in-string "-" " " str)))
+
+(define-obsolete-function-alias
+  'denote--desluggify
+  'denote-desluggify
+  "1.0.0")
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
@@ -906,7 +926,7 @@ To only return an existing identifier, refer to the function
   "Extract title from FILE name, else return `file-name-base'."
   (if (and (file-exists-p file)
            (denote--file-has-identifier-p file))
-      (denote--desluggify
+      (denote-desluggify
        (progn
          (string-match denote--title-regexp file)
          (match-string 1 file)))
@@ -1023,7 +1043,7 @@ string.  EXTENSION is the file type extension, as a string."
 (defun denote--format-front-matter-keywords (keywords file-type)
   "Format KEYWORDS according to FILE-TYPE for the file's front matter.
 Apply `downcase' to KEYWORDS."
-  (let ((kw (mapcar #'downcase (denote--sluggify-keywords keywords))))
+  (let ((kw (mapcar #'downcase (denote-sluggify-keywords keywords))))
     (funcall (denote--keywords-value-function file-type) kw)))
 
 (make-obsolete-variable 'denote-text-front-matter-delimiter nil "0.6.0")
@@ -1042,8 +1062,8 @@ provided by `denote'.  FILETYPE is one of the values of
   "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
   (denote--format-file
    dir id
-   (denote--sluggify-keywords keywords)
-   (denote--sluggify title)
+   (denote-sluggify-keywords keywords)
+   (denote-sluggify title)
    (denote--file-extension file-type)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
@@ -1647,7 +1667,7 @@ files)."
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote--format-file
-                    dir id keywords (denote--sluggify title) extension))
+                    dir id keywords (denote-sluggify title) extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote--rename-file-prompt file new-name)
       (denote--rename-file file new-name)
@@ -1712,7 +1732,7 @@ The operation does the following:
                      (title (denote--retrieve-title-or-filename file file-type))
                      (extension (file-name-extension file t))
                      (new-name (denote--format-file
-                                dir id keywords (denote--sluggify title) extension)))
+                                dir id keywords (denote-sluggify title) extension)))
                 (denote--rename-file file new-name)
                 (when (denote--writable-and-supported-p new-name)
                   (if (denote--edit-front-matter-p new-name file-type)
@@ -1756,7 +1776,7 @@ typos and the like."
             (id (denote-retrieve-or-create-file-identifier file))
             (dir (file-name-directory file))
             (new-name (denote--format-file
-                       dir id keywords (denote--sluggify title) extension)))
+                       dir id keywords (denote-sluggify title) extension)))
       (when (denote--rename-file-prompt file new-name)
         (denote--rename-file file new-name)
         (denote-update-dired-buffers))
@@ -1805,7 +1825,7 @@ their respective front matter."
                  (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote--format-file
-                            dir id keywords (denote--sluggify title) extension)))
+                            dir id keywords (denote-sluggify title) extension)))
             (denote--rename-file file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))

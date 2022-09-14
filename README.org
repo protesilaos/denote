@@ -2024,6 +2024,18 @@ might change them without further notice.
 + ~denote-directory-files-matching-regexp~ :: Return list of files
   matching =REGEXP= in ~denote-directory-files~.
 
++ ~denote-sluggify~ :: Make =STR= an appropriate slug for file names and
+  related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
+
++ ~denote-sluggify-and-join~ :: Sluggify =STR= while joining separate
+  words.
+
++ ~denote-desluggify~ :: Capitalize and dehyphenate =STR=, inverting
+  ~denote-sluggify~.
+
++ ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is a list of
+  strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
+
 + ~denote-filetype-heuristics~ :: Return likely file type of =FILE=.
   Use the file extension to detect the file type of the file.
 
