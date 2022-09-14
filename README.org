@@ -2032,6 +2032,13 @@ might change them without further notice.
 + ~denote-file-is-writable-and-supported-p~ :: Return non-nil if =FILE=
   is writable and has supported extension.
 
++ ~denote-keywords~ :: Return appropriate list of keyword candidates.
+  If ~denote-infer-keywords~ is non-nil, infer keywords from existing
+  notes and combine them into a list with ~denote-known-keywords~.  Else
+  use only the latter ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
++ ~denote-directory~ (function) :: Return path of the variable
+  ~denote-directory~ as a proper directory, also because it accepts a
+  directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 + ~denote-directory-files~ :: Return list of absolute file paths in
   variable ~denote-directory~. The returned files only need to have an
   identifier.  This may include files that are not implied by
