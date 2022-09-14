@@ -1187,7 +1187,7 @@ When called from Lisp, all arguments are optional.
                                   (region-end))))))
          ('keywords (aset args 1 (denote-keywords-prompt)))
          ('file-type (aset args 2 (denote-file-type-prompt)))
-         ('subdirectory (aset args 3 (denote--subdirs-prompt)))
+         ('subdirectory (aset args 3 (denote-subdirs-prompt)))
          ('date (aset args 4 (denote-date-prompt)))
          ('template (aset args 5 (denote--template-prompt)))))
      (append args nil)))
@@ -1268,7 +1268,7 @@ here for clarity."
   "1.0.0")
 
 (defvar denote--subdir-history nil
-  "Minibuffer history of `denote--subdirs-prompt'.")
+  "Minibuffer history of `denote-subdirs-prompt'.")
 
 ;; Making it a completion table is useful for packages that read the
 ;; metadata, such as `marginalia' and `embark'.
@@ -1281,12 +1281,17 @@ here for clarity."
                    "Select subdirectory: ")))
     (completing-read prompt table nil t nil 'denote--subdir-history def)))
 
-(defun denote--subdirs-prompt ()
+(defun denote-subdirs-prompt ()
   "Handle user input on choice of subdirectory."
   (let* ((root (directory-file-name (denote-directory)))
          (subdirs (denote--subdirs))
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
+
+(define-obsolete-function-alias
+  'denote--subdirs-prompt
+  'denote-subdirs-prompt
+  "1.0.0")
 
 (defvar denote--template-history nil
   "Minibuffer history of `denote--template-prompt'.")
