@@ -2015,6 +2015,12 @@ By contradistinction, a "private" form is declared with two hyphens in
 its symbol such as ~denote--file-extension~.  Do not use those as we
 might change them without further notice.
 
++ ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an actual Denote
+  note.  For our purposes, a note must note be a directory, must satisfy
+  ~file-regular-p~, its path must be part of the variable
+  ~denote-directory~, it must have a Denote identifier in its name, and
+  use one of the extensions implied by ~denote-file-type~.
+
 + ~denote-directory-files~ :: List absolute file paths in variable
   ~denote-directory~. The returned files only need to have an
   identifier.  This may include files that are not implied by

@@ -462,14 +462,23 @@ leading and trailing hyphen."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
-(defun denote--only-note-p (file)
-  "Make sure FILE is an actual Denote note."
+(defun denote-file-is-note-p (file)
+  "Return non-nil if FILE is an actual Denote note.
+For our purposes, a note must note be a directory, must satisfy
+`file-regular-p', its path must be part of the variable
+`denote-directory', it must have a Denote identifier in its name,
+and use one of the extensions implied by `denote-file-type'."
   (let ((file-name (file-name-nondirectory file)))
     (and (not (file-directory-p file))
          (file-regular-p file)
          (string-prefix-p (denote-directory) (expand-file-name file))
          (string-match-p (concat "\\`" denote--id-regexp) file-name)
          (denote--file-supported-extension-p file))))
+
+(define-obsolete-function-alias
+  'denote--only-note-p
+  'denote-file-is-note-p
+  "1.0.0")
 
 (defun denote--file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -993,7 +1002,7 @@ To only return an existing identifier, refer to the function
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
-  (if (denote--only-note-p file)
+  (if (denote-file-is-note-p file)
       (denote-retrieve-title-value file type)
     (denote-retrieve-filename-title file)))
 
@@ -1015,7 +1024,7 @@ Parse `denote--retrieve-xrefs'."
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
   (seq-filter
-   #'denote--only-note-p
+   #'denote-file-is-note-p
    (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
                                (denote--retrieve-xrefs identifier)))))
 
@@ -1158,7 +1167,7 @@ where the former does not read dates without a time component."
 (defun denote--buffer-file-names ()
   "Return file names of active buffers."
   (seq-filter
-   #'denote--only-note-p
+   #'denote-file-is-note-p
    (delq nil
          (mapcar
           #'buffer-file-name
@@ -1503,7 +1512,7 @@ the file type is assumed to be the first of `denote-file-types'."
   "1.0.0")
 
 (defun denote--add-front-matter (file title keywords id file-type)
-  "Prepend front matter to FILE if `denote--only-note-p'.
+  "Prepend front matter to FILE if `denote-file-is-note-p'.
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
@@ -2460,10 +2469,10 @@ inserts links with just the identifier."
      nil t)))
 
 (defun denote-link--map-over-notes ()
-  "Return list of `denote--only-note-p' from Dired marked items."
+  "Return list of `denote-file-is-note-p' from Dired marked items."
   (seq-filter
    (lambda (f)
-     (and (denote--only-note-p f)
+     (and (denote-file-is-note-p f)
           (denote--dir-in-denote-directory-p default-directory)))
    (dired-get-marked-files)))
 
