@@ -501,7 +501,9 @@ FILE must be an absolute path."
 (defun denote-directory-files ()
   "List absolute file paths in variable `denote-directory'.
 The returned files only need to have an identifier.  This may
-include files that are not implied by `denote-file-types'."
+include files that are not implied by `denote-file-types'.
+Remember that the variable `denote-directory' accepts a dir-local
+value, as explained in its doc string."
   (mapcar
    #'expand-file-name
    (seq-remove
