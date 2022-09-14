@@ -1284,7 +1284,9 @@ Use Org's more advanced date selection utility if the user option
     (completing-read prompt table nil t nil 'denote--subdir-history def)))
 
 (defun denote-subdirectory-prompt ()
-  "Handle user input on choice of subdirectory."
+  "Prompt for subdirectory of the variable `denote-directory'.
+The table uses the `file' completion category (so it works with
+packages such as `marginalia' and `embark')."
   (let* ((root (directory-file-name (denote-directory)))
          (subdirs (denote--subdirs))
          (dirs (push root subdirs)))
