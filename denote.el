@@ -2499,10 +2499,14 @@ file."
 (defun denote-link-ol-face (link)
   "Return appropriate face for LINK.
 If the LINK resolves to a note, use `denote-faces-link', else
-return `denote-faces-broken-link'."
-  (if (denote-link--ol-resolve-link-to-target link)
-      'denote-faces-link
-    'denote-faces-broken-link))
+return `denote-faces-broken-link'.  When links are propertized in
+other contexts, apply the generic `link' face (this happens with
+the Org agenda)."
+  (if (not (denote--current-file-is-note-p))
+      'link
+    (if (denote-link--ol-resolve-link-to-target link)
+        'denote-faces-link
+      'denote-faces-broken-link)))
 
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
