@@ -2041,6 +2041,10 @@ might change them without further notice.
 + ~denote-directory-files-matching-regexp~ :: Return list of files
   matching =REGEXP= in ~denote-directory-files~.
 
++ ~denote-file-name-relative-to-denote-directory~ :: Return name of
+  =FILE= relative to the variable ~denote-directory~.  =FILE= must be an
+  absolute path.
+
 + ~denote-sluggify~ :: Make =STR= an appropriate slug for file names and
   related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
 

@@ -523,7 +523,7 @@ Supported extensions are those implied by `denote-file-type'."
   'denote-file-is-writable-and-supported-p
   "1.0.0")
 
-(defun denote--file-name-relative-to-denote-directory (file)
+(defun denote-file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
   (when-let* ((dir (denote-directory))
@@ -531,6 +531,11 @@ FILE must be an absolute path."
               (file-name (expand-file-name file))
               ((string-prefix-p dir file-name)))
     (substring-no-properties file-name (length dir))))
+
+(define-obsolete-function-alias
+  'denote--file-name-relative-to-denote-directory
+  'denote-file-name-relative-to-denote-directory
+  "1.0.0")
 
 (defun denote--default-dir-has-denote-prefix ()
   "Test `default-directory' for variable `denote-directory' prefix."
@@ -573,7 +578,7 @@ value, as explained in its doc string."
   "Return list of files matching REGEXP in `denote-directory-files'."
   (seq-filter
    (lambda (f)
-     (string-match-p regexp (denote--file-name-relative-to-denote-directory f)))
+     (string-match-p regexp (denote-file-name-relative-to-denote-directory f)))
    (denote-directory-files)))
 
 (define-obsolete-function-alias
@@ -1211,8 +1216,8 @@ where the former does not read dates without a time component."
   (seq-remove
    (lambda (filename)
      (or (not (file-directory-p filename))
-         (string-match-p "\\`\\." (denote--file-name-relative-to-denote-directory filename))
-         (string-match-p "/\\." (denote--file-name-relative-to-denote-directory filename))))
+         (string-match-p "\\`\\." (denote-file-name-relative-to-denote-directory filename))
+         (string-match-p "/\\." (denote-file-name-relative-to-denote-directory filename))))
    (directory-files-recursively (denote-directory) ".*" t t)))
 
 ;;;;; The `denote' command and its prompts
@@ -2197,7 +2202,7 @@ format is always [[denote:IDENTIFIER]]."
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
-  (let ((file-names (mapcar #'denote--file-name-relative-to-denote-directory
+  (let ((file-names (mapcar #'denote-file-name-relative-to-denote-directory
                             files)))
     (completing-read
      "Find linked file "
@@ -2390,7 +2395,7 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (mapc (lambda (f)
-              (insert (denote--file-name-relative-to-denote-directory f))
+              (insert (denote-file-name-relative-to-denote-directory f))
               (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
               (newline))
             files)
