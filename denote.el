@@ -569,12 +569,17 @@ value, as explained in its doc string."
   'denote-directory-files
   "1.0.0")
 
-(defun denote--get-note-path-by-id (id)
-  "Return the absolute path of ID note in variable `denote-directory'."
+(defun denote-get-path-by-id (id)
+  "Return absolute path of ID string in `denote-directory-files'."
   (seq-find
    (lambda (f)
      (string-prefix-p id (file-name-nondirectory f)))
    (denote-directory-files)))
+
+(define-obsolete-function-alias
+  'denote--get-note-path-by-id
+  'denote-get-path-by-id
+  "1.0.0")
 
 (defun denote-directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP in `denote-directory-files'."
@@ -2218,7 +2223,7 @@ format is always [[denote:IDENTIFIER]]."
   (if-let* ((regexp (denote-link--file-type-regexp (buffer-file-name)))
             (files (denote-link--expand-identifiers regexp)))
       (find-file ; TODO 2022-09-05: Revise for possible refinement
-       (denote--get-note-path-by-id
+       (denote-get-path-by-id
         (denote-link--id-from-string
          (denote-link--find-file-prompt files))))
     (user-error "No links found in the current buffer")))
@@ -2319,7 +2324,7 @@ file's title.  This has the same meaning as in `denote-link'."
               (buffer-substring-no-properties
                (button-start button)
                (button-end button))))
-         (file (denote--get-note-path-by-id id)))
+         (file (denote-get-path-by-id id)))
     (funcall denote-link-button-action file)))
 
 ;;;###autoload
@@ -2554,7 +2559,7 @@ and the identifier."
          (id (if (and (stringp search) (not (string-empty-p search)))
                  (substring link 0 (match-beginning 0))
                link))
-         (path (denote--get-note-path-by-id id)))
+         (path (denote-get-path-by-id id)))
     (cond
      (path-id
       (cons (format "%s" path) (format "%s" id)))

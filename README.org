@@ -2045,6 +2045,9 @@ might change them without further notice.
   =FILE= relative to the variable ~denote-directory~.  =FILE= must be an
   absolute path.
 
++ ~denote-get-path-by-id~ :: Return absolute path of =ID= string in
+  ~denote-directory-files~.
+
 + ~denote-sluggify~ :: Make =STR= an appropriate slug for file names and
   related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
 
