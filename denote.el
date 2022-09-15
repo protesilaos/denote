@@ -2321,7 +2321,7 @@ file's title.  This has the same meaning as in `denote-link'."
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
 (defvar denote-link-button-action #'find-file-other-window
-  "Action for Denote buttons.")
+  "Display buffer action for Denote buttons.")
 
 (make-obsolete-variable 'denote-link-buton-action 'denote-link-button-action "0.5.0")
 
