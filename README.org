@@ -2214,6 +2214,11 @@ might change them without further notice.
 + ~denote-rename-file-and-buffer~ :: Rename file named =OLD-NAME= to
   =NEW-NAME=, updating buffer name.
 
+#+findex: denote-update-dired-buffers
++ ~denote-update-dired-buffers~ :: Update Dired buffers of variable
+  ~denote-directory~.  Note that the ~denote-directory~ accepts a
+  directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+
 #+vindex: denote-file-types
 + ~denote-file-types~ :: Alist of ~denote-file-type~ and their format
   properties.  Each element is of the form =(SYMBOL . PROPERTY-LIST)=.
