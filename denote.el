@@ -1625,9 +1625,6 @@ values if appropriate."
             (insert new-keywords-line)
             (delete-region (point) (line-end-position))))))))
 
-(make-obsolete 'denote-dired-rename-expert nil "0.5.0")
-(make-obsolete 'denote-dired-post-rename-functions nil "0.4.0")
-
 ;;;;; The renaming commands and their prompts
 
 (defun denote--rename-dired-file-or-prompt ()
@@ -1736,21 +1733,6 @@ files)."
             (denote--rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
-(define-obsolete-function-alias
-  'denote-dired-rename-file-and-add-front-matter
-  'denote-rename-file
-  "0.5.0")
-
-(define-obsolete-function-alias
-  'denote-dired-rename-file
-  'denote-rename-file
-  "0.5.0")
-
-(define-obsolete-function-alias
-  'denote-dired-convert-file-to-denote
-  'denote-dired-rename-file-and-add-front-matter
-  "0.4.0")
-
 ;;;###autoload
 (defun denote-dired-rename-marked-files ()
   "Rename marked files in Dired to Denote file name.
@@ -1799,11 +1781,6 @@ The operation does the following:
                     (denote--add-front-matter new-name title keywords id file-type)))))
             (revert-buffer))))
     (user-error "No marked files; aborting")))
-
-(define-obsolete-function-alias
-  'denote-dired-rename-marked-files-and-add-front-matter
-  'denote-dired-rename-marked-files
-  "0.5.0")
 
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file)
@@ -2323,8 +2300,6 @@ file's title.  This has the same meaning as in `denote-link'."
 (defvar denote-link-button-action #'find-file-other-window
   "Display buffer action for Denote buttons.")
 
-(make-obsolete-variable 'denote-link-buton-action 'denote-link-button-action "0.5.0")
-
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
   (let* ((id (denote-link--id-from-string
@@ -2676,10 +2651,6 @@ the standard front matter we define."
   :group 'denote-org-capture)
 
 (defvar denote-last-path nil "Store last path.")
-(make-obsolete-variable 'denote-last-title nil "0.5.0")
-(make-obsolete-variable 'denote-last-keywords nil "0.5.0")
-(make-obsolete-variable 'denote-last-buffer nil "0.5.0")
-(make-obsolete-variable 'denote-last-front-matter nil "0.5.0")
 
 ;;;###autoload
 (defun denote-org-capture ()
