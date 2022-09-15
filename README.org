@@ -2139,6 +2139,12 @@ might change them without further notice.
   equivalent: they will all be converted into a single string.
   =EXTENSION= is the file type extension, as a string.
 
+#+findex: denote-extract-keywords-from-path
++ ~denote-extract-keywords-from-path~ :: Extract keywords from =PATH=
+  and return them as a list of strings.  =PATH= must be a Denote-style
+  file name where keywords are prefixed with an underscore.  If =PATH=
+  has no such keywords, return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
 #+findex: denote-retrieve-filename-identifier
 + ~denote-retrieve-filename-identifier~ :: Extract identifier from
   =FILE= name.  To only return an existing identifier or create a new

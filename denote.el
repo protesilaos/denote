@@ -621,19 +621,28 @@ value, as explained in its doc string."
 
 ;;;; Keywords
 
-(defun denote--extract-keywords-from-path (path)
-  "Extract keywords from PATH."
+(defun denote-extract-keywords-from-path (path)
+  "Extract keywords from PATH and return them as a list of strings.
+PATH must be a Denote-style file name where keywords are prefixed
+with an underscore.
+
+If PATH has no such keywords, return nil."
   (let* ((file-name (file-name-nondirectory path))
          (kws (when (string-match denote--keywords-regexp file-name)
                 (match-string-no-properties 1 file-name))))
     (when kws
       (split-string kws "_"))))
 
+(define-obsolete-function-alias
+  'denote--extract-keywords-from-path
+  'denote-extract-keywords-from-path
+  "1.0.0")
+
 (defun denote--inferred-keywords ()
   "Extract keywords from `denote-directory-files'.
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
-  (mapcan #'denote--extract-keywords-from-path
+  (mapcan #'denote-extract-keywords-from-path
           (denote-directory-files)))
 
 (defun denote-keywords ()
