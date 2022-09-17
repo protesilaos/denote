@@ -2114,8 +2114,9 @@ might change them without further notice.
   words.
 
 #+findex: denote-desluggify
-+ ~denote-desluggify~ :: Capitalize and dehyphenate =STR=, inverting
-  ~denote-sluggify~.
++ ~denote-desluggify~ :: Upcase first char in =STR= and dehyphenate =STR=,
+  inverting ~denote-sluggify~.  Basically, convert =this-is-a-test= to
+  =This is a test=.
 
 #+findex: denote-sluggify-keywords
 + ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is a list of
