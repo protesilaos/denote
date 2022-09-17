@@ -450,8 +450,10 @@ leading and trailing hyphen."
   "1.0.0")
 
 (defun denote-desluggify (str)
-  "Capitalize and dehyphenate STR, inverting `denote-sluggify'."
-  (capitalize (replace-regexp-in-string "-" " " str)))
+  "Upcase first char in STR and dehyphenate STR, inverting `denote-sluggify'."
+  (let ((str (replace-regexp-in-string "-" " " str)))
+    (aset str 0 (upcase (aref str 0)))
+    str))
 
 (define-obsolete-function-alias
   'denote--desluggify
