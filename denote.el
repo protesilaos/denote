@@ -1051,8 +1051,9 @@ To only return an existing identifier, refer to the function
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
-  (if (denote-file-is-note-p file)
-      (denote-retrieve-title-value file type)
+  (if-let (((denote-file-is-note-p file))
+           (title (denote-retrieve-title-value file type)))
+      title
     (denote-retrieve-filename-title file)))
 
 (defun denote--retrieve-xrefs (identifier)
