@@ -2158,7 +2158,8 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-title
 + ~denote-retrieve-filename-title~ :: Extract title from =FILE= name,
-  else return ~file-name-base~.
+  else return ~file-name-base~.  Run ~denote-desluggify~ on the title if
+  the extraction is successful.
 
 #+findex: denote-retrieve-title-value
 + ~denote-retrieve-title-value~ :: Return title value from =FILE= front

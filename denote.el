@@ -981,13 +981,13 @@ To only return an existing identifier, refer to the function
   "1.0.0")
 
 (defun denote-retrieve-filename-title (file)
-  "Extract title from FILE name, else return `file-name-base'."
-  (if (and (file-exists-p file)
-           (denote-file-has-identifier-p file))
-      (denote-desluggify
-       (progn
-         (string-match denote--title-regexp file)
-         (match-string 1 file)))
+  "Extract title from FILE name, else return `file-name-base'.
+Run `denote-desluggify' on title if the extraction is sucessful."
+  (if-let* (((file-exists-p file))
+            ((denote-file-has-identifier-p file))
+            ((string-match denote--title-regexp file))
+            (title (match-string 1 file)))
+      (denote-desluggify title)
     (file-name-base file)))
 
 (define-obsolete-function-alias
