@@ -2271,6 +2271,22 @@ file's title.  This has the same meaning as in `denote-link'."
 
 (defalias 'denote-link-to-existing-or-new-note (symbol-function 'denote-link-or-create))
 
+(defun denote-link-or-create-with-date ()
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote-link-or-create)))
+
+(defun denote-open-or-create (target)
+  (interactive (list (denote-file-prompt)))
+  (if (file-exists-p target)
+      (find-file target)
+    (call-interactively #'denote)))
+
+(defun denote-open-or-create-with-date ()
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
 ;;;;; Link buttons
 
 ;; Evaluate: (info "(elisp) Button Properties")
