@@ -1497,14 +1497,14 @@ If file does not exist, invoke `denote' to create a file."
 
 ;;;###autoload
 (defun denote-open-or-create-with-date ()
-  "Invoke `denote-link-or-create' but also prompt for date.
+  "Invoke `denote-open-or-create' but also prompt for date.
 
 The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
 that plus the time: 2022-06-16 14:30.  When the user option
 `denote-date-prompt-use-org-read-date' is non-nil, the date
 prompt uses the more powerful Org+calendar system.
 
-This is the equivalent to calling `denote-link-or-create' when
+This is the equivalent to calling `denote-open-or-create' when
 `denote-prompts' is set to \\='(date title keywords)."
   (declare (interactive-only t))
   (interactive)
