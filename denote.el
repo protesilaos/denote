@@ -1484,6 +1484,65 @@ set to \\='(template title keywords)."
 
 (defalias 'denote-create-note-with-template (symbol-function 'denote-template))
 
+;;;;; Other convenience commands
+
+;;;###autoload
+(defun denote-open-or-create (target)
+  "Visit file in variable `denote-directory'.
+If file does not exist, invoke `denote' to create a file."
+  (interactive (list (denote-file-prompt)))
+  (if (file-exists-p target)
+      (find-file target)
+    (call-interactively #'denote)))
+
+;;;###autoload
+(defun denote-open-or-create-with-date ()
+  "Invoke `denote-link-or-create' but also prompt for date.
+
+The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
+that plus the time: 2022-06-16 14:30.  When the user option
+`denote-date-prompt-use-org-read-date' is non-nil, the date
+prompt uses the more powerful Org+calendar system.
+
+This is the equivalent to calling `denote-link-or-create' when
+`denote-prompts' is set to \\='(date title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-type ()
+  "Invoke `denote-open-or-create' but also prompt for file type.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(type title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(type title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-subdirectory ()
+  "Invoke `denote-open-or-create' but also prompt for subdirectory.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(subdirectory title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-template ()
+  "Invoke `denote-open-or-create' but also prompt for template.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(template title keywords).
+
+For templates, refer to `denote-templates'."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(template title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
 ;;;; Note modification
 
 ;;;;; Common helpers for note modifications
@@ -2320,63 +2379,6 @@ For templates, refer to `denote-templates'."
   (interactive)
   (let ((denote-prompts '(template title keywords)))
     (call-interactively #'denote-link-or-create)))
-
-;;;###autoload
-(defun denote-open-or-create (target)
-  "Visit file in variable `denote-directory'.
-If file does not exist, invoke `denote' to create a file."
-  (interactive (list (denote-file-prompt)))
-  (if (file-exists-p target)
-      (find-file target)
-    (call-interactively #'denote)))
-
-;;;###autoload
-(defun denote-open-or-create-with-date ()
-  "Invoke `denote-link-or-create' but also prompt for date.
-
-The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
-that plus the time: 2022-06-16 14:30.  When the user option
-`denote-date-prompt-use-org-read-date' is non-nil, the date
-prompt uses the more powerful Org+calendar system.
-
-This is the equivalent to calling `denote-link-or-create' when
-`denote-prompts' is set to \\='(date title keywords)."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(date title keywords)))
-    (call-interactively #'denote-open-or-create)))
-
-;;;###autoload
-(defun denote-open-or-create-with-type ()
-  "Invoke `denote-open-or-create' but also prompt for file type.
-This is the equivalent to calling `denote-open-or-create' when
-`denote-prompts' is set to \\='(type title keywords)."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(type title keywords)))
-    (call-interactively #'denote-open-or-create)))
-
-;;;###autoload
-(defun denote-open-or-create-with-subdirectory ()
-  "Invoke `denote-open-or-create' but also prompt for subdirectory.
-This is the equivalent to calling `denote-open-or-create' when
-`denote-prompts' is set to \\='(subdirectory title keywords)."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(subdirectory title keywords)))
-    (call-interactively #'denote-open-or-create)))
-
-;;;###autoload
-(defun denote-open-or-create-with-template ()
-  "Invoke `denote-open-or-create' but also prompt for template.
-This is the equivalent to calling `denote-open-or-create' when
-`denote-prompts' is set to \\='(template title keywords).
-
-For templates, refer to `denote-templates'."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(template title keywords)))
-    (call-interactively #'denote-open-or-create)))
 
 ;;;;; Link buttons
 
