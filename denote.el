@@ -1438,7 +1438,9 @@ is set to \\='(file-type title keywords)."
   "Create note while prompting for a date.
 
 The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
-that plus the time: 2022-06-16 14:30
+that plus the time: 2022-06-16 14:30.  When the user option
+`denote-date-prompt-use-org-read-date' is non-nil, the date
+prompt uses the more powerful Org+calendar system.
 
 This is the equivalent to calling `denote' when `denote-prompts'
 is set to \\='(date title keywords)."
