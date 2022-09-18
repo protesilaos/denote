@@ -234,7 +234,7 @@ Finally, this user option only affects the interactive use of the
 ad-hoc interactive actions that do not change the default
 behaviour of the `denote' command, users can invoke these
 convenience commands: `denote-type', `denote-subdirectory',
-`denote-date'."
+`denote-date', `denote-template'."
   :group 'denote
   :package-version '(denote . "0.5.0")
   :link '(info-link "(denote) The denote-prompts option")
