@@ -1861,6 +1861,149 @@ version control framework or the exceptionally well-crafted =magit=
 package will get the job done (VC can work with other backends besides
 Git).
 
+** Variants of ~denote-open-or-create~
+:PROPERTIES:
+:CUSTOM_ID: h:ad91ca39-cf10-4e16-b224-fdf78f093883
+:END:
+
+#+findex: denote-open-or-create
+The command ~denote-open-or-create~ prompts to visit a file in the
+~denote-directory~.  If the user input does not have any matches,
+~denote-open-or-create~ will call the ~denote~ command interactively.
+It will then use whatever prompts ~denote~ normally has, per the user
+option ~denote-prompts~ ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+
+To speed up the process or to maintain variants that suit one's
+workflow, we provide these ready-to-use commands that one can add to
+their Emacs init file.  They can be assigned to key bindings or be used
+via =M-x= after they have been evaluated.
+
+#+begin_src emacs-lisp
+;;;###autoload
+(defun denote-open-or-create-with-date ()
+  "Invoke `denote-open-or-create' but also prompt for date.
+
+The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
+that plus the time: 2022-06-16 14:30.  When the user option
+`denote-date-prompt-use-org-read-date' is non-nil, the date
+prompt uses the more powerful Org+calendar system.
+
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(date title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-type ()
+  "Invoke `denote-open-or-create' but also prompt for file type.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(type title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(type title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-subdirectory ()
+  "Invoke `denote-open-or-create' but also prompt for subdirectory.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(subdirectory title keywords)))
+    (call-interactively #'denote-open-or-create)))
+
+;;;###autoload
+(defun denote-open-or-create-with-template ()
+  "Invoke `denote-open-or-create' but also prompt for template.
+This is the equivalent to calling `denote-open-or-create' when
+`denote-prompts' is set to \\='(template title keywords).
+
+For templates, refer to `denote-templates'."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(template title keywords)))
+    (call-interactively #'denote-open-or-create)))
+#+end_src
+
+** Variants of ~denote-link-or-create~
+:PROPERTIES:
+:CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
+:END:
+
+#+findex: denote-link-or-create
+The command ~denote-link-or-create~ uses ~denote-link~ on a =TARGET=
+file, creating it if necessary.  The =TARGET= matches the user input at
+a minibuffer prompt: it is a file in the ~denote-directory~.
+
+#+findex: denote-link-after-creating
+If =TARGET= file does not exist, The ~denote-link-or-create~ calls
+~denote-link-after-creating~ which runs the standard ~denote~ command
+interactively to create the file ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  The
+established link will then be targeting that new file.
+
+When called with an optional prefix argument (=C-u= by default)
+~denote-link-or-create~ creates a link that consists of just the
+identifier.  Else it tries to also include the file's title.  This has
+the same meaning as in ~denote-link~ ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
+
+To speed up the process or to maintain variants that suit one's
+workflow, we provide these ready-to-use commands that one can add to
+their Emacs init file.  They can be assigned to key bindings or be used
+via =M-x= after they have been evaluated.
+
+#+begin_src emacs-lisp
+;;;###autoload
+(defun denote-link-or-create-with-date ()
+  "Invoke `denote-link-or-create' but also prompt for date.
+
+The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
+that plus the time: 2022-06-16 14:30.  When the user option
+`denote-date-prompt-use-org-read-date' is non-nil, the date
+prompt uses the more powerful Org+calendar system.
+
+This is the equivalent to calling `denote-link-or-create' when
+`denote-prompts' is set to \\='(date title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date title keywords)))
+    (call-interactively #'denote-link-or-create)))
+
+;;;###autoload
+(defun denote-link-or-create-with-type ()
+  "Invoke `denote-link-or-create' but also prompt for file type.
+This is the equivalent to calling `denote-link-or-create' when
+`denote-prompts' is set to \\='(type title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(type title keywords)))
+    (call-interactively #'denote-link-or-create)))
+
+;;;###autoload
+(defun denote-link-or-create-with-subdirectory ()
+  "Invoke `denote-link-or-create' but also prompt for subdirectory.
+This is the equivalent to calling `denote-link-or-create' when
+`denote-prompts' is set to \\='(subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(subdirectory title keywords)))
+    (call-interactively #'denote-link-or-create)))
+
+;;;###autoload
+(defun denote-link-or-create-with-template ()
+  "Invoke `denote-link-or-create' but also prompt for template.
+This is the equivalent to calling `denote-link-or-create' when
+`denote-prompts' is set to \\='(template title keywords).
+
+For templates, refer to `denote-templates'."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(template title keywords)))
+    (call-interactively #'denote-link-or-create)))
+#+end_src
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
