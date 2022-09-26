@@ -2286,6 +2286,10 @@ might change them without further notice.
   file name where keywords are prefixed with an underscore.  If =PATH=
   has no such keywords, return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
+#+findex: denote-extract-id-from-string
++ ~denote-extract-id-from-string~ :: Return existing Denote identifier
+  in =STRING=, else nil.
+
 #+findex: denote-retrieve-filename-identifier
 + ~denote-retrieve-filename-identifier~ :: Extract identifier from
   =FILE= name.  To only return an existing identifier or create a new
@@ -2946,11 +2950,11 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kaludercic, Quiliro Ordóñez, Stefan Monnier.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
-  Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Frank Ehmsen,
-  Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal Modi, M. Hadi
-  Timachi, Paul van Gelder, Peter Prevos, Shreyas Ragavan, Summer Emacs,
-  Sven Seebeck, Taoufik, Ypot, atanasj, hpgisler, pRot0ta1p, sienic,
-  sundar bp.
+  Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
+  Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal
+  Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
+  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Ypot, atanasj,
+  hpgisler, pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

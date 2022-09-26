@@ -539,6 +539,16 @@ FILE must be an absolute path."
   'denote-get-file-name-relative-to-denote-directory
   "1.0.0")
 
+(defun denote-extract-id-from-string (string)
+  "Return existing Denote identifier in STRING, else nil."
+  (when (string-match denote--id-regexp string)
+    (match-string 0 string)))
+
+(define-obsolete-function-alias
+  'denote-link--id-from-string
+  'denote-extract-id-from-string
+  "1.0.0")
+
 ;; TODO 2022-09-26: Maybe we can consolidate this with
 ;; `denote--dir-in-denote-directory-p'?  Another check for the
 ;; directory prefix is done in `denote-file-is-note-p'.
@@ -2220,9 +2230,9 @@ format is always [[denote:IDENTIFIER]]."
   (interactive)
   (if-let* ((regexp (denote-link--file-type-regexp (buffer-file-name)))
             (files (denote-link--expand-identifiers regexp)))
-      (find-file ; TODO 2022-09-05: Revise for possible refinement
+      (find-file
        (denote-get-path-by-id
-        (denote-link--id-from-string
+        (denote-extract-id-from-string
          (denote-link--find-file-prompt files))))
     (user-error "No links found in the current buffer")))
 
@@ -2302,12 +2312,6 @@ file's title.  This has the same meaning as in `denote-link'."
             (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
     (match-string-no-properties 0)))
 
-(defun denote-link--id-from-string (string)
-  "Extract identifier from STRING."
-  (replace-regexp-in-string
-   (concat ".*denote:" "\\(" denote--id-regexp "\\)" ".*")
-   "\\1" string))
-
 ;; NOTE 2022-06-15: I add this as a variable for advanced users who may
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
@@ -2316,7 +2320,7 @@ file's title.  This has the same meaning as in `denote-link'."
 
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
-  (let* ((id (denote-link--id-from-string
+  (let* ((id (denote-extract-id-from-string
               (buffer-substring-no-properties
                (button-start button)
                (button-end button))))
