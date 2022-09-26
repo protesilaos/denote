@@ -539,19 +539,13 @@ FILE must be an absolute path."
   'denote-get-file-name-relative-to-denote-directory
   "1.0.0")
 
-;; TODO 2022-09-14: Do we actually need the following two given the
-;; above predicate functions?
+;; TODO 2022-09-26: Maybe we can consolidate this with
+;; `denote--dir-in-denote-directory-p'?  Another check for the
+;; directory prefix is done in `denote-file-is-note-p'.
 (defun denote--default-dir-has-denote-prefix ()
   "Test `default-directory' for variable `denote-directory' prefix."
   (string-prefix-p (denote-directory)
                    (expand-file-name default-directory)))
-
-(defun denote--current-file-is-note-p ()
-  "Return non-nil if current file likely is a Denote note."
-  (and (buffer-file-name)
-       (or (string-match-p denote--id-regexp (buffer-file-name))
-           (string-match-p denote--id-regexp (buffer-name)))
-       (denote--default-dir-has-denote-prefix)))
 
 (defun denote-directory-files ()
   "Return list of absolute file paths in variable `denote-directory'.
@@ -2347,13 +2341,8 @@ this.
 When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
   (interactive)
-  ;; TODO 2022-09-05: Perhaps we need a more relaxed check that does not
-  ;; account for the `denote-directory' instead of
-  ;; `denote--current-file-is-note-p'?  For the use-case, see commit
-  ;; a3cc59a.  Basically, a 'denote:' link will work for as long as the
-  ;; target file is in the `denote-directory'.  So why not buttonize
-  ;; those links even from outside the `denote-directory'?
-  (when (and (not (derived-mode-p 'org-mode)) (denote--current-file-is-note-p))
+  (when (and (not (derived-mode-p 'org-mode))
+             (denote-file-has-identifier-p (buffer-file-name)))
     (save-excursion
       (goto-char (or beg (point-min)))
       (while (re-search-forward denote--id-regexp end t)
@@ -2611,16 +2600,16 @@ interface by first selecting the `denote:' hyperlink type."
 
 (defun denote-link-ol-store()
   "Handler for `org-store-link' adding support for denote: links."
-  (when (denote--current-file-is-note-p)
-    (let* ((file (buffer-file-name))
-           (file-type (denote-filetype-heuristics file))
-           (file-id (denote-retrieve-filename-identifier file))
-           (file-title (denote--retrieve-title-or-filename file file-type)))
-      (org-link-store-props
-       :type "denote"
-       :description file-title
-       :link (concat "denote:" file-id)))
-    org-store-link-plist))
+  (when-let* ((file (buffer-file-name))
+              (denote-file-is-note-p file)
+              (file-type (denote-filetype-heuristics file))
+              (file-id (denote-retrieve-filename-identifier file))
+              (file-title (denote--retrieve-title-or-filename file file-type)))
+    (org-link-store-props
+     :type "denote"
+     :description file-title
+     :link (concat "denote:" file-id)))
+  org-store-link-plist)
 
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
