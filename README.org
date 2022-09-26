@@ -2192,11 +2192,11 @@ its symbol such as ~denote--file-extension~.  Do not use those as we
 might change them without further notice.
 
 #+findex: denote-file-is-note-p
-+ ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an actual Denote
-  note.  For our purposes, a note must not be a directory, must satisfy
-  ~file-regular-p~, its path must be part of the variable
-  ~denote-directory~, it must have a Denote identifier in its name, and
-  use one of the extensions implied by ~denote-file-type~.
++ ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an actual
+  Denote note.  For our purposes, a note must not be a directory, must
+  satisfy ~file-regular-p~, its path must be part of the variable
+  ~denote-directory~, it must have a Denote identifier in its name,
+  and use one of the extensions implied by ~denote-file-type~.
 
 #+findex: denote-file-has-identifier-p
 + ~denote-file-has-identifier-p~ :: Return non-nil if FILE has a Denote
