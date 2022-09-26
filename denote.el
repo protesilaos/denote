@@ -2588,7 +2588,7 @@ interface by first selecting the `denote:' hyperlink type."
 (defun denote-link-ol-store()
   "Handler for `org-store-link' adding support for denote: links."
   (when-let* ((file (buffer-file-name))
-              (denote-file-is-note-p file)
+              ((denote-file-is-note-p file))
               (file-type (denote-filetype-heuristics file))
               (file-id (denote-retrieve-filename-identifier file))
               (file-title (denote--retrieve-title-or-filename file file-type)))
