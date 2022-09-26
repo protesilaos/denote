@@ -1142,13 +1142,6 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
-#+vindex: denote-faces-broken-link
-In Org files, broken links get the ~denote-faces-broken-link~ if the
-linked identifier does not resolve to a file path with a note.  The
-ability to use distinct faces for such a scenario is a feature of Org,
-which is not available in other supported file types that use Emacs'
-generic button mechanism.
-
 ** Insert links matching a regexp
 :PROPERTIES:
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90

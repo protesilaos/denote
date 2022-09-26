@@ -1938,12 +1938,7 @@ relevant front matter."
   :group 'denote-faces
   :package-version '(denote . "0.5.0"))
 
-(defface denote-faces-broken-link '((t :inherit (error link)))
-  "Face used to style Denote broken links in the buffer.
-This only works in Org files, as Emacs' generic buttons do not
-provide a facility that uses a face based on certain conditions."
-  :group 'denote-faces
-  :package-version '(denote . "0.5.0"))
+(make-obsolete 'denote-faces-broken-link nil "1.0.0")
 
 (defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
@@ -2575,18 +2570,6 @@ file."
    (denote-link--ol-resolve-link-to-target link)
    nil))
 
-(defun denote-link-ol-face (link)
-  "Return appropriate face for LINK.
-If the LINK resolves to a note, use `denote-faces-link', else
-return `denote-faces-broken-link'.  When links are propertized in
-other contexts, apply the generic `link' face (this happens with
-the Org agenda)."
-  (if (not (denote--current-file-is-note-p))
-      'link
-    (if (denote-link--ol-resolve-link-to-target link)
-        'denote-faces-link
-      'denote-faces-broken-link)))
-
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
@@ -2642,7 +2625,7 @@ backend."
           (org-link-set-parameters
            "denote"
            :follow #'denote-link-ol-follow
-           :face #'denote-link-ol-face
+           :face 'denote-faces-link
            :complete #'denote-link-ol-complete
            :store #'denote-link-ol-store
            :export #'denote-link-ol-export)))))
