@@ -1492,7 +1492,7 @@ set to \\='(template title keywords)."
 
 ;;;###autoload
 (defun denote-open-or-create (target)
-  "Visit file in variable `denote-directory'.
+  "Visit TARGET file in variable `denote-directory'.
 If file does not exist, invoke `denote' to create a file."
   (interactive (list (denote-file-prompt)))
   (if (file-exists-p target)
