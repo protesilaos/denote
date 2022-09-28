@@ -2595,8 +2595,8 @@ interface by first selecting the `denote:' hyperlink type."
     (org-link-store-props
      :type "denote"
      :description file-title
-     :link (concat "denote:" file-id)))
-  org-store-link-plist)
+     :link (concat "denote:" file-id))
+  org-store-link-plist))
 
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
