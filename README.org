@@ -1703,6 +1703,102 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (dired-do-kill-lines))
 #+end_src
 
+** Use ~dired-virtual-mode~ for arbitrary file listings
+:PROPERTIES:
+:CUSTOM_ID: h:d35d8d41-f51b-4139-af8f-9c8cc508e35b
+:END:
+
+Emacs' Dired is a powerful file manager that builds its functionality
+on top of the Unix =ls= command.  As noted elsewhere in this manual,
+the user can update the =ls= flags that Dired uses to display its
+contents ([[#h:a7fd5e0a-78f7-434e-aa2e-e150479c16e2][I want to sort by last modified, why won't Denote let me?]]).
+
+What Dired cannot do is parse the output of a result that is produced
+by piped commands, such as =ls -l | sort -t _ -k2=.  This specific
+example targets the second underscore-separated field of the file
+name, per our conventions ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  Conceretely, it
+matches the "alpha" as the sorting key in something like this:
+
+#+begin_src emacs-lisp
+20220929T200432--testing-file-one__alpha.txt
+#+end_src
+
+Consider then, how Dired will sort those files by their identifier:
+
+#+begin_src emacs-lisp
+20220929T200432--testing-file-one__alpha.txt
+20220929T200532--testing-file-two__beta.txt
+20220929T200632--testing-file-three__alpha.txt
+20220929T200732--testing-file-four__beta.txt
+#+end_src
+
+Whereas on the command line, we can get the following:
+
+#+begin_example
+$ ls | sort -t _ -k 2
+20220929T200432--testing-file-one__alpha.txt
+20220929T200632--testing-file-three__alpha.txt
+20220929T200532--testing-file-two__beta.txt
+20220929T200732--testing-file-four__beta.txt
+#+end_example
+
+This is where ~dired-virtual-mode~ shows its utility.  If we tweak our
+command-line invocation to include =ls -l=, this mode can behave like
+Dired on the listed files.  (We omit the output of the =-l= flag from
+this tutorial, as it is too verbose.)
+
+What we now need is to capture the output of =ls -l | sort -t _ -k 2=
+in an Emacs buffer and then enable ~dired-virtual-mode~.  To do that,
+we can rely on either =M-x shell= or =M-x eshell= and then manually
+copy the relevant contents.
+
+For the user's convenience, I share what I have for Eshell to quickly
+capture the last command's output in a dedicated buffer:
+
+#+begin_src emacs-lisp
+(defcustom prot-eshell-output-buffer "*Exported Eshell output*"
+  "Name of buffer with the last output of Eshell command.
+Used by `prot-eshell-export'."
+  :type 'string
+  :group 'prot-eshell)
+
+(defcustom prot-eshell-output-delimiter "* * *"
+  "Delimiter for successive `prot-eshell-export' outputs.
+This is formatted internally to have newline characters before
+and after it."
+  :type 'string
+  :group 'prot-eshell)
+
+(defun prot-eshell--command-prompt-output ()
+  "Capture last command prompt and its output."
+  (let ((beg (save-excursion
+               (goto-char (eshell-beginning-of-input))
+               (goto-char (point-at-bol)))))
+    (when (derived-mode-p 'eshell-mode)
+      (buffer-substring-no-properties beg (eshell-end-of-output)))))
+
+;;;###autoload
+(defun prot-eshell-export ()
+  "Produce a buffer with output of the last Eshell command.
+If `prot-eshell-output-buffer' does not exist, create it.  Else
+append to it, while separating multiple outputs with
+`prot-eshell-output-delimiter'."
+  (interactive)
+  (let ((eshell-output (prot-eshell--command-prompt-output)))
+    (with-current-buffer (get-buffer-create prot-eshell-output-buffer)
+      (let ((inhibit-read-only t))
+        (goto-char (point-max))
+        (unless (eq (point-min) (point-max))
+          (insert (format "\n%s\n\n" prot-eshell-output-delimiter)))
+        (goto-char (point-at-bol))
+        (insert eshell-output)
+        (switch-to-buffer-other-window (current-buffer))))))
+#+end_src
+
+Bind ~prot-eshell-export~ to a key in the ~eshell-mode-map~ and give
+it a try (I use =C-c C-e=).  In the produced buffer, activate the
+~dired-virtual-mode~.
+
 ** Use Embark to collect minibuffer candidates
 :PROPERTIES:
 :CUSTOM_ID: h:edf9b651-86eb-4d5f-bade-3c9e270082f0
@@ -2953,7 +3049,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
   Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal
   Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
-  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Ypot, atanasj,
+  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot, atanasj,
   hpgisler, pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
