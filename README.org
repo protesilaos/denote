@@ -2984,6 +2984,9 @@ type =C-u M-x dired-sort-toggle-or-edit= (=C-u s= by default) and append
 =--sort=time= at the prompt.  To reverse the order, add the =-r= flag.
 The user option ~dired-listing-switches~ sets your default preference.
 
+There is also "virtual Dired" if you need something that cannot be
+done with Dired ([[#h:d35d8d41-f51b-4139-af8f-9c8cc508e35b][Use dired-virtual-mode for arbitrary file listings]]).
+
 ** How do you handle the last modified case?
 :PROPERTIES:
 :CUSTOM_ID: h:764b5e87-cd22-4937-b5fc-af3892d6b3d8
