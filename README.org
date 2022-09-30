@@ -1205,15 +1205,18 @@ Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
 ** Insert links, but only those missing from current buffer
+:PROPERTIES:
+:CUSTOM_ID: h:0c1fdaab-5a6b-4792-9694-fed53cd042e6
+:END:
 
 #+findex: denote-link-add-missing-links
-As a variation on the =denote-link-add-links= function, one may wish to
+As a variation on the ~denote-link-add-links~ command, one may wish to
 only include 'missing links', i.e. links that are not yet present in
 the current file.
 
-This can be achieved with =denote-link-add-missing-links=. The function
-is similar to =denote-link-add-links=, but will only include links to
-notes that are not yet linked to.
+This can be achieved with ~denote-link-add-missing-links~. The command
+is similar to ~denote-link-add-links~, but will only include links to
+notes that are not yet linked to ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
 
 ** Insert links from marked files in Dired
 :PROPERTIES:
