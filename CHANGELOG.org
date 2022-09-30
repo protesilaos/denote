@@ -9,6 +9,276 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 1.0.0 on 2022-09-30
+:PROPERTIES:
+:CUSTOM_ID: h:053975d7-3fe2-49e5-96a0-336483e5861c
+:END:
+
+This is the first major release of Denote.  A part of the changes
+documented herein is for advanced users or developers who wish to
+extend Denote with their custom code.  Though we first cover what
+applies to everyone.
+
+** Changes for all users
+:PROPERTIES:
+:CUSTOM_ID: h:25692d4f-08da-4938-a81e-54070d91f51a
+:END:
+
++ The custom Org hyperlink type of =denote:= can be visited from
+  outside the ~denote-directory~.  We now provide the necessary glue
+  code that Org needs to store these =denote:= links.  Storing them
+  can be done with an ~org-capture~ template or via the command
+  ~org-store-link~.  Use this to, for example, capture a TODO that
+  references one of your notes.
+
+  =denote:= links work for as long as the referenced file is somewhere
+  in the ~denote-directory~ or one of its subdirectories.
+
+  Thanks to Marc Fargas for the contribution.  Marc did not need to
+  assign copyright to the Free Software Foundation, as the patch was
+  within the ~15 line limit that is permissible.
+
+  The contribution was discussed on the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/patches/35137>.  A prior
+  exchange took place in issue 104 over at the GitHub mirror:
+  <https://github.com/protesilaos/denote/issues/104>.
+
+  Some further tweaks were made to the relevant function.  Thanks to
+  Elias Storms for reporting on the mailing list a bug which revealed
+  a regression I introduced to the Org link storing mechanism:
+  <https://lists.sr.ht/~protesilaos/denote/%3C15D55F4B-64D1-4083-AD5E-B5BACA8F1909%40ap.be%3E>.
+
++ Following from above, the command ~denote-link-find-file~ finds
+  files reliably, regardless of where the link is stored.  All it
+  needs is for the target file to be inside the ~denote-directory~.
+
+  I discovered this while exchanging views with Marc Fargas regarding
+  the aforementioned patch: <https://lists.sr.ht/~protesilaos/denote/patches/35137>.
+
++ The command ~denote-link-buttonize-buffer~, which "buttonizes"
+  =denote:= links in plain text and Markdown files, now performs its
+  task regardless of where the current file is stored.  Those links
+  work for as long as the file they reference is somewhere inside the
+  ~denote-directory~.
+
++ The commands ~denote-link-after-creating~, ~denote-link-or-create~
+  provide a convenience for users who need to create link to notes
+  that may not exist yet.  The idea is that one is expounding on a
+  given topic and wants to create a link to a relevant issue.  They
+  are not sure if they have written anything about it yet, so they
+  invoke the relevant command.  Consult their doc strings or read the
+  manual: <https://protesilaos.com/emacs/denote#h:9e41e7df-2aac-4835-94c5-659b6111e6de>.
+
+  Thanks to user sienic for suggesting the idea and for testing the
+  prototypes.  And thanks to Juanjo Presa for participating in the
+  discussion to share the view that this functionality should be part of
+  denote.el.  This happened in issue 96 over at the GitHub mirror:
+  <https://github.com/protesilaos/denote/issues/96>.
+
++ The command ~denote-open-or-create~ offers the convenience of
+  visiting a file, if it exists, else prompting for its creation.
+  Thanks to Alan Schmitt for the contribution.  The patch was sent on
+  the mailing list: <https://lists.sr.ht/~protesilaos/denote/%3C87fsgvddny.fsf%40protesilaos.com%3E>.
+  It is within the limit of what is allowed without assigning
+  copyright to the Free Software Foundation, though Alan has done the
+  relevant paperwork.
+
++ The manual expands on two sections: (1) Variants of
+  ~denote-open-or-create~, (2) Variants of ~denote-link-or-create~.
+  They show how one can use the above "do or create" commands with
+  different permutations of the Denote prompts for new note creation.
+
++ The manual includes a section titled "Create a note with the
+  region's contents".  Quote:
+
+  #+begin_quote
+  Sometimes it makes sense to gather notes in a single file and later
+  review it to make multiple notes out of it.  With the following
+  code, the user marks a region and then invokes the command
+  ~my-denote-create-new-note-from-region~: it prompts for a title and
+  keywords and then uses the region's contents to fill in the newly
+  created note.
+  #+end_quote
+
+  This is not part of denote.el, though we provide it in the manual
+  for users that may need it.  Thanks to sundar bp for suggesting the
+  idea.  This was done via a private channel and the information is
+  shared with permission.
+
++ The manual has another entry titled "Split an Org subtree into its
+  own note", which is similar to the above idea of using the region's
+  contents but has some extra niceties provided by Org.  Quote:
+
+  #+begin_quote
+  With Org files in particular, it is common to have nested headings which
+  could be split off into their own standalone notes.  In Org parlance an
+  entry with all its subheadings is a "subtree".  With the following code,
+  the user places the point inside the heading they want to split off and
+  invokes the command ~my-denote-split-org-subtree~.  It will create a
+  note using the heading's text and tags for the new file.  The contents
+  of the subtree become the contents of the new note and are removed from
+  the old one.
+  #+end_quote
+
+  Thanks to Sven Seebeck for suggesting the idea and for testing my
+  prototypes.  This information is shared with permission, as it was
+  provided via a private channel.
+
++ The manual describes how a user can leverage the built-in
+  ~dired-virtual-mode~ to perform arbitrary sorting of their list of
+  notes.  It also includes code for Eshell to quickly "export" a
+  command's output into a dedicated buffer (which can then be used to
+  derive a "virtual" Dired).  Thanks to Yi Liu for asking the question
+  that inspired this entry:
+  <https://lists.sr.ht/~protesilaos/denote/%3C1C75FF01-EC76-49DF-9AEB-ED718A2795FF@gmail.com%3E>.
+
++ The ~denote-faces-broken-link~ has been removed.  It was used for
+  Org links.  The idea was to apply a different style if the link was
+  broken.  However, the way fontification works means that there may
+  be a performance penalty as Org tries to check again and again if
+  the link is broken or note.  As =denote:= links are robust (unless
+  the user tries to break them), this penalty is unacceptable.  Thanks
+  to Peter Prevos for reporting the issue and discussing it with me on
+  the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/%3C87k05umyyo.fsf%40prevos.net%3E>.
+
++ The "denote" group in Custom UI buffers now provides a link to the
+  Info manual that is shipped with the package.  To read the manual,
+  evaluate =(info "(denote) Top")=.  Else visit the official web page:
+  <https://protesilaos.com/emacs/denote>.
+
++ Fixed a case where an internal check for a note would throw an error
+  if the buffer was not visiting a file.  Thanks to Hilde Rhyne was
+  the patch: it is below the ~15 line threshold and thus does not
+  require copyright assignment to the Free Software Foundation.  The
+  issue was discussed on the mailing list and was pushed to users as
+  version =0.6.1=:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm035d7nq22.fsf%40disroot.org%3E>.
+
++ When linking to a file that has no front matter, Denote tries to use
+  the TITLE component of the file name (per our file-naming scheme) as
+  the link's descriptive text.  We now make this look a bit better, by
+  capitalising only the first letter while dehyphenating the text,
+  converting =this-is-a-test= to =This is a test=.  Before, we would
+  capitalise all words.  Thanks to Clemens Radermacher for the patch.
+  It was sent via a private channel.  Clemens has assigned copyright
+  to the Free Software Foundation.
+
+** Changes for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:165cd056-5e27-4536-b8ac-57f88c927a43
+:END:
+
+Lots of functions and variables which once were for "private" use (the
+presence of double hyphens in the symbol) are now made public.
+Concretely this means that they no longer have double hyphens in their
+name and we pledge to support them henceforth.  "Support" means that
+we (i) consider them stable, (ii) document them properly, (iii) will
+record any changes made to them such as in a change log, a blog post
+on my website, and via ~make-obsolete~.
+
+The manual provides a complete reference of what is on offer.  The
+section is titled "For developers or advanced users":
+<https://protesilaos.com/emacs/denote#h:c916d8c5-540a-409f-b780-6ccbd90e088e>.
+
+Normally, we do not support private forms and can delete/modify them
+without notice.  However, I decided to write obsoletion aliases for
+all forms I made public or otherwise revised, in an effort not to
+break any existing custom code.  The following table covers all
+obsolete symbols and their new counterparts.  PLEASE UPDATE YOUR CODE
+as those aliases will be removed in the near future.
+
+| Index | Old symbol                                     | New symbol                                        |
+|-------+------------------------------------------------+---------------------------------------------------|
+|     1 | denote--id-format                              | denote-id-format                                  |
+|     2 | denote--id-regexp                              | denote-id-regexp                                  |
+|     3 | denote--title-regexp                           | denote-title-regexp                               |
+|     4 | denote--keywords-regexp                        | denote-keywords-regexp                            |
+|     5 | denote--punctuation-regexp                     | denote-excluded-punctuation-regexp                |
+|     6 | denote-punctuation-excluded-extra-regexp       | denote-excluded-punctuation-extra-regexp          |
+|     7 | denote--sluggify                               | denote-sluggify                                   |
+|     8 | denote--sluggify-and-join                      | denote-sluggify-and-join                          |
+|     9 | denote--sluggify-keywords                      | denote-sluggify-keywords                          |
+|    10 | denote--desluggify                             | denote-desluggify                                 |
+|    11 | denote--only-note-p                            | denote-file-is-note-p                             |
+|    12 | denote--file-has-identifier-p                  | denote-file-has-identifier-p                      |
+|    13 | denote--file-supported-extension-p             | denote-file-has-supported-extension-p             |
+|    14 | denote--writable-and-supported-p               | denote-file-is-writable-and-supported-p           |
+|    15 | denote--file-name-relative-to-denote-directory | denote-get-file-name-relative-to-denote-directory |
+|    16 | denote-link--id-from-string                    | denote-extract-id-from-string                     |
+|    17 | denote--directory-files                        | denote-directory-files                            |
+|    18 | denote--subdirs                                | denote-directory-subdirectories                   |
+|    19 | denote--get-note-path-by-id                    | denote-get-path-by-id                             |
+|    20 | denote--directory-files-matching-regexp        | denote-directory-files-matching-regexp            |
+|    21 | denote--retrieve-read-file-prompt              | denote-file-prompt                                |
+|    22 | denote--extract-keywords-from-path             | denote-extract-keywords-from-path                 |
+|    23 | denote--keywords-prompt                        | denote-keywords-prompt                            |
+|    24 | denote--retrieve-filename-identifier           | denote-retrieve-filename-identifier               |
+|    25 | denote--file-name-id                           | denote-retrieve-or-create-file-identifier         |
+|    26 | denote--retrieve-filename-title                | denote-retrieve-filename-title                    |
+|    27 | denote--retrieve-title-value                   | denote-retrieve-title-value                       |
+|    28 | denote--retrieve-title-line                    | denote-retrieve-title-line                        |
+|    29 | denote--retrieve-keywords-value                | denote-retrieve-keywords-value                    |
+|    30 | denote--retrieve-keywords-line                 | denote-retrieve-keywords-line                     |
+|    31 | denote--format-file                            | denote-format-file-name                           |
+|    32 | denote--barf-duplicate-id                      | denote-barf-duplicate-id                          |
+|    33 | denote--title-prompt                           | denote-title-prompt                               |
+|    34 | denote--file-type-prompt                       | denote-file-type-prompt                           |
+|    35 | denote--date-prompt                            | denote-date-prompt                                |
+|    36 | denote--subdirs-prompt                         | denote-subdirectory-prompt                        |
+|    37 | denote--template-prompt                        | denote-template-prompt                            |
+|    38 | denote--filetype-heuristics                    | denote-filetype-heuristics                        |
+|    39 | denote--rename-file                            | denote-rename-file-and-buffer                     |
+|    40 | denote--rename-file-prompt                     | denote-rename-file-prompt                         |
+
+If you are writing code that extends Denote and feel that something is
+either missing or has remained private, please contact us on the
+mailing list, the GitHub/GitLab mirror, or send me an email directly.
+I always respond in a timely fashion.
+
+** Open to everyone
+:PROPERTIES:
+:CUSTOM_ID: h:27a391cf-8d5e-4d19-942f-46fc52dea80c
+:END:
+
+The most common feedback I get about Denote is that its documentation
+is good.  As you can tell from these change logs, the plan is to
+continue on this path.
+
+Please note that the communication channels for Denote (mailing list,
+mirrors, my personal email) are open to users of all levels.  Do not
+hesitate to contact us/me.
+
+Thanks again to everyone for their contributions, direct or indirect,
+either in the form of code or the discussion of ideas.  Quoting from
+the "Acknowledgements" section of the manual (all my packages have
+such a section):
+
+#+begin_quote
+Denote is meant to be a collective effort.  Every bit of help matters.
+
++ Author/maintainer :: Protesilaos Stavrou.
+
++ Contributions to code or the manual :: Abin Simon, Alan Schmitt,
+  Benjamin Kästner, Clemens Radermacher, Colin McLear, Damien Cassou,
+  Eshel Yaron, Hilde Rhyne, Jack Baty, Jean-Philippe Gagné Guay, Jürgen
+  Hötzel, Kaushal Modi, Kyle Meyer, Marc Fargas, Peter Prevos, Philip
+  Kaludercic, Quiliro Ordóñez, Stefan Monnier.
+
++ Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
+  Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
+  Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal
+  Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
+  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot, atanasj,
+  hpgisler, pRot0ta1p, sienic, sundar bp.
+
+Special thanks to Peter Povinec who helped refine the file-naming
+scheme, which is the cornerstone of this project.
+
+Special thanks to Jean-Philippe Gagné Guay for the numerous
+contributions to the code base.
+#+end_quote
+
 * Version 0.6.0 on 2022-08-31
 :PROPERTIES:
 :CUSTOM_ID: h:50aba79a-d702-42b4-a2a5-7fa29033f904

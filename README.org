@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 0.6.0
-#+macro:                 release-date 2022-08-31
-#+macro:                 development-version 1.0.0-dev
+#+macro:                 stable-version 1.0.0
+#+macro:                 release-date 2022-09-30
+#+macro:                 development-version 1.1.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -1238,9 +1238,6 @@ for our purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 :CUSTOM_ID: h:9e41e7df-2aac-4835-94c5-659b6111e6de
 :END:
 
-[ The ~denote-link-after-creating~ and ~denote-link-or-create~ are part
-  of {{{development-version}}}. ]
-
 In one's note-taking workflow, there may come a point where they are
 expounding on a certain topic but have an idea about another subject
 they would like to link to ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).  The user can always rely on
@@ -1955,8 +1952,6 @@ Git).
 :CUSTOM_ID: h:ad91ca39-cf10-4e16-b224-fdf78f093883
 :END:
 
-[ Part of {{{development-version}}} ]
-
 #+findex: denote-open-or-create
 The command ~denote-open-or-create~ prompts to visit a file in the
 ~denote-directory~.  If the user input does not have any matches,
@@ -2023,8 +2018,6 @@ For templates, refer to `denote-templates'."
 :PROPERTIES:
 :CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
 :END:
-
-[ Part of {{{development-version}}} ]
 
 #+findex: denote-link-or-create
 The command ~denote-link-or-create~ uses ~denote-link~ on a =TARGET=
@@ -2261,8 +2254,6 @@ Everything is in place to set up the package.
 :PROPERTIES:
 :CUSTOM_ID: h:c916d8c5-540a-409f-b780-6ccbd90e088e
 :END:
-
-[ Part of {{{development-version}}} ]
 
 Denote is in a stable state and can be relied upon as the basis for
 custom extensions.  Further below is a list with the functions or
