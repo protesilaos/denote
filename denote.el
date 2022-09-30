@@ -2539,8 +2539,7 @@ inserts links with just the identifier."
               (beg (point)))
         (progn
           (insert (denote-link--prepare-links final-files current-file id-only))
-          (unless (derived-mode-p 'org-mode)
-            (denote-link-buttonize-buffer beg (point))))
+          (denote-link-buttonize-buffer beg (point)))
       (user-error "No links matching `%s' that aren't yet present in the current buffer." regexp))))
 
 ;;;;; Links from Dired marks
