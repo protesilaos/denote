@@ -2363,11 +2363,17 @@ file's title.  This has the same meaning as in `denote-link'."
 (defun denote-link-buttonize-buffer (&optional beg end)
   "Make denote: links actionable buttons in the current buffer.
 
-Add this to `find-file-hook'.  It will only work with Denote
-notes inside the variable `denote-directory' and will not do
-anything in `org-mode' buffers, as buttons already work there.
-If you do not use Markdown or plain text, then you do not need
-this.
+Buttonization applies to the plain text and Markdown file types,
+per the user option `denote-file-types'.  It will not do anything
+in `org-mode' buffers, as buttons already work there.  If you do
+not use Markdown or plain text, then you do not need this.
+
+Links work when they point to a file inside the variable
+`denote-directory'.
+
+To buttonize links automatically add this function to the
+`find-file-hook'.  Or call it interactively for on-demand
+buttonization.
 
 When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
