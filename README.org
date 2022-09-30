@@ -1204,6 +1204,17 @@ above is for interactive usage.
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
+** Insert links, but only those missing from current buffer
+
+#+findex: denote-link-add-missing-links
+As a variation on the =denote-link-add-links= function, one may wish to
+only include 'missing links', i.e. links that are not yet present in
+the current file.
+
+This can be achieved with =denote-link-add-missing-links=. The function
+is similar to =denote-link-add-links=, but will only include links to
+notes that are not yet linked to.
+
 ** Insert links from marked files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:9cbb692e-5d8a-44a6-9193-899a07872a07
