@@ -2280,6 +2280,35 @@ By contradistinction, a "private" form is declared with two hyphens in
 its symbol such as ~denote--file-extension~.  Do not use those as we
 might change them without further notice.
 
+#+vindex: denote-id-format
++ Variable ~denote-id-format~ :: Format of ID prefix of a note's
+  filename.  The note's ID is derived from the date and time of its
+  creation ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+#+vindex: denote-id-regexp
++ Variable ~denote-id-regexp~ :: Regular expression to match
+  ~denote-id-format~.
+
+#+vindex: denote-title-regexp
++ Variable ~denote-title-regexp~ :: Regular expression to match the
+  TITLE field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+#+vindex: denote-keywords-regexp
++ Variable ~denote-keywords-regexp~ :: Regular expression to match the
+  KEYWORDS field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+#+vindex: denote-excluded-punctuation-regexp
++ Variable ~denote-excluded-punctuation-regexp~ :: Punctionation that
+  is removed from file names.  We consider those characters illegal
+  for our purposes.
+
+#+vindex: denote-excluded-punctuation-extra-regexp
++ Variable ~denote-excluded-punctuation-extra-regexp~ :: Additional
+  punctuation that is removed from file names.  This variable is for
+  advanced users who need to extend the ~denote-excluded-punctuation-regexp~.
+  Once we have a better understanding of what we should be omitting,
+  we will update things accordingly.
+
 #+findex: denote-file-is-note-p
 + Function ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an
   actual Denote note.  For our purposes, a note must not be a

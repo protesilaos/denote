@@ -359,26 +359,57 @@ command."
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
-(defconst denote--id-format "%Y%m%dT%H%M%S"
-  "Format of ID prefix of a note's filename.")
+(define-obsolete-variable-alias
+  'denote--id-format
+  'denote-id-format
+  "1.0.0")
 
-(defconst denote--id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
-  "Regular expression to match `denote--id-format'.")
+(defconst denote-id-format "%Y%m%dT%H%M%S"
+  "Format of ID prefix of a note's filename.
+The note's ID is derived from the date and time of its creation.")
 
-(defconst denote--title-regexp "--\\([[:alnum:][:nonascii:]-]*\\)"
-  "Regular expression to match the title field.")
+(define-obsolete-variable-alias
+  'denote--id-regexp
+  'denote-id-regexp
+  "1.0.0")
 
-(defconst denote--keywords-regexp "__\\([[:alnum:][:nonascii:]_-]*\\)"
-  "Regular expression to match keywords.")
+(defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
+  "Regular expression to match `denote-id-format'.")
 
-(defconst denote--punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
+(define-obsolete-variable-alias
+  'denote--title-regexp
+  'denote-title-regexp
+  "1.0.0")
+
+(defconst denote-title-regexp "--\\([[:alnum:][:nonascii:]-]*\\)"
+  "Regular expression to match the TITLE field in a file name.")
+
+(define-obsolete-variable-alias
+  'denote--keywords-regexp
+  'denote-keywords-regexp
+  "1.0.0")
+
+(defconst denote-keywords-regexp "__\\([[:alnum:][:nonascii:]_-]*\\)"
+  "Regular expression to match the KEYWORDS field in a file name.")
+
+(define-obsolete-variable-alias
+  'denote--punctuation-regexp
+  'denote-excluded-punctuation-regexp
+  "1.0.0")
+
+(defconst denote-excluded-punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
   "Punctionation that is removed from file names.
 We consider those characters illegal for our purposes.")
 
-(defvar denote-punctuation-excluded-extra-regexp nil
+(define-obsolete-variable-alias
+  'denote-punctuation-excluded-extra-regexp
+  'denote-excluded-punctuation-extra-regexp
+  "1.0.0")
+
+(defvar denote-excluded-punctuation-extra-regexp nil
   "Additional punctuation that is removed from file names.
 This variable is for advanced users who need to extend the
-`denote--punctuation-regexp'.  Once we have a better
+`denote-excluded-punctuation-regexp'.  Once we have a better
 understanding of what we should be omitting, we will update
 things accordingly.")
 
@@ -403,7 +434,8 @@ things accordingly.")
 (defun denote--slug-no-punct (str)
   "Convert STR to a file name slug."
   (replace-regexp-in-string
-   (concat denote--punctuation-regexp denote-punctuation-excluded-extra-regexp)
+   (concat denote-excluded-punctuation-regexp
+           denote-excluded-punctuation-extra-regexp)
    "" str))
 
 (defun denote--slug-hyphenate (str)
@@ -474,7 +506,7 @@ and use one of the extensions implied by `denote-file-type'."
     (and (not (file-directory-p file))
          (file-regular-p file)
          (string-prefix-p (denote-directory) (expand-file-name file))
-         (string-match-p (concat "\\`" denote--id-regexp) file-name)
+         (string-match-p (concat "\\`" denote-id-regexp) file-name)
          (denote-file-has-supported-extension-p file))))
 
 (define-obsolete-function-alias
@@ -485,7 +517,7 @@ and use one of the extensions implied by `denote-file-type'."
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
   (let ((file-name (file-name-nondirectory file)))
-    (string-match-p (concat "\\`" denote--id-regexp) file-name)))
+    (string-match-p (concat "\\`" denote-id-regexp) file-name)))
 
 (define-obsolete-function-alias
   'denote--file-has-identifier-p
@@ -541,7 +573,7 @@ FILE must be an absolute path."
 
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
-  (when (string-match denote--id-regexp string)
+  (when (string-match denote-id-regexp string)
     (match-string 0 string)))
 
 (define-obsolete-function-alias
@@ -634,7 +666,7 @@ with an underscore.
 
 If PATH has no such keywords, return nil."
   (let* ((file-name (file-name-nondirectory path))
-         (kws (when (string-match denote--keywords-regexp file-name)
+         (kws (when (string-match denote-keywords-regexp file-name)
                 (match-string-no-properties 1 file-name))))
     (when kws
       (split-string kws "_"))))
@@ -962,7 +994,7 @@ To only return an existing identifier or create a new one, refer
 to the function `denote-retrieve-or-create-file-identifier'."
   (if (denote-file-has-identifier-p file)
       (progn
-        (string-match denote--id-regexp file)
+        (string-match denote-id-regexp file)
         (match-string 0 file))
     (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
@@ -976,10 +1008,10 @@ to the function `denote-retrieve-or-create-file-identifier'."
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
   (cond
-   ((string-match denote--id-regexp file)
+   ((string-match denote-id-regexp file)
     (substring file (match-beginning 0) (match-end 0)))
    ((denote--file-attributes-time file))
-   (t (format-time-string denote--id-format))))
+   (t (format-time-string denote-id-format))))
 
 (define-obsolete-function-alias
   'denote--file-name-id
@@ -991,7 +1023,7 @@ To only return an existing identifier, refer to the function
 Run `denote-desluggify' on title if the extraction is sucessful."
   (if-let* (((file-exists-p file))
             ((denote-file-has-identifier-p file))
-            ((string-match denote--title-regexp file))
+            ((string-match denote-title-regexp file))
             (title (match-string 1 file)))
       (denote-desluggify title)
     (file-name-base file)))
@@ -1175,7 +1207,7 @@ and TEMPLATE should be valid for note creation."
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date file-type) keywords
-                  (format-time-string denote--id-format date)
+                  (format-time-string denote-id-format date)
                   file-type)))
     (with-current-buffer buffer
       (insert header)
@@ -1301,7 +1333,7 @@ When called from Lisp, all arguments are optional.
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
-         (id (format-time-string denote--id-format date))
+         (id (format-time-string denote-id-format date))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
                       (denote-directory)))
@@ -1546,7 +1578,7 @@ the file type is assumed to be the first of `denote-file-types'."
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
   (format-time-string
-   denote--id-format
+   denote-id-format
    (file-attribute-modification-time (file-attributes file))))
 
 (defun denote-update-dired-buffers ()
@@ -2139,13 +2171,13 @@ and/or the documentation string of `display-buffer'."
   "Format of identifier-only link to note.")
 
 (defconst denote-link--regexp-org
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]" "\\[.*?]]"))
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\[.*?]]"))
 
 (defconst denote-link--regexp-markdown
-  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote--id-regexp "\\)" ")"))
+  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")"))
 
 (defconst denote-link--regexp-plain
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote--id-regexp "\\)" "]]"))
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]]"))
 
 (defun denote-link--file-type-format (current-file id-only)
   "Return link format based on CURRENT-FILE format.
@@ -2344,7 +2376,7 @@ positions, limit the process to the region in-between."
              (denote-file-has-identifier-p (buffer-file-name)))
     (save-excursion
       (goto-char (or beg (point-min)))
-      (while (re-search-forward denote--id-regexp end t)
+      (while (re-search-forward denote-id-regexp end t)
         (when-let ((string (denote-link--link-at-point-string))
                    (beg (match-beginning 0))
                    (end (match-end 0)))
@@ -2672,11 +2704,11 @@ Consult the manual for template samples."
          (keywords (denote-keywords-prompt))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
-                        (format-time-string denote--id-format nil) 'org)))
+                        (format-time-string denote-id-format nil) 'org)))
     (setq denote-last-path
           (denote--path title keywords
                         (file-name-as-directory (denote-directory))
-                        (format-time-string denote--id-format) 'org))
+                        (format-time-string denote-id-format) 'org))
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
