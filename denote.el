@@ -2534,9 +2534,10 @@ inserts links with just the identifier."
          (current-id (denote-link--file-type-regexp current-file))
          (linked-files (denote-link--expand-identifiers current-id)))
     (if-let* ((found-files (delete current-file
-                                  (denote-directory-files-matching-regexp regexp)))
-              (final-files (seq-difference found-files linked-files)))
-        (let ((beg (point)))
+                                   (denote-directory-files-matching-regexp regexp)))
+              (final-files (seq-difference found-files linked-files))
+              (beg (point)))
+        (progn
           (insert (denote-link--prepare-links final-files current-file id-only))
           (unless (derived-mode-p 'org-mode)
             (denote-link-buttonize-buffer beg (point))))
