@@ -1407,6 +1407,10 @@ the =embark= package will be able to work its magic such as in exporting
 the list into a filtered Dired buffer (i.e. a familiar Dired listing
 with only the files of the current minibuffer session).
 
+#+findex: denote-link-find-backlink
+To visit backlinks to the current note via the minibuffer, use
+~denote-link-find-backlink~.
+
 ** Miscellaneous information about links
 :PROPERTIES:
 :CUSTOM_ID: h:dd8f2231-8d77-49b9-acc4-af525c68b271

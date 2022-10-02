@@ -2269,6 +2269,20 @@ format is always [[denote:IDENTIFIER]]."
     (user-error "No links found in the current buffer")))
 
 ;;;###autoload
+(defun denote-link-find-backlink ()
+  "Use minibuffer completion to visit backlink to current file.
+
+Like `denote-link-find-file', but select backlink to follow."
+  (interactive)
+  (when-let* ((file (buffer-file-name))
+              (id (denote-retrieve-filename-identifier file))
+              (files (denote--retrieve-process-grep id)))
+    (find-file
+      (denote-get-path-by-id
+        (denote-extract-id-from-string
+          (denote-link--find-file-prompt files))))))
+
+;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
   "Create new note in the background and link to it directly.
 
