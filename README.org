@@ -2813,7 +2813,7 @@ should not be mutually exclusive.
 
 If I missed something, please let me know.
 
-** Alternative ideas wih Emacs and further reading
+** Alternative ideas with Emacs and further reading
 :PROPERTIES:
 :CUSTOM_ID: h:188c0986-f2fa-444f-b493-5429356e75cf
 :END:
@@ -3108,10 +3108,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
-  Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo Presa, Kaushal
-  Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
-  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot, atanasj,
-  hpgisler, pRot0ta1p, sienic, sundar bp.
+  Federico Stilman, Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo
+  Presa, Kaushal Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos,
+  Shreyas Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot,
+  atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
