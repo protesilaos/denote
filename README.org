@@ -1353,6 +1353,10 @@ certain executables to the relevant environment variable.
 
 [[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
 
+Backlinks can also be visited by using minibuffer completion.  The
+command is ~denote-link-find-backlink~, which is part of
+{{{development-version}}} ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
+
 ** Writing metanotes
 :PROPERTIES:
 :CUSTOM_ID: h:6060a7e6-f179-4d42-a9de-a9968aaebecc
@@ -1409,7 +1413,10 @@ with only the files of the current minibuffer session).
 
 #+findex: denote-link-find-backlink
 To visit backlinks to the current note via the minibuffer, use
-~denote-link-find-backlink~.
+~denote-link-find-backlink~.  This is an alternative to placing
+backlinks in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+
+[ The ~denote-link-find-backlink~ is part of {{{development-version}}}. ]
 
 ** Miscellaneous information about links
 :PROPERTIES:
