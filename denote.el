@@ -2252,7 +2252,7 @@ format is always [[denote:IDENTIFIER]]."
   (let ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory
                             files)))
     (completing-read
-     "Find linked file "
+     "Find linked file: "
      (denote--completion-table 'file file-names)
      nil t nil 'denote-link--find-file-history)))
 
