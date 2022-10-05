@@ -645,9 +645,10 @@ value, as explained in its doc string."
   'denote-directory-files-matching-regexp
   "1.0.0")
 
-(defun denote-file-prompt ()
-  "Prompt for file with identifier in variable `denote-directory'."
-  (read-file-name "Select note: " (denote-directory) nil nil nil
+(defun denote-file-prompt (&optional initial-text)
+  "Prompt for file with identifier in variable `denote-directory'.
+With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
+  (read-file-name "Select note: " (denote-directory) nil nil initial-text
                   (lambda (f)
                     (or (denote-file-has-identifier-p f)
                         (file-directory-p f)))))
