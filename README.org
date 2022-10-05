@@ -2472,8 +2472,9 @@ might change them without further notice.
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
-  variable ~denote-directory~.  With optional =INITIAL-TEXT= use it to
-  prepopulate the minibuffer.
+  variable ~denote-directory~.  With optional =INITIAL-TEXT=, use it
+  to prepopulate the minibuffer.  [ The optional =INITIAL-TEXT= is
+  part of {{{development-version}}}. ]
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more
