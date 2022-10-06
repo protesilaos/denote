@@ -2649,6 +2649,7 @@ and the identifier."
       (concat path "::" search))
      (path))))
 
+;;;###autoload
 (defun denote-link-ol-follow (link)
   "Find file of type `denote:' matching LINK.
 LINK is the identifier of the note, optionally followed by a
@@ -2661,6 +2662,7 @@ file."
    (denote-link--ol-resolve-link-to-target link)
    nil))
 
+;;;###autoload
 (defun denote-link-ol-complete ()
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
@@ -2672,6 +2674,7 @@ interface by first selecting the `denote:' hyperlink type."
 (declare-function org-link-store-props "ol.el" (&rest plist))
 (defvar org-store-link-plist)
 
+;;;###autoload
 (defun denote-link-ol-store ()
   "Handler for `org-store-link' adding support for denote: links."
   (when-let* ((file (buffer-file-name))
@@ -2685,6 +2688,7 @@ interface by first selecting the `denote:' hyperlink type."
      :link (concat "denote:" file-id))
   org-store-link-plist))
 
+;;;###autoload
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
 The LINK, DESCRIPTION, and FORMAT are handled by the export
