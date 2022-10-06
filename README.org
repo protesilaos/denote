@@ -1316,6 +1316,8 @@ Backlinks to "On being honest" (20220614T130812)
 20220616T182958--not-feeling-butterflies-in-your-stomach__journal.txt
 #+end_example
 
+[[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]
+
 #+vindex: denote-link-fontify-backlinks
 The backlinks' buffer is fontified by default, though the user has
 access to the ~denote-link-fontify-backlinks~ option to disable this
@@ -3072,6 +3074,45 @@ In short: let Denote (or equivalent) create notes and link between them,
 the file manager organise and provide access to files, search programs
 deal with searching and narrowing, and version control software handle
 the tracking of changes.
+
+** Speed up backlinks' buffer creation?
+:PROPERTIES:
+:CUSTOM_ID: h:893eec49-d7be-4603-bcff-fcc247244011
+:END:
+
+Denotes leverages the built-in =xref= library to search for the
+identifier of the current file and return any links to it.  For users
+of Emacs version 28 or higher, there exists a user option to specify
+the program that performs this search: ~xref-search-program~.  The
+default is =grep=, which can be slow, though one may opt for =ugrep=,
+=ripgrep=, or even specify something else (read the doc string of that
+user option for the details).
+
+Try either for these for better results:
+
+#+begin_src emacs-lisp
+(setq xref-search-program 'ripgrep)
+
+;; OR
+
+(setq xref-search-program 'ugrep)
+#+end_src
+
+To use whatever executable is available on your system, use something
+like this:
+
+#+begin_src emacs-lisp
+;; Prefer ripgrep, then ugrep, and fall back to regular grep.
+(setq xref-search-program
+      (cond
+       ((or (executable-find "ripgrep")
+            (executable-find "rg"))
+        'ripgrep)
+       ((executable-find "ugrep")
+        'ugrep)
+       (t
+        'grep)))
+#+end_src
 
 ** Why do I get "Search failed with status 1" when I search for backlinks?
 :PROPERTIES:
