@@ -2443,7 +2443,8 @@ Expand `denote-link-backlinks-display-buffer-action'."
   "Create backlinks' buffer for ID including FILES.
 Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
-        (buf (format "*denote-backlinks to %s*" id)))
+        (buf (format "*denote-backlinks to %s*" id))
+        (file (buffer-file-name)))
     (with-current-buffer (get-buffer-create buf)
       (setq-local default-directory (denote-directory))
       (erase-buffer)
@@ -2460,7 +2461,12 @@ Use optional TITLE for a prettier heading."
             files)
       (goto-char (point-min))
       (when denote-link-fontify-backlinks
-        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
+        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
+      (setq-local revert-buffer-function
+                  (lambda (_ignore-auto _noconfirm)
+                    (when-let ((buffer-file-name file)
+                               (files (denote--retrieve-process-grep id)))
+                      (denote-link--prepare-backlinks id files title)))))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload
