@@ -1857,9 +1857,9 @@ the requisite front matter.  It is thus implied that the FILE has
 a file type that is supported by Denote, per `denote-file-type'.
 
 Unless AUTO-CONFIRM is non-nil, ask for confirmation, showing the
-difference between the old and the new file names. Refrain from
-performing the operation if the buffer has unsaved changes, unless
-AUTO-CONFIRM is non-nil: then save the buffer first.
+difference between the old and the new file names.  Refrain from
+performing the operation if the buffer has unsaved changes,
+unless AUTO-CONFIRM is non-nil: then save the buffer first.
 
 Never modify the identifier of the FILE, if any, even if it is
 edited in the front matter.  Denote considers the file name to be
