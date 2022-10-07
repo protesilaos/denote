@@ -1865,7 +1865,7 @@ Never modify the identifier of the FILE, if any, even if it is
 edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like."
-  (interactive (list (buffer-file-name)))
+  (interactive (list (buffer-file-name) current-prefix-arg))
   (when (buffer-modified-p)
     (if (or auto-confirm
             (y-or-n-p "Would you like to save the buffer?"))
