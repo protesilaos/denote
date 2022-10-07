@@ -733,6 +733,10 @@ updates the file name to:
 The renaming is subject to a "yes or no" prompt that shows the old and
 new names, just so the user is certain about the change.
 
+If called interactively with a prefix argument =C-u= or from Lisp with
+a non-nil =AUTO-CONFIRM= argument, this "yes or no" prompt is skipped.
+[ This is part of {{{development-version}}}. ]
+
 The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the
 source of truth in this case, to avoid potential breakage with typos and
