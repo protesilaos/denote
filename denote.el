@@ -1849,16 +1849,17 @@ The operation does the following:
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
-(defun denote-rename-file-using-front-matter (file)
+(defun denote-rename-file-using-front-matter (file &optional auto-confirm)
   "Rename FILE using its front matter as input.
 When called interactively, FILE is the return value of the
 function `buffer-file-name' which is subsequently inspected for
 the requisite front matter.  It is thus implied that the FILE has
 a file type that is supported by Denote, per `denote-file-type'.
 
-Ask for confirmation, showing the difference between the old and
-the new file names.  Refrain from performing the operation if the
-buffer has unsaved changes.
+Unless AUTO-CONFIRM is non-nil, ask for confirmation, showing the
+difference between the old and the new file names. Refrain from
+performing the operation if the buffer has unsaved changes, unless
+AUTO-CONFIRM is non-nil: then save the buffer first.
 
 Never modify the identifier of the FILE, if any, even if it is
 edited in the front matter.  Denote considers the file name to be
@@ -1866,7 +1867,8 @@ the source of truth in this case to avoid potential breakage with
 typos and the like."
   (interactive (list (buffer-file-name)))
   (when (buffer-modified-p)
-    (if (y-or-n-p "Would you like to save the buffer?")
+    (if (or auto-confirm
+            (y-or-n-p "Would you like to save the buffer?"))
         (save-buffer)
       (user-error "Save buffer before proceeding")))
   (unless (denote-file-is-writable-and-supported-p file)
@@ -1879,7 +1881,8 @@ typos and the like."
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
                        dir id keywords (denote-sluggify title) extension)))
-      (when (denote-rename-file-prompt file new-name)
+    (when (or auto-confirm
+              (denote-rename-file-prompt file new-name))
         (denote-rename-file-and-buffer file new-name)
         (denote-update-dired-buffers))
     (user-error "No front matter for title and/or keywords")))
