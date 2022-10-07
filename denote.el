@@ -516,8 +516,9 @@ and use one of the extensions implied by `denote-file-type'."
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
-  (let ((file-name (file-name-nondirectory file)))
-    (string-match-p (concat "\\`" denote-id-regexp) file-name)))
+  (when file
+    (string-match-p (concat "\\`" denote-id-regexp)
+                    (file-name-nondirectory file))))
 
 (define-obsolete-function-alias
   'denote--file-has-identifier-p
