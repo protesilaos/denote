@@ -2241,10 +2241,13 @@ title."
 
 (defun denote-link--format-link (file pattern)
   "Prepare link to FILE using PATTERN."
-  (let* ((file-id (denote-retrieve-filename-identifier file))
+  (let* ((region-text (when (region-active-p)
+                        (buffer-substring (region-beginning) (region-end))))
+         (file-id (denote-retrieve-filename-identifier file))
          (file-type (denote-filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
-                       (denote--retrieve-title-or-filename file file-type))))
+                       (or region-text
+                           (denote--retrieve-title-or-filename file file-type)))))
     (format pattern file-id file-title)))
 
 ;;;###autoload
@@ -2252,14 +2255,17 @@ title."
   "Create link to TARGET note in variable `denote-directory'.
 With optional ID-ONLY, such as a universal prefix
 argument (\\[universal-argument]), insert links with just the
-identifier and no further description.  In this case, the link
-format is always [[denote:IDENTIFIER]]."
+identifier and no further description. In this case, the link
+format is always [[denote:IDENTIFIER]]. If region is active,
+region is replaced with the link while using the region as link
+title."
   (interactive (list (denote-file-prompt) current-prefix-arg))
-  (let ((beg (point)))
-    (insert
-     (denote-link--format-link
-      target
-      (denote-link--file-type-format (buffer-file-name) id-only)))
+  (let ((beg (point))
+        (link (denote-link--format-link
+               target
+               (denote-link--file-type-format (buffer-file-name) id-only))))
+    (when (region-active-p) (delete-region (region-beginning) (region-end)))
+    (insert link)
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
