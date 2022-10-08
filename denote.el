@@ -995,8 +995,8 @@ contain the newline."
 
 (defun denote-retrieve-filename-identifier (file)
   "Extract identifier from FILE name.
-To only return an existing identifier or create a new one, refer
-to the function `denote-retrieve-or-create-file-identifier'."
+To return an existing identifier or create a new one, refer to
+the function `denote-retrieve-or-create-file-identifier'."
   (if (denote-file-has-identifier-p file)
       (progn
         (string-match denote-id-regexp file)

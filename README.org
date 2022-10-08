@@ -2445,8 +2445,8 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
-  from =FILE= name.  To only return an existing identifier or create a
-  new one, refer to the ~denote-retrieve-or-create-file-identifier~
+  from =FILE= name.  To return an existing identifier or create a new
+  one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
 #+findex: denote-retrieve-or-create-file-identifier
