@@ -1008,13 +1008,28 @@ the function `denote-retrieve-or-create-file-identifier'."
   'denote-retrieve-filename-identifier
   "1.0.0")
 
-(defun denote-retrieve-or-create-file-identifier (file)
-  "Return FILE identifier, else generate one.
+(defun denote-retrieve-or-create-file-identifier (file &optional date)
+  "Return FILE identifier, generating one if appropriate.
+
+The conditions are as follows:
+
+- If FILE has an identifier, return it.
+
+- If FILE does not have an identifier and optional DATE is
+  non-nil, invoke `denote-prompt-for-date-return-id'.
+
+- If FILE does not have an identifier and DATE is nil, use the
+  file attributes to determine the last modified date and format
+  it as an identifier.
+
+- As a fallback, derive an identifier from the current time.
+
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
   (cond
    ((string-match denote-id-regexp file)
     (substring file (match-beginning 0) (match-end 0)))
+   (date (denote-prompt-for-date-return-id))
    ((denote--file-attributes-time file))
    (t (format-time-string denote-id-format))))
 

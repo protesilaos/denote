@@ -2449,11 +2449,27 @@ might change them without further notice.
   one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
+[ The ~denote-retrieve-or-create-file-identifier~ accepts an optional
+  =DATE= argument as part of {{{development-version}}}. ]
+
 #+findex: denote-retrieve-or-create-file-identifier
-+ Function ~denote-retrieve-or-create-file-identifier~ :: Extract
-  identifier from =FILE= name.  To only return an existing identifier
-  or create a new one, refer to the function
-  ~denote-retrieve-or-create-file-identifier~.
++ Function ~denote-retrieve-or-create-file-identifier~ :: Return
+  =FILE= identifier, generating one if appropriate.  The conditions
+  are as follows:
+
+  - If =FILE= has an identifier, return it.
+
+  - If =FILE= does not have an identifier and optional =DATE= is
+    non-nil, invoke ~denote-prompt-for-date-return-id~.
+
+  - If =FILE= does not have an identifier and DATE is nil, use the
+    file attributes to determine the last modified date and format it
+    as an identifier.
+
+  - As a fallback, derive an identifier from the current time.
+
+  To only return an existing identifier, refer to the function
+  ~denote-retrieve-filename-identifier~.
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ :: Extract title from
