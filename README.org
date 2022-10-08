@@ -602,6 +602,9 @@ all the mechanisms to facilitate the task of renaming them.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
+[ The ~denote-rename-file~ accepts an optional =DATE= argument as part
+  of {{{development-version}}}. ]
+
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate.
@@ -609,11 +612,21 @@ front matter if appropriate.
 If in Dired, the =FILE= to be renamed is the one at point, else the
 command prompts with minibuffer completion for a target file.
 
-If =FILE= has a Denote-compliant identifier, the command retains it
-while updating the =TITLE= and =KEYWORDS= fields of the file name.
-Otherwise it creates an identifier based on the file's attribute of last
-modification time.  If such attribute cannot be found, the identifier
-falls back to the current date and time.
+If =FILE= has a Denote-compliant identifier, retain it while updating
+the =TITLE= and =KEYWORDS= fields of the file name.  Else create an
+identifier based on the following conditions:
+
+- If =FILE= does not have an identifier and optional =DATE= is non-nil
+  (such as with a prefix argument), invoke the function
+  ~denote-prompt-for-date-return-id~.  It prompts for a date and uses
+  it to derive the identifier.
+
+- If =FILE= does not have an identifier and optional =DATE= is nil
+  (this is the case without a prefix argument), use the file
+  attributes to determine the last modified date and format it as an
+  identifier.
+
+- As a fallback, derive an identifier from the current time.
 
 The default =TITLE= is retrieved from a line starting with a title field
 in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
@@ -3179,10 +3192,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
-  Federico Stilman, Frank Ehmsen, Hanspeter Gisler, Jack Baty, Juanjo
-  Presa, Kaushal Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos,
-  Shreyas Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot,
-  atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
+  Federico Stilman, Florian, Frank Ehmsen, Hanspeter Gisler, Jack
+  Baty, Juanjo Presa, Kaushal Modi, M. Hadi Timachi, Paul van Gelder,
+  Peter Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck, Taoufik,
+  Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

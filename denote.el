@@ -1743,7 +1743,7 @@ Throw error is FILE is not regular, else return FILE."
   "1.0.0")
 
 ;;;###autoload
-(defun denote-rename-file (file title keywords)
+(defun denote-rename-file (file title keywords &optional date)
   "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
@@ -1751,9 +1751,19 @@ with minibuffer completion for one.
 
 If FILE has a Denote-compliant identifier, retain it while
 updating the TITLE and KEYWORDS fields of the file name.  Else
-create an identifier based on the file's attribute of last
-modification time.  If such attribute cannot be found, the
-identifier falls back to the `current-time'.
+create an identifier based on the following conditions:
+
+- If FILE does not have an identifier and optional DATE is
+  non-nil (such as with a prefix argument), invoke the function
+  `denote-prompt-for-date-return-id'.  It prompts for a date and
+  uses it to derive the identifier.
+
+- If FILE does not have an identifier and optional DATE is
+  nil (this is the case without a prefix argument), use the file
+  attributes to determine the last modified date and format it as
+  an identifier.
+
+- As a fallback, derive an identifier from the current time.
 
 The default TITLE is retrieved from a line starting with a title
 field in the file's contents, depending on the given file
@@ -1805,9 +1815,10 @@ files)."
       file
       (denote-title-prompt
        (denote--retrieve-title-or-filename file file-type))
-      (denote-keywords-prompt))))
+      (denote-keywords-prompt)
+      current-prefix-arg)))
   (let* ((dir (file-name-directory file))
-         (id (denote-retrieve-or-create-file-identifier file))
+         (id (denote-retrieve-or-create-file-identifier file date))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name
