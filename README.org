@@ -2505,6 +2505,13 @@ might change them without further notice.
   ~denote-date-prompt-use-org-read-date~ is non-nil.  It requires Org
   ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
 
+[ The ~denote-prompt-for-date-return-id~ is part of
+  {{{development-version}}}. ]
+
+#+findex: denote-prompt-for-date-return-id
++ Function ~denote-prompt-for-date-return-id~ :: Use
+  ~denote-date-prompt~ and return it as ~denote-id-format~.
+
 #+findex: denote-template-prompt
 + Function ~denote-template-prompt~ :: Prompt for template key in
   ~denote-templates~ and return its value.

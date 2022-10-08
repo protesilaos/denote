@@ -1412,6 +1412,12 @@ Use Org's more advanced date selection utility if the user option
   'denote-date-prompt
   "1.0.0")
 
+(defun denote-prompt-for-date-return-id ()
+  "Use `denote-date-prompt' and return it as `denote-id-format'."
+  (format-time-string
+   denote-id-format
+   (denote--valid-date (denote-date-prompt))))
+
 (defvar denote--subdir-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
 
