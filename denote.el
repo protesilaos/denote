@@ -2239,15 +2239,14 @@ title."
     ("md" denote-link--regexp-markdown)
     (_ denote-link--regexp-org)))
 
-(defun denote-link--format-link (file pattern)
-  "Prepare link to FILE using PATTERN."
-  (let* ((region-text (when (region-active-p)
-                        (buffer-substring (region-beginning) (region-end))))
-         (file-id (denote-retrieve-filename-identifier file))
+(defun denote-link--format-link (file pattern &optional description)
+  "Prepare link to FILE using PATTERN.
+If DESCRIPTION is non-nil, it is used as link description instead
+of FILE's title."
+  (let* ((file-id (denote-retrieve-filename-identifier file))
          (file-type (denote-filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
-                       (or region-text
-                           (denote--retrieve-title-or-filename file file-type)))))
+                       (or description (denote--retrieve-title-or-filename file file-type)))))
     (format pattern file-id file-title)))
 
 ;;;###autoload
@@ -2260,11 +2259,15 @@ format is always [[denote:IDENTIFIER]]. If region is active,
 region is replaced with the link while using the region as link
 title."
   (interactive (list (denote-file-prompt) current-prefix-arg))
-  (let ((beg (point))
-        (link (denote-link--format-link
-               target
-               (denote-link--file-type-format (buffer-file-name) id-only))))
-    (when (region-active-p) (delete-region (region-beginning) (region-end)))
+  (let* ((beg (point))
+         (description (when-let (((region-active-p))
+                                 (selected-text (buffer-substring-no-properties (region-beginning) (region-end))))
+                        (delete-region (region-beginning) (region-end))
+                        selected-text))
+         (link (denote-link--format-link
+                target
+                (denote-link--file-type-format (buffer-file-name) id-only)
+                description)))
     (insert link)
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
