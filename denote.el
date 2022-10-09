@@ -2257,6 +2257,9 @@ argument (\\[universal-argument]), insert links with just the
 identifier and no further description. In this case, the link
 format is always [[denote:IDENTIFIER]].
 
+Use TARGET's title for the link's description.  The title comes
+either from the front matter or the file name.
+
 If region is active, use its text as the link's description
 instead of TARGET's title."
   (interactive (list (denote-file-prompt) current-prefix-arg))
