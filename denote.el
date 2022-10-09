@@ -2241,8 +2241,8 @@ title."
 
 (defun denote-link--format-link (file pattern &optional description)
   "Prepare link to FILE using PATTERN.
-If DESCRIPTION is non-nil, it is used as link description instead
-of FILE's title."
+If DESCRIPTION is non-nil, use it as link description instead of
+FILE's title."
   (let* ((file-id (denote-retrieve-filename-identifier file))
          (file-type (denote-filetype-heuristics file))
          (file-title (unless (string= pattern denote-link--format-id-only)
@@ -2255,20 +2255,23 @@ of FILE's title."
 With optional ID-ONLY, such as a universal prefix
 argument (\\[universal-argument]), insert links with just the
 identifier and no further description. In this case, the link
-format is always [[denote:IDENTIFIER]]. If region is active,
-region is replaced with the link while using the region as link
-title."
+format is always [[denote:IDENTIFIER]].
+
+If region is active, use its text as the link's description
+instead of TARGET's title."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (let* ((beg (point))
-         (description (when-let (((region-active-p))
-                                 (selected-text (buffer-substring-no-properties (region-beginning) (region-end))))
-                        (delete-region (region-beginning) (region-end))
-                        selected-text))
-         (link (denote-link--format-link
-                target
-                (denote-link--file-type-format (buffer-file-name) id-only)
-                description)))
-    (insert link)
+         (description (when-let* (((region-active-p))
+                                  (beg (region-beginning))
+                                  (end (region-end))
+                                  (selected-text (buffer-substring-no-properties beg end)))
+                        (delete-region beg end)
+                        selected-text)))
+    (insert
+     (denote-link--format-link
+      target
+      (denote-link--file-type-format (buffer-file-name) id-only)
+      description))
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
