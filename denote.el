@@ -2261,16 +2261,20 @@ Use TARGET's title for the link's description.  The title comes
 either from the front matter or the file name.
 
 If region is active, use its text as the link's description
-instead of TARGET's title."
+instead of TARGET's title. If active region is empty (i.e
+whitespace-only), insert an id-only link (following org-mode's
+behavior with empty description)."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (let* ((beg (point))
-         ;; TODO 2022-10-09: Do we need to check for empty region?
          (description (when-let* (((region-active-p))
                                   (beg (region-beginning))
                                   (end (region-end))
-                                  (selected-text (buffer-substring-no-properties beg end)))
+                                  (selected-text (string-trim (buffer-substring-no-properties beg end))))
                         (delete-region beg end)
-                        selected-text)))
+                        selected-text))
+         ;; If DESCRIPTION is empty, we follow org-mode's behavior of inserting
+         ;; ID-only link
+         (id-only (or id-only (string-empty-p description))))
     (insert
      (denote-link--format-link
       target
