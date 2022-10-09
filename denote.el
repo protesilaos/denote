@@ -2264,6 +2264,7 @@ If region is active, use its text as the link's description
 instead of TARGET's title."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (let* ((beg (point))
+         ;; TODO 2022-10-09: Do we need to check for empty region?
          (description (when-let* (((region-active-p))
                                   (beg (region-beginning))
                                   (end (region-end))
