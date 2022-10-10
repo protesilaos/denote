@@ -1136,8 +1136,10 @@ its simplicity.
 
 The description of the link is taken from the target file's front
 matter or, if that is not available, from the file name.  If the
-region is active, its text is used as the link's description instead [
-the ability to use the region is part of {{{development-version}}} ].
+region is active, its text is used as the link's description instead.
+If the active region has no text, the inserted link used just the
+identifier, as with the =C-u= prefix mentioned above [the ability of
+~denote-link~ to use the region is part of {{{development-version}}}].
 
 Inserted links are automatically buttonized and remain active for as
 long as the buffer is available.  In Org this is handled by the major
