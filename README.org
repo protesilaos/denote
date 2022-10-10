@@ -2397,7 +2397,8 @@ might change them without further notice.
 #+findex: denote-directory-text-only-files
 + Function ~denote-directory-text-only-files~ :: Return list of text
   files in variable ~denote-directory~.  Filter
-  ~denote-directory-files~ using ~denote-file-is-note-p~.
+  ~denote-directory-files~ using ~denote-file-is-note-p~. [ This is
+  part of {{{development-version}}}. ]
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
