@@ -603,6 +603,11 @@ value, as explained in its doc string."
       (not (denote-file-has-identifier-p f)))
     (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
 
+(defun denote-directory-text-only-files ()
+  "Return list of text files in variable `denote-directory'.
+Filter `denote-directory-files' using `denote-file-is-note-p'."
+  (seq-filter #'denote-file-is-note-p (denote-directory-files)))
+
 (define-obsolete-function-alias
   'denote--directory-files
   'denote-directory-files

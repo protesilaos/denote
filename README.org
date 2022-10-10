@@ -2394,6 +2394,11 @@ might change them without further notice.
   by ~denote-file-type~.  Remember that the ~denote-directory~ accepts
   a directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
+#+findex: denote-directory-text-only-files
++ Function ~denote-directory-text-only-files~ :: Return list of text
+  files in variable ~denote-directory~.  Filter
+  ~denote-directory-files~ using ~denote-file-is-note-p~.
+
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
   subdirectories of the variable ~denote-directory~.  Note that the
