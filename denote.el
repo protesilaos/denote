@@ -1123,7 +1123,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist."
   (xref--alistify
-   (xref-matches-in-files identifier (denote-directory-files))
+   (xref-matches-in-files identifier (denote-directory-text-only-files))
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
@@ -1136,10 +1136,9 @@ Parse `denote--retrieve-xrefs'."
 
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of files."
-  (seq-filter
-   #'denote-file-is-note-p
-   (delete (buffer-file-name) (denote--retrieve-files-in-xrefs
-                               (denote--retrieve-xrefs identifier)))))
+  (delete (buffer-file-name)
+          (denote--retrieve-files-in-xrefs
+           (denote--retrieve-xrefs identifier))))
 
 ;;;; New note
 
