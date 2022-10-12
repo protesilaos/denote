@@ -791,8 +791,10 @@ This can be used in `denote-file-types' to format front mattter."
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
 This can be used in `denote-file-types' to format front mattter."
-  (let ((trims "[ \t\n\r]+"))
-    (string-trim s trims trims)))
+  (if (string-blank-p s)
+      ""
+    (let ((trims "[ \t\n\r]+"))
+      (string-trim s trims trims))))
 
 (defun denote--trim-quotes (s)
   "Trim quotes around string S."
@@ -802,7 +804,9 @@ This can be used in `denote-file-types' to format front mattter."
 (defun denote-trim-whitespace-then-quotes (s)
   "Trim whitespace then quotes around string S.
 This can be used in `denote-file-types' to format front mattter."
-  (denote--trim-quotes (denote-trim-whitespace s)))
+  (if (string-blank-p s)
+      ""
+    (denote--trim-quotes (denote-trim-whitespace s))))
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
