@@ -1124,7 +1124,8 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
   (if-let (((denote-file-is-note-p file))
-           (title (denote-retrieve-title-value file type)))
+           (title (denote-retrieve-title-value file type))
+           ((not (string-blank-p title))))
       title
     (denote-retrieve-filename-title file)))
 
