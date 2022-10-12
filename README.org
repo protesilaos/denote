@@ -3685,7 +3685,6 @@ to permit their use in free software.
 * Indices
 :PROPERTIES:
 :CUSTOM_ID: h:dd530040-de9d-4f2b-8dfd-d8b8f14c058e
-:UNNUMBERED: notoc
 :END:
 
 ** Function index
