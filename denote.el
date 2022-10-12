@@ -826,8 +826,13 @@ for how this is used."
 
 (defun denote-extract-keywords-from-front-matter (keywords-string)
   "Extract keywords list from front matter KEYWORDS-STRING.
+Split KEYWORDS-STRING into a list of strings.  If KEYWORDS-STRING
+satisfies `string-blank-p', return an empty string.
+
 Consult the `denote-file-types' for how this is used."
-  (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
+  (if (string-blank-p keywords-string)
+      ""
+    (split-string keywords-string "[:,\s]+" t "[][ \"']+")))
 
 (defvar denote-file-types
   ;; If denote-file-type is nil, we use the first element
@@ -1153,7 +1158,7 @@ string.  EXTENSION is the file type extension, as a string."
         (file-name (concat path id)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
-    (when keywords
+    (when (and keywords (not (string-blank-p kws)))
       (setq file-name (concat file-name "__" kws)))
     (concat file-name extension)))
 
