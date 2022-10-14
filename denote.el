@@ -1932,8 +1932,8 @@ proceed with the renaming."
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
                        dir id keywords (denote-sluggify title) extension)))
-    (when (or auto-confirm
-              (denote-rename-file-prompt file new-name))
+      (when (or auto-confirm
+                (denote-rename-file-prompt file new-name))
         (denote-rename-file-and-buffer file new-name)
         (denote-update-dired-buffers))
     (user-error "No front matter for title and/or keywords")))
@@ -2356,9 +2356,9 @@ Like `denote-link-find-file', but select backlink to follow."
               (id (denote-retrieve-filename-identifier file))
               (files (denote--retrieve-process-grep id)))
     (find-file
-      (denote-get-path-by-id
-        (denote-extract-id-from-string
-          (denote-link--find-file-prompt files))))))
+     (denote-get-path-by-id
+      (denote-extract-id-from-string
+       (denote-link--find-file-prompt files))))))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
@@ -2759,7 +2759,7 @@ interface by first selecting the `denote:' hyperlink type."
      :type "denote"
      :description file-title
      :link (concat "denote:" file-id))
-  org-store-link-plist))
+    org-store-link-plist))
 
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
