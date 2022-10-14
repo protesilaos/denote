@@ -1572,6 +1572,46 @@ If file does not exist, invoke `denote' to create a file."
       (find-file target)
     (call-interactively #'denote)))
 
+;;;###autoload
+(defun denote-keyword-add (keywords)
+  "Prompt for KEYWORDS to add to the current note's front matter.
+When called from Lisp, KEYWORDS is a list of strings.
+
+Rename the file without further prompt so that its name reflects
+the new front matter, per `denote-rename-file-using-front-matter'."
+  (interactive (list (denote-keywords-prompt)))
+  ;; A combination of if-let and let, as we need to take into account
+  ;; the scenario in which there are no keywords yet.
+  (if-let* ((file (buffer-file-name))
+            ((denote-file-is-note-p file))
+            (file-type (denote-filetype-heuristics file)))
+      (let* ((cur-keywords (denote-retrieve-keywords-value file file-type))
+             (new-keywords (if (string-blank-p cur-keywords)
+                               keywords
+                             (seq-uniq (append keywords cur-keywords)))))
+        (denote--rewrite-keywords file new-keywords file-type)
+        (denote-rename-file-using-front-matter file t))
+    (message "Buffer not visiting a Denote file")))
+
+;;;###autoload
+(defun denote-keyword-remove ()
+  "Prompt for a keyword in current note and remove it.
+Keywords are retrieved from the file's front matter.
+
+Rename the file without further prompt so that its name reflects
+the new front matter, per `denote-rename-file-using-front-matter'."
+  (declare (interactive-only t))
+  (interactive)
+  (if-let* ((file (buffer-file-name))
+            ((denote-file-is-note-p file))
+            (file-type (denote-filetype-heuristics file)))
+      (when-let* ((cur-keywords (denote-retrieve-keywords-value file file-type))
+                  ((or (listp cur-keywords) (not (string-blank-p cur-keywords))))
+                  (del-keyword (completing-read "Keyword to remove: " cur-keywords nil t)))
+        (denote--rewrite-keywords file (delete del-keyword cur-keywords) file-type)
+        (denote-rename-file-using-front-matter file t))
+    (message "Buffer not visiting a Denote file")))
+
 ;;;; Note modification
 
 ;;;;; Common helpers for note modifications
