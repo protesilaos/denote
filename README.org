@@ -460,6 +460,26 @@ Users who want to benefit from the more advanced date selection method
 that is common in interactions with Org mode, can set the user option
 ~denote-date-prompt-use-org-read-date~ to a non-nil value.
 
+*** Add or remove keywords interactively
+:PROPERTIES:
+:CUSTOM_ID: h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-keyword-add
+#+findex: denote-keyword-remove
+The commands ~denote-keyword-add~ and ~denote-keyword-remove~
+streamline the process of interactively updating a file's keywords in
+the front matter and renaming it accordingly.
+
+The ~denote-keyword-add~ asks for keywords using the familiar
+minibuffer prompt ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  It then renames the file
+([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).
+
+Similarly, the ~denote-keyword-remove~ removes a keyword from the list
+of existing keywords and then renames the file accordingly.
+
 ** Create note using Org capture
 :PROPERTIES:
 :CUSTOM_ID: h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881
