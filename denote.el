@@ -1586,7 +1586,8 @@ the new front matter, per `denote-rename-file-using-front-matter'."
             ((denote-file-is-note-p file))
             (file-type (denote-filetype-heuristics file)))
       (let* ((cur-keywords (denote-retrieve-keywords-value file file-type))
-             (new-keywords (if (string-blank-p cur-keywords)
+             (new-keywords (if (and (stringp cur-keywords)
+                                    (string-blank-p cur-keywords))
                                keywords
                              (seq-uniq (append keywords cur-keywords)))))
         (denote--rewrite-keywords file new-keywords file-type)
