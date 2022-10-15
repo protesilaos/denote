@@ -1573,7 +1573,7 @@ If file does not exist, invoke `denote' to create a file."
     (call-interactively #'denote)))
 
 ;;;###autoload
-(defun denote-keyword-add (keywords)
+(defun denote-keywords-add (keywords)
   "Prompt for KEYWORDS to add to the current note's front matter.
 When called from Lisp, KEYWORDS is a list of strings.
 
@@ -1595,7 +1595,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
     (message "Buffer not visiting a Denote file")))
 
 ;;;###autoload
-(defun denote-keyword-remove ()
+(defun denote-keywords-remove ()
   "Prompt for a keyword in current note and remove it.
 Keywords are retrieved from the file's front matter.
 
