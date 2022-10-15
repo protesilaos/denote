@@ -1594,7 +1594,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
                              (seq-uniq (append keywords cur-keywords)))))
         (denote--rewrite-keywords file new-keywords file-type)
         (denote-rename-file-using-front-matter file t))
-    (message "Buffer not visiting a Denote file")))
+    (user-error "Buffer not visiting a Denote file")))
 
 (defun denote--keywords-delete-prompt (keywords)
   "Prompt for one or more KEYWORDS.
@@ -1626,7 +1626,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
          (seq-difference cur-keywords del-keyword)
          file-type)
         (denote-rename-file-using-front-matter file t))
-    (message "Buffer not visiting a Denote file")))
+    (user-error "Buffer not visiting a Denote file")))
 
 ;;;; Note modification
 
