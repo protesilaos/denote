@@ -477,8 +477,9 @@ The ~denote-keywords-add~ asks for keywords using the familiar
 minibuffer prompt ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  It then renames the file
 ([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).
 
-Similarly, the ~denote-keywords-remove~ removes a keyword from the list
-of existing keywords and then renames the file accordingly.
+Similarly, the ~denote-keywords-remove~ removes one or more keywords
+from the list of existing keywords and then renames the file
+accordingly.
 
 ** Create note using Org capture
 :PROPERTIES:
