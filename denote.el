@@ -1697,9 +1697,13 @@ the file type is assumed to be the first of `denote-file-types'."
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (if (derived-mode-p 'dired-mode)
-        (dired-rename-file old-name new-name nil)
-      (rename-file old-name new-name nil))
+    (cond
+     ((derived-mode-p 'dired-mode)
+      (dired-rename-file old-name new-name nil))
+     ((vc-backend old-name)
+      (vc-rename-file old-name new-name))
+     (t
+      (rename-file old-name new-name nil)))
     (denote--rename-buffer old-name new-name)))
 
 (define-obsolete-function-alias
