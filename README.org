@@ -38,6 +38,8 @@ Current development target is {{{development-version}}}.
     + GitHub: <https://github.com/protesilaos/denote>
     + GitLab: <https://gitlab.com/protesilaos/denote>
 + Mailing list: <https://lists.sr.ht/~protesilaos/denote>
++ Backronyms: Denote Everything Neatly; Omit The Excesses.  Don't Ever
+  Note Only The Epiphenomenal.
 
 If you are viewing the README.org version of this file, please note that
 the GNU ELPA machinery automatically generates an Info manual out of it.
