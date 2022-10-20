@@ -9,6 +9,209 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 1.1.0 on 2022-10-20
+:PROPERTIES:
+:CUSTOM_ID: h:8e0f536a-ab3b-4cab-82f7-529bc0e40dbd
+:END:
+
+** New commands or refinements to common use-cases
+:PROPERTIES:
+:CUSTOM_ID: h:5665e7ec-4f3a-4de3-8cb0-63d25a0db8c1
+:END:
+
++ The ~denote-link-add-missing-links~ is a companion to what we
+  already provide to produce a list of links to Denote files matching
+  a regular expression (the ~denote-link-add-links~).  This new
+  command adds links that are not already present in the current file.
+  So if you have a metanote that references, say, your journal entries
+  but have not updated it in a month, you can revisit the metanote,
+  invoke ~denote-link-add-missing-links~, and then type the search
+  terms (e.g. =_journal=) to include what remains.
+
+  Thanks to Elias Storms for the initial contribution, which was done
+  in pull request 108 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/108>.
+
+  Elias has assigned copyright to the Free Software Foundation.  It is
+  required for changes that exceed 15 lines in total.
+
++ The ~denote-link-find-backlink~ provides a minibuffer interface that
+  shows all backlinks to the current note.  It complements the
+  existing ~denote-link-backlinks~ command (which also has the alias
+  ~denote-link-show-backlinks-buffer~).  Each command has its own
+  niche: the minibuffer lets the user leverage powerful pattern
+  matching styles, such as those provided by the =orderless= package,
+  while the bespoke buffer provides an easy overview of what links to
+  the current note.
+
+  Thanks to Elias Storms for the original patch:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm2fsg6o2t6.fsf%40MBA21.fritz.box%3E#%3Cm2pmfam7yi.fsf@MBA21.fritz.box%3E>.
+
++ The ~denote-keywords-add~ and ~denote-keywords-remove~ are two
+  commands that interactively operate on the current note's front
+  matter to add or remove keywords.  They use the familiar keywords'
+  prompt which means, among others, that they can read more than one
+  keyword at a time.  To specify multiple keywords, separate each
+  input with a comma (or whatever the value of ~crm-separator~ is,
+  which should be a comma unless something out-of-the-ordinary is in
+  force).
+
+  Thanks to Elias Storms for the original patch, which was done as
+  part of a discussion on the mailing list and then iterated on:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm24jwvpbt2.fsf%40MBA21.fritz.box%3E#%3Cm28rlik0tc.fsf@MBA21.fritz.box%3E>.
+
++ The ~denote-link~ command will now recognise an active region and
+  use its text as the description of the inserted link.  The default
+  behaviour is to use the file's title from its front matter or file
+  name.  Thanks to Charanjit Singh for the original contribution,
+  which was done as part of pull request 109 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/109>.  A subsequent
+  tweak was implemented in pull request 110, following a discussion
+  with me: <https://github.com/protesilaos/denote/pull/110>.
+
+  Charanjit's contribution is below the ~15 line threshold and thus
+  does not require copyright assignment to the Free Software
+  Foundation.
+
++ The renaming operations are now aware of the underlying version
+  control system and will use the appropriate command when a VCS is
+  available.  In practice, renaming a file under, say, Git will
+  register it as a "rename" instead of two separate actions of
+  deletion and addition.
+
+  Thanks to Florian for the patch.  It was discussed on the mailing
+  list and then underwent some changes:
+  <https://lists.sr.ht/~protesilaos/denote/%3C166547153518.8.941129310186454444.68125516@aboulafia.org%3E>.
+
++ The ~denote-rename-file-using-front-matter~ no longer fails to carry
+  out its intended task when the front matter has no keywords.  If no
+  keywords are available, this is interpreted as a request to remove
+  the KEYWORDS component of the file name.  This was always
+  technically possible and could be achieved with various permutations
+  of the user option ~denote-prompts~ (as explained in its doc string
+  or the manual).  Denote only needs an identifier in the file name to
+  establish unique links (although I strongly encourage you to stick
+  to the standard file-naming scheme as it is informative, reliable,
+  and can work even if you access your data without Emacs).
+
+** For more advanced use-cases
+:PROPERTIES:
+:CUSTOM_ID: h:505c84dd-2959-4bd4-8af4-78d75592a6d5
+:END:
+
++ The variable ~denote-file-types~ has been tweaked to respond
+  directly to changes in its value done with ~setq~.  Thanks to Noboru
+  Ota for the patch: <https://lists.sr.ht/~protesilaos/denote/%3C86k05gsqsg.fsf%40nobiot.com%3E>.
+
+  Noboru has assigned copyright to the Free Software Foundation.
+
++ The =:front-matter= property of the ~denote-file-types~ now accepts
+  a nil value.  Denote could always work without front matter, but
+  this was not implemented flexibly in the ~denote-file-types~.
+  Thanks to Noboru Ota (nobiot) for pointing this out on the mailing
+  list: <https://lists.sr.ht/~protesilaos/denote/%3C86k05gsqsg.fsf%40nobiot.com%3E>.
+
++ The ~denote-file-prompt~ function now reads an optional
+  =INITIAL-TEXT= argument.  This is a string that prepopulates the
+  minibuffer.  It is useful for custom commands the user may have
+  where, for example, there is a need to automatically filter to
+  entries matching =_journal=.  Thanks to Alan Schmitt for suggesting
+  the idea: <https://lists.sr.ht/~protesilaos/denote/%3C87pmf676n1.fsf@m4x.org%3E>.
+
++ The ~denote-rename-file-using-front-matter~ accepts an optional
+  =AUTO-CONFIRM= argument.  It can either be passed interactively or
+  via Lisp.  The doc string (or the manual) explains the details.
+  Thanks to Elias Storms for the initial patch:
+  <https://lists.sr.ht/~protesilaos/denote/%3Cm2a667aeku.fsf%40gmail.com%3E>.
+
++ The ~denote-prompt-for-date-return-id~ function uses the familiar
+  ~denote-date-prompt~ and returns the appropriate identifier.  It is
+  used internally by some of our function, but we also provide it for
+  anyone who wants to write their own custom code.
+
++ The ~denote-retrieve-or-create-file-identifier~ function reads and
+  option =DATE= argument to its mandatory =FILE= argument.  If =FILE=
+  does not have an identifier and optional =DATE= is non-nil, the
+  function invokes the ~denote-prompt-for-date-return-id~, as
+  mentioned above.
+
++ The ~denote-rename-file~ command accepts an optional =DATE=
+  argument.  It functionally does what is described right above, with
+  the exception that this is for an interactive function (a
+  "command").  Read the detailed doc string or the manual for
+  everything that pertains to this powerful command.
+
+  Thanks to Florian for suggesting the idea on the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/%3C166521684647.7.5483179875879361874.67576870%40aboulafia.org%3E>.
+
++ The ~denote-directory-text-only-files~ function filters the
+  ~denote-directory-files~ to only return a list of text files.  This
+  leaves out, say, mp3 files.  The function is used internally, though
+  it may also prove useful in custom user code.
+  
+** Miscellaneous refinements
+:PROPERTIES:
+:CUSTOM_ID: h:0531047f-ef15-412e-b265-886c55526d57
+:END:
+
++ Implemented a ~revert-buffer-function~ for the backlinks' buffer,
+  which is produced by the command ~denote-link-backlinks~.  This
+  revert function is what the =g= key invokes with the default key
+  bindings (the command is ~revert-buffer~).  It produces the buffer
+  anew, updating the list of backlinks accordingly.
+
++ Documented how to speed up the creation of the backlinks' buffer.
+  As this depends on the built-in =xref= library, the change is done
+  by specifying the value of the user option ~xref-search-program~ in
+  Emacs 28 or higher.  For example:
+
+  #+begin_src emacs-lisp
+  (setq xref-search-program 'ripgrep)
+  #+end_src
+
+  For something more elaborate:
+
+  #+begin_src emacs-lisp
+  ;; Prefer ripgrep, then ugrep, and fall back to regular grep.
+  (setq xref-search-program
+        (cond
+         ((or (executable-find "ripgrep")
+              (executable-find "rg"))
+          'ripgrep)
+         ((executable-find "ugrep")
+          'ugrep)
+         (t
+          'grep)))
+  #+end_src
+
++ Removed some minor duplication of effort in how the buttonisation of
+  links is done (what makes them clickable).
+
++ Made refinements to the definition of functions such as
+  ~denote-link-add-links~.  There should be no noticeable change for
+  users, though this shows we care about code quality.
+
++ With Eshel Yaron, we tried to remove the empty indices for functions
+  and variables from the HTML version of the manual.  These indices
+  are useful in the Info version, which can be accessed directly from
+  Emacs when the =denote= package is installed (for example, evaluate
+  =(info "(denote) Top")=), but they do not work with HTML.  Alas,
+  what we tried to do did not work.  Maybe Org has a way to control
+  what is exported where.  We shall see.  At any rate, thanks to Eshel
+  for the effort: <https://lists.sr.ht/~protesilaos/denote/patches/36028>.
+
++ All code that integrates the =denote:= custom hyperlink type with
+  Org's link facility is now assigned =autoload= cookies.  These are
+  done to ensure that =denote= is loaded and is available in cases
+  where Org needs to access a =denote:= link at some early stage
+  (e.g. at startup before using Denote).  Thanks to Sven Seebeck for
+  reporting the problem: <https://lists.sr.ht/~protesilaos/denote/%3C87r0zovwix.fsf%40svenseebeck.me%3E>.
+  Although Sven could not reproduce a bug reliably, I believe this
+  prevents such an eventuality.
+
++ Expanded or otherwise updated the manual to account for all of the
+  above, where appropriate.
+
 * Version 1.0.0 on 2022-09-30
 :PROPERTIES:
 :CUSTOM_ID: h:053975d7-3fe2-49e5-96a0-336483e5861c

@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 1.0.0
-#+macro:                 release-date 2022-09-30
-#+macro:                 development-version 1.1.0-dev
+#+macro:                 stable-version 1.1.0
+#+macro:                 release-date 2022-10-20
+#+macro:                 development-version 1.2.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -467,8 +467,6 @@ that is common in interactions with Org mode, can set the user option
 :CUSTOM_ID: h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+findex: denote-keywords-add
 #+findex: denote-keywords-remove
 The commands ~denote-keywords-add~ and ~denote-keywords-remove~
@@ -625,9 +623,6 @@ all the mechanisms to facilitate the task of renaming them.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
-[ The ~denote-rename-file~ accepts an optional =DATE= argument as part
-  of {{{development-version}}}. ]
-
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate.
@@ -771,7 +766,6 @@ new names, just so the user is certain about the change.
 
 If called interactively with a prefix argument =C-u= or from Lisp with
 a non-nil =AUTO-CONFIRM= argument, this "yes or no" prompt is skipped.
-[ This is part of {{{development-version}}}. ]
 
 The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the
@@ -1161,8 +1155,7 @@ The description of the link is taken from the target file's front
 matter or, if that is not available, from the file name.  If the
 region is active, its text is used as the link's description instead.
 If the active region has no text, the inserted link used just the
-identifier, as with the =C-u= prefix mentioned above [the ability of
-~denote-link~ to use the region is part of {{{development-version}}}].
+identifier, as with the =C-u= prefix mentioned above.
 
 Inserted links are automatically buttonized and remain active for as
 long as the buffer is available.  In Org this is handled by the major
@@ -1402,9 +1395,9 @@ certain executables to the relevant environment variable.
 
 [[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
 
-Backlinks can also be visited by using minibuffer completion.  The
-command is ~denote-link-find-backlink~, which is part of
-{{{development-version}}} ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
+Backlinks to the current file can also be visited by using the
+minibuffer completion interface with the ~denote-link-find-backlink~
+command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
 ** Writing metanotes
 :PROPERTIES:
@@ -1464,8 +1457,6 @@ with only the files of the current minibuffer session).
 To visit backlinks to the current note via the minibuffer, use
 ~denote-link-find-backlink~.  This is an alternative to placing
 backlinks in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
-
-[ The ~denote-link-find-backlink~ is part of {{{development-version}}}. ]
 
 ** Miscellaneous information about links
 :PROPERTIES:
@@ -2420,8 +2411,7 @@ might change them without further notice.
 #+findex: denote-directory-text-only-files
 + Function ~denote-directory-text-only-files~ :: Return list of text
   files in variable ~denote-directory~.  Filter
-  ~denote-directory-files~ using ~denote-file-is-note-p~. [ This is
-  part of {{{development-version}}}. ]
+  ~denote-directory-files~ using ~denote-file-is-note-p~.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -2498,9 +2488,6 @@ might change them without further notice.
   one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
-[ The ~denote-retrieve-or-create-file-identifier~ accepts an optional
-  =DATE= argument as part of {{{development-version}}}. ]
-
 #+findex: denote-retrieve-or-create-file-identifier
 + Function ~denote-retrieve-or-create-file-identifier~ :: Return
   =FILE= identifier, generating one if appropriate.  The conditions
@@ -2544,8 +2531,7 @@ might change them without further notice.
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
   variable ~denote-directory~.  With optional =INITIAL-TEXT=, use it
-  to prepopulate the minibuffer.  [ The optional =INITIAL-TEXT= is
-  part of {{{development-version}}}. ]
+  to prepopulate the minibuffer.
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more
@@ -2569,9 +2555,6 @@ might change them without further notice.
   more advanced date selection utility if the user option
   ~denote-date-prompt-use-org-read-date~ is non-nil.  It requires Org
   ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
-
-[ The ~denote-prompt-for-date-return-id~ is part of
-  {{{development-version}}}. ]
 
 #+findex: denote-prompt-for-date-return-id
 + Function ~denote-prompt-for-date-return-id~ :: Use
