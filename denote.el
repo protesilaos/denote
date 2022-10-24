@@ -1584,10 +1584,18 @@ set to \\='(template title keywords)."
 ;;;###autoload
 (defun denote-open-or-create (target)
   "Visit TARGET file in variable `denote-directory'.
-If file does not exist, invoke `denote' to create a file."
+If file does not exist, invoke `denote' to create a file.
+
+If TARGET file does not exist, add the user input that was used
+to search for it to the minibuffer history of the
+`denote-title-prompt'.  The user can then retrieve and possibly
+further edit their last input, using it as the newly created
+note's actual title.  At the `denote-title-prompt' type
+\\<minibuffer-local-map>\\[previous-history-element]."
   (interactive (list (denote-file-prompt)))
   (if (file-exists-p target)
       (find-file target)
+    (denote--push-extracted-title-to-history)
     (call-interactively #'denote)))
 
 ;;;###autoload
