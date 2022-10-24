@@ -1330,6 +1330,15 @@ this end, Denote provides two convenience commands:
   which runs the ~denote~ command interactively to create the file.  The
   established link will then be targeting that new file.
 
+  If =TARGET= file does not exist, add the user input that was used to
+  search for it to the history of the ~denote-title-prompt~.  The user
+  can then retrieve and possibly further edit their last input, using
+  it as the newly created note's actual title.  At the ~denote-title-prompt~
+  type =M-p= with the default key bindings, which calls ~previous-history-element~.
+
+  [ The above paragraph describes functionality that is part of
+    {{{development-version}}}. ]
+
   With optional =ID-ONLY= as a prefix argument create a link with just
   the file's identifier.  This has the same meaning as in ~denote-link~.
 
@@ -3211,10 +3220,11 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
-  Federico Stilman, Florian, Frank Ehmsen, Hanspeter Gisler, Jack
-  Baty, Juanjo Presa, Kaushal Modi, M. Hadi Timachi, Paul van Gelder,
-  Peter Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck, Taoufik,
-  Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
+  Federico Stilman, Florian, Frank Ehmsen, Guo Yong, Hanspeter Gisler,
+  Jack Baty, Juanjo Presa, Kaushal Modi, M. Hadi Timachi, Paul van
+  Gelder, Peter Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck,
+  Taoufik, Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar
+  bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

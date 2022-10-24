@@ -1565,6 +1565,22 @@ set to \\='(template title keywords)."
 
 ;;;;; Other convenience commands
 
+(defun denote--extract-title-from-file-history ()
+  "Extract last file title input from `file-name-history'."
+  ;; We do not need to check if `file-name-history' is initialised
+  ;; because it is defined in files.el.  My understanding is that it
+  ;; is always loaded.
+  (when-let ((title (expand-file-name (car file-name-history))))
+    (string-match (denote-directory) title)
+    (substring title (match-end 0))))
+
+(defun denote--push-extracted-title-to-history ()
+  "Add `denote--extract-title-from-file-history' to `denote--title-history'."
+  (when-let* ((last-input (denote--extract-title-from-file-history))
+              ((not (string-empty-p last-input)))
+              ((not (string-blank-p last-input))))
+    (push last-input denote--title-history)))
+
 ;;;###autoload
 (defun denote-open-or-create (target)
   "Visit TARGET file in variable `denote-directory'.
@@ -2459,12 +2475,20 @@ If TARGET file does not exist, call `denote-link-after-creating'
 which runs the `denote' command interactively to create the file.
 The established link will then be targeting that new file.
 
+If TARGET file does not exist, add the user input that was used
+to search for it to the minibuffer history of the
+`denote-title-prompt'.  The user can then retrieve and possibly
+further edit their last input, using it as the newly created
+note's actual title.  At the `denote-title-prompt' type
+\\<minibuffer-local-map>\\[previous-history-element].
+
 With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (file-exists-p target)
       (denote-link target id-only)
+    (denote--push-extracted-title-to-history)
     (call-interactively #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note (symbol-function 'denote-link-or-create))
