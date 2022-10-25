@@ -907,7 +907,7 @@ PROPERTY-LIST is a plist that consists of 8 elements:
 
 - `:title-value-reverse-function' is the function used to
   retrieve the raw title string from the front matter.  It
-  performs the reverse of `:title-value-reverse-function'.
+  performs the reverse of `:title-value-function'.
 
 - `:keywords-key-regexp' is a string with the regular expression
   used to retrieve the keywords' line in the file.  The first
