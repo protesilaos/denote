@@ -1139,6 +1139,13 @@ The xrefs are returned as an alist."
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
+(defun denote--retrieve-files-in-xrefs (xrefs-alist)
+  "Return sorted file names sans directory from XREFS.
+Parse `denote--retrieve-xrefs'."
+  (sort
+   (delete-dups (mapcar #'car xrefs-alist))
+   #'string-lessp))
+
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of xrefs-alist."
   (assoc-delete-all (buffer-file-name)
@@ -2432,7 +2439,8 @@ Like `denote-link-find-file', but select backlink to follow."
   (interactive)
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
-              (files (denote--retrieve-process-grep id)))
+              (files (denote--retrieve-files-in-xrefs
+                      (denote--retrieve-process-grep id))))
     (find-file
      (denote-get-path-by-id
       (denote-extract-id-from-string
