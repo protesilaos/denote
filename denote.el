@@ -2686,9 +2686,14 @@ built-in function `xref--insert-xrefs'."
 
 ;;;###autoload
 (defun denote-link-backlinks ()
-  "Produce a buffer with lines in files linking to current note.
-File names are fontified if the user option
-`denote-link-fontify-backlinks' is non-nil.  If the user option is nil, the buffer is fontified by Xref.
+  "Produce a buffer with backlinks to the current note.
+
+The backlinks' buffer shows the file name of the note linking to
+the current note, as well as the context of each link.
+
+File names are fontified by Denote if the user option
+`denote-link-fontify-backlinks' is non-nil.  If this user option
+is nil, the buffer is fontified by Xref.
 
 The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
