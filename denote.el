@@ -2201,7 +2201,7 @@ and seconds."
      (4 'denote-faces-title nil t)
      (5 'denote-faces-delimiter nil t)
      (6 'denote-faces-keywords nil t)
-     (7 'denote-faces-extension nil t )))
+     (7 'denote-faces-extension nil t)))
   "Keywords for fontification of file names in the backlinks buffer.")
 
 ;;;; Fontification in Dired
