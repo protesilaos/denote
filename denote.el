@@ -1139,18 +1139,18 @@ The xrefs are returned as an alist."
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
-(defun denote--retrieve-files-in-xrefs (xrefs)
-  "Return sorted file names sans directory from XREFS.
-Parse `denote--retrieve-xrefs'."
-  (sort
-   (delete-dups (mapcar #'car xrefs))
-   #'string-lessp))
+;;; No longer used.
+;; (defun denote--retrieve-files-in-xrefs (xrefs)
+;;   "Return sorted file names sans directory from XREFS.
+;; Parse `denote--retrieve-xrefs'."
+;;   (sort
+;;    (delete-dups (mapcar #'car xrefs))
+;;    #'string-lessp))
 
 (defun denote--retrieve-process-grep (identifier)
-  "Process lines matching IDENTIFIER and return list of files."
-  (delete (buffer-file-name)
-          (denote--retrieve-files-in-xrefs
-           (denote--retrieve-xrefs identifier))))
+  "Process lines matching IDENTIFIER and return list of xrefs-alist."
+  (assoc-delete-all (buffer-file-name)
+                    (denote--retrieve-xrefs identifier)))
 
 ;;;; New note
 
@@ -2594,20 +2594,19 @@ Expand `denote-link-backlinks-display-buffer-action'."
 
 (defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
-    (define-key m "n" #'forward-button)
-    (define-key m "p" #'backward-button)
+    (define-key m "g" #'revert-buffer)
     m)
   "Keymap for `denote-backlinks-mode'.")
 
 (make-obsolete-variable 'denote-backlink-mode-map 'denote-backlinks-mode-map "0.6.0")
 
-(define-derived-mode denote-backlinks-mode special-mode "Backlinks"
+(define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
   "Major mode for backlinks buffers.")
 
 (make-obsolete-variable 'denote-backlink-mode 'denote-backlinks-mode "0.6.0")
 
-(defun denote-link--prepare-backlinks (id files &optional title)
-  "Create backlinks' buffer for ID including FILES.
+(defun denote-link--prepare-backlinks (id xrefs-alist &optional title)
+  "Create backlinks' buffer for ID using XREFS-ALIST.
 Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
         (buf (format "*denote-backlinks to %s*" id))
@@ -2621,27 +2620,75 @@ Use optional TITLE for a prettier heading."
                   (heading (format "Backlinks to %S (%s)" title id))
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
-      (mapc (lambda (f)
-              (insert (denote-get-file-name-relative-to-denote-directory f))
-              (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
-              (newline))
-            files)
+      ;;; We could have a user option to use the current backlink buffer
+      (denote-xref--insert-xrefs xrefs-alist)
       (goto-char (point-min))
       (when denote-link-fontify-backlinks
         (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file)
-                               (files (denote--retrieve-process-grep id)))
-                      (denote-link--prepare-backlinks id files title)))))
+                               (xrefs-alist (denote--retrieve-process-grep id)))
+                      (denote-link--prepare-backlinks id xrefs-alist title)))))
     (denote-link--display-buffer buf)))
+
+(defun denote-xref--insert-xrefs (xref-alist)
+  "Insert XREF-ALIST in the current buffer.
+XREF-ALIST is of the form ((GROUP . (XREF ...)) ...), where GROUP
+is a string for decoration purposes and XREF is an `xref-item'
+object.  This function is a slightly modified version of the
+built-in function `xref--insert-xrefs'."
+  (require 'compile) ; For the compilation faces.
+  (cl-loop for (group . xrefs) in xref-alist
+           for max-line = (cl-loop for xref in xrefs
+                                   maximize (xref-location-line
+                                             (xref-item-location xref)))
+           for line-format = (and max-line
+                                  (format "%%%dd: " (1+ (floor (log max-line 10)))))
+           with item-text-props = (list 'mouse-face 'highlight
+                                        'keymap xref--button-map
+                                        'help-echo
+                                        (concat "mouse-2: display in another window, "
+                                                "RET or mouse-1: follow reference"))
+           with prev-group = nil
+           with prev-line = nil
+           do
+           (xref--insert-propertized '(face xref-file-header xref-group t)
+                                     (denote-get-file-name-relative-to-denote-directory group) "\n")
+           (dolist (xref xrefs)
+             (pcase-let (((cl-struct xref-item summary location) xref))
+               (let* ((line (xref-location-line location))
+                      (prefix
+                       (cond
+                        ((not line) "  ")
+                        ((and (equal line prev-line)
+                              (equal prev-group group))
+                         "")
+                        (t (propertize (format line-format line)
+                                       'face 'xref-line-number)))))
+                 ;; Render multiple matches on the same line, together.
+                 (when (and (equal prev-group group)
+                            (or (null line)
+                                (not (equal prev-line line))))
+                   (insert "\n"))
+                 (xref--insert-propertized (nconc (list 'xref-item xref)
+                                                  item-text-props)
+                                           prefix summary)
+                 (setq prev-line line
+                       prev-group group))))
+           (insert "\n"))
+  (add-to-invisibility-spec '(ellipsis . t))
+  (save-excursion
+    (goto-char (point-min))
+    (while (= 0 (forward-line 1))
+      (xref--apply-truncation)))
+  (run-hooks 'xref-after-update-hook))
 
 ;;;###autoload
 (defun denote-link-backlinks ()
-  "Produce a buffer with files linking to current note.
-Each file is a clickable/actionable button that visits the
-referenced entry.  Files are fontified if the user option
-`denote-link-fontify-backlinks' is non-nil.
+  "Produce a buffer with lines in files linking to current note.
+File names are fontified if the user option
+`denote-link-fontify-backlinks' is non-nil.  If the user option is nil, the buffer is fontified by Xref.
 
 The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
@@ -2652,8 +2699,9 @@ default, it will show up below the current window."
       (let* ((id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file))
              (title (denote-retrieve-title-value file file-type)))
-        (if-let ((files (denote--retrieve-process-grep id)))
-            (denote-link--prepare-backlinks id files title)
+        (if-let ((xrefs-alist (denote--retrieve-process-grep id)))
+            (progn (xref--push-markers)
+                   (denote-link--prepare-backlinks id xrefs-alist title))
           (user-error "No links to the current note"))))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
