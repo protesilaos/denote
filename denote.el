@@ -1139,14 +1139,6 @@ The xrefs are returned as an alist."
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
-;;; No longer used.
-;; (defun denote--retrieve-files-in-xrefs (xrefs)
-;;   "Return sorted file names sans directory from XREFS.
-;; Parse `denote--retrieve-xrefs'."
-;;   (sort
-;;    (delete-dups (mapcar #'car xrefs))
-;;    #'string-lessp))
-
 (defun denote--retrieve-process-grep (identifier)
   "Process lines matching IDENTIFIER and return list of xrefs-alist."
   (assoc-delete-all (buffer-file-name)
