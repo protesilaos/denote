@@ -356,6 +356,18 @@ command."
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
+(defcustom denote-backlilnks-show-context nil
+  "When non-nil, the backlinks buffer shows context of identifiers.
+The context is the one line an identifier is found.  This option
+also enables the backlink buffer to show multiple occurrences of an
+identifier in a single file.
+
+When nil, the backlinks buffer shows a list of file names where
+the identifier is found."
+  :group 'denote
+  :package-version '(denote . "0.1.2")
+  :type 'boolean)
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -2623,7 +2635,13 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       ;;; We could have a user option to use the current backlink buffer
-      (denote-xref--insert-xrefs xrefs-alist)
+      (if denote-backlilnks-show-context
+          (denote-xref--insert-xrefs xrefs-alist)
+        (mapc (lambda (x)
+                (insert (denote-get-file-name-relative-to-denote-directory (car x)))
+                (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
+                (newline))
+              xrefs-alist))
       (goto-char (point-min))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
