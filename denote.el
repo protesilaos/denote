@@ -2601,7 +2601,9 @@ Expand `denote-link-backlinks-display-buffer-action'."
 (make-obsolete-variable 'denote-backlink-mode-map 'denote-backlinks-mode-map "0.6.0")
 
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
-  "Major mode for backlinks buffers.")
+  "Major mode for backlinks buffers."
+  (when denote-link-fontify-backlinks
+    (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
 
 (make-obsolete-variable 'denote-backlink-mode 'denote-backlinks-mode "0.6.0")
 
@@ -2623,8 +2625,6 @@ Use optional TITLE for a prettier heading."
       ;;; We could have a user option to use the current backlink buffer
       (denote-xref--insert-xrefs xrefs-alist)
       (goto-char (point-min))
-      (when denote-link-fontify-backlinks
-        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file)
