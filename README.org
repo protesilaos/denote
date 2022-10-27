@@ -1350,18 +1350,31 @@ this end, Denote provides two convenience commands:
 :CUSTOM_ID: h:c73f1f68-e214-49d5-b369-e694f6a5d708
 :END:
 
-[ Refactored as part of {{{development-version}}} to show the context
-  of links. ]
+[ Refactored as part of {{{development-version}}} to optionally show
+  the context of links. ]
 
 #+findex: denote-link-backlinks
 The command ~denote-link-backlinks~ produces a bespoke buffer which
 displays backlinks to the current note.  A "backlink" is a link back
 to the present entry.
 
-The backlinks' buffer is desinged to display the file name of the note
-linking to the current entry, as well as the context of each link.
+By default, the backlinks' buffer is desinged to display the file name
+of the note linking to the current entry.  Each file name is presented
+on its own line, like this:
 
-It looks like this:
+#+begin_example
+Backlinks to "On being honest" (20220614T130812)
+------------------------------------------------
+
+20220614T145606--let-this-glance-become-a-stare__journal.txt
+20220616T182958--feeling-butterflies-in-your-stomach__journal.txt
+#+end_example
+
+#+vindex: denote-backlinks-show-context
+When the user option ~denote-backlinks-show-context~ is non-nil, the
+backlinks' buffer displays the line on which a link to the current
+note occurs.  It also shows multiple occurances, if present.  It looks
+like this (and has the appropriate fontification):
 
 #+begin_example
 Backlinks to "On being honest" (20220614T130812)
@@ -1376,18 +1389,31 @@ Backlinks to "On being honest" (20220614T130812)
 
 Note that the width of the lines in the context depends on the
 underlying file.  In the above example, the lines are split at the
-~fill-column~.  Long lines will show up just fine.
+~fill-column~.  Long lines will show up just fine.  Also note that the
+built-in user option ~xref-truncation-width~ can truncate long lines
+to a given maximum number of characters.
 
 [[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]
 
-#+vindex: denote-link-fontify-backlinks
-The backlinks' buffer is fontified by default, though the user has
-access to the ~denote-link-fontify-backlinks~ option to disable this
-effect by setting its value to nil.  The default style is handled by
-Denote, to highlight the components of each file.  A nil value means
-that the fontification will be performed by the underlying =xref=
-mechanism (generic style such as the one used by the output of the
-built-in command ~project-find-regexp~).
+#+findex: denote-backlinks-mode
+#+vindex: denote-backlinks-mode-map
+The backlinks' buffer runs the major-mode ~denote-backlinks-mode~.  It
+binds keys to move between links with =n= (next) and =p= (previous).
+These are stored in the ~denote-backlinks-mode-map~ (use =M-x
+describe-mode= (=C-h m=) in an unfamiliar buffer to learn more about
+it).  When the user option ~denote-backlinks-show-context~ is non-nil,
+all relevant Xref key bindings are fully functional: again, check
+~describe-mode~.
+
+The backlinking facility uses Emacs' built-in Xref infrastructure.  On
+some operating systems, the user may need to add certain executables
+to the relevant environment variable.
+
+[[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
+
+Backlinks to the current file can also be visited by using the
+minibuffer completion interface with the ~denote-link-find-backlink~
+command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
 #+vindex: denote-link-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
@@ -1406,28 +1432,6 @@ Reproducing it here for the sake of convenience:
         (slot . 99)
         (window-width . 0.3)))
 #+end_src
-
-#+findex: denote-backlinks-mode
-#+vindex: denote-backlinks-mode-map
-The backlinks' buffer runs the major-mode ~denote-backlinks-mode~, which
-is derived from ~special-mode~.  It binds keys to move between links
-with =n= (next) and =p= (previous).  These are stored in the
-~denote-backlinks-mode-map~ (use =M-x describe-mode= (=C-h m=) in an
-unfamiliar buffer to learn more about it).
-
-[ The above paragraph is no longer accurate since 2022-10-26 06:44
-  +0300, on {{{development-version}}}.  We are making refinements to
-  it and shall update the documentation accordingly. ]
-
-Note that the backlinking facility uses Emacs' built-in Xref
-infrastructure.  On some operating systems, the user may need to add
-certain executables to the relevant environment variable.
-
-[[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
-
-Backlinks to the current file can also be visited by using the
-minibuffer completion interface with the ~denote-link-find-backlink~
-command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
 ** Writing metanotes
 :PROPERTIES:
