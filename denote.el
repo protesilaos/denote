@@ -356,16 +356,17 @@ command."
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
-(defcustom denote-backlilnks-show-context nil
-  "When non-nil, the backlinks buffer shows context of identifiers.
-The context is the one line an identifier is found.  This option
-also enables the backlink buffer to show multiple occurrences of an
-identifier in a single file.
+(defcustom denote-backlinks-show-context nil
+  "When non-nil, show link context in the backlinks buffer.
 
-When nil, the backlinks buffer shows a list of file names where
-the identifier is found."
+The context is the line a link to the current note is found in.
+The context includes multiple links to the same note, if those
+are present.
+
+When nil, only show a simple list of file names that link to the
+current note."
   :group 'denote
-  :package-version '(denote . "0.1.2")
+  :package-version '(denote . "1.2.0")
   :type 'boolean)
 
 ;;;; Main variables
@@ -2634,7 +2635,7 @@ Use optional TITLE for a prettier heading."
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       ;;; We could have a user option to use the current backlink buffer
-      (if denote-backlilnks-show-context
+      (if denote-backlinks-show-context
           (denote-xref--insert-xrefs xrefs-alist)
         (mapc (lambda (x)
                 (insert (denote-get-file-name-relative-to-denote-directory (car x)))
