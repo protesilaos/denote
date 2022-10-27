@@ -2274,8 +2274,9 @@ Everything is in place to set up the package.
 
 (setq denote-date-format nil) ; read doc string
 
-;; By default, we fontify backlinks in their bespoke buffer.
-(setq denote-link-fontify-backlinks t)
+;; By default, we do not show the context of links.  We just display
+;; file names.  This provides a more informative view.
+(setq denote-backlinks-show-context t)
 
 ;; Also see `denote-link-backlinks-display-buffer-action' which is a bit
 ;; advanced.
