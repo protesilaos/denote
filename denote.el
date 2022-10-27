@@ -1152,8 +1152,7 @@ The xrefs are returned as an alist."
      (xref-location-group (xref-item-location x)))))
 
 (defun denote--retrieve-files-in-xrefs (xrefs-alist)
-  "Return sorted file names sans directory from XREFS.
-Parse `denote--retrieve-xrefs'."
+  "Return sorted, deduplicated file names from XREFS-ALIST."
   (sort
    (delete-dups (mapcar #'car xrefs-alist))
    #'string-lessp))
