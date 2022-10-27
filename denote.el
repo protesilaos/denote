@@ -1154,14 +1154,14 @@ The xrefs are returned as an alist."
    (lambda (x)
      (xref-location-group (xref-item-location x)))))
 
-(defun denote--retrieve-files-in-xrefs (xrefs-alist)
-  "Return sorted, deduplicated file names from XREFS-ALIST."
+(defun denote--retrieve-files-in-xrefs (xref-alist)
+  "Return sorted, deduplicated file names from XREF-ALIST."
   (sort
-   (delete-dups (mapcar #'car xrefs-alist))
+   (delete-dups (mapcar #'car xref-alist))
    #'string-lessp))
 
 (defun denote--retrieve-process-grep (identifier)
-  "Process lines matching IDENTIFIER and return list of xrefs-alist."
+  "Process lines matching IDENTIFIER and return list of xref-alist."
   (assoc-delete-all (buffer-file-name)
                     (denote--retrieve-xrefs identifier)))
 
@@ -2636,8 +2636,8 @@ nil)."
 
 (make-obsolete-variable 'denote-backlink-mode 'denote-backlinks-mode "0.6.0")
 
-(defun denote-link--prepare-backlinks (id xrefs-alist &optional title)
-  "Create backlinks' buffer for ID using XREFS-ALIST.
+(defun denote-link--prepare-backlinks (id xref-alist &optional title)
+  "Create backlinks' buffer for ID using XREF-ALIST.
 Use optional TITLE for a prettier heading."
   (let ((inhibit-read-only t)
         (buf (format "*denote-backlinks to %s*" id))
@@ -2653,18 +2653,18 @@ Use optional TITLE for a prettier heading."
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       ;;; We could have a user option to use the current backlink buffer
       (if denote-backlinks-show-context
-          (denote-xref--insert-xrefs xrefs-alist)
+          (denote-xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
                 (insert (denote-get-file-name-relative-to-denote-directory (car x)))
                 (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
                 (newline))
-              xrefs-alist))
+              xref-alist))
       (goto-char (point-min))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file)
-                               (xrefs-alist (denote--retrieve-process-grep id)))
-                      (denote-link--prepare-backlinks id xrefs-alist title)))))
+                               (xref-alist (denote--retrieve-process-grep id)))
+                      (denote-link--prepare-backlinks id xref-alist title)))))
     (denote-link--display-buffer buf)))
 
 (defun denote-xref--insert-xrefs (xref-alist)
@@ -2739,9 +2739,9 @@ default, it will show up below the current window."
       (let* ((id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file))
              (title (denote-retrieve-title-value file file-type)))
-        (if-let ((xrefs-alist (denote--retrieve-process-grep id)))
+        (if-let ((xref-alist (denote--retrieve-process-grep id)))
             (progn (xref--push-markers)
-                   (denote-link--prepare-backlinks id xrefs-alist title))
+                   (denote-link--prepare-backlinks id xref-alist title))
           (user-error "No links to the current note"))))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
