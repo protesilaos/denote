@@ -731,11 +731,17 @@ keywords."
   "Prompt for one or more keywords.
 In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
-output is sorted with `string-lessp'."
-  (let ((choice (denote--keywords-crm (denote-keywords))))
-    (if denote-sort-keywords
-        (sort choice #'string-lessp)
-      choice)))
+output is sorted with `string-lessp'.
+
+To sort the return value, use `denote-keywords-sort'."
+  (denote--keywords-crm (denote-keywords)))
+
+(defun denote-keywords-sort (keywords)
+  "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
+KEYWORDS is a list of strings, per `denote-keywords-prompt'."
+  (if denote-sort-keywords
+      (sort keywords #'string-lessp)
+    keywords))
 
 (define-obsolete-function-alias
   'denote--keywords-prompt
@@ -1380,6 +1386,7 @@ When called from Lisp, all arguments are optional.
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
+         (kws (denote--keywords-sort keywords))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
@@ -1391,7 +1398,7 @@ When called from Lisp, all arguments are optional.
                        template
                      (or (alist-get template denote-templates) ""))))
     (denote-barf-duplicate-id id)
-    (denote--prepare-note title keywords date id directory file-type template)
+    (denote--prepare-note title kws date id directory file-type template)
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil

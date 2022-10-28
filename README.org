@@ -2430,6 +2430,13 @@ might change them without further notice.
   ~denote-known-keywords~.  Else use only the latter set of keywords
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
+#+findex: denote-keywords-sort
++ Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
+  ~denote-sort-keywords~ is non-nil.  =KEYWORDS= is a list of strings,
+  per ~denote-keywords-prompt~.  [ This function is part of
+  {{{development-version}}}.  Before, the keywords were sorted by the
+  ~denote-keywords-prompt~. ]
+
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a
@@ -2572,7 +2579,9 @@ might change them without further notice.
 + Function ~denote-keywords-prompt~ :: Prompt for one or more
   keywords.  In the case of multiple entries, those are separated by
   the ~crm-sepator~, which typically is a comma.  In such a scenario,
-  the output is sorted with ~string-lessp~.
+  the output is sorted with ~string-lessp~.  To sort the return value,
+  use ~denote-keywords-sort~.  [ The ~denote-keywords-sort~ is part of
+  {{{development-version}}}. ]
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Read file title for ~denote~.
