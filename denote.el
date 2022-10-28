@@ -1156,7 +1156,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
 The xrefs are returned as an alist of the form:
 
-((GROUP . (XREF ...)) ...)
+    ((GROUP . (XREF ...)) ...)
 
 GROUP is an absolute file name as retrieved by Xref facility.
 
@@ -1183,7 +1183,7 @@ The alist excludes GROUP for the file that current buffer is
 visiting so that only its backlinks are colleced.
 
 In addition, GROUP is a transformed to filename relative to
-`denote-directory', which is the string displayed in the
+variable `denote-directory', which is the string displayed in the
 backlinks' buffer."
   ;;; This `mapcar' form is doing what function `xref--analyze' would
   ;;; do.  `xref--analyze' can be flexibly configured but is not used
