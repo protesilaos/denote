@@ -1386,7 +1386,7 @@ When called from Lisp, all arguments are optional.
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
-         (kws (denote--keywords-sort keywords))
+         (kws (denote-keywords-sort keywords))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
