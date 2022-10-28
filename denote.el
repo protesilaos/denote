@@ -2451,14 +2451,15 @@ whitespace-only), insert an ID-ONLY link."
 
 Like `denote-link-find-file', but select backlink to follow."
   (interactive)
-  (when-let* ((file (buffer-file-name))
+  (if-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
               (files (denote--retrieve-files-in-xrefs
                       (denote--retrieve-process-grep id))))
-    (find-file
-     (denote-get-path-by-id
-      (denote-extract-id-from-string
-       (denote-link--find-file-prompt files))))))
+      (find-file
+       (denote-get-path-by-id
+        (denote-extract-id-from-string
+         (denote-link--find-file-prompt files))))
+    (user-error "No links found in the current buffer")))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
