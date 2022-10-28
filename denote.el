@@ -1152,13 +1152,21 @@ Run `denote-desluggify' on title if the extraction is sucessful."
       title
     (denote-retrieve-filename-title file)))
 
-(defun denote--retrieve-xrefs (identifier)
+(defun denote--retrieve-xrefs (identifier &optional file)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.
-The xrefs are returned as an alist."
-  (xref--alistify
-   (xref-matches-in-files identifier (denote-directory-text-only-files))
-   (lambda (x)
-     (xref-location-group (xref-item-location x)))))
+The xrefs are returned as an alist of the form:
+
+((GROUP . (XREF ...)) ...)
+
+GROUP is an absolute file name as retrieved by Xref facility.
+
+When FILE is present, remove its GROUP from the alist."
+  (let ((alist
+         (xref--alistify
+          (xref-matches-in-files identifier (denote-directory-text-only-files))
+          (lambda (x)
+            (xref-location-group (xref-item-location x))))))
+    (if file (assoc-delete-all file alist) alist)))
 
 (defun denote--retrieve-files-in-xrefs (xref-alist)
   "Return sorted, deduplicated file names from XREF-ALIST."
@@ -1167,9 +1175,26 @@ The xrefs are returned as an alist."
    #'string-lessp))
 
 (defun denote--retrieve-process-grep (identifier)
-  "Process lines matching IDENTIFIER and return list of xref-alist."
-  (assoc-delete-all (buffer-file-name)
-                    (denote--retrieve-xrefs identifier)))
+  "Process lines matching IDENTIFIER and return list of xref-alist.
+
+The alist is of the form ((GROUP . (XREF ...)) ...).
+
+The alist excludes GROUP for the file that current buffer is
+visiting so that only its backlinks are colleced.
+
+In addition, GROUP is a transformed to filename relative to
+`denote-directory', which is the string displayed in the
+backlinks' buffer."
+  ;;; This `mapcar' form is doing what function `xref--analyze' would
+  ;;; do.  `xref--analyze' can be flexibly configured but is not used
+  ;;; directly here because it assumes that the current directory is in
+  ;;; a "project" as defined in project.el.  For Denote, this is not the
+  ;;; case (at least as at the time of this writing).
+  (mapcar
+   (lambda (xref)
+     (cons (denote-get-file-name-relative-to-denote-directory (car xref))
+           (cdr xref)))
+   (denote--retrieve-xrefs identifier (buffer-file-name))))
 
 ;;;; New note
 
@@ -2452,9 +2477,10 @@ whitespace-only), insert an ID-ONLY link."
 Like `denote-link-find-file', but select backlink to follow."
   (interactive)
   (if-let* ((file (buffer-file-name))
-              (id (denote-retrieve-filename-identifier file))
-              (files (denote--retrieve-files-in-xrefs
-                      (denote--retrieve-process-grep id))))
+            (id (denote-retrieve-filename-identifier file))
+            (files
+             (denote--retrieve-files-in-xrefs
+              (denote--retrieve-xrefs id (buffer-file-name)))))
       (find-file
        (denote-get-path-by-id
         (denote-extract-id-from-string
@@ -2659,11 +2685,10 @@ Use optional TITLE for a prettier heading."
                   (heading (format "Backlinks to %S (%s)" title id))
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
-      ;;; We could have a user option to use the current backlink buffer
       (if denote-backlinks-show-context
-          (denote-xref--insert-xrefs xref-alist)
+          (xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
-                (insert (denote-get-file-name-relative-to-denote-directory (car x)))
+                (insert (car x))
                 (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
                 (newline))
               xref-alist))
@@ -2674,58 +2699,6 @@ Use optional TITLE for a prettier heading."
                                (xref-alist (denote--retrieve-process-grep id)))
                       (denote-link--prepare-backlinks id xref-alist title)))))
     (denote-link--display-buffer buf)))
-
-(defun denote-xref--insert-xrefs (xref-alist)
-  "Insert XREF-ALIST in the current buffer.
-XREF-ALIST is of the form ((GROUP . (XREF ...)) ...), where GROUP
-is a string for decoration purposes and XREF is an `xref-item'
-object.  This function is a slightly modified version of the
-built-in function `xref--insert-xrefs'."
-  (require 'compile) ; For the compilation faces.
-  (cl-loop for (group . xrefs) in xref-alist
-           for max-line = (cl-loop for xref in xrefs
-                                   maximize (xref-location-line
-                                             (xref-item-location xref)))
-           for line-format = (and max-line
-                                  (format "%%%dd: " (1+ (floor (log max-line 10)))))
-           with item-text-props = (list 'mouse-face 'highlight
-                                        'keymap xref--button-map
-                                        'help-echo
-                                        (concat "mouse-2: display in another window, "
-                                                "RET or mouse-1: follow reference"))
-           with prev-group = nil
-           with prev-line = nil
-           do
-           (xref--insert-propertized '(face xref-file-header xref-group t)
-                                     (denote-get-file-name-relative-to-denote-directory group) "\n")
-           (dolist (xref xrefs)
-             (pcase-let (((cl-struct xref-item summary location) xref))
-               (let* ((line (xref-location-line location))
-                      (prefix
-                       (cond
-                        ((not line) "  ")
-                        ((and (equal line prev-line)
-                              (equal prev-group group))
-                         "")
-                        (t (propertize (format line-format line)
-                                       'face 'xref-line-number)))))
-                 ;; Render multiple matches on the same line, together.
-                 (when (and (equal prev-group group)
-                            (or (null line)
-                                (not (equal prev-line line))))
-                   (insert "\n"))
-                 (xref--insert-propertized (nconc (list 'xref-item xref)
-                                                  item-text-props)
-                                           prefix summary)
-                 (setq prev-line line
-                       prev-group group))))
-           (insert "\n"))
-  (add-to-invisibility-spec '(ellipsis . t))
-  (save-excursion
-    (goto-char (point-min))
-    (while (= 0 (forward-line 1))
-      (xref--apply-truncation)))
-  (run-hooks 'xref-after-update-hook))
 
 ;;;###autoload
 (defun denote-link-backlinks ()
