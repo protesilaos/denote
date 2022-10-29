@@ -2845,6 +2845,34 @@ You are welcome to suggest more ideas.  If they do not broaden the scope
 of Denote, they can be added to denote.el.  Otherwise we might think of
 extensions to the core package.
 
+* Publications about Denote
+:PROPERTIES:
+:CUSTOM_ID: h:ca0c38f9-fa3e-4901-947e-1b589335781d
+:END:
+
+The Emacs community is putting Denote to great use.  This section
+includes publications that show how people configure their note-taking
+setup.  If you have a blog post, video, or configuration file about
+Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+
++ David Wilson (SystemCrafters), /Generating a Blog Site from Denote
+  Entries/, 2022-09-09, <https://www.youtube.com/watch?v=5R7ad5xz5wo>.
+
++ David Wilson (SystemCrafters), /Trying Out Prot's Denote, an Org
+  Roam Alternative?/, 2022-07-15, <https://www.youtube.com/watch?v=QcRY_rsX0yY>.
+
++ Jeremy Friesen, /Denote Emacs Configuration/, 2022-10-02,
+  <https://takeonrules.com/2022/10/09/denote-emacs-configuration/>
+
++ Jeremy Friesen, /Exploring the Denote Emacs Package/, 2022-10-01,
+  <https://takeonrules.com/2022/10/01/exploring-the-denote-emacs-package/>
+
++ Jeremy Friesen, /Migration Plan for Org-Roam Notes to Denote/,
+  2022-10-02, <https://takeonrules.com/2022/10/02/migration-plan-for-org-roam-notes-to-denote/>
+
++ Peter Prevos, /Simulating Text Files with R to Test the Emacs Denote
+  Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>.
+
 * Alternatives to Denote
 :PROPERTIES:
 :CUSTOM_ID: h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e
@@ -3256,10 +3284,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
   Federico Stilman, Florian, Frank Ehmsen, Guo Yong, Hanspeter Gisler,
-  Jack Baty, Juanjo Presa, Kaushal Modi, M. Hadi Timachi, Paul van
-  Gelder, Peter Prevos, Shreyas Ragavan, Summer Emacs, Sven Seebeck,
-  Taoufik, Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar
-  bp.
+  Jack Baty, Jeremy Friesen, Juanjo Presa, Kaushal Modi, M. Hadi
+  Timachi, Paul van Gelder, Peter Prevos, Shreyas Ragavan, Summer
+  Emacs, Sven Seebeck, Taoufik, Yi Liu, Ypot, atanasj, hpgisler,
+  pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
