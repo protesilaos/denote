@@ -2677,6 +2677,14 @@ might change them without further notice.
      the keywords' value from the front matter.  It performs the reverse
      of the =:keywords-value-function=.
 
+  10. =:link= is a string, or variable holding a string, that
+      specifies the format of a link.  See the variables
+      ~denote-org-link-format~, ~denote-md-link-format~.
+
+  11. =:link-in-context-regexp= is a regular expression that is used
+      to match the aforementioned link format.  See the variables
+      ~denote-org-link-in-context-regexp~, ~denote-md-link-in-context-regexp~.
+
   If ~denote-file-type~ is nil, we use the first element of this list
   for new note creation.  The default is ~org~.
 
