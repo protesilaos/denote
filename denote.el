@@ -2380,17 +2380,35 @@ and/or the documentation string of `display-buffer'."
 
 ;;;;; Link to note
 
-;; Arguments are: FILE-ID FILE-TITLE
-(defconst denote-link--format-org "[[denote:%s][%s]]"
-  "Format of Org link to note.")
+(define-obsolete-variable-alias
+  'denote-link--format-org
+  'denote-org-link-format
+  "1.2.0")
 
-(defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
+(defvar denote-org-link-format "[[denote:%s][%s]]"
+  "Format of Org link to note.
+The value is passed to `format' with IDENTIFIER and TITLE
+arguments, in this order.")
+
+(define-obsolete-variable-alias
+  'denote-link--format-markdown
+  'denote-md-link-format
+  "1.2.0")
+
+(defvar denote-md-link-format "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.
-The %N$s notation is for `format' as the supplied arguments are
-IDENTIFIER and TITLE, in this order.")
+The %N$s notation used in the default value is for `format' as
+the supplied arguments are IDENTIFIER and TITLE, in this order.")
 
-(defconst denote-link--format-id-only "[[denote:%s]]"
-  "Format of identifier-only link to note.")
+(define-obsolete-variable-alias
+  'denote-link--format-id-only
+  'denote-id-only-link-format
+  "1.2.0")
+
+(defvar denote-id-only-link-format "[[denote:%s]]"
+  "Format of identifier-only link to note.
+The value is passed to `format' with IDENTIFIER as its sole
+argument.")
 
 (defconst denote-link--regexp-org
   (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\[.*?]]"))
@@ -2408,11 +2426,11 @@ title."
   ;; Includes backup files.  Maybe we can remove them?
   (let ((current-file-ext (file-name-extension current-file)))
     (cond
-     (id-only denote-link--format-id-only)
+     (id-only denote-id-only-link-format)
      ((string= current-file-ext "md")
-      denote-link--format-markdown)
+      denote-md-link-format)
      ;; Plain text also uses [[denote:ID][TITLE]]
-     (t denote-link--format-org))))
+     (t denote-org-link-format))))
 
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
@@ -2426,7 +2444,7 @@ If DESCRIPTION is non-nil, use it as link description instead of
 FILE's title."
   (let* ((file-id (denote-retrieve-filename-identifier file))
          (file-type (denote-filetype-heuristics file))
-         (file-title (unless (string= pattern denote-link--format-id-only)
+         (file-title (unless (string= pattern denote-id-only-link-format)
                        (or description (denote--retrieve-title-or-filename file file-type)))))
     (format pattern file-id file-title)))
 
