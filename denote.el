@@ -998,14 +998,14 @@ list for new note creation.  The default is `org'.")
    :keywords-value-reverse-function))
 
 (defun denote--extensions ()
-  "Return all extensions in `denote-file-type'."
+  "Return all extensions in `denote-file-types'."
   (delete-dups
    (mapcar (lambda (type)
              (plist-get (cdr type) :extension))
            denote-file-types)))
 
 (defun denote--file-type-keys ()
-  "Return all `denote-file-type' keys."
+  "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
 
 (defun denote--get-title-line-from-front-matter (title file-type)
