@@ -924,7 +924,7 @@ Consult the `denote-file-types' for how this is used."
      :link-in-context-regexp denote-org-link-in-context-regexp))
   "Alist of `denote-file-type' and their format properties.
 
-Each element is of the form (SYMBOL . PROPERTY-LIST).  SYMBOL is
+Each element is of the form (SYMBOL PROPERTY-LIST).  SYMBOL is
 one of those specified in `denote-file-type' or an arbitrary
 symbol that defines a new file type.
 
