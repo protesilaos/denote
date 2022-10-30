@@ -2388,7 +2388,9 @@ and/or the documentation string of `display-buffer'."
 (defvar denote-org-link-format "[[denote:%s][%s]]"
   "Format of Org link to note.
 The value is passed to `format' with IDENTIFIER and TITLE
-arguments, in this order.")
+arguments, in this order.
+
+Also see `denote-org-link-in-context-regexp'.")
 
 (define-obsolete-variable-alias
   'denote-link--format-markdown
@@ -2398,7 +2400,9 @@ arguments, in this order.")
 (defvar denote-md-link-format "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.
 The %N$s notation used in the default value is for `format' as
-the supplied arguments are IDENTIFIER and TITLE, in this order.")
+the supplied arguments are IDENTIFIER and TITLE, in this order.
+
+Also see `denote-md-link-in-context-regexp'.")
 
 (define-obsolete-variable-alias
   'denote-link--format-id-only
@@ -2408,16 +2412,39 @@ the supplied arguments are IDENTIFIER and TITLE, in this order.")
 (defvar denote-id-only-link-format "[[denote:%s]]"
   "Format of identifier-only link to note.
 The value is passed to `format' with IDENTIFIER as its sole
-argument.")
+argument.
 
-(defconst denote-link--regexp-org
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\[.*?]]"))
+Also see `denote-id-only-link-in-context-regexp'.")
 
-(defconst denote-link--regexp-markdown
-  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")"))
+(define-obsolete-variable-alias
+  'denote-link--regexp-org
+  'denote-org-link-in-context-regexp
+  "1.2.0")
 
-(defconst denote-link--regexp-plain
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]]"))
+(defvar denote-org-link-in-context-regexp
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\[.*?]]")
+  "Regexp to match an Org link in its context.
+The format of such links is `denote-org-link-format'.")
+
+(define-obsolete-variable-alias
+  'denote-link--regexp-markdown
+  'denote-md-link-in-context-regexp
+  "1.2.0")
+
+(defvar denote-md-link-in-context-regexp
+  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")")
+  "Regexp to match a Markdown link in its context.
+The format of such links is `denote-md-link-format'.")
+
+(define-obsolete-variable-alias
+  'denote-link--regexp-plain
+  'denote-id-only-link-in-context-regexp
+  "1.2.0")
+
+(defvar denote-id-only-link-in-context-regexp
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]]")
+  "Regexp to match an identifier-only link in its context.
+The format of such links is `denote-id-only-link-format'."  )
 
 (defun denote-link--file-type-format (current-file id-only)
   "Return link format based on CURRENT-FILE format.
@@ -2435,8 +2462,8 @@ title."
 (defun denote-link--file-type-regexp (file)
   "Return link regexp based on FILE format."
   (pcase (file-name-extension file)
-    ("md" denote-link--regexp-markdown)
-    (_ denote-link--regexp-org)))
+    ("md" denote-md-link-in-context-regexp)
+    (_ denote-org-link-in-context-regexp)))
 
 (defun denote-link--format-link (file pattern &optional description)
   "Prepare link to FILE using PATTERN.
@@ -2489,7 +2516,7 @@ whitespace-only), insert an ID-ONLY link."
     (save-excursion
       (goto-char (point-min))
       (while (or (re-search-forward regexp nil t)
-                 (re-search-forward denote-link--regexp-plain nil t))
+                 (re-search-forward denote-id-only-link-in-context-regexp nil t))
         (push (match-string-no-properties 1) matches)))
     matches))
 
@@ -2614,9 +2641,9 @@ file's title.  This has the same meaning as in `denote-link'."
 
 (defun denote-link--link-at-point-string ()
   "Return identifier at point."
-  (when (or (thing-at-point-looking-at denote-link--regexp-plain)
-            (thing-at-point-looking-at denote-link--regexp-markdown)
-            (thing-at-point-looking-at denote-link--regexp-org)
+  (when (or (thing-at-point-looking-at denote-id-only-link-in-context-regexp)
+            (thing-at-point-looking-at denote-md-link-in-context-regexp)
+            (thing-at-point-looking-at denote-org-link-in-context-regexp)
             ;; Meant to handle the case where a link is broken by
             ;; `fill-paragraph' into two lines, in which case it
             ;; buttonizes only the "denote:ID" part.  Example:
