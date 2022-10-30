@@ -1456,7 +1456,7 @@ Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
 here for clarity."
   (completing-read
-   "Select file type: " '(org markdown-yaml markdown-toml text) nil t
+   "Select file type: " (denote--file-type-keys) nil t
    nil 'denote--file-type-history))
 
 (define-obsolete-function-alias
