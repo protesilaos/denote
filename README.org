@@ -2641,7 +2641,7 @@ might change them without further notice.
   1. =:extension= which is a string with the file extension
      including the period.
 
-  2. ~:date-function~ is a function that can format a date.  See the
+  2. =:date-function= is a function that can format a date.  See the
      functions ~denote--date-iso-8601~, ~denote--date-rfc3339~, and
      ~denote--date-org-timestamp~. [This property is part of
      {{{development-version}}}.]
