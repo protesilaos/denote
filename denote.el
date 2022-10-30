@@ -278,16 +278,24 @@ Reduce them to a single word, such as by turning <word1_word2> or
   "The file type extension for new notes.
 
 By default (a nil value), the file type is that of Org mode.
-Though the `org' can be specified for the same effect.
+Though the `org' symbol can be specified for the same effect.
 
 When the value is the symbol `markdown-yaml', the file type is
-that of Markdown mode and the front matter uses YAML.  Similarly,
-`markdown-toml' will use Markdown but apply TOML to the front
-matter.
+that of Markdown mode and the front matter uses YAML notation.
+Similarly, `markdown-toml' is Markdown but has TOML syntax in the
+front matter.
 
 When the value is `text', the file type is that of Text mode.
 
-Any other non-nil value is the same as the default."
+Any other non-nil value is the same as the default.
+
+NOTE: expert users can change the supported file types by leaving
+the value of this user option to nil and directly editing the
+value of `denote-file-types'.  That variable, which is not a user
+option, controls the behaviour of all file-type-aware
+functions (creating notes, renaming them, inserting front matter,
+formatting a link, etc.).  Consult its documentation for the
+technicalities."
   :type '(choice
           (const :tag "Unspecified (defaults to Org)" nil)
           (const :tag "Org mode (default)" org)
