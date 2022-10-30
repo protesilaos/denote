@@ -2639,36 +2639,41 @@ might change them without further notice.
   =PROPERTY-LIST= is a plist that consists of eight elements:
 
   1. =:extension= which is a string with the file extension
-     including the perion.
+     including the period.
 
-  2. =:front-matter= which is either a string passed to ~format~ or a
+  2. ~:date-function~ is a function that can format a date.  See the
+     functions ~denote--date-iso-8601~, ~denote--date-rfc3339~, and
+     ~denote--date-org-timestamp~. [This property is part of
+     {{{development-version}}}.]
+
+  3. =:front-matter= which is either a string passed to ~format~ or a
      variable holding such a string.  The ~format~ function accepts four
      arguments, which come from ~denote~ in this order: =TITLE=, =DATE=,
      =KEYWORDS=, =IDENTIFIER=.  Read the doc string of ~format~ on how
      to reorder arguments.
 
-  3. =:title-key-regexp= is a string with the regular expression that is
+  4. =:title-key-regexp= is a string with the regular expression that is
      used to retrieve the title line in a file.  The first line matching
      this regexp is considered the title line.
 
-  4. =:title-value-function= is the function used to format the raw
+  5. =:title-value-function= is the function used to format the raw
      title string for inclusion in the front matter (e.g. to surround it
      in quotes).  Use the ~identity~ function if no further processing
      is required.
 
-  5. =:title-value-reverse-function= is the function used to retrieve
+  6. =:title-value-reverse-function= is the function used to retrieve
      the raw title string from the front matter.  It performs the
      reverse of =:title-value-function=.
 
-  6. =:keywords-key-regexp= is a string with the regular expression used
+  7. =:keywords-key-regexp= is a string with the regular expression used
      to retrieve the keywords' line in the file.  The first line
      matching this regexp is considered the keywords' line.
 
-  7. =:keywords-value-function= is the function used to format the
+  8. =:keywords-value-function= is the function used to format the
      keywords' list of strings as a single string for inclusion in the
      front matter.
 
-  8. =:keywords-value-reverse-function= is the function used to retrieve
+  9. =:keywords-value-reverse-function= is the function used to retrieve
      the keywords' value from the front matter.  It performs the reverse
      of the =:keywords-value-function=.
 

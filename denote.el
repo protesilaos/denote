@@ -876,6 +876,7 @@ Consult the `denote-file-types' for how this is used."
 (defvar denote-file-types
   '((org
      :extension ".org"
+     :date-function denote--date-org-timestamp
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function identity
@@ -885,6 +886,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-yaml
      :extension ".md"
+     :date-function denote--date-rfc3339
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-surround-with-quotes
@@ -894,6 +896,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-toml
      :extension ".md"
+     :date-function denote--date-rfc3339
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
      :title-value-function denote-surround-with-quotes
@@ -903,6 +906,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (text
      :extension ".txt"
+     :date-function denote--date-iso-8601
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function identity
@@ -918,7 +922,11 @@ one of those specified in `denote-file-type'.
 PROPERTY-LIST is a plist that consists of 8 elements:
 
 - `:extension' which is a string with the file extension
-  including the perion.
+  including the period.
+
+- `:date-function' is a function that can format a date.  See the
+  functions `denote--date-iso-8601', `denote--date-rfc3339', and
+  `denote--date-org-timestamp'.
 
 - `:front-matter' which is either a string passed to `format' or
   a variable holding such a string.  The `format' function
@@ -953,6 +961,12 @@ PROPERTY-LIST is a plist that consists of 8 elements:
 
 If `denote-file-type' is nil, we use the first element of this
 list for new note creation.  The default is `org'.")
+
+(defun denote--date-format-function (file-type)
+  "Return date format function of FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :date-function))
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
@@ -1283,11 +1297,8 @@ provided by `denote'.  FILETYPE is one of the values of
     (cond
      ((stringp format)
       (format-time-string format date))
-     ((or (eq file-type 'markdown-toml)
-          (eq file-type 'markdown-yaml))
-      (denote--date-rfc3339 date))
-     ((eq file-type 'text)
-      (denote--date-iso-8601 date))
+     ((when-let ((fn (denote--date-format-function file-type)))
+        (funcall fn date)))
      (t
       (denote--date-org-timestamp date)))))
 
