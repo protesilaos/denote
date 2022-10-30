@@ -607,8 +607,12 @@ FILE must be an absolute path."
 
 (defun denote-directory-files ()
   "Return list of absolute file paths in variable `denote-directory'.
-The returned files only need to have an identifier.  This may
-include files that are not implied by `denote-file-type'.
+
+Files only need to have an identifier.  The return value may thus
+include file types that are not implied by `denote-file-type'.
+To limit the return value to text files, use the function
+`denote-directory-text-only-files'.
+
 Remember that the variable `denote-directory' accepts a dir-local
 value, as explained in its doc string."
   (mapcar
