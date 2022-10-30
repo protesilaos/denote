@@ -2384,9 +2384,10 @@ and/or the documentation string of `display-buffer'."
 (defconst denote-link--format-org "[[denote:%s][%s]]"
   "Format of Org link to note.")
 
-;; The %N$s notation is for `format'.
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
-  "Format of Markdown link to note.")
+  "Format of Markdown link to note.
+The %N$s notation is for `format' as the supplied arguments are
+IDENTIFIER and TITLE, in this order.")
 
 (defconst denote-link--format-id-only "[[denote:%s]]"
   "Format of identifier-only link to note.")
