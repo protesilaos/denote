@@ -925,43 +925,44 @@ Consult the `denote-file-types' for how this is used."
   "Alist of `denote-file-type' and their format properties.
 
 Each element is of the form (SYMBOL . PROPERTY-LIST).  SYMBOL is
-one of those specified in `denote-file-type'.
+one of those specified in `denote-file-type' or an arbitrary
+symbol that defines a new file type.
 
 PROPERTY-LIST is a plist that consists of 8 elements:
 
-- `:extension' which is a string with the file extension
-  including the period.
+- `:extension' is a string with the file extension including the
+  period.
 
 - `:date-function' is a function that can format a date.  See the
   functions `denote-date-iso-8601', `denote-date-rfc3339', and
   `denote-date-org-timestamp'.
 
-- `:front-matter' which is either a string passed to `format' or
-  a variable holding such a string.  The `format' function
-  accepts four arguments, which come from `denote' in this order:
-  TITLE, DATE, KEYWORDS, IDENTIFIER.  Read the doc string of
-  `format' on how to reorder arguments.
+- `:front-matter' is either a string passed to `format' or a
+  variable holding such a string.  The `format' function accepts
+  four arguments, which come from `denote' in this order: TITLE,
+  DATE, KEYWORDS, IDENTIFIER.  Read the doc string of `format' on
+  how to reorder arguments.
 
-- `:title-key-regexp' is a string with the regular expression
-  that is used to retrieve the title line in a file.  The first
-  line matching this regexp is considered the title line.
+- `:title-key-regexp' is a regular expression that is used to
+  retrieve the title line in a file.  The first line matching
+  this regexp is considered the title line.
 
 - `:title-value-function' is the function used to format the raw
   title string for inclusion in the front matter (e.g. to
-  surround it in quotes).  Use the `identity' function if no
+  surround it with quotes).  Use the `identity' function if no
   further processing is required.
 
 - `:title-value-reverse-function' is the function used to
   retrieve the raw title string from the front matter.  It
   performs the reverse of `:title-value-function'.
 
-- `:keywords-key-regexp' is a string with the regular expression
-  used to retrieve the keywords' line in the file.  The first
-  line matching this regexp is considered the keywords' line.
+- `:keywords-key-regexp' is a regular expression used to retrieve
+  the keywords' line in the file.  The first line matching this
+  regexp is considered the keywords' line.
 
 - `:keywords-value-function' is the function used to format the
-  keywords' list of strings as a single string for inclusion in
-  the front matter.
+  keywords' list of strings as a single string, with appropriate
+  delimiters, for inclusion in the front matter.
 
 - `:keywords-value-reverse-function' is the function used to
   retrieve the keywords' value from the front matter.  It
@@ -975,8 +976,8 @@ PROPERTY-LIST is a plist that consists of 8 elements:
   to match the aforementioned link format.  See the variables
   `denote-org-link-in-context-regexp',`denote-md-link-in-context-regexp'.
 
-If `denote-file-type' is nil, we use the first element of this
-list for new note creation.  The default is `org'.")
+If `denote-file-type' is nil, use the first element of this list
+for new note creation.  The default is `org'.")
 
 (defun denote--date-format-function (file-type)
   "Return date format function of FILE-TYPE."
