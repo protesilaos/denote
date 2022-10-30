@@ -2672,6 +2672,9 @@ might change them without further notice.
      the keywords' value from the front matter.  It performs the reverse
      of the =:keywords-value-function=.
 
+  If ~denote-file-type~ is nil, we use the first element of this list
+  for new note creation.  The default is ~org~.
+
 #+vindex: denote-org-front-matter
 + Variable ~denote-org-front-matter~ :: Specifies the Org front
   matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,

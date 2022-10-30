@@ -866,10 +866,7 @@ Consult the `denote-file-types' for how this is used."
     (split-string keywords-string "[:,\s]+" t "[][ \"']+")))
 
 (defvar denote-file-types
-  ;; If denote-file-type is nil, we use the first element
-  ;; of denote-file-types for new note creation, which we want
-  ;; to be org by default.
-  `((org
+  '((org
      :extension ".org"
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
@@ -944,7 +941,10 @@ PROPERTY-LIST is a plist that consists of 8 elements:
 
 - `:keywords-value-reverse-function' is the function used to
   retrieve the keywords' value from the front matter.  It
-  performs the reverse of the `:keywords-value-function'.")
+  performs the reverse of the `:keywords-value-function'.
+
+If `denote-file-type' is nil, we use the first element of this
+list for new note creation.  The default is `org'.")
 
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
