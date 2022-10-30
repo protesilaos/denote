@@ -2679,11 +2679,13 @@ might change them without further notice.
 
   10. =:link= is a string, or variable holding a string, that
       specifies the format of a link.  See the variables
-      ~denote-org-link-format~, ~denote-md-link-format~.
+      ~denote-org-link-format~, ~denote-md-link-format~.  [This
+      property is part of {{{development-version}}}.]
 
   11. =:link-in-context-regexp= is a regular expression that is used
       to match the aforementioned link format.  See the variables
       ~denote-org-link-in-context-regexp~, ~denote-md-link-in-context-regexp~.
+      [This property is part of {{{development-version}}}.]
 
   If ~denote-file-type~ is nil, we use the first element of this list
   for new note creation.  The default is ~org~.
@@ -2730,15 +2732,17 @@ might change them without further notice.
 #+vindex: denote-org-link-in-context-regexp
 + Variable ~denote-org-link-in-context-regexp~ :: Regexp to match an
   Org link in its context.  The format of such links is ~denote-org-link-format~.
+  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-md-link-in-context-regexp
 + Variable ~denote-md-link-in-context-regexp~ :: Regexp to match an
   Markdown link in its context.  The format of such links is ~denote-md-link-format~.
+  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-id-only-link-in-context-regexp
 + Variable ~denote-id-only-link-in-context-regexp~ :: Regexp to match
   an identifier-only link in its context.  The format of such links is
-  ~denote-id-only-link-format~.
+  ~denote-id-only-link-format~.  [This variable is part of {{{development-version}}}.]
 
 #+findex: denote-surround-with-quotes
 + Function ~denote-surround-with-quotes~ :: Surround string =S= with
