@@ -876,7 +876,7 @@ Consult the `denote-file-types' for how this is used."
 (defvar denote-file-types
   '((org
      :extension ".org"
-     :date-function denote--date-org-timestamp
+     :date-function denote-date-org-timestamp
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function identity
@@ -886,7 +886,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-yaml
      :extension ".md"
-     :date-function denote--date-rfc3339
+     :date-function denote-date-rfc3339
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-surround-with-quotes
@@ -896,7 +896,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (markdown-toml
      :extension ".md"
-     :date-function denote--date-rfc3339
+     :date-function denote-date-rfc3339
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
      :title-value-function denote-surround-with-quotes
@@ -906,7 +906,7 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
     (text
      :extension ".txt"
-     :date-function denote--date-iso-8601
+     :date-function denote-date-iso-8601
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function identity
@@ -925,8 +925,8 @@ PROPERTY-LIST is a plist that consists of 8 elements:
   including the period.
 
 - `:date-function' is a function that can format a date.  See the
-  functions `denote--date-iso-8601', `denote--date-rfc3339', and
-  `denote--date-org-timestamp'.
+  functions `denote-date-iso-8601', `denote-date-rfc3339', and
+  `denote-date-org-timestamp'.
 
 - `:front-matter' which is either a string passed to `format' or
   a variable holding such a string.  The `format' function
@@ -1277,19 +1277,34 @@ provided by `denote'.  FILETYPE is one of the values of
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
-(defun denote--date-rfc3339 (date)
+(defun denote-date-rfc3339 (date)
   "Format DATE using the RFC3339 specification."
   (replace-regexp-in-string
    "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
    (format-time-string "%FT%T%z" date)))
 
-(defun denote--date-org-timestamp (date)
+(define-obsolete-function-alias
+  'denote--date-rfc3339
+  'denote-date-rfc3339
+  "1.2.0")
+
+(defun denote-date-org-timestamp (date)
   "Format DATE using the Org inactive timestamp notation."
   (format-time-string "[%F %a %R]" date))
 
-(defun denote--date-iso-8601 (date)
+(define-obsolete-function-alias
+  'denote--date-org-timestamp
+  'denote-date-org-timestamp
+  "1.2.0")
+
+(defun denote-date-iso-8601 (date)
   "Format DATE according to ISO 8601 standard."
   (format-time-string "%F" date))
+
+(define-obsolete-function-alias
+  'denote--date-iso-8601
+  'denote-date-iso-8601
+  "1.2.0")
 
 (defun denote--date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
@@ -1300,7 +1315,7 @@ provided by `denote'.  FILETYPE is one of the values of
      ((when-let ((fn (denote--date-format-function file-type)))
         (funcall fn date)))
      (t
-      (denote--date-org-timestamp date)))))
+      (denote-date-org-timestamp date)))))
 
 (defun denote--prepare-note (title keywords date id directory file-type template)
   "Prepare a new note file.

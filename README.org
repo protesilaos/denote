@@ -2705,6 +2705,18 @@ might change them without further notice.
   quotes.  This can be used in ~denote-file-types~ to format front
   mattter.
 
+#+findex: denote-date-org-timestamp
++ Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
+  inactive timestamp notation.  [This function is part of {{{development-version}}}.]
+
+#+findex: denote-date-rfc3339
++ Function ~denote-date-rfc3339~ :: Format =DATE= using the RFC3339
+  specification.  [This function is part of {{{development-version}}}.]
+
+#+findex: denote-date-iso-8601
++ Function ~denote-date-iso-8601~ :: Format =DATE= according to ISO
+  8601 standard.  [This function is part of {{{development-version}}}.]
+
 #+findex: denote-trim-whitespace
 + Function ~denote-trim-whitespace~ :: Trim whitespace around string
   =S=.  This can be used in ~denote-file-types~ to format front
