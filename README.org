@@ -532,7 +532,7 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
-** Maintain separate directories for notes
+** Maintain separate directory silos for notes
 :PROPERTIES:
 :CUSTOM_ID: h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5
 :END:
