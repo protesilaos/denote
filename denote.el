@@ -2027,7 +2027,7 @@ files)."
       file
       (denote-title-prompt
        (denote--retrieve-title-or-filename file file-type))
-      (denote-keywords-prompt)
+      (denote-keywords-sort (denote-keywords-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (denote-retrieve-or-create-file-identifier file date))
