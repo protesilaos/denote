@@ -1727,7 +1727,8 @@ the new front matter, per `denote-rename-file-using-front-matter'."
              (new-keywords (if (and (stringp cur-keywords)
                                     (string-blank-p cur-keywords))
                                keywords
-                             (seq-uniq (append keywords cur-keywords)))))
+                             (denote-keywords-sort
+                              (seq-uniq (append keywords cur-keywords))))))
         (denote--rewrite-keywords file new-keywords file-type)
         (denote-rename-file-using-front-matter file t))
     (user-error "Buffer not visiting a Denote file")))
