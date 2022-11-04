@@ -3399,10 +3399,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Contributions to code or the manual :: Abin Simon, Alan Schmitt,
   Benjamin Kästner, Charanjit Singh, Clemens Radermacher, Colin
-  McLear, Damien Cassou, Elias Storms, Eshel Yaron, Florian, Hilde
-  Rhyne, Jack Baty, Jean-Philippe Gagné Guay, Jürgen Hötzel, Kaushal
-  Modi, Kyle Meyer, Marc Fargas, Noboru Ota (nobiot), Peter Prevos,
-  Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier.
+  McLear, Damien Cassou, Elias Storms, Eshel Yaron, Florian, Graham
+  Marlow, Hilde Rhyne, Jack Baty, Jean-Philippe Gagné Guay, Jürgen
+  Hötzel, Kaushal Modi, Kyle Meyer, Marc Fargas, Noboru Ota (nobiot),
+  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
