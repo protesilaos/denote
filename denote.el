@@ -379,10 +379,12 @@ current note."
 
 (make-obsolete 'denote-link-fontify-backlinks 'denote-backlinks-show-context "1.2.0")
 
-(defcustom denote-directory-exclusions nil
-  "Regular expression that excludes matching directories from denote-file-prompt.
+(defcustom denote-excluded-directories-regexp nil
+  "Regular expression of directories to exclude from file prompts.
+When nil (the default value) all directory names are shown.
 
-When nil (the default value) all directory names are allowed."
+File prompts are used by several commands, such as `denote-link'.
+The underlying function is `denote-file-prompt'."
   :group 'denote
   :package-version '(denote . "1.2.0")
   :type 'string)
@@ -558,13 +560,11 @@ and use one of the extensions implied by `denote-file-type'."
 
 (defun denote-file-directory-p (file)
   "Return non-nil if FILE is a directory.
-You can exclude certain directories by customizing the
-`denote-directory-exclusions' regular expresion."
-  (and
-   (file-directory-p file)
-   (if denote-directory-exclusions
-       (not (string-match-p denote-directory-exclusions file))
-     t)))
+Omit FILE if it matches the value of user option
+`denote-excluded-directories-regexp'."
+  (and (file-directory-p file)
+       denote-excluded-directories-regexp
+       (not (string-match-p denote-excluded-directories-regexp file))))
 
 (defun denote-file-has-supported-extension-p (file)
   "Return non-nil if FILE has supported extension.
