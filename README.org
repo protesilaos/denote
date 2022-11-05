@@ -648,6 +648,31 @@ to experiment with the best setup for their workflow.
 Feel welcome to ask for help if the information provided herein is not
 sufficient.  The manual shall be expanded accordingly.
 
+** Exclude certain directories from all operations
+:PROPERTIES:
+:CUSTOM_ID: h:8458f716-f9c2-4888-824b-2bf01cc5850a
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-excluded-directories-regexp
+The user option ~denote-excluded-directories-regexp~ instructs all
+Denote functions that read or check file/directory names to omit
+directories that match the given regular expression.  The regexp needs
+to match only the name of the directory, not its full path.
+
+Affected operations include file prompts and functions that return the
+available files in the value of the user option ~denote-directory~
+([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
+
+File prompts are used by several commands, such as ~denote-link~ and
+~denote-subdirectory~.
+
+Functions that check for files include ~denote-directory-files~ and
+~denote-directory-subdirectories~.
+
+[[#h:c916d8c5-540a-409f-b780-6ccbd90e088e][For developers or advanced users]].
+
 * Renaming files
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
@@ -2313,7 +2338,7 @@ Everything is in place to set up the package.
 (setq denote-sort-keywords t)
 (setq denote-file-type nil) ; Org is the default, set others here
 (setq denote-prompts '(title keywords))
-
+(setq denote-excluded-directories-regexp nil)
 
 ;; Pick dates, where relevant, with Org's advanced interface:
 (setq denote-date-prompt-use-org-read-date t)
@@ -2514,7 +2539,9 @@ might change them without further notice.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
-  subdirectories of the variable ~denote-directory~.  Note that the
+  subdirectories in variable ~denote-directory~. Omit dotfiles (such
+  as .git) unconditionally.  Also exclude whatever matches
+  ~denote-excluded-directories-regexp~.  Note that the
   ~denote-directory~ accepts a directory-local value for what we call
   "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 

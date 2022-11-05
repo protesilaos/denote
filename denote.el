@@ -380,11 +380,17 @@ current note."
 (make-obsolete 'denote-link-fontify-backlinks 'denote-backlinks-show-context "1.2.0")
 
 (defcustom denote-excluded-directories-regexp nil
-  "Regular expression of directories to exclude from file prompts.
-When nil (the default value) all directory names are shown.
+  "Regular expression of directories to exclude from all operations.
+Omit matching directories from file prompts and also exclude them
+from all functions that check the contents of the variable
+`denote-directory'.  The regexp needs to match only the name of
+the directory, not its full path.
 
-File prompts are used by several commands, such as `denote-link'.
-The underlying function is `denote-file-prompt'."
+File prompts are used by several commands, such as `denote-link'
+and `denote-subdirectory'.
+
+Functions that check for files include `denote-directory-files'
+and `denote-directory-subdirectories'."
   :group 'denote
   :package-version '(denote . "1.2.0")
   :type 'string)
@@ -646,7 +652,13 @@ value, as explained in its doc string."
    (seq-remove
     (lambda (f)
       (not (denote-file-has-identifier-p f)))
-    (directory-files-recursively (denote-directory) directory-files-no-dot-files-regexp t))))
+    (directory-files-recursively
+     (denote-directory)
+     directory-files-no-dot-files-regexp
+     :include-directories
+     (lambda (f)
+       (when-let ((regexp denote-excluded-directories-regexp))
+         (not (string-match-p regexp f))))))))
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
@@ -659,12 +671,17 @@ Filter `denote-directory-files' using `denote-file-is-note-p'."
   "1.0.0")
 
 (defun denote-directory-subdirectories ()
-  "Return list of subdirectories in variable `denote-directory'."
+  "Return list of subdirectories in variable `denote-directory'.
+Omit dotfiles (such as .git) unconditionally.  Also exclude
+whatever matches `denote-excluded-directories-regexp'."
   (seq-remove
    (lambda (filename)
-     (or (not (file-directory-p filename))
-         (string-match-p "\\`\\." (denote-get-file-name-relative-to-denote-directory filename))
-         (string-match-p "/\\." (denote-get-file-name-relative-to-denote-directory filename))))
+     (let ((rel (denote-get-file-name-relative-to-denote-directory filename)))
+       (or (not (file-directory-p filename))
+           (string-match-p "\\`\\." rel)
+           (string-match-p "/\\." rel)
+           (when-let ((regexp denote-excluded-directories-regexp))
+             (string-match-p regexp rel)))))
    (directory-files-recursively (denote-directory) ".*" t t)))
 
 (define-obsolete-function-alias
