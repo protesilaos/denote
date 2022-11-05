@@ -763,8 +763,8 @@ In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
 output is sorted with `string-lessp'.
 
-To sort the return value, use `denote-keywords-sort'."
-  (denote--keywords-crm (denote-keywords)))
+Process the return value with `denote-keywords-sort'."
+  (denote-keywords-sort (denote--keywords-crm (denote-keywords))))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
@@ -1496,7 +1496,9 @@ When called from Lisp, all arguments are optional.
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
-         (kws (denote-keywords-sort keywords))
+         (kws (if (called-interactively-p 'interactive)
+                  keywords
+                (denote-keywords-sort keywords)))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
@@ -1735,7 +1737,7 @@ When called from Lisp, KEYWORDS is a list of strings.
 
 Rename the file without further prompt so that its name reflects
 the new front matter, per `denote-rename-file-using-front-matter'."
-  (interactive (list (denote-keywords-sort (denote-keywords-prompt))))
+  (interactive (list (denote-keywords-prompt)))
   ;; A combination of if-let and let, as we need to take into account
   ;; the scenario in which there are no keywords yet.
   (if-let* ((file (buffer-file-name))
@@ -2093,7 +2095,7 @@ The operation does the following:
   the user option `denote-file-type')."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-sort (denote-keywords-prompt))))
+      (let ((keywords (denote-keywords-prompt)))
         (when (yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")
           (progn
             (dolist (file marks)
@@ -2238,7 +2240,7 @@ relevant front matter."
    (list
     (buffer-file-name)
     (denote-title-prompt)
-    (denote-keywords-sort (denote-keywords-prompt))))
+    (denote-keywords-prompt)))
   (when (denote-file-is-writable-and-supported-p file)
     (denote--add-front-matter
      file title keywords
@@ -3139,7 +3141,7 @@ arbitrary text).
 
 Consult the manual for template samples."
   (let* ((title (denote-title-prompt))
-         (keywords (denote-keywords-sort (denote-keywords-prompt)))
+         (keywords (denote-keywords-prompt))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
                         (format-time-string denote-id-format nil) 'org)))
