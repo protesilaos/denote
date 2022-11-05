@@ -657,8 +657,11 @@ value, as explained in its doc string."
      directory-files-no-dot-files-regexp
      :include-directories
      (lambda (f)
-       (when-let ((regexp denote-excluded-directories-regexp))
-         (not (string-match-p regexp f))))))))
+       (cond
+        ((when-let ((regexp denote-excluded-directories-regexp))
+           (not (string-match-p regexp f))))
+        ((file-readable-p f))
+        (t)))))))
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
