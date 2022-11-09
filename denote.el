@@ -2928,7 +2928,7 @@ inserts links with just the identifier."
     current-prefix-arg))
   (let* ((current-file (buffer-file-name))
          (file-type (denote-filetype-heuristics current-file)))
-    (if-let ((files (assoc-delete-all
+    (if-let ((files (delete
                      current-file
                      (denote-directory-files-matching-regexp regexp)))
              (beg (point)))
@@ -2955,7 +2955,7 @@ inserts links with just the identifier."
          (file-type (denote-filetype-heuristics current-file))
          (current-id (denote--link-in-context-regexp file-type))
          (linked-files (denote-link--expand-identifiers current-id)))
-  (if-let* ((found-files (assoc-delete-all
+  (if-let* ((found-files (delete
                           current-file
                           (denote-directory-files-matching-regexp regexp)))
               (final-files (seq-difference found-files linked-files))
