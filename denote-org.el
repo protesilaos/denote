@@ -37,6 +37,7 @@
 
 ;;; Org-mode Subtree to new note
 
+;;;###autoload
 (defun denote-org-extract-subtree ()
   "Create new Denote note as an Org file using current Org subtree.
 
