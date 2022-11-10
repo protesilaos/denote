@@ -88,10 +88,10 @@ This command deletes the original subtree."
 ;;
 ;; Inserting a block can be done via the Org-mode entry point
 ;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
-;; the list, or directly by calling 'denote-org-dblock-insert-denote-links'.
+;; the list, or directly by calling 'denote-org-dblock-insert-links'.
 ;;
 ;;;###autoload
-(defun denote-org-dblock-insert-denote-links (regexp)
+(defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
   (interactive
    ;; TODO 2022-11-10: Should we make this a `read-regexp' as is the
@@ -103,7 +103,7 @@ This command deletes the original subtree."
                            :missing-only 't))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-denote-links)
+(org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
 
 ;; FIXME 2022-11-10: The `denote-org-dblock-write-links' is not used
 ;; anywhere.  We need to check again.
@@ -111,7 +111,7 @@ This command deletes the original subtree."
 ;; By using the `org-dblock-write:' format, Org-mode knows how to
 ;; compute the dynamic block. Inner workings of this function copied
 ;; from `denote-link-add-links'.
-(defun denote-org-dblock-write-denote-links (params)
+(defun denote-org-dblock-write-links (params)
   "Write denote links with PARAMS in org dynamic block."
   ;; TODO 2022-11-10: check doc string.  I simply added something here
   ;; to placate the compiler.
@@ -142,16 +142,16 @@ This command deletes the original subtree."
 ;; (such as ':missing-only').
 
 ;;;###autoload
-(defun org-dblock-insert-denote-backlinks ()
+(defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
   (interactive)
   (org-create-dblock (list :name "denote-backlinks"))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-backlinks" 'org-dblock-insert-denote-backlinks)
+(org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
 ;;;###autoload
-(defun org-dblock-write:denote-backlinks (params)
+(defun denote-org-dblock-write-backlinks (params)
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
               (files (denote--retrieve-files-in-xrefs
