@@ -150,6 +150,9 @@ This command deletes the original subtree."
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
+;; FIXME 2022-11-10: Add doc string to the following function and make
+;; sure the PARAMS are used.
+
 (defun denote-org-dblock-write-backlinks (params)
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
