@@ -150,7 +150,6 @@ This command deletes the original subtree."
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
-;;;###autoload
 (defun denote-org-dblock-write-backlinks (params)
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
