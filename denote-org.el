@@ -88,19 +88,22 @@ This command deletes the original subtree."
 ;;
 ;; Inserting a block can be done via the Org-mode entry point
 ;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
-;; the list, or directly by calling 'org-dblock-insert-denote-links'.
+;; the list, or directly by calling 'denote-org-dblock-insert-denote-links'.
 ;;
 ;;;###autoload
-(defun org-dblock-insert-denote-links (regexp)
-  "Insert new Org dynamic block to insert denote links."
+(defun denote-org-dblock-insert-denote-links (regexp)
+  "Create Org dynamic block to insert Denote links matching REGEXP."
   (interactive
+   ;; TODO 2022-11-10: Should we make this a `read-regexp' as is the
+   ;; case with `denote-link-add-missing-links'?  Also add the
+   ;; minibuffer history.
     (list (read-string "Search for (include _ for keyword): ")))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
                            :missing-only 't))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-links" 'org-dblock-insert-denote-links)
+(org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-denote-links)
 
 ;; By using the `org-dblock-write:' format, Org-mode knows how to
 ;; compute the dynamic block. Inner workings of this function copied
