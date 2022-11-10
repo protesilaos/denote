@@ -30,6 +30,8 @@
 ;; Org-mode.  The file should be required after both denote.el and
 ;; Org-mode are loaded.
 
+;;; Code:
+
 (require 'denote)
 (require 'org)
 
