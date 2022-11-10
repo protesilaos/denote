@@ -26,9 +26,9 @@
 
 ;;; Commentary:
 ;;
-;; This file provides extensions to Denote that are specific to
-;; Org-mode.  The file should be required after both denote.el and
-;; Org-mode are loaded.
+;; This file provides specialized extensions to Denote that are
+;; specific to Org-mode.  By "specialized", we refer to features that
+;; are likely not to be used in casual workflows.
 
 ;;; Code:
 
