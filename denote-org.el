@@ -43,12 +43,13 @@
 The Org-tags are used as note keywords, and the subtree title as note title.
 This command deletes the original subtree."
   (interactive)
-  (let ((text (org-get-entry))
-        (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment))
-        (tags (org-get-tags)))
-    (delete-region (org-entry-beginning-position) (org-entry-end-position))
-    (denote heading tags 'org)
-    (insert text)))
+  (if-let ((text (org-get-entry))
+           (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
+      (progn
+        (delete-region (org-entry-beginning-position) (org-entry-end-position))
+        (denote heading (org-get-tags) 'org)
+        (insert text))
+    (user-error "No subtree to extract; aborting")))
 
 ;;; Org-mode Dynamic blocks
 
