@@ -30,6 +30,9 @@
 ;; Org-mode. The file should be required after both denote.el and
 ;; Org-mode are loaded.
 
+(require 'denote)
+(require 'org)
+
 ;;; Org-mode Subtree to new note
 
 (defun denote-org-extract-subtree ()
