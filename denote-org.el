@@ -105,18 +105,25 @@ This command deletes the original subtree."
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-denote-links)
 
+;; FIXME 2022-11-10: The `denote-org-dblock-write-links' is not used
+;; anywhere.  We need to check again.
+
 ;; By using the `org-dblock-write:' format, Org-mode knows how to
 ;; compute the dynamic block. Inner workings of this function copied
 ;; from `denote-link-add-links'.
-;;
-;;;###autoload
-(defun org-dblock-write:denote-links (params)
+(defun denote-org-dblock-write-denote-links (params)
+  "Write denote links with PARAMS in org dynamic block."
+  ;; TODO 2022-11-10: check doc string.  I simply added something here
+  ;; to placate the compiler.
   (let ((regexp (plist-get params :regexp))
         (missing-only (plist-get params :missing-only))
         (block-name (plist-get params :block-name))
         (current-file (buffer-file-name)))
     (when block-name
-      (insert "#+NAME: " block-name "\n"))
+      (insert "#+name: " block-name "\n"))
+    ;; TODO 2022-11-10: Perhaps we can tweak the code so that instead
+    ;; of `join-line' we delete empty lines within the affected
+    ;; region.
     (if missing-only
         (progn
           (denote-link-add-missing-links regexp)
