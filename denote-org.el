@@ -6,8 +6,8 @@
 ;; Maintainer: Denote Development <~protesilaos/denote@lists.sr.ht>
 ;; URL: https://git.sr.ht/~protesilaos/denote
 ;; Mailing-List: https://lists.sr.ht/~protesilaos/denote
-;; Version: 0.0.1
-;; Package-Requires: ((emacs "27.2"))
+;; Version: 1.1.0
+;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -27,7 +27,7 @@
 ;;; Commentary:
 ;;
 ;; This file provides extensions to Denote that are specific to
-;; Org-mode. The file should be required after both denote.el and
+;; Org-mode.  The file should be required after both denote.el and
 ;; Org-mode are loaded.
 
 (require 'denote)
