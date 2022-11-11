@@ -59,24 +59,27 @@
 ;; contents of the block with links to notes matching the search
 ;; ':regexp'. See also the denote manual on 'denote-link-add-links'.
 ;;
-;; To only include "missing links" (i.e., links to notes that the
-;; current buffer doesn't already link to), add ':missing-only t' to
-;; the block's header.
-;;
-;; With ':block-name "string"', include a name in the Dynamic block,
-;; formated as '#+NAME: string'. This enables users to use the Dynamic
-;; block as inputs for further computation, e.g. in Org source blocks.
-;;
-;; In summary, Org Dynamic blocks of the denote-links type can have
-;; three arguments:
-;;  1. :regexp "string" -- the search input (required)
-;;  2. :missing-only t  -- to only include missing links
-;;  3. :block-name "n"  -- to include a name for later processing
-;;
 ;; Inserting a block can be done via the Org-mode entry point
 ;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
 ;; the list, or directly by calling 'denote-org-dblock-insert-links'.
 ;;
+;;
+;; Org Dynamic blocks of the denote-links type can have three
+;; arguments:
+;;  1. :regexp "string" -- the search input (required)
+;;  2. :missing-only t  -- to only include missing links
+;;  3. :block-name "n"  -- to include a name for later processing
+;;
+;; By default ':missing-only t' is included as a parameter in the
+;; block's header, so that only "missing links" are included (i.e.,
+;; links to notes that the current buffer doesn't already link to).
+;; Remove this parameter or set to 'nil' to include all matching
+;; notes.
+;;
+;; With ':block-name "string"' include a '#+NAME: string' line in the
+;; Dynamic block. This allows use of the Dynomic block output as input
+;; for further computation, e.g. in Org source blocks.
+
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
