@@ -1,4 +1,4 @@
-;;; denote-org.el --- Org-functionalities in addition to denote.el -*- lexical-binding: t -*-
+;;; denote-org-dblock.el --- Org Dynamic blocks for denote.el -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022  Free Software Foundation, Inc.
 
@@ -26,31 +26,18 @@
 
 ;;; Commentary:
 ;;
-;; This file provides specialized extensions to Denote that are
-;; specific to Org-mode.  By "specialized", we refer to features that
-;; are likely not to be used in casual workflows.
+;; This file provides a specialized Org-mode extension to Denote: it
+;; introduces Org Dynamic blocks that collect links to Denote notes
+;; based on a provided regexp. In short, this automates
+;; 'denote-link-add-links' and 'denote-link-add-backlinks'.
+;;
+;; For more information, read the commented code below or refer to the
+;; Denote manual
 
 ;;; Code:
 
 (require 'denote)
 (require 'org)
-
-;;; Org-mode Subtree to new note
-
-;;;###autoload
-(defun denote-org-extract-subtree ()
-  "Create new Denote note as an Org file using current Org subtree.
-
-The Org-tags are used as note keywords, and the subtree title as note title.
-This command deletes the original subtree."
-  (interactive)
-  (if-let ((text (org-get-entry))
-           (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
-      (progn
-        (delete-region (org-entry-beginning-position) (org-entry-end-position))
-        (denote heading (org-get-tags) 'org)
-        (insert text))
-    (user-error "No subtree to extract; aborting")))
 
 ;;; Org-mode Dynamic blocks
 
