@@ -81,10 +81,8 @@
 (defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
   (interactive
-   ;; TODO 2022-11-10: Should we make this a `read-regexp' as is the
-   ;; case with `denote-link-add-missing-links'?  Also add the
-   ;; minibuffer history.
-    (list (read-string "Search for (include _ for keyword): ")))
+    (list
+     (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
                            :missing-only 't))
