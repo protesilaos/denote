@@ -92,16 +92,12 @@
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
 
-;; FIXME 2022-11-10: The `denote-org-dblock-write-links' is not used
-;; anywhere.  We need to check again.
-
 ;; By using the `org-dblock-write:' format, Org-mode knows how to
 ;; compute the dynamic block. Inner workings of this function copied
 ;; from `denote-link-add-links'.
-(defun denote-org-dblock-write-links (params)
-  "Write denote links with PARAMS in org dynamic block."
-  ;; TODO 2022-11-10: check doc string.  I simply added something here
-  ;; to placate the compiler.
+(defun org-dblock-write:denote-links (params)
+  "Function to update `denote-links' Org Dynamic blocks.
+Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let ((regexp (plist-get params :regexp))
         (missing-only (plist-get params :missing-only))
         (block-name (plist-get params :block-name))
@@ -137,10 +133,9 @@
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
-;; FIXME 2022-11-10: Add doc string to the following function and make
-;; sure the PARAMS are used.
-
-(defun denote-org-dblock-write-backlinks (params)
+(defun org-dblock-write:denote-backlinks (params)
+  "Function to update `denote-backlinks' Org Dynamic blocks.
+Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
               (files (denote--retrieve-files-in-xrefs
