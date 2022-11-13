@@ -144,5 +144,5 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
     (insert (denote-link--prepare-links files file nil))
     (join-line))) ;; remove trailing empty line
 
-(provide 'denote-org)
+(provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
