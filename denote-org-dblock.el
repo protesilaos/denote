@@ -28,7 +28,7 @@
 ;;
 ;; This file provides a specialized Org-mode extension to Denote: it
 ;; introduces Org Dynamic blocks that collect links to Denote notes
-;; based on a provided regexp. In short, this automates
+;; based on a provided regexp.  In short, this automates
 ;; 'denote-link-add-links' and 'denote-link-add-backlinks'.
 ;;
 ;; For more information, read the commented code below or refer to the
@@ -145,4 +145,4 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
     (join-line))) ;; remove trailing empty line
 
 (provide 'denote-org)
-;;; denote-org.el ends here
+;;; denote-org-dblock.el ends here
