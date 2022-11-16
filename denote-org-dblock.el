@@ -134,7 +134,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
-(defun org-dblock-write:denote-backlinks (params)
+(defun org-dblock-write:denote-backlinks (_params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
