@@ -77,7 +77,7 @@
 ;; notes.
 ;;
 ;; With ':block-name "string"' include a '#+NAME: string' line in the
-;; Dynamic block. This allows use of the Dynomic block output as input
+;; Dynamic block. This allows use of the Dynamic block output as input
 ;; for further computation, e.g. in Org source blocks.
 
 ;;;###autoload
