@@ -1649,6 +1649,100 @@ multimedia in a systematic way (and, perhaps, use them as attachments
 for the notes Denote produces if you are writing Org notes and are using
 its standand attachments' facility).
 
+* Use Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+Denote can optionally integrate with Org mode's "dynamic blocks"
+facility.  Start by loading the relevant library:
+
+#+begin_src emacs-lisp
+;; Register Denote's Org dynamic blocks
+(require 'denote-org-dblock)
+#+end_src
+
+A dynamic block gets its contents by evaluating a given function.  The
+function and its parameters are stated in the opening =#+BEGIN= line
+of the block.  Typing =C-c C-c= with point on that line runs the
+function, with the given arguments, and populates the block's contents
+accordingly.
+
+Denote leverages Org dynamic blocks to streamline the inclusion of (i)
+links that match a given search query and (ii) backlinks to the
+current note.
+
+The two blocks that Denote registers are named =denote-links= and
+=denote-backlinks=.  The latter does not accept any parameters, while
+the former does, which we explain below by also demonstrating how
+dynamic blocks are written.
+
+A dynamic block looks like this:
+
+: #+BEGIN: denote-links :regexp "_journal"
+: 
+: #+END:
+
+Here we have the =denote-links= type, with the =:regexp= parameter.
+The value of the =:regexp= parameter iss the same as that of the
+command ~denote-link-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  The
+linked entry provides practical examples of patterns that make good
+use of Denote's file-naming scheme ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+In this example, we instruct Org to produce a list of all notes that
+include the =journal= keyword in their file name (keywords in file
+names are prefixed with the underscore).  So the following:
+
+: #+BEGIN: denote-links :regexp "_journal"
+: 
+: #+END:
+
+Becomes something like this once we type =C-c C-c= with point on the
+=#+BEGIN= line (Org makes the links look prettier by default):
+
+: #+BEGIN: denote-links :regexp "_journal"
+: - [[denote:20220616T182958][Feeling butterflies in your stomach]]
+: - [[denote:20220818T221036][Between friend and stranger]]
+: #+END:
+
+The dynamic block takes care to keep the list in order and to add any
+missing links.
+
+Depending on one's workflow, an additional dynamic block can be
+included in the file to list only those links which are missing from
+the original dynamic block (e.g. due to new notes being added over
+time).  Adding the =:missing-only= parameter with a non-~nil~ value
+achieves this effect.  The =#+BEGIN= line looks like this:
+
+: #+BEGIN: denote-links :regexp "_journal" :missing-only t
+
+The =denote-links= block can also accept a =:block-name= parameter
+with a string value that names the block.  Once the dynamic block is
+evaluated, a =#+NAME= is prepended to the block's contents.  This can
+be referenced in other source blocks to parse the named block's
+contents as input of another process.  The details are beyond the
+scope of Denote.
+
+As for the =denote-backlinks= dynamic block type, it simply produces a
+list of notes that link to the current file.  It accepts no parameters
+and looks like this:
+
+: #+BEGIN: denote-backlinks
+: 
+: #+END:
+
+The Org manual describes the technicalities of Dynamic Blocks.
+Evaluate:
+
+#+begin_src emacs-lisp
+(info "(org) Dynamic Blocks")
+#+end_src
+
+Dynamic blocks are particularly useful for metanote entries that
+reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]).
+
 * Minibuffer histories
 :PROPERTIES:
 :CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651
