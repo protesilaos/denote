@@ -661,7 +661,8 @@ value, as explained in its doc string."
         ((when-let ((regexp denote-excluded-directories-regexp))
            (not (string-match-p regexp f))))
         ((file-readable-p f))
-        (t)))))))
+        (t)))
+     :follow-symlinks))))
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
