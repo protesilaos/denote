@@ -3189,5 +3189,57 @@ defined in `project'."
               (string-prefix-p root dir)) ; or its subdirectory
       (cons 'denote root))))
 
+;;;; Xref integration
+;;   Set `xref-backend-functions' like this.
+;;     (add-hook 'xref-backend-functions #'denote--xref-backend)
+;;
+;;   You can tell xref-references not to prompt by adding the following:
+;;     (add-to-list 'xref-prompt-for-identifier #'xref-find-references
+;;     :append)
+
+(defun denote--xref-backend ()
+  "Return denote if `default-directory' is in denote directory."
+  (when (denote--dir-in-denote-directory-p default-directory)
+    'denote))
+
+(cl-defmethod xref-backend-identifier-at-point ((_backend (eql 'denote)))
+  "Return the \"thing\" at point.
+The same logic as `elisp-mode'.  The \"thing\" is assumed to be a
+Denote identifier, but can be any word.  The method checks this
+and errors and if the word at point is not a Denote identifer."
+  (let ((bounds (bounds-of-thing-at-point 'word)))
+    (and bounds
+         (let ((id (buffer-substring-no-properties
+                    (car bounds) (cdr bounds))))
+           (if (string-match-p denote-id-regexp id)
+               ;; Use a property to transport the location of the identifier.
+               (propertize id 'pos (car bounds))
+             (user-error "%s is not a Denote identifier" id))))))
+
+(cl-defmethod xref-backend-definitions ((_backend (eql 'denote)) identifier)
+  "Return xref for the note IDENTIFIER points to."
+  (let ((file (denote-get-path-by-id identifier)))
+    (when file
+      (if (file-equal-p file (buffer-file-name (current-buffer)))
+          (user-error "Identifier points to the current buffer")
+        ;; Without the message, Xref will report that the ID does not
+        ;; exist, which is incorrect in this case.
+        (list (xref-make nil (xref-make-file-location file 0 0)))))))
+
+(cl-defgeneric xref-backend-references ((_backend (eql 'denote)) identifier)
+  "Return list of xrefs where IDENTIFIER is referenced.
+This include the definition itself."
+  (xref-matches-in-files identifier (denote-directory-text-only-files)))
+
+(cl-defmethod xref-backend-identifier-completion-table ((_backend
+                                                         (eql 'denote)))
+  "Return list of Denote identifers as completion table."
+
+  (let* ((project-find-functions #'denote-project-find)
+         (project (project-current nil (denote-directory)))
+         (dirs (list (project-root project)))
+         (all-files (project-files project dirs)))
+    (mapcar #'denote-retrieve-filename-identifier all-files)))
+
 (provide 'denote)
 ;;; denote.el ends here
