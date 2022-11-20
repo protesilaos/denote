@@ -697,7 +697,11 @@ whatever matches `denote-excluded-directories-regexp'."
   "Return absolute path of ID string in `denote-directory-files'."
   (seq-find
    (lambda (f)
-     (string-prefix-p id (file-name-nondirectory f)))
+     (and (string-prefix-p id (file-name-nondirectory f))
+          ;; The directory can contain exported html and other
+          ;; derivative files that have the same name sans extetion as
+          ;; the note.
+          (denote-file-is-note-p f)))
    (denote-directory-files)))
 
 (define-obsolete-function-alias
