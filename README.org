@@ -3123,6 +3123,10 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
 + Jeremy Friesen, /Migration Plan for Org-Roam Notes to Denote/,
   2022-10-02, <https://takeonrules.com/2022/10/02/migration-plan-for-org-roam-notes-to-denote/>
 
++ Jeremy Friesen: /Project Dispatch Menu with Org Mode Metadata,
+  Denote, and Transient/, 2022-11-19,
+  <https://takeonrules.com/2022/11/19/project-dispatch-menu-with-org-mode-metadata-denote-and-transient/>
+
 + Peter Prevos, /Simulating Text Files with R to Test the Emacs Denote
   Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>.
 
