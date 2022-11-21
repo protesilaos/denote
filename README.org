@@ -3108,26 +3108,26 @@ includes publications that show how people configure their note-taking
 setup.  If you have a blog post, video, or configuration file about
 Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
-+ David Wilson (SystemCrafters), /Generating a Blog Site from Denote
++ David Wilson (SystemCrafters): /Generating a Blog Site from Denote
   Entries/, 2022-09-09, <https://www.youtube.com/watch?v=5R7ad5xz5wo>.
 
-+ David Wilson (SystemCrafters), /Trying Out Prot's Denote, an Org
++ David Wilson (SystemCrafters): /Trying Out Prot's Denote, an Org
   Roam Alternative?/, 2022-07-15, <https://www.youtube.com/watch?v=QcRY_rsX0yY>.
 
-+ Jeremy Friesen, /Denote Emacs Configuration/, 2022-10-02,
++ Jeremy Friesen: /Denote Emacs Configuration/, 2022-10-02,
   <https://takeonrules.com/2022/10/09/denote-emacs-configuration/>
 
-+ Jeremy Friesen, /Exploring the Denote Emacs Package/, 2022-10-01,
++ Jeremy Friesen: /Exploring the Denote Emacs Package/, 2022-10-01,
   <https://takeonrules.com/2022/10/01/exploring-the-denote-emacs-package/>
 
-+ Jeremy Friesen, /Migration Plan for Org-Roam Notes to Denote/,
++ Jeremy Friesen: /Migration Plan for Org-Roam Notes to Denote/,
   2022-10-02, <https://takeonrules.com/2022/10/02/migration-plan-for-org-roam-notes-to-denote/>
 
 + Jeremy Friesen: /Project Dispatch Menu with Org Mode Metadata,
   Denote, and Transient/, 2022-11-19,
   <https://takeonrules.com/2022/11/19/project-dispatch-menu-with-org-mode-metadata-denote-and-transient/>
 
-+ Peter Prevos, /Simulating Text Files with R to Test the Emacs Denote
++ Peter Prevos: /Simulating Text Files with R to Test the Emacs Denote
   Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>.
 
 * Alternatives to Denote
