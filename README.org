@@ -1672,8 +1672,8 @@ and populates the block's contents accordingly.
 
 Denote leverages Org dynamic blocks to streamline the inclusion of (i)
 links to notes whose name matches a given search query (like
-~denote-link-add-links~) and (ii) backlinks to the current note (like
-~denote-link-add-backlinks~).
+~denote-link-add-links~) and (ii) backlinks to the current note (similar to
+~denote-link-find-backlink~).
 
 These two types of blocks are named =denote-links= and =denote-backlinks=
 respectively.  The latter does not accept any parameters, while the

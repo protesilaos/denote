@@ -29,7 +29,7 @@
 ;; This file provides a specialized Org-mode extension to Denote: it
 ;; introduces Org Dynamic blocks that collect links to Denote notes
 ;; based on a provided regexp.  In short, this automates
-;; 'denote-link-add-links' and 'denote-link-add-backlinks'.
+;; 'denote-link-add-links'.
 ;;
 ;; For more information, read the commented code below or refer to the
 ;; Denote manual
