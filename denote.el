@@ -3226,7 +3226,7 @@ and errors and if the word at point is not a Denote identifer."
         ;; exist, which is incorrect in this case.
         (list (xref-make nil (xref-make-file-location file 0 0)))))))
 
-(cl-defgeneric xref-backend-references ((_backend (eql 'denote)) identifier)
+(cl-defmethod xref-backend-references ((_backend (eql 'denote)) identifier)
   "Return list of xrefs where IDENTIFIER is referenced.
 This include the definition itself."
   (xref-matches-in-files identifier (denote-directory-text-only-files)))
