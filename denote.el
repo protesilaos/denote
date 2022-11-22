@@ -661,7 +661,8 @@ value, as explained in its doc string."
         ((when-let ((regexp denote-excluded-directories-regexp))
            (not (string-match-p regexp f))))
         ((file-readable-p f))
-        (t)))))))
+        (t)))
+     :follow-symlinks))))
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
@@ -696,7 +697,11 @@ whatever matches `denote-excluded-directories-regexp'."
   "Return absolute path of ID string in `denote-directory-files'."
   (seq-find
    (lambda (f)
-     (string-prefix-p id (file-name-nondirectory f)))
+     (and (string-prefix-p id (file-name-nondirectory f))
+          ;; The directory can contain exported html and other
+          ;; derivative files that have the same name sans extetion as
+          ;; the note.
+          (denote-file-is-note-p f)))
    (denote-directory-files)))
 
 (define-obsolete-function-alias
@@ -719,10 +724,13 @@ whatever matches `denote-excluded-directories-regexp'."
 (defun denote-file-prompt (&optional initial-text)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
-  (read-file-name "Select note: " (denote-directory) nil nil initial-text
-                  (lambda (f)
-                    (or (denote-file-has-identifier-p f)
-                        (denote-file-directory-p f)))))
+  (let* ((project-find-functions #'denote-project-find)
+         (project (project-current nil (denote-directory)))
+         (dirs (list (project-root project)))
+         (all-files (project-files project dirs))
+         (completion-ignore-case read-file-name-completion-ignore-case))
+    (funcall project-read-file-name-function
+             "Select note: " all-files nil 'denote--title-history initial-text)))
 
 (define-obsolete-function-alias
   'denote--retrieve-read-file-prompt
@@ -1245,49 +1253,15 @@ Run `denote-desluggify' on title if the extraction is sucessful."
       title
     (denote-retrieve-filename-title file)))
 
-(defun denote--retrieve-xrefs (identifier &optional file)
-  "Return xrefs of IDENTIFIER in variable `denote-directory'.
-The xrefs are returned as an alist of the form:
-
-    ((GROUP . (XREF ...)) ...)
-
-GROUP is an absolute file name as retrieved by Xref facility.
-
-When FILE is present, remove its GROUP from the alist."
-  (let ((alist
-         (xref--alistify
-          (xref-matches-in-files identifier (denote-directory-text-only-files))
-          (lambda (x)
-            (xref-location-group (xref-item-location x))))))
-    (if file (assoc-delete-all file alist) alist)))
-
-(defun denote--retrieve-files-in-xrefs (xref-alist)
-  "Return sorted, deduplicated file names from XREF-ALIST."
+(defun denote--retrieve-files-in-xrefs (identifier)
+  "Return sorted, deduplicated file names from IDENTIFIER."
   (sort
-   (delete-dups (mapcar #'car xref-alist))
+   (delete-dups
+    (mapcar #'xref-location-group
+            (mapcar #'xref-match-item-location
+                    (xref-matches-in-files identifier
+                                           (denote-directory-text-only-files)))))
    #'string-lessp))
-
-(defun denote--retrieve-process-grep (identifier)
-  "Process lines matching IDENTIFIER and return list of xref-alist.
-
-The alist is of the form ((GROUP . (XREF ...)) ...).
-
-The alist excludes GROUP for the file that current buffer is
-visiting so that only its backlinks are colleced.
-
-In addition, GROUP is a transformed to filename relative to
-variable `denote-directory', which is the string displayed in the
-backlinks' buffer."
-  ;;; This `mapcar' form is doing what function `xref--analyze' would
-  ;;; do.  `xref--analyze' can be flexibly configured but is not used
-  ;;; directly here because it assumes that the current directory is in
-  ;;; a "project" as defined in project.el.  For Denote, this is not the
-  ;;; case (at least as at the time of this writing).
-  (mapcar
-   (lambda (xref)
-     (cons (denote-get-file-name-relative-to-denote-directory (car xref))
-           (cdr xref)))
-   (denote--retrieve-xrefs identifier (buffer-file-name))))
 
 ;;;; New note
 
@@ -1726,13 +1700,6 @@ set to \\='(template title keywords)."
     (string-match (denote-directory) title)
     (substring title (match-end 0))))
 
-(defun denote--push-extracted-title-to-history ()
-  "Add `denote--extract-title-from-file-history' to `denote--title-history'."
-  (when-let* ((last-input (denote--extract-title-from-file-history))
-              ((not (string-empty-p last-input)))
-              ((not (string-blank-p last-input))))
-    (push last-input denote--title-history)))
-
 ;;;###autoload
 (defun denote-open-or-create (target)
   "Visit TARGET file in variable `denote-directory'.
@@ -1747,7 +1714,6 @@ note's actual title.  At the `denote-title-prompt' type
   (interactive (list (denote-file-prompt)))
   (if (file-exists-p target)
       (find-file target)
-    (denote--push-extracted-title-to-history)
     (call-interactively #'denote)))
 
 ;;;###autoload
@@ -2635,9 +2601,7 @@ Like `denote-link-find-file', but select backlink to follow."
   (interactive)
   (if-let* ((file (buffer-file-name))
             (id (denote-retrieve-filename-identifier file))
-            (files
-             (denote--retrieve-files-in-xrefs
-              (denote--retrieve-xrefs id (buffer-file-name)))))
+            (files (delete file (denote--retrieve-files-in-xrefs id))))
       (find-file
        (denote-get-path-by-id
         (denote-extract-id-from-string
@@ -2694,7 +2658,6 @@ file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (file-exists-p target)
       (denote-link target id-only)
-    (denote--push-extracted-title-to-history)
     (call-interactively #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note (symbol-function 'denote-link-or-create))
@@ -2823,24 +2786,37 @@ nil)."
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
   "Major mode for backlinks buffers."
   (unless denote-backlinks-show-context
-    (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
+    (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
+  (add-hook 'project-find-functions #'denote-project-find nil t))
 
 (make-obsolete-variable 'denote-backlink-mode 'denote-backlinks-mode "0.6.0")
 
-(defun denote-link--prepare-backlinks (id xref-alist &optional title)
-  "Create backlinks' buffer for ID using XREF-ALIST.
-Use optional TITLE for a prettier heading."
-  (let ((inhibit-read-only t)
-        (buf (format "*denote-backlinks to %s*" id))
-        (file (buffer-file-name)))
+(defun denote-link--prepare-backlinks (fetcher _alist)
+  "Create backlinks' buffer for the current note.
+FETCHER is a function that fetches a list of xrefs.  It is called
+with `funcall' with no argument like `xref--fetcher'.
+
+In the case of `denote', `apply-partially' is used to create a
+function that has already applied another function to multiple
+arguments.
+
+ALIST is not used in favour of using
+`denote-link-backlinks-display-buffer-action'."
+  (let* ((inhibit-read-only t)
+         (file (buffer-file-name))
+         (file-type (denote-filetype-heuristics file))
+         (id (denote-retrieve-filename-identifier file))
+         (buf (format "*denote-backlinks to %s*" id))
+         (xref-alist (xref--analyze (funcall fetcher))))
     (with-current-buffer (get-buffer-create buf)
       (setq-local default-directory (denote-directory))
       (erase-buffer)
+      (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (when-let* ((title)
-                  (heading (format "Backlinks to %S (%s)" title id))
-                  (l (length heading)))
+      (when-let*  ((title (denote-retrieve-title-value file file-type))
+                   (heading (format "Backlinks to %S (%s)" title id))
+                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (if denote-backlinks-show-context
           (xref--insert-xrefs xref-alist)
@@ -2852,9 +2828,11 @@ Use optional TITLE for a prettier heading."
       (goto-char (point-min))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
-                    (when-let ((buffer-file-name file)
-                               (xref-alist (denote--retrieve-process-grep id)))
-                      (denote-link--prepare-backlinks id xref-alist title)))))
+                    (when-let ((buffer-file-name file))
+                      (denote-link--prepare-backlinks
+                       (apply-partially #'xref-matches-in-files id
+                                        (delete file (denote-directory-text-only-files)))
+                       nil)))))
     (denote-link--display-buffer buf)))
 
 ;;;###autoload
@@ -2875,12 +2853,14 @@ default, it will show up below the current window."
   (let ((file (buffer-file-name)))
     (when (denote-file-is-writable-and-supported-p file)
       (let* ((id (denote-retrieve-filename-identifier file))
-             (file-type (denote-filetype-heuristics file))
-             (title (denote-retrieve-title-value file file-type)))
-        (if-let ((xref-alist (denote--retrieve-process-grep id)))
-            (progn (xref--push-markers)
-                   (denote-link--prepare-backlinks id xref-alist title))
-          (user-error "No links to the current note"))))))
+             (xref-show-xrefs-function #'denote-link--prepare-backlinks)
+             (project-find-functions #'denote-project-find))
+        (xref--show-xrefs
+         (apply-partially #'xref-matches-in-files id
+                          ;; remove the current buffer file from the
+                          ;; backlinks
+                          (delete file (denote-directory-text-only-files)))
+         nil)))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
 
@@ -3180,6 +3160,86 @@ Consult the manual for template samples."
 
 (make-obsolete 'denote-migrate-old-org-filetags nil "1.1.0")
 (make-obsolete 'denote-migrate-old-markdown-yaml-tags nil "1.1.0")
+
+
+;;;; project.el integration
+;;   This is also used by xref integration
+
+(cl-defmethod project-root ((project (head denote)))
+  "Denote's implementation of `project-root' method from `project'.
+Return current variable `denote-directory' as the root of the
+current denote PROJECT."
+  (cdr project))
+
+(cl-defmethod project-files ((_project (head denote)) &optional _dirs)
+  "Denote's implementation of `project-files' method from `project'.
+Return all files that have an identifier for the current denote
+PROJECT.  The return value may thus include file types that are
+not implied by `denote-file-type'.  To limit the return value to
+text files, use the function `denote-directory-text-only-files'."
+  (denote-directory-files))
+
+(defun denote-project-find (dir)
+  "Return project instance if DIR is part of variable `denote-directory'.
+The format of project instance is aligned with `project-try-vc'
+defined in `project'."
+  (let ((dir (expand-file-name dir)) ; canonicalize current directory name
+        (root (denote-directory)))
+    (when (or (file-equal-p dir root) ; currently at `denote-directory'
+              (string-prefix-p root dir)) ; or its subdirectory
+      (cons 'denote root))))
+
+;;;; Xref integration
+;;   Set `xref-backend-functions' like this.
+;;     (add-hook 'xref-backend-functions #'denote--xref-backend)
+;;
+;;   You can tell xref-references not to prompt by adding the following:
+;;     (add-to-list 'xref-prompt-for-identifier #'xref-find-references
+;;     :append)
+
+(defun denote--xref-backend ()
+  "Return denote if `default-directory' is in denote directory."
+  (when (denote--dir-in-denote-directory-p default-directory)
+    'denote))
+
+(cl-defmethod xref-backend-identifier-at-point ((_backend (eql 'denote)))
+  "Return the \"thing\" at point.
+The same logic as `elisp-mode'.  The \"thing\" is assumed to be a
+Denote identifier, but can be any word.  The method checks this
+and errors and if the word at point is not a Denote identifer."
+  (let ((bounds (bounds-of-thing-at-point 'word)))
+    (and bounds
+         (let ((id (buffer-substring-no-properties
+                    (car bounds) (cdr bounds))))
+           (if (string-match-p denote-id-regexp id)
+               ;; Use a property to transport the location of the identifier.
+               (propertize id 'pos (car bounds))
+             (user-error "%s is not a Denote identifier" id))))))
+
+(cl-defmethod xref-backend-definitions ((_backend (eql 'denote)) identifier)
+  "Return xref for the note IDENTIFIER points to."
+  (let ((file (denote-get-path-by-id identifier)))
+    (when file
+      (if (file-equal-p file (buffer-file-name (current-buffer)))
+          (user-error "Identifier points to the current buffer")
+        ;; Without the message, Xref will report that the ID does not
+        ;; exist, which is incorrect in this case.
+        (list (xref-make nil (xref-make-file-location file 0 0)))))))
+
+(cl-defgeneric xref-backend-references ((_backend (eql 'denote)) identifier)
+  "Return list of xrefs where IDENTIFIER is referenced.
+This include the definition itself."
+  (xref-matches-in-files identifier (denote-directory-text-only-files)))
+
+(cl-defmethod xref-backend-identifier-completion-table ((_backend
+                                                         (eql 'denote)))
+  "Return list of Denote identifers as completion table."
+
+  (let* ((project-find-functions #'denote-project-find)
+         (project (project-current nil (denote-directory)))
+         (dirs (list (project-root project)))
+         (all-files (project-files project dirs)))
+    (mapcar #'denote-retrieve-filename-identifier all-files)))
 
 (provide 'denote)
 ;;; denote.el ends here
