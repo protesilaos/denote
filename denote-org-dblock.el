@@ -139,7 +139,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
-              (files (delete file (denote--retrieve-files-in-xrefs id)))))
+              (files (delete file (denote--retrieve-files-in-xrefs id))))
     (insert (denote-link--prepare-links files file nil))
     (join-line))) ;; remove trailing empty line
 
