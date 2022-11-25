@@ -105,9 +105,6 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
         (current-file (buffer-file-name)))
     (when block-name
       (insert "#+name: " block-name "\n"))
-    ;; TODO 2022-11-10: Perhaps we can tweak the code so that instead
-    ;; of `join-line' we delete empty lines within the affected
-    ;; region.
     (if missing-only
         (progn
           (denote-link-add-missing-links regexp)
