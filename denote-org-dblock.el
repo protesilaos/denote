@@ -64,17 +64,22 @@
 ;; the list, or directly by calling 'denote-org-dblock-insert-links'.
 ;;
 ;;
-;; Org Dynamic blocks of the denote-links type can have three
-;; arguments:
+;; Org Dynamic blocks of the denote-links type can have the follwoing
+;; arguments (in any order):
 ;;  1. :regexp "string" -- the search input (required)
 ;;  2. :missing-only t  -- to only include missing links
-;;  3. :block-name "n"  -- to include a name for later processing
+;;  3. :reverse t       -- reverse sort order (or don't, when nil)
+;;  4. :block-name "n"  -- to include a name for later processing
 ;;
 ;; By default ':missing-only t' is included as a parameter in the
 ;; block's header, so that only "missing links" are included (i.e.,
 ;; links to notes that the current buffer doesn't already link to).
 ;; Remove this parameter or set to 'nil' to include all matching
 ;; notes.
+;;
+;; With ':reverse' the value of 'denote-link-add-links-sort' can be
+;; let-bound specifically for this list of links. For more
+;; information, see the documentation of this variable.
 ;;
 ;; With ':block-name "string"' include a '#+NAME: string' line in the
 ;; Dynamic block. This allows use of the Dynamic block output as input
@@ -102,6 +107,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let ((regexp (plist-get params :regexp))
         (missing-only (plist-get params :missing-only))
         (block-name (plist-get params :block-name))
+        (denote-link-add-links-sort (plist-get params :reverse))
         (current-file (buffer-file-name)))
     (when block-name
       (insert "#+name: " block-name "\n"))
