@@ -1719,6 +1719,9 @@ looks like this:
 
 : #+BEGIN: denote-links :regexp "_journal" :missing-only t
 
+To reverse the order links appear in, add =:reverse t= to the
+=#+BEGIN= line.
+
 The =denote-links= block can also accept a =:block-name= parameter
 with a string value that names the block.  Once the dynamic block is
 evaluated, a =#+NAME= is prepended to the block's contents.  This can
