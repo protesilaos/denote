@@ -3206,7 +3206,7 @@ defined in `project'."
   "Return the \"thing\" at point.
 The same logic as `elisp-mode'.  The \"thing\" is assumed to be a
 Denote identifier, but can be any word.  The method checks this
-and errors and if the word at point is not a Denote identifer."
+and errors and if the word at point is not a Denote identifier."
   (let ((bounds (bounds-of-thing-at-point 'word)))
     (and bounds
          (let ((id (buffer-substring-no-properties
