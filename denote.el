@@ -3324,8 +3324,8 @@ or set it in your configuration."
               (const xref-backend-functions)
               (function denote--xref-backend))
         (cons :tag "Integration with find-file-at-point `ffap'"
-              (function denote-module-ffap-setup)
-              (function denote-module-ffap-teardown))))
+              (function denote-module-ffap-enable)
+              (function denote-module-ffap-disable))))
 
 ;;;; project.el integration
 ;;   This is also used by xref integration
