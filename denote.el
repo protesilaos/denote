@@ -3168,20 +3168,60 @@ Consult the manual for template samples."
 
 ;;; Denote extension "modules"
 
-(defvar denote-module-ffap-last-enabled nil)
-(defvar denote-modules-last-enabled nil)
+(defvar denote-modules-available
+      '(project (project-find-functions . denote-project-find)
+        xref    (xref-backend-functions . denote--xref-backend)
+        ffap    (denote-module-ffap-enable . denote-module-ffap-disable))
+      "Denote modules currently built-in with Denote.
+This variable is a plist.  Each module is represented as a pair
+of a property name and its value being a cons cell; thus a module
+is written in either the following forms:
+
+    NAME (HOOK . FUNCTION\)
+    NAME (FUNCTION . FUNCTION\)
+
+NAME, HOOK, FUNCTION are symbols.
+
+When a HOOK-FUNCTION pair is used, `denote-modules-enable'
+function will add FUNCTION to HOOK and `denote-modules-disable'
+function will remove FUNCTION from HOOK.  Generally, it should be
+possible to set HOOK-FUNCTION modules locally.
+
+When a FUNCTION-FUNCTION pair is used, the first FUNCTION must be
+an enable function and the second, its corresponding disable
+function to undo the former.  They are both called with no
+arguments.  For FUNCTION-FUNCTION modules, in some cases, it may
+not be possible to enable a module locally.  In these cases, some
+parts of a module may be enabled globally even when local minor
+mode function `denote-modules-mode' is called.
+
+NOTES for future development to add new modules: 
+
+It is important that FUNCTION must be defined and loaded before
+`denote-modules-enable' and `denote-moduel-disable' (the new
+functions probably should be written in the source code lines
+before these enable/disable functions)")
+
+(defvar denote-module-ffap-last-enabled nil
+  "Value of `ffap-next-regexp' beofe ffap module was last enabled.
+It is used by `denote-module-ffap-disable' to undo the value
+the module previoulsy set.")
+(defvar denote-modules-last-enabled nil
+  "Denote modules set last time.
+It is used by `denote-modules-enable' and
+`denote-moduules-disable' to undo the modules enabled last time.")
 ;; defvars to placate the compilers
 (defvar denote-modules)
 (defvar ffap-next-regexp)
 (defvar ffap-alist)
 
 (defun denote-module-ffap-disable (&optional local)
-  "Tear down `denote' integration with `ffap'.
+  "Disable Denote integration with `ffap'.
 This function is meant to be set as a pair function with
-`denote-module-ffap-enable' in `denote-modules'.
+`denote-module-ffap-enable' in `denote-modules-available'.
 
-When LOCAL is non-nil, tear down only for the local buffer as
-much as possible.  Currently, `'ffap-alist' is only teared down
+When LOCAL is non-nil, enable only for the local buffer as
+much as possible.  Currently, `ffap-alist' is only disabled
 globally."
   (require 'ffap)
   (setq ffap-alist (rassq-delete-all  #'denote-get-relative-path-by-id ffap-alist))
@@ -3194,12 +3234,12 @@ globally."
       (setq ffap-next-regexp denote-module-ffap-last-enabled))))
 
 (defun denote-module-ffap-enable (&optional local)
-  "Set up `denote' integration with `ffap'.
+  "Enable Denote integration with `ffap'.
 This function is meant to be set as a pair function with
-`denote-module-ffap-disable' in `denote-modules'.
+`denote-module-ffap-disable' in `denote-modules-available'.
 
-When LOCAL is non-nil, set up only for the local buffer as much
-as possible.  Currently, `'ffap-alist' is only set globally."
+When LOCAL is non-nil, enable only for the local buffer as much
+as possible.  Currently, `'ffap-alist' is only enabled globally."
   (require 'ffap)
   (if local (setq-local denote-module-ffap-last-active ffap-next-regexp)
     (setq denote-module-ffap-last-enabled ffap-next-regexp)
@@ -3209,58 +3249,35 @@ as possible.  Currently, `'ffap-alist' is only set globally."
     (setq ffap-next-regexp (concat ffap-next-regexp "\\|" denote-id-regexp))))
 
 (defun denote-modules-disable (modules &optional local)
-  "Disable MODULES.
+  "Disable Denote integration MODULES.
 This function is meant to be used by `denote-modules-enable',
-which calls this function with `denote-modules-last-enable' as
-MODULES to undo the modules currently active.
+which calls this function, passgin `denote-modules-last-enable'
+as MODULES to undo the modules currently active.
 
 When LOCAL is non-nil, disable MODULES locally, where possible.
 
-Refer to the document string of `denote-modules-enable' for
-detail."
-  (dolist (pair modules)
-    (let ((hook (car pair))
-          (func (cdr pair)))
+Refer to document string of `denote-modules-available'."
+  (dolist (module modules)
+    (let* ((module-def (plist-get denote-modules-available module))
+           (hook (car module-def))
+           (func (cdr module-def)))
       ;; If HOOK is a function, it's a setup function and FUNC is its
       ;; teardown counterpart.
       (if (functionp hook) (funcall func local)
         (remove-hook hook func local)))))
 
 (defun denote-modules-enable (modules &optional local)
-  "Enable MODULES set by `denote-modules'.
+  "Enable MODULES set in `denote-modules'.
 When LOCAL is non-nil, it tries to enable them only locally.
 Whether this is possible or not depends on the module in
 question.
 
-Each module is defined as a cons sell of either of the following
-forms:
-
-    \(HOOK . FUNCTION\)
-    \(FUNCTION . FUNCTION\)
-
-When a HOOK-FUNCTION pair is defined, `denote-modules-enable'
-function will add FUNCTION to HOOK and `denote-modules-disable'
-function will remove FUNCTION from HOOK.  Generally, it should be
-possible to set HOOK-FUNCTION modules locally.
-
-When a FUNCTION-FUNCTION pair is defined, the first FUNCTION must
-be an enable function and the second, its corresponding disable
-function to undo the former.  They are both called with no
-arguments.  For FUNCTION-FUNCTION modules, in some cases, it may
-not be possible to enable a module locally.  In these cases, some
-parts of a module may be globally set even when LOCAL is non-nil.
-
-NOTES for future development to add new modules
-
-It is important that FUNCTION must be defined and loaded before
-`denote-modules-enable' and `denote-moduel-disable' (the new
-functions should probably written in the source code lines before
-these enable/disable functions) `denote-modules' is cons list of
-the form \(HOOK . FUNCTION\)."
+Refer to document string of `denote-modules-available'."
   (denote-modules-disable denote-modules-last-enabled)
-  (dolist (pair modules)
-    (let ((hook (car pair))
-          (func (cdr pair)))
+  (dolist (module modules)
+    (let* ((module-def (plist-get denote-modules-available module))
+           (hook (car module-def))
+           (func (cdr module-def)))
       ;; If HOOK is a function, it's a setup function and FUNC is its
       ;; teardown counterpart.
       (if (functionp hook) (funcall hook local)
@@ -3270,7 +3287,10 @@ the form \(HOOK . FUNCTION\)."
 
 ;;;###autoload
 (define-minor-mode denote-modules-mode
-  "Enable donote's extension modules locally."
+  "Enable Denote integration modules locally.
+Set modules to be enabled in `denote-modules' and activate the
+minor mode, either globally or locally.  The selected modules are
+enabled only when the minor mode is active."
   :global nil
   :init-value nil
   (if denote-modules-mode
@@ -3279,7 +3299,10 @@ the form \(HOOK . FUNCTION\)."
 
 ;;;###autoload
 (define-minor-mode denote-modules-global-mode
-  "Enable denote's extension modules globally."
+  "Enable Denote integration modules globally.
+Set modules to be enabled in `denote-modules' and activate the
+minor mode, either globally or locally.  The selected modules are
+enabled only when the minor mode is active."
   :global t
   :init-value nil
   (if denote-modules-global-mode
@@ -3287,7 +3310,7 @@ the form \(HOOK . FUNCTION\)."
     (denote-modules-disable denote-modules-last-enabled)))
 
 (defun denote-modules-set (symbol value)
-  "Set SYMBOL and VALUE for `denote-modules'.
+  "Set SYMBOL and VALUE for `denote-modules' upon customizing.
 Enable the modules set when `denote-modules-mode' or
 `denote-modules-global-mode' is active.  If not, this function
 does not enable them automatically.  Manually call the minor mode
@@ -3301,12 +3324,16 @@ UI will be effective immediately."
     (denote-modules-enable value)))
 
 (defcustom denote-modules nil
-  "Indicate which modules is to be enabled or disabled.
-These modules are `denote' integration with other Emacs built-in
-features.
+  "User-selected Denote modules.
+The selected modules are a list of NAME (symbols), and each
+module enables integration with another Emacs built-in feature.
+See `denote-modules-available' for the modules currently
+available.  Set this user option as a list of NAME; for example:
 
-When customized in `customize' UI, it presents a set of
-tickboxes, each box represetns an integration module.
+    \(project xref ffap\)
+
+When customized in Customize UI, it presents a set of checkboxes,
+each box checked adds NAME of the module to the list.
 
 Modules are automatically enabled only when either
 `denote-modules-mode' or `denote-modules-global-mode' is active.
@@ -3317,15 +3344,9 @@ or set it in your configuration."
   :set #'denote-modules-set
   :package-version '(denote . "1.2.0")
   :type
-  '(set (cons :tag "Project integration"
-              (const project-find-functions)
-              (function denote-project-find))
-        (cons :tag "Xref integration"
-              (const xref-backend-functions)
-              (function denote--xref-backend))
-        (cons :tag "Integration with find-file-at-point `ffap'"
-              (function denote-module-ffap-enable)
-              (function denote-module-ffap-disable))))
+  '(set (const :tag "Project integration"                     project)
+        (const :tag "Xref integration                          " xref)
+        (const :tag "Integration with find-file-at-point `ffap'" ffap)))
 
 ;;;; project.el integration
 ;;   This is also used by xref integration
