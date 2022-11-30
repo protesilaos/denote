@@ -3166,7 +3166,7 @@ Consult the manual for template samples."
 (make-obsolete 'denote-migrate-old-org-filetags nil "1.1.0")
 (make-obsolete 'denote-migrate-old-markdown-yaml-tags nil "1.1.0")
 
-;;; Denote extension "modules"
+;;;; Denote extension "modules"
 
 (defvar denote-modules-available
       '(project (project-find-functions . denote-project-find)
