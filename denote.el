@@ -3195,7 +3195,7 @@ not be possible to enable a module locally.  In these cases, some
 parts of a module may be enabled globally even when local minor
 mode function `denote-modules-mode' is called.
 
-NOTES for future development to add new modules: 
+NOTES for future development to add new modules:
 
 It is important that FUNCTION must be defined and loaded before
 `denote-modules-enable' and `denote-moduel-disable' (the new
@@ -3206,10 +3206,12 @@ before these enable/disable functions)")
   "Value of `ffap-next-regexp' beofe ffap module was last enabled.
 It is used by `denote-module-ffap-disable' to undo the value
 the module previoulsy set.")
+
 (defvar denote-modules-last-enabled nil
   "Denote modules set last time.
 It is used by `denote-modules-enable' and
 `denote-moduules-disable' to undo the modules enabled last time.")
+
 ;; defvars to placate the compilers
 (defvar denote-modules)
 (defvar ffap-next-regexp)
