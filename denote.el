@@ -377,7 +377,7 @@ current note."
   :package-version '(denote . "1.2.0")
   :type 'boolean)
 
-(make-obsolete 'denote-link-fontify-backlinks 'denote-backlinks-show-context "1.2.0")
+(make-obsolete-variable 'denote-link-fontify-backlinks 'denote-backlinks-show-context "1.2.0")
 
 (defcustom denote-excluded-directories-regexp nil
   "Regular expression of directories to exclude from all operations.
@@ -2249,7 +2249,7 @@ relevant front matter."
   :group 'denote-faces
   :package-version '(denote . "0.5.0"))
 
-(make-obsolete 'denote-faces-broken-link nil "1.0.0")
+(make-obsolete-variable 'denote-faces-broken-link nil "1.0.0")
 
 (defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
