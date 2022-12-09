@@ -3117,6 +3117,9 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
 + David Wilson (SystemCrafters): /Trying Out Prot's Denote, an Org
   Roam Alternative?/, 2022-07-15, <https://www.youtube.com/watch?v=QcRY_rsX0yY>.
 
++ Jack Baty: /Keeping my Org Agenda updated based on Denote keywords/,
+  2022-11-30, <https://baty.net/2022/keeping-my-org-agenda-updated>.
+
 + Jeremy Friesen: /Denote Emacs Configuration/, 2022-10-02,
   <https://takeonrules.com/2022/10/09/denote-emacs-configuration/>
 
