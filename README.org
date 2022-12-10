@@ -3542,7 +3542,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   McLear, Damien Cassou, Elias Storms, Eshel Yaron, Florian, Graham
   Marlow, Hilde Rhyne, Jack Baty, Jean-Philippe Gagné Guay, Jürgen
   Hötzel, Kaushal Modi, Kyle Meyer, Marc Fargas, Noboru Ota (nobiot),
-  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier.
+  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier,
+  Thibaut Benjamin.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
