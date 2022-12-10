@@ -3078,7 +3078,7 @@ interface by first selecting the `denote:' hyperlink type."
 The LINK, DESCRIPTION, and FORMAT are handled by the export
 backend."
   (let* ((path-id (denote-link--ol-resolve-link-to-target link :path-id))
-         (path (file-name-nondirectory (car path-id)))
+         (path (file-relative-name (car path-id)))
          (p (file-name-sans-extension path))
          (id (cdr path-id))
          (desc (or description (concat "denote:" id))))
