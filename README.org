@@ -671,6 +671,8 @@ File prompts are used by several commands, such as ~denote-link~ and
 Functions that check for files include ~denote-directory-files~ and
 ~denote-directory-subdirectories~.
 
+The match is performed with ~string-match-p~.
+
 [[#h:c916d8c5-540a-409f-b780-6ccbd90e088e][For developers or advanced users]].
 
 * Renaming files

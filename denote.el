@@ -390,7 +390,9 @@ File prompts are used by several commands, such as `denote-link'
 and `denote-subdirectory'.
 
 Functions that check for files include `denote-directory-files'
-and `denote-directory-subdirectories'."
+and `denote-directory-subdirectories'.
+
+The match is performed with `string-match-p'."
   :group 'denote
   :package-version '(denote . "1.2.0")
   :type 'string)
