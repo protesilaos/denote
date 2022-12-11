@@ -675,6 +675,23 @@ The match is performed with ~string-match-p~.
 
 [[#h:c916d8c5-540a-409f-b780-6ccbd90e088e][For developers or advanced users]].
 
+** Exclude certain keywords from being inferred
+:PROPERTIES:
+:CUSTOM_ID: h:69e518ee-ed43-40ab-a5f4-c780a23e5358
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-excluded-keywords-regexp
+The user option ~denote-excluded-keywords-regexp~ omits keywords that
+match a regular expression from the list of inferred keywords.
+
+Keywords are inferred from file names and provided at relevant prompts
+as completion candidates when the user option ~denote-infer-keywords~
+is non-nil.
+
+The match is performed with ~string-match-p~.
+
 * Renaming files
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
@@ -2447,6 +2464,7 @@ Everything is in place to set up the package.
 (setq denote-file-type nil) ; Org is the default, set others here
 (setq denote-prompts '(title keywords))
 (setq denote-excluded-directories-regexp nil)
+(setq denote-excluded-keywords-regexp nil)
 
 ;; Pick dates, where relevant, with Org's advanced interface:
 (setq denote-date-prompt-use-org-read-date t)
@@ -3552,8 +3570,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Federico Stilman, Florian, Frank Ehmsen, Guo Yong, Hanspeter Gisler,
   Jack Baty, Jeremy Friesen, Juanjo Presa, Johan Bolmsjö, Kaushal
   Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
-  Ragavan, Summer Emacs, Sven Seebeck, Taoufik, Viktor Haag, Yi Liu,
-  Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
+  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor
+  Haag, Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

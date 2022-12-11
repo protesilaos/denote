@@ -159,6 +159,9 @@ If nil, refrain from inferring keywords.  The aforementioned
 completion prompt only shows the `denote-known-keywords'.  Use
 this if you want to enforce a restricted vocabulary.
 
+The user option `denote-excluded-keywords-regexp' can be used to
+exclude keywords that match a regular expression.
+
 Inferred keywords are specific to the value of the variable
 `denote-directory'.  If a silo with a local value is used, as
 explained in that variable's doc string, the inferred keywords
@@ -391,6 +394,17 @@ and `denote-subdirectory'.
 
 Functions that check for files include `denote-directory-files'
 and `denote-directory-subdirectories'.
+
+The match is performed with `string-match-p'."
+  :group 'denote
+  :package-version '(denote . "1.2.0")
+  :type 'string)
+
+(defcustom denote-excluded-keywords-regexp nil
+  "Regular expression of keywords to not infer.
+Keywords are inferred from file names and provided at relevant
+prompts as completion candidates when the user option
+`denote-infer-keywords' is non-nil.
 
 The match is performed with `string-match-p'."
   :group 'denote
@@ -767,14 +781,19 @@ If PATH has no such keywords, return nil."
   "Extract keywords from `denote-directory-files'.
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
-  (mapcan #'denote-extract-keywords-from-path
-          (denote-directory-files)))
+  (let ((kw (mapcan #'denote-extract-keywords-from-path (denote-directory-files))))
+    (if-let ((regexp denote-excluded-keywords-regexp))
+        (seq-filter (lambda (k) (not (string-match-p regexp k))) kw)
+      kw)))
 
 (defun denote-keywords ()
   "Return appropriate list of keyword candidates.
 If `denote-infer-keywords' is non-nil, infer keywords from
 existing notes and combine them into a list with
-`denote-known-keywords'.  Else use only the latter."
+`denote-known-keywords'.  Else use only the latter.
+
+Inferred keywords are filtered by the user option
+`denote-excluded-keywords-regexp'."
   (delete-dups
    (if denote-infer-keywords
        (append (denote--inferred-keywords) denote-known-keywords)
