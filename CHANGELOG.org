@@ -9,6 +9,321 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 1.2.0 on 2022-12-12
+:PROPERTIES:
+:CUSTOM_ID: h:92478a05-4a69-413c-8d95-1dacbcf6af2c
+:END:
+
+** Denote now requires Emacs version 28.1 or higher
+:PROPERTIES:
+:CUSTOM_ID: h:bc0e173a-3b9f-427c-9fb0-d435a5ef127e
+:END:
+
+With the help of Noboru Ota (nobiot), we realised that Denote was
+broken on Emacs 27 for quite a while.  The fact that we received no
+feedback about it suggests that this change is the best course of
+action going forward.  Discussion:
+<https://lists.sr.ht/~protesilaos/denote/%3C86r0yvzm12.fsf%40nobiot.com%3E#%3C86sfja78ik.fsf@nobiot.com%3E>
+
+Emacs 27 lacks certain Xref facilities that we need for the
+backlinking facility.  It was holding us back for no good reason,
+while also adding to the maintenance burden.
+
+If you are using Denote on Emacs 27 and things are working for you,
+there is no need to update the package.  Do it when you also upgrade
+Emacs to a newer version.
+
+** Display context in backlinks' buffer
+:PROPERTIES:
+:CUSTOM_ID: h:dafbdbae-36f1-487a-94c8-2762568a766e
+:END:
+
+By default, the generic backlinks' buffer, which can be displayed with
+the command ~denote-link-backlinks~ (alias ~denote-link-show-backlinks-buffer~),
+only shows the file names of the linked notes.
+
+We have made it possible to produce a more informative view by showing
+the context of the link and also listing all links per file.  This is
+done by setting the user option ~denote-backlinks-show-context~ to a
+non-nil value.
+
+To illustrate the difference, this is the default backlinks' buffer:
+
+#+begin_example
+Backlinks to "On being honest" (20220614T130812)
+------------------------------------------------
+
+20220614T145606--let-this-glance-become-a-stare__journal.txt
+20220616T182958--feeling-butterflies-in-your-stomach__journal.txt
+#+end_example
+
+And this is the one with ~denote-backlinks-show-context~ enabled:
+
+#+begin_example
+Backlinks to "On being honest" (20220614T130812)
+------------------------------------------------
+
+20220614T145606--let-this-glance-become-a-stare__journal.txt
+37: growing into it: [[denote:20220614T130812][On being honest]].
+64: As I said in [[denote:20220614T130812][On being honest]] I have never
+20220616T182958--feeling-butterflies-in-your-stomach__journal.txt
+62: indifference.  In [[denote:20220614T130812][On being honest]] I alluded
+#+end_example
+
+Granted, here we show plain text though in Emacs the results have the
+appropriate colours of the active theme and are easier to read.
+
+Thanks to Noboru Ota (nobiot) for implementing this feature.  We
+discussed it at length on the mailing list:
+<https://lists.sr.ht/~protesilaos/denote/%3C86r0yvzm12.fsf%40nobiot.com%3E>.
+
+Noboru has assigned copyright to the Free Software Foundation.
+
+** Dynamic Org blocks for lists of Denote links
+:PROPERTIES:
+:CUSTOM_ID: h:f7904a57-22c0-446f-b7e3-7a736332002c
+:END:
+
+Denote now includes the ~denote-org-dblock~ library.  Activate it
+thus:
+
+#+begin_src emacs-lisp
+;; Register Denote's Org dynamic blocks
+(require 'denote-org-dblock)
+#+end_src
+
+A dynamic block gets its contents by evaluating a given function,
+depending on the type of block.  The type of block and its parameters
+are stated in the opening =#+BEGIN= line of the block.  Typing =C-c
+C-c= with point on that line runs the function, with the given
+arguments, and populates the block's contents accordingly.
+
+What Denote has is ways to write blocks that produce a list of links
+matching a given regular expression while conforming with some other
+parameters.  The manual explains how to use this powerful feature
+(which is necessarily specific to the Org file type):
+<https://protesilaos.com/emacs/denote#h:8b542c50-dcc9-4bca-8037-a36599b22779>.
+
+Thanks to Elias Storms for authoring ~denote-org-dblock~ and for
+discussing this issue at length with me on the mailing list:
+<https://lists.sr.ht/~protesilaos/denote/%3Cm2sfisexx7.fsf%40MBA21.fritz.box%3E>.
+
+Elias has assigned copyright to the Free Software Foundation.
+
+** Integration with the built-in project.el and xref.el libraries
+:PROPERTIES:
+:CUSTOM_ID: h:e8a7d08c-cdf0-4207-92c1-391415b8371f
+:END:
+
+Denote was already using Xref internally but has now gained more
+capabilities which help it find files more effectively.  With the help
+of Emacs' standard project library, all file-related prompts (e.g. to
+add a link) search all items in the ~denote-directory~ regardless of
+whether the user is in a subdirectory or not.
+
+All Denote commands benefit from this refactoring.  One such request
+to "Make ~denote-open-or-create~ work better across subfolders" was
+made in issue 114 on the GitHub mirror:
+<https://github.com/protesilaos/denote/issues/114>.
+
+Thanks to Noboru Ota (nobiot) for introducing this feature together
+with a new system of "modules" for incorporating additional built-in
+functionality:
+
+- <https://lists.sr.ht/~protesilaos/denote/%3C86a64ooxyi.fsf%40nobiot.com%3E>
+- <https://lists.sr.ht/~protesilaos/denote/%3C86k03f4iq6.fsf%40nobiot.com%3E>
+
+I will not document the new user option ~denote-modules~ right now as
+my ongoing job search prevented me from exploring the full potential
+of this feature.  I promise to do it for the next version of Denote
+and update the manual accordingly.  Nevertheless, the doc string of
+~denote-modules~ already provides all one needs to get started.
+
+** Re-use last input in "do or create" commands
+:PROPERTIES:
+:CUSTOM_ID: h:5a003d44-7ad0-4c92-b908-ec7cf016b2dd
+:END:
+
+The commands ~denote-open-or-create~, ~denote-link-or-create~ first
+prompt for an existing note.  If they find it, they act on it,
+otherwise they prompt for the creation of a new note to operate on.
+
+At the first prompt, it is common to use regular expressions and
+out-of-order pattern matching (such as with the ~orderless~ package),
+so the input can be something like =_test ^2022 some title=, which we
+obviously don't want to automatically reuse as the new note's actual
+title.
+
+To this end, and to accommodate all workflows, we leverage Emacs'
+minibuffer history to make the last input accessible with =M-p= at the
+minibuffer prompt (=M-x previous-history-element=).  The text is
+available for further editing before it is submitted as the new note's
+title.  Simple, effective, and flexible!
+
+Thanks to Guo Yong for starting the discussion that led me to this
+improvement:
+<https://lists.sr.ht/~protesilaos/denote/%3CNF6pFBq--3-9%40tutanota.com%3E>.
+
+** Add support for any file type
+:PROPERTIES:
+:CUSTOM_ID: h:e73a4e76-6c00-4691-8893-8f885c26f306
+:END:
+
+Denote provides the user option ~denote-file-type~ which specifies the
+file type to use for new notes.  Options include Org mode (the
+default), Markdown+YAML, Markdown+TOML, and plain text.  Furthermore,
+there exists the convenience command ~denote-type~ (alias
+~denote-create-note-using-type~) which prompts for a file type to use
+when creating a new note (I normally write in plain text, but
+sometimes switch to Org or Markdown).
+
+The variable ~denote-file-types~ (which is NOT a user option)
+specifies all the parameters of what a "file type" means, such as how
+to format its front matter, what style of date+time to use, which file
+type extension to write, how to rename the file, what style of link to
+apply, and so on.  Advanced users can now edit this variable to either
+register new file types or redefine the behaviour of existing ones.
+Read this comprehensive guide on how to do it:
+<https://protesilaos.com/codelog/2022-10-30-demo-denote-custom-file-type/>.
+
+I repeat: this is for advanced users or, anyhow, for those who are
+prepared to maintain some custom code in their setup.  The guide is
+accessible though and I am always willing to help anyone in need of
+assistance.
+
+A relevant request for such a feature can be found in issue 86 on the
+GitHub mirror: <https://github.com/protesilaos/denote/issues/86>.
+
+The ~denote-file-types~ were introduced by Jean-Philippe Gagné Guay in
+pull request 89 at the GitHub mirror and were part of Denote version
+0.6.0: <https://github.com/protesilaos/denote/pull/89>.  I have made
+lots of changes since then to make all parts of Denote work with it
+and to parameterise its various facets.
+
+** Exclude certain directories from all operations
+:PROPERTIES:
+:CUSTOM_ID: h:04f42aab-d8fe-4c4a-b865-3bb0655e2631
+:END:
+
+The user option ~denote-excluded-directories-regexp~ instructs all
+Denote functions that read or check file/directory names to omit
+directories that match the given regular expression.  The regexp needs
+to match only the name of the directory, not its full path.
+
+Affected operations include file prompts and functions that return the
+available files in the ~denote-directory~.  File prompts are used by
+several commands, such as ~denote-link~ and ~denote-subdirectory~.
+Functions that check for files include ~denote-directory-files~ and
+~denote-directory-subdirectories~.
+
+Thanks to Graham Marlow for the contribution which was done in pull
+request 112 on the GitHub mirror:
+<https://github.com/protesilaos/denote/pull/112>.
+
+The original contribution, with the subsequent tweaks I made to it, is
+within the eligible line count and thus does not require copyright
+assignment to the Free Software Foundation.
+
+** Exclude certain keywords from being inferred
+:PROPERTIES:
+:CUSTOM_ID: h:226ba85e-1f5e-45f5-956a-f5e8a95c397e
+:END:
+
+The user option ~denote-excluded-keywords-regexp~ omits keywords that
+match a regular expression from the list of inferred keywords.
+
+Keywords are inferred from file names and provided at relevant prompts
+as completion candidates when the user option ~denote-infer-keywords~
+is non-nil.
+
+Thanks to Stefan Thesing for proposing this idea in issue 115 on the
+GitHub mirror: <https://github.com/protesilaos/denote/issues/115>.
+
+[ Other people participate in that thread and there may be something
+  more coming out of it. ]
+
+** Use the ~citar-denote~ package for bibliography notes
+:PROPERTIES:
+:CUSTOM_ID: h:ff16633f-5fb8-4935-9e2f-044ec998d3f7
+:END:
+
+Peter Prevos has produced the ~citar-denote~ package which makes it
+possible to write notes on BibTeX entries with the help of the ~citar~
+package.  These notes have the citation's unique key associated with
+them in the file's front matter.  They also get a configurable keyword
+in their file name, making it easy to find them in Dired and/or
+retrieve them with the various Denote methods.
+
+With ~citar-denote~, the user leverages standard minibuffer completion
+mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
+to manage bibliographic notes and access those notes with ease.  The
+package's documentation covers the details: <https://github.com/pprevos/citar-denote/>.
+
+Thanks to Peter Prevos for developing this package and for mentioning
+it on the Denote mailing list:
+<https://lists.sr.ht/~protesilaos/denote/%3C877cz0e96r.fsf%40prevos.net%3E>.
+
+** New functions and variables for developers
+:PROPERTIES:
+:CUSTOM_ID: h:5cc2076d-d4d2-45be-b28e-9ec67eca82b4
+:END:
+
+Developers or users who maintain custom code now have access to:
+
++ Function ~denote-keywords-sort~
++ Function ~denote-keywords-prompt~
+
+Plus all the following which are related to the aforementioned ~denote-file-types~:
+
++ Variable ~denote-org-link-format~
++ Variable ~denote-md-link-format~
++ Variable ~denote-id-only-link-format~
++ Variable ~denote-org-link-in-context-regexp~
++ Variable ~denote-md-link-in-context-regexp~
++ Variable ~denote-id-only-link-in-context-regexp~
++ Function ~denote-date-org-timestamp~
++ Function ~denote-date-rfc3339~
++ Function ~denote-date-iso-8601~
+
+Again, users can implement support for ANY FILE TYPE and use it to
+write notes in, either as their default choice or on-demand.  If
+anything, this highlights the flexibility of Denote.
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:acbb0cf7-ad17-495e-85d2-821cbbfc3158
+:END:
+
++ Added the ~denote-keywords-sort~ function.  The intent is to
+  abstract the task of sorting the keywords.  Before, it was handled
+  by the ~denote-keywords-prompt~, which meant that keywords were not
+  sorted when the ~denote~ function was called from Lisp.  Thanks to
+  Florian for bringing this matter to my attention, providing relevant
+  feedback, and fixing an omission of mine in ~denote-rename-file~:
+  <https://lists.sr.ht/~protesilaos/denote/%3C166689879712.8.6808878344988686135.71824507%40aboulafia.org%3E>.
+
++ Expanded the manual's entry on directory "silos" to include more
+  code examples.  Thanks to Viktor Haag for asking a question on the
+  mailing list that inspired me to produce this entry:
+  <https://lists.sr.ht/~protesilaos/denote/%3CCANnkwC6NLd0VneUEqFrjh7TCUBLBgEtLCcPwM37JDvJXJCShVQ%40mail.gmail.com%3E>.
+
++ Included a section in the manual with a non-exhaustive list of
+  references to publications about Denote.  As of this writing, it
+  includes entries from David Wilson (SystemCrafters), Jack Baty,
+  Jeremy Friesen, and Peter Prevos.  If you have an article about
+  Denote, please contact me about it directly or on the Denote mailing
+  list and I will add it to the manual.
+
++ Tweaked how Org's HTML export produces links in order to avoid
+  broken subdirectory paths.  Thanks to Thibaut Benjamin for the
+  contribution, which was done in pull request 116 on the GitHub
+  mirror: <https://github.com/protesilaos/denote/pull/116>.
+
+  The change concerns a single line and thus Thibaut requires no
+  copyright assignment to the Free Software Foundation.
+
++ Expanded the manual where necessary.
+
 * Version 1.1.0 on 2022-10-20
 :PROPERTIES:
 :CUSTOM_ID: h:8e0f536a-ab3b-4cab-82f7-529bc0e40dbd
@@ -148,7 +463,7 @@ the manual: <https://protesilaos.com/emacs/denote>.
   ~denote-directory-files~ to only return a list of text files.  This
   leaves out, say, mp3 files.  The function is used internally, though
   it may also prove useful in custom user code.
-  
+
 ** Miscellaneous refinements
 :PROPERTIES:
 :CUSTOM_ID: h:0531047f-ef15-412e-b265-886c55526d57

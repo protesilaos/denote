@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 1.1.0
-#+macro:                 release-date 2022-10-20
-#+macro:                 development-version 1.2.0-dev
+#+macro:                 stable-version 1.2.0
+#+macro:                 release-date 2022-12-16
+#+macro:                 development-version 1.3.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -653,8 +653,6 @@ sufficient.  The manual shall be expanded accordingly.
 :CUSTOM_ID: h:8458f716-f9c2-4888-824b-2bf01cc5850a
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+vindex: denote-excluded-directories-regexp
 The user option ~denote-excluded-directories-regexp~ instructs all
 Denote functions that read or check file/directory names to omit
@@ -679,8 +677,6 @@ The match is performed with ~string-match-p~.
 :PROPERTIES:
 :CUSTOM_ID: h:69e518ee-ed43-40ab-a5f4-c780a23e5358
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+vindex: denote-excluded-keywords-regexp
 The user option ~denote-excluded-keywords-regexp~ omits keywords that
@@ -1435,9 +1431,6 @@ this end, Denote provides two convenience commands:
   it as the newly created note's actual title.  At the ~denote-title-prompt~
   type =M-p= with the default key bindings, which calls ~previous-history-element~.
 
-  [ The above paragraph describes functionality that is part of
-    {{{development-version}}}. ]
-
   With optional =ID-ONLY= as a prefix argument create a link with just
   the file's identifier.  This has the same meaning as in ~denote-link~.
 
@@ -1448,9 +1441,6 @@ this end, Denote provides two convenience commands:
 :PROPERTIES:
 :CUSTOM_ID: h:c73f1f68-e214-49d5-b369-e694f6a5d708
 :END:
-
-[ Refactored as part of {{{development-version}}} to optionally show
-  the context of links. ]
 
 #+findex: denote-link-backlinks
 The command ~denote-link-backlinks~ produces a bespoke buffer which
@@ -1673,8 +1663,6 @@ its standand attachments' facility).
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 Denote can optionally integrate with Org mode's "dynamic blocks"
 facility.  Start by loading the relevant library:
 
@@ -1702,7 +1690,7 @@ blocks are written.
 A dynamic block looks like this:
 
 : #+BEGIN: denote-links :regexp "_journal"
-: 
+:
 : #+END:
 
 Here we have the =denote-links= type, with the =:regexp= parameter.
@@ -1716,7 +1704,7 @@ include the =journal= keyword in their file name (keywords in file
 names are prefixed with the underscore).  So the following:
 
 : #+BEGIN: denote-links :regexp "_journal"
-: 
+:
 : #+END:
 
 Becomes something like this once we type =C-c C-c= with point on the
@@ -1753,7 +1741,7 @@ list of notes that link to the current file.  It accepts no parameters
 and looks like this:
 
 : #+BEGIN: denote-backlinks
-: 
+:
 : #+END:
 
 The Org manual describes the technicalities of Dynamic Blocks.
@@ -2657,9 +2645,7 @@ might change them without further notice.
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
   ~denote-sort-keywords~ is non-nil.  =KEYWORDS= is a list of strings,
-  per ~denote-keywords-prompt~.  [ This function is part of
-  {{{development-version}}}.  Before, the keywords were sorted by the
-  ~denote-keywords-prompt~. ]
+  per ~denote-keywords-prompt~.
 
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
@@ -2808,8 +2794,7 @@ might change them without further notice.
   keywords.  In the case of multiple entries, those are separated by
   the ~crm-sepator~, which typically is a comma.  In such a scenario,
   the output is sorted with ~string-lessp~.  To sort the return value,
-  use ~denote-keywords-sort~.  [ The ~denote-keywords-sort~ is part of
-  {{{development-version}}}. ]
+  use ~denote-keywords-sort~.
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Read file title for ~denote~.
@@ -2871,8 +2856,7 @@ might change them without further notice.
 
   2. =:date-function= is a function that can format a date.  See the
      functions ~denote--date-iso-8601~, ~denote--date-rfc3339~, and
-     ~denote--date-org-timestamp~. [This property is part of
-     {{{development-version}}}.]
+     ~denote--date-org-timestamp~.
 
   3. =:front-matter= is either a string passed to ~format~ or a
      variable holding such a string.  The ~format~ function accepts
@@ -2907,13 +2891,11 @@ might change them without further notice.
 
   10. =:link= is a string, or variable holding a string, that
       specifies the format of a link.  See the variables
-      ~denote-org-link-format~, ~denote-md-link-format~.  [This
-      property is part of {{{development-version}}}.]
+      ~denote-org-link-format~, ~denote-md-link-format~.
 
   11. =:link-in-context-regexp= is a regular expression that is used
       to match the aforementioned link format.  See the variables
       ~denote-org-link-in-context-regexp~, ~denote-md-link-in-context-regexp~.
-      [This property is part of {{{development-version}}}.]
 
   If ~denote-file-type~ is nil, use the first element of this list for
   new note creation.  The default is ~org~.
@@ -2942,35 +2924,30 @@ might change them without further notice.
 + Variable ~denote-org-link-format~ :: Format of Org link to note.
   The value is passed to ~format~ with =IDENTIFIER= and =TITLE=
   arguments, in this order.  Also see ~denote-org-link-in-context-regexp~.
-  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-md-link-format
 + Variable ~denote-md-link-format~ :: Format of Markdown link to note.
   The =%N$s= notation used in the default value is for ~format~ as the
   supplied arguments are =IDENTIFIER= and =TITLE=, in this order.
-  Also see ~denote-md-link-in-context-regexp~.  [This variable is part
-  of {{{development-version}}}.]
+  Also see ~denote-md-link-in-context-regexp~.
 
 #+vindex: denote-id-only-link-format
 + Variable ~denote-id-only-link-format~ :: Format of identifier-only
   link to note.  The value is passed to ~format~ with =IDENTIFIER= as
   its sole argument.    Also see ~denote-id-only-link-in-context-regexp~.
-  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-org-link-in-context-regexp
 + Variable ~denote-org-link-in-context-regexp~ :: Regexp to match an
   Org link in its context.  The format of such links is ~denote-org-link-format~.
-  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-md-link-in-context-regexp
 + Variable ~denote-md-link-in-context-regexp~ :: Regexp to match an
   Markdown link in its context.  The format of such links is ~denote-md-link-format~.
-  [This variable is part of {{{development-version}}}.]
 
 #+vindex: denote-id-only-link-in-context-regexp
 + Variable ~denote-id-only-link-in-context-regexp~ :: Regexp to match
   an identifier-only link in its context.  The format of such links is
-  ~denote-id-only-link-format~.  [This variable is part of {{{development-version}}}.]
+  ~denote-id-only-link-format~.
 
 #+findex: denote-surround-with-quotes
 + Function ~denote-surround-with-quotes~ :: Surround string =S= with
@@ -2979,15 +2956,15 @@ might change them without further notice.
 
 #+findex: denote-date-org-timestamp
 + Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
-  inactive timestamp notation.  [This function is part of {{{development-version}}}.]
+  inactive timestamp notation.
 
 #+findex: denote-date-rfc3339
 + Function ~denote-date-rfc3339~ :: Format =DATE= using the RFC3339
-  specification.  [This function is part of {{{development-version}}}.]
+  specification.
 
 #+findex: denote-date-iso-8601
 + Function ~denote-date-iso-8601~ :: Format =DATE= according to ISO
-  8601 standard.  [This function is part of {{{development-version}}}.]
+  8601 standard.
 
 #+findex: denote-trim-whitespace
 + Function ~denote-trim-whitespace~ :: Trim whitespace around string
