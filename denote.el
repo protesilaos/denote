@@ -3353,7 +3353,7 @@ module enables integration with another Emacs built-in feature.
 See `denote-modules-available' for the modules currently
 available.  Set this user option as a list of NAME; for example:
 
-    \(project xref ffap\)
+    (project xref ffap)
 
 When customized in Customize UI, it presents a set of checkboxes,
 each box checked adds NAME of the module to the list.
@@ -3367,8 +3367,8 @@ or set it in your configuration."
   :set #'denote-modules-set
   :package-version '(denote . "1.2.0")
   :type
-  '(set (const :tag "Project integration"                     project)
-        (const :tag "Xref integration                          " xref)
+  '(set (const :tag "Project integration" project)
+        (const :tag "Xref integration " xref)
         (const :tag "Integration with find-file-at-point `ffap'" ffap)))
 
 ;;;; project.el integration
