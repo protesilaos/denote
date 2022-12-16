@@ -2193,6 +2193,23 @@ Each of those types can be narrowed to with a prefix key.  The package
 =consult-dir= is an extension to =consult= which provides useful extras
 for working with directories, including bookmarks.
 
+** Use the ~citar-denote~ package for bibliography notes
+:PROPERTIES:
+:CUSTOM_ID: h:226d66e4-b7de-4617-87e2-a7f2d6f007dd
+:END:
+
+Peter Prevos has produced the ~citar-denote~ package which makes it
+possible to write notes on BibTeX entries with the help of the ~citar~
+package.  These notes have the citation's unique key associated with
+them in the file's front matter.  They also get a configurable keyword
+in their file name, making it easy to find them in Dired and/or
+retrieve them with the various Denote methods.
+
+With ~citar-denote~, the user leverages standard minibuffer completion
+mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
+to manage bibliographic notes and access those notes with ease.  The
+package's documentation covers the details: <https://github.com/pprevos/citar-denote/>.
+
 ** Use the consult-notes package
 :PROPERTIES:
 :CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
