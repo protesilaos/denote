@@ -634,6 +634,24 @@ modes, we can do something like this:
               (org-hide-leading-stars . t))))
 #+end_src
 
+IMPORTANT If your silo contains sub-directories of notes, you
+should replace ~default-directory~ in the above examples with an
+absolute path to your silo directory, otherwise links from files
+within the sub-directories cannot be made to files in the parent
+directory. For example:
+
+#+begin_src emacs-lisp
+;;; Directory Local Variables.  For more information evaluate:
+;;;
+;;;     (info "(emacs) Directory Variables")
+  ((nil . ((denote-directory . "~/my-silo")
+           (denote-known-keywords . ("food" "drink"))
+           (denote-infer-keywords . nil)))
+   (org-mode . ((org-hide-emphasis-markers . t)
+                (org-hide-macro-markers . t)
+                (org-hide-leading-stars . t))))
+#+end_src
+
 As not all user options have a "safe" local value, Emacs will ask the
 user to confirm their choice and to store it in the Custom code
 snippet that is normally appended to init file (or added to the file
