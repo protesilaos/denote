@@ -1649,7 +1649,8 @@ packages such as `marginalia' and `embark')."
 
 ;;;;; Convenience commands as `denote' variants
 
-(defalias 'denote-create-note (symbol-function 'denote))
+(defalias 'denote-create-note 'denote
+  "Alias of `denote' command.")
 
 ;;;###autoload
 (defun denote-type ()
@@ -1662,7 +1663,8 @@ is set to \\='(file-type title keywords)."
   (let ((denote-prompts '(file-type title keywords)))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-using-type (symbol-function 'denote-type))
+(defalias 'denote-create-note-using-type 'denote-type
+  "Alias of `denote-type' command.")
 
 ;;;###autoload
 (defun denote-date ()
@@ -1680,7 +1682,8 @@ is set to \\='(date title keywords)."
   (let ((denote-prompts '(date title keywords)))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-using-date (symbol-function 'denote-date))
+(defalias 'denote-create-note-using-date 'denote-date
+  "Alias of `denote-date' command.")
 
 ;;;###autoload
 (defun denote-subdirectory ()
@@ -1696,7 +1699,8 @@ set to \\='(subdirectory title keywords)."
   (let ((denote-prompts '(subdirectory title keywords)))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-in-subdirectory (symbol-function 'denote-subdirectory))
+(defalias 'denote-create-note-in-subdirectory 'denote-subdirectory
+  "Alias of `denote-subdirectory' command.")
 
 ;;;###autoload
 (defun denote-template ()
@@ -1713,7 +1717,8 @@ set to \\='(template title keywords)."
   (let ((denote-prompts '(template title keywords)))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-with-template (symbol-function 'denote-template))
+(defalias 'denote-create-note-with-template 'denote-template
+  "Alias of `denote-template' command.")
 
 ;;;;; Other convenience commands
 
@@ -2570,7 +2575,8 @@ whitespace-only), insert an ID-ONLY link."
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
-(defalias 'denote-link-insert-link (symbol-function 'denote-link))
+(defalias 'denote-link-insert-link 'denote-link
+  "Alias of `denote-link' command.")
 
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
@@ -2686,7 +2692,8 @@ file's title.  This has the same meaning as in `denote-link'."
       (denote-link target id-only)
     (call-interactively #'denote-link-after-creating)))
 
-(defalias 'denote-link-to-existing-or-new-note (symbol-function 'denote-link-or-create))
+(defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
+  "Alias of `denote-link-or-create' command.")
 
 ;;;;; Link buttons
 
@@ -2888,7 +2895,8 @@ default, it will show up below the current window."
                           (delete file (denote-directory-text-only-files)))
          nil)))))
 
-(defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
+(defalias 'denote-link-show-backlinks-buffer 'denote-link-backlinks
+  "Alias of `denote-link-backlinks' command.")
 
 ;;;;; Add links matching regexp
 
@@ -2942,7 +2950,8 @@ inserts links with just the identifier."
           (denote-link-buttonize-buffer beg (point)))
       (message "No links matching `%s'" regexp))))
 
-(defalias 'denote-link-insert-links-matching-regexp (symbol-function 'denote-link-add-links))
+(defalias 'denote-link-insert-links-matching-regexp 'denote-link-add-links
+  "Alias of `denote-link-add-links' command.")
 
 ;;;###autoload
 (defun denote-link-add-missing-links (regexp &optional id-only)
