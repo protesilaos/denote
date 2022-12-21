@@ -3151,13 +3151,13 @@ setup.  If you have a blog post, video, or configuration file about
 Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
 + David Wilson (SystemCrafters): /Generating a Blog Site from Denote
-  Entries/, 2022-09-09, <https://www.youtube.com/watch?v=5R7ad5xz5wo>.
+  Entries/, 2022-09-09, <https://www.youtube.com/watch?v=5R7ad5xz5wo>
 
 + David Wilson (SystemCrafters): /Trying Out Prot's Denote, an Org
-  Roam Alternative?/, 2022-07-15, <https://www.youtube.com/watch?v=QcRY_rsX0yY>.
+  Roam Alternative?/, 2022-07-15, <https://www.youtube.com/watch?v=QcRY_rsX0yY>
 
 + Jack Baty: /Keeping my Org Agenda updated based on Denote keywords/,
-  2022-11-30, <https://baty.net/2022/keeping-my-org-agenda-updated>.
+  2022-11-30, <https://baty.net/2022/keeping-my-org-agenda-updated>
 
 + Jeremy Friesen: /Denote Emacs Configuration/, 2022-10-02,
   <https://takeonrules.com/2022/10/09/denote-emacs-configuration/>
@@ -3176,7 +3176,7 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
   Denote/, 2022-12-20, <https://www.scss.tcd.ie/~sulimanm/posts/denote-bibliography.html>
 
 + Peter Prevos: /Simulating Text Files with R to Test the Emacs Denote
-  Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>.
+  Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>
 
 * Alternatives to Denote
 :PROPERTIES:
