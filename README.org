@@ -20,7 +20,7 @@
 #+texinfo: @insertcopying
 
 This manual, written by Protesilaos Stavrou, describes the customization
-options for the Emacs package called =denote= (or =denote.el=), and
+options for the Emacs package called ~denote~ (or =denote.el=), and
 provides every other piece of information pertinent to it.
 
 The documentation furnished herein corresponds to stable version
@@ -30,7 +30,7 @@ commit, is explicitly marked as such.
 
 Current development target is {{{development-version}}}.
 
-+ Package name (GNU ELPA): =denote=
++ Package name (GNU ELPA): ~denote~
 + Official manual: <https://protesilaos.com/emacs/denote>
 + Change log: <https://protesilaos.com/emacs/denote-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
