@@ -2228,7 +2228,7 @@ to preview the currently selected entry and to filter searches via a
 prefix key.  For example:
 
 #+begin_src emacs-lisp
-(setq consult-notes-filhe-dir-sources
+(setq consult-notes-file-dir-sources
       `(("Denote Notes"  ?d ,(denote-directory))
         ("Books"  ?b "~/Documents/books/")))
 #+end_src
