@@ -3172,6 +3172,9 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
   Denote, and Transient/, 2022-11-19,
   <https://takeonrules.com/2022/11/19/project-dispatch-menu-with-org-mode-metadata-denote-and-transient/>
 
++ Mohamed Suliman: /Managing a bibliography of BiBTeX entries with
+  Denote/, 2022-12-20, <https://www.scss.tcd.ie/~sulimanm/posts/denote-bibliography.html>
+
 + Peter Prevos: /Simulating Text Files with R to Test the Emacs Denote
   Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>.
 
