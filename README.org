@@ -2221,28 +2221,34 @@ package's documentation covers the details: <https://github.com/pprevos/citar-de
 :CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
 :END:
 
-If you are already using ~consult~ (which is a brilliant package), you
-will probably like its ~consult-notes~ extension.  It uses the familiar
-mechanisms of Consult to filter searches via a prefix key.  For example:
+If you are using Daniel Mendler's ~consult~ (which is a brilliant
+package), you will most probably like its ~consult-notes~ extension,
+developed by Colin McLear.  It uses the familiar mechanisms of Consult
+to preview the currently selected entry and to filter searches via a
+prefix key.  For example:
 
 #+begin_src emacs-lisp
-(setq consult-notes-sources
-      `(("Notes"  ?n ,denote-directory)
-        ("Books"  ?b "~/Documents/books")))
+(setq consult-notes-filhe-dir-sources
+      `(("Denote Notes"  ?d ,(denote-directory))
+        ("Books"  ?b "~/Documents/books/")))
 #+end_src
 
 With the above, =M-x consult-notes= will list the files in those two
-directories.  If you type =n= and space, it narrows the list to just the
-notes, while =b= does the same for books.
+directories.  If you type =d= and space, it narrows the list to just
+the notes, while =b= does the same for books.
 
-To search all your notes with grep (or ripgrep if installed -- see
-~consult-notes-use-rg~ variable) use the command
-~consult-notes-search-in-all-notes~. This will employ grep/ripgrep for
-searching terms in all the directories set in ~consult-notes-sources~.
+The other approach is to enable the ~consult-notes-denote-mode~.  It
+takes care to add the ~denote-directory~ to the sources that
+~consult-notes~ reads from.  Denote notes are then filtered by the =d=
+prefix followed by a space.
 
-Note that ~consult-notes~ is in its early stages of development.
-Expect improvements in the near future (written on 2022-06-22 16:48
-+0300).
+The minor mode has the extra feature of reformatting the title of
+notes shown in the minibuffer.  It isolates the =TITLE= component of
+each note and shows it without hyphens, while presenting keywords in
+their own column.  The user option ~consult-notes-denote-display-id~
+can be set to ~nil~ to hide the identifier.  Depending on how one
+searches through their notes, this refashioned presentation may be the
+best option ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
 
 ** Treat your notes as a project
 :PROPERTIES:
