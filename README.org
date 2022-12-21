@@ -3585,7 +3585,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Marlow, Hilde Rhyne, Jack Baty, Jean-Philippe Gagné Guay, Jürgen
   Hötzel, Kaushal Modi, Kyle Meyer, Marc Fargas, Matthew Lemon, Noboru
   Ota (nobiot), Peter Prevos, Philip Kaludercic, Quiliro Ordóñez,
-  Stefan Monnier, Thibaut Benjamin.
+  Stefan Monnier, Stefan Thesing, Thibaut Benjamin.
 
 + Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
