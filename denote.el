@@ -223,6 +223,8 @@ The value is a list of symbols, which includes any of the following:
   value of that KEY is used to populate the new note with
   content, which is added after the front matter.
 
+- TODO 2022-12-23: document `signature'.
+
 The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.
@@ -444,6 +446,9 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-id-format'.")
 
+(defconst denote-signature-regexp "==\\([[:alnum:][:nonascii:]]*\\)"
+  "Regular expression to match the SIGNATURE field in a file name.")
+
 (define-obsolete-variable-alias
   'denote--title-regexp
   'denote-title-regexp
@@ -603,6 +608,12 @@ and use one of the extensions implied by `denote-file-type'."
   'denote--file-has-identifier-p
   'denote-file-has-identifier-p
   "1.0.0")
+
+(defun denote-file-has-signature-p (file)
+  "Return non-nil if FILE has a Denote identifier."
+  (when file
+    (string-match-p denote-signature-regexp
+                    (file-name-nondirectory file))))
 
 (defun denote-file-directory-p (file)
   "Return non-nil if FILE is a directory.
@@ -1211,6 +1222,14 @@ the function `denote-retrieve-or-create-file-identifier'."
         (match-string 0 file))
     (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
+(defun denote-retrieve-filename-signature (file)
+  "Extract signature from FILE name."
+  (if (denote-file-has-signature-p file)
+      (progn
+        (string-match denote-signature-regexp file)
+        (match-string 1 file))
+    (error "Cannot find `%s' as a file with a Denote signature" file)))
+
 (define-obsolete-function-alias
   'denote--retrieve-filename-identifier
   'denote-retrieve-filename-identifier
@@ -1337,13 +1356,14 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 
 ;;;;; Common helpers for new notes
 
-(defun denote-format-file-name (path id keywords title-slug extension)
+(defun denote-format-file-name (path id keywords title-slug extension &optional signature)
   "Format file name.
-PATH, ID, KEYWORDS, TITLE-SLUG are expected to be supplied by
-`denote' or equivalent: they will all be converted into a single
-string.  EXTENSION is the file type extension, as a string."
+PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and optional SIGNATURE
+are expected to be supplied by `denote' or equivalent command."
   (let ((kws (denote--keywords-combine keywords))
         (file-name (concat path id)))
+    (when (and signature (not (string-empty-p signature)))
+      (setq file-name (concat file-name "==" signature)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
     (when (and keywords (not (string-blank-p kws)))
@@ -1378,13 +1398,16 @@ provided by `denote'.  FILETYPE is one of the values of
          (kws (denote--format-front-matter-keywords keywords filetype)))
     (if fm (format fm title date kws id) "")))
 
-(defun denote--path (title keywords dir id file-type)
-  "Return path to new file with ID, TITLE, KEYWORDS and FILE-TYPE in DIR."
+(defun denote--path (title keywords dir id file-type &optional signature)
+  "Return path to new file.
+Use ID, TITLE, KEYWORDS, FILE-TYPE and optional SIGNATURE to
+construct path to DIR."
   (denote-format-file-name
    dir id
    (denote-sluggify-keywords keywords)
    (denote-sluggify title)
-   (denote--file-extension file-type)))
+   (denote--file-extension file-type)
+   (denote--slug-no-punct signature)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -1428,12 +1451,13 @@ provided by `denote'.  FILETYPE is one of the values of
      (t
       (denote-date-org-timestamp date)))))
 
-(defun denote--prepare-note (title keywords date id directory file-type template)
+(defun denote--prepare-note (title keywords date id directory file-type template &optional signature)
   "Prepare a new note file.
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
-and TEMPLATE should be valid for note creation."
-  (let* ((path (denote--path title keywords directory id file-type))
+TEMPLATE, and optional SIGNATURE should be valid for note
+creation."
+  (let* ((path (denote--path title keywords directory id file-type signature))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date file-type) keywords
@@ -1515,7 +1539,7 @@ where the former does not read dates without a time component."
 ;;;;; The `denote' command and its prompts
 
 ;;;###autoload
-(defun denote (&optional title keywords file-type subdirectory date template)
+(defun denote (&optional title keywords file-type subdirectory date template signature)
   "Create a new note with the appropriate metadata and file name.
 
 When called interactively, the metadata and file name are prompted
@@ -1542,9 +1566,11 @@ When called from Lisp, all arguments are optional.
 
 - TEMPLATE is a symbol which represents the key of a cons cell in
   the user option `denote-templates'.  The value of that key is
-  inserted to the newly created buffer after the front matter."
+  inserted to the newly created buffer after the front matter.
+
+- SIGNATURE is a string or a function returning a string."
   (interactive
-   (let ((args (make-vector 6 nil)))
+   (let ((args (make-vector 7 nil)))
      (dolist (prompt denote-prompts)
        (pcase prompt
          ('title (aset args 0 (denote-title-prompt
@@ -1556,7 +1582,8 @@ When called from Lisp, all arguments are optional.
          ('file-type (aset args 2 (denote-file-type-prompt)))
          ('subdirectory (aset args 3 (denote-subdirectory-prompt)))
          ('date (aset args 4 (denote-date-prompt)))
-         ('template (aset args 5 (denote-template-prompt)))))
+         ('template (aset args 5 (denote-template-prompt)))
+         ('signature (aset args 6 (denote-signature-prompt)))))
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
@@ -1572,9 +1599,10 @@ When called from Lisp, all arguments are optional.
                       (denote-directory)))
          (template (if (stringp template)
                        template
-                     (or (alist-get template denote-templates) ""))))
+                     (or (alist-get template denote-templates) "")))
+         (signature (or signature "")))
     (denote-barf-duplicate-id id)
-    (denote--prepare-note title kws date id directory file-type template)
+    (denote--prepare-note title kws date id directory file-type template signature)
     (denote--keywords-add-to-history keywords)))
 
 (defvar denote--title-history nil
@@ -1691,6 +1719,13 @@ packages such as `marginalia' and `embark')."
   'denote-template-prompt
   "1.0.0")
 
+(defvar denote--signature-history nil
+  "Minibuffer history of `denote-signature-prompt'.")
+
+(defun denote-signature-prompt ()
+  "Prompt for signature string."
+  (read-string "Provide signature: " nil 'denote--signature-history))
+
 ;;;;; Convenience commands as `denote' variants
 
 (defalias 'denote-create-note 'denote
@@ -1763,6 +1798,20 @@ set to \\='(template title keywords)."
 
 (defalias 'denote-create-note-with-template 'denote-template
   "Alias of `denote-template' command.")
+
+;;;###autoload
+(defun denote-signature ()
+  "Create note while prompting for a file signature.
+
+This is the equivalent to calling `denote' when `denote-prompts'
+is set to \\='(signature title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(signature title keywords)))
+    (call-interactively #'denote)))
+
+(defalias 'denote-create-note-using-signature 'denote-signature
+  "Alias of `denote-signature' command.")
 
 ;;;;; Other convenience commands
 
@@ -2122,10 +2171,11 @@ files)."
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (denote-retrieve-or-create-file-identifier file date))
+         (signature (denote-retrieve-filename-signature file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name
-                    dir id keywords (denote-sluggify title) extension))
+                    dir id keywords (denote-sluggify title) extension signature))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
@@ -2212,11 +2262,12 @@ The operation does the following:
             (dolist (file marks)
               (let* ((dir (file-name-directory file))
                      (id (denote-retrieve-or-create-file-identifier file))
+                     (signature (denote-retrieve-filename-signature file))
                      (file-type (denote-filetype-heuristics file))
                      (title (denote--retrieve-title-or-filename file file-type))
                      (extension (file-name-extension file t))
                      (new-name (denote-format-file-name
-                                dir id keywords (denote-sluggify title) extension)))
+                                dir id keywords (denote-sluggify title) extension signature)))
                 (denote-rename-file-and-buffer file new-name)
                 (when (denote-file-is-writable-and-supported-p new-name)
                   (if (denote--edit-front-matter-p new-name file-type)
@@ -2259,9 +2310,10 @@ proceed with the renaming."
             (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote-retrieve-or-create-file-identifier file))
+            (signature (denote-retrieve-filename-signature file))
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
-                       dir id keywords (denote-sluggify title) extension)))
+                       dir id keywords (denote-sluggify title) extension signature)))
       (when (or auto-confirm
                 (denote-rename-file-prompt file new-name))
         (denote-rename-file-and-buffer file new-name)
@@ -2306,12 +2358,13 @@ their respective front matter."
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
                  (id (denote-retrieve-or-create-file-identifier file))
+                 (signature (denote-retrieve-filename-signature file))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote-retrieve-title-value file file-type))
                  (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (file-name-extension file t))
                  (new-name (denote-format-file-name
-                            dir id keywords (denote-sluggify title) extension)))
+                            dir id keywords (denote-sluggify title) extension signature)))
             (denote-rename-file-and-buffer file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
@@ -2407,6 +2460,11 @@ and seconds."
   :group 'denote-faces
   :package-version '(denote . "0.1.0"))
 
+(defface denote-faces-signature '((t :inherit font-lock-warning-face))
+  "Face for file name signature in Dired buffers."
+  :group 'denote-faces
+  :package-version '(denote . "1.3.0"))
+
 (defface denote-faces-delimiter
   '((((class color) (min-colors 88) (background light))
      :foreground "gray70")
@@ -2420,9 +2478,10 @@ and seconds."
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 (defvar denote-faces--file-name-regexp
   (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
-          "\\(?:\\(?3:--\\)\\(?4:[[:alnum:][:nonascii:]-]*\\)\\)?"
-          "\\(?:\\(?5:__\\)\\(?6:[[:alnum:][:nonascii:]_-]*\\)\\)?"
-          "\\(?7:\\..*\\)?$")
+          "\\(?:\\(?3:==\\)\\(?4:[[:alnum:][:nonascii:]]*\\)\\)?"
+          "\\(?:\\(?5:--\\)\\(?6:[[:alnum:][:nonascii:]-]*\\)\\)?"
+          "\\(?:\\(?7:__\\)\\(?8:[[:alnum:][:nonascii:]_-]*\\)\\)?"
+          "\\(?9:\\..*\\)?$")
   "Regexp of file names for fontification.")
 
 (defconst denote-faces-file-name-keywords
@@ -2430,22 +2489,26 @@ and seconds."
      (1 'denote-faces-date)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
-     (4 'denote-faces-title nil t)
+     (4 'denote-faces-signature nil t)
      (5 'denote-faces-delimiter nil t)
-     (6 'denote-faces-keywords nil t)
-     (7 'denote-faces-extension nil t )))
+     (6 'denote-faces-title nil t)
+     (7 'denote-faces-delimiter nil t)
+     (8 'denote-faces-keywords nil t)
+     (9 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
 
 (defconst denote-faces-file-name-keywords-for-backlinks
-  `((,(concat "^\\(?8:.*/\\)?" denote-faces--file-name-regexp)
-     (8 'denote-faces-subdirectory nil t)
+  `((,(concat "^\\(?10:.*/\\)?" denote-faces--file-name-regexp)
+     (10 'denote-faces-subdirectory nil t)
      (1 'denote-faces-date)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
-     (4 'denote-faces-title nil t)
+     (4 'denote-faces-signature nil t)
      (5 'denote-faces-delimiter nil t)
-     (6 'denote-faces-keywords nil t)
-     (7 'denote-faces-extension nil t)))
+     (6 'denote-faces-title nil t)
+     (7 'denote-faces-delimiter nil t)
+     (8 'denote-faces-keywords nil t)
+     (9 'denote-faces-extension nil t )))
   "Keywords for fontification of file names in the backlinks buffer.")
 
 ;;;; Fontification in Dired
