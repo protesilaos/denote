@@ -2155,6 +2155,46 @@ files)."
           (denote--add-front-matter new-name title keywords id file-type))))))
 
 ;;;###autoload
+(defun denote-change-file-type (file new-file-type)
+  "Change file type of FILE and add an appropriate front matter.
+
+If in Dired, consider FILE to be the one at point, else prompt
+with minibuffer completion for one.
+
+Add a front matter in the format of the NEW-FILE-TYPE at the
+beginning of the file.
+
+The title is retrieved from a line starting with a title field in
+the file's contents, depending on the previous file type (e.g.
+#+title for Org). The same process applies for keywords and id.
+
+As a final step, ask for confirmation, showing the difference
+between old and new file names.
+
+Important note: No attempt is made to modify any other elements
+of the file. This needs to be done manually."
+  (interactive
+   (list
+    (denote--rename-dired-file-or-prompt)
+    (denote--valid-file-type (or (denote-file-type-prompt) denote-file-type))))
+  (let* ((dir (file-name-directory file))
+         (old-file-type (denote-filetype-heuristics file))
+         (id (denote-retrieve-or-create-file-identifier file))
+         (title (denote-retrieve-title-value file old-file-type))
+         (keywords (denote-retrieve-keywords-value file old-file-type))
+         (old-extension (file-name-extension file t))
+         (new-extension (denote--file-extension new-file-type))
+         (new-name (denote-format-file-name
+                    dir id keywords (denote-sluggify title) new-extension))
+         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
+    (when (and (not (eq old-extension new-extension))
+               (denote-rename-file-prompt file new-name))
+      (denote-rename-file-and-buffer file new-name)
+      (denote-update-dired-buffers)
+      (when (denote-file-is-writable-and-supported-p new-name)
+        (denote--add-front-matter new-name title keywords id new-file-type)))))
+
+;;;###autoload
 (defun denote-dired-rename-marked-files ()
   "Rename marked files in Dired to Denote file name.
 
