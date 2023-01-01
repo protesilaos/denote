@@ -52,7 +52,7 @@ the GNU ELPA machinery automatically generates an Info manual out of it.
 :CUSTOM_ID: h:40b18bb2-4dc1-4202-bd0b-6fab535b2a0f
 :END:
 
-Copyright (C) 2022  Free Software Foundation, Inc.
+Copyright (C) 2022-2023  Free Software Foundation, Inc.
 
 #+begin_quote
 Permission is granted to copy, distribute and/or modify this document
