@@ -3253,15 +3253,16 @@ should not be mutually exclusive.
 
 If I missed something, please let me know.
 
-** Alternative ideas with Emacs and further reading
+** Alternative implementations and further reading
 :PROPERTIES:
 :CUSTOM_ID: h:188c0986-f2fa-444f-b493-5429356e75cf
 :END:
 
-This section covers blog posts from the Emacs community on the matter of
-note-taking.  They may reference some of the packages covered in the
-previous section or provide their custom code ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).
-The list is unsorted.
+This section covers blog posts and implementations from the Emacs
+community about the topic of note-taking and file organization.  They
+may refer to some of the packages covered in the previous section or
+provide their custom code ([[#h:dbb51a1b-90b8-48e8-953c-e2fb3e36981e][Alternatives to Denote]]).  The list is
+unsorted.
 
 + José Antonio Ortega Ruiz (aka "jao") explains a note-taking method
   that is simple like Denote but differs in other ways.  An interesting
@@ -3270,6 +3271,13 @@ The list is unsorted.
 + Jethro Kuan (the main =org-roam= developer) explains their note-taking
   techniques: https://jethrokuan.github.io/org-roam-guide/.  Good ideas
   all round, regardless of the package/code you choose to use.
+
++ Karl Voit's tools [[https://github.com/novoid/date2name][date2name]], [[https://github.com/novoid/filetags/][filetags]], [[https://github.com/novoid/appendfilename/][appendfilename]], and
+  [[https://github.com/novoid/move2archive][move2archive]] provide a Python-based implementation to organize
+  individual files which do not require Emacs.  His approach ([[https://karl-voit.at/managing-digital-photographs/][blog
+  post]] and his [[https://www.youtube.com/watch?v=rckSVmYCH90][presentation at GLT18]]) has been complemented by [[https://github.com/novoid/memacs][memacs]]
+  to process e.g., the date of creation of photographs, or the log of
+  a phone call in a format compatible to org.
 
 [ Development note: help expand this list. ]
 
