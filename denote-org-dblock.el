@@ -102,19 +102,20 @@
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (let ((regexp (plist-get params :regexp))
-        (missing-only (plist-get params :missing-only))
-        (block-name (plist-get params :block-name))
-        (denote-link-add-links-sort (plist-get params :reverse))
-        (current-file (buffer-file-name)))
+  (let* ((regexp (plist-get params :regexp))
+         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (missing-only (plist-get params :missing-only))
+         (block-name (plist-get params :block-name))
+         (denote-link-add-links-sort (plist-get params :reverse))
+         (current-file (buffer-file-name)))
     (when block-name
       (insert "#+name: " block-name "\n"))
     (if missing-only
         (progn
-          (denote-link-add-missing-links regexp)
+          (denote-link-add-missing-links rx)
           (join-line)) ;; remove trailing empty line left by denote-link--prepare-links
       (when-let ((files (delete current-file
-                                (denote-directory-files-matching-regexp regexp))))
+                                (denote-directory-files-matching-regexp rx))))
         (insert (denote-link--prepare-links files current-file nil))
         (join-line))))) ;; remove trailing empty line
 

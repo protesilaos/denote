@@ -1713,7 +1713,9 @@ A dynamic block looks like this:
 
 Here we have the =denote-links= type, with the =:regexp= parameter.
 The value of the =:regexp= parameter is the same as that of the
-command ~denote-link-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  The
+command ~denote-link-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  It
+can only use the notation of the ~rx~ macro, as explained in the Emacs
+Lisp Reference Manual (evaluate: =(info "(elisp) Rx Notation")=).  The
 linked entry provides practical examples of patterns that make good
 use of Denote's file-naming scheme ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
@@ -3599,9 +3601,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
   Federico Stilman, Florian, Frank Ehmsen, Guo Yong, Hanspeter Gisler,
   Jack Baty, Jeremy Friesen, Juanjo Presa, Johan Bolmsjö, Kaushal
-  Modi, M. Hadi Timachi, Paul van Gelder, Peter Prevos, Shreyas
-  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor
-  Haag, Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p, sienic, sundar bp.
+  Modi, M. Hadi Timachi, Mirko Hernandez, Paul van Gelder, Peter
+  Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
+  Taoufik, Viktor Haag, Yi Liu, Ypot, atanasj, hpgisler, pRot0ta1p,
+  sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
