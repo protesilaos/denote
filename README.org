@@ -2426,6 +2426,46 @@ For templates, refer to `denote-templates'."
     (call-interactively #'denote-link-or-create)))
 #+end_src
 
+** Using the tree-based file prompt for select commands
+:PROPERTIES:
+:CUSTOM_ID: h:8f9e0971-8b30-4e7b-af79-8fed257dbcfa
+:END:
+
+Older versions of Denote had a file prompt that resembled that of the
+standard ~find-file~ command (bound to =C-x C-f= by default).  This
+means that it used a tree-based method of navigating the filesystem by
+selecting the specific directory and then the given file.
+
+Currently, Denote flattens the file prompt so that every file in the
+~denote-directory~ and its subdirectories can be matched from anywhere
+using the power of Emacs' minibuffer completion (such as with the help
+of the ~orderless~ package in addition to built-in options).
+
+Users who need the old behaviour on a per-command basis can define
+their own wrapper functions as shown in the following code block.
+
+#+begin_src emacs-lisp
+;; This is the old `denote-file-prompt' that we renamed to
+;; `denote-file-prompt-original' for clarity.
+(defun denote-file-prompt-original (&optional initial-text)
+  "Prompt for file with identifier in variable `denote-directory'.
+With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
+  (read-file-name "Select note: " (denote-directory) nil nil initial-text
+                  (lambda (f)
+                    (or (denote-file-has-identifier-p f)
+                        (file-directory-p f)))))
+
+;; Our wrapper command that changes the current `denote-file-prompt'
+;; to the functionality of `denote-file-prompt-original' only when
+;; this command is used.
+(defun my-denote-link ()
+  "Call `denote-link' but use Denote's original file prompt.
+See `denote-file-prompt-original'."
+  (interactive)
+  (cl-letf (((symbol-function 'denote-file-prompt) #'denote-file-prompt-original))
+    (call-interactively #'denote-link)))
+#+end_src
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
