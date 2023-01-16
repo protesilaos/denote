@@ -2314,6 +2314,9 @@ searches through their notes, this refashioned presentation may be the
 best option ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
 
 ** Use the ~denote-menu~ package
+:PROPERTIES:
+:CUSTOM_ID: h:472db709-27de-4a1f-a171-c3fe0a7a9be8
+:END:
 
 Denote's file-naming scheme is designed to be efficient and to provide
 valueable meta information about the file.  The cost, however, is that
