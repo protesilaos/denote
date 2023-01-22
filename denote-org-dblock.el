@@ -127,8 +127,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 ;; Similarly, we can create a 'denote-backlinks' block that inserts
 ;; links to notes that link to the current note.
 
-;; Note that this block type doesn't take any additional parameters
-;; (such as ':missing-only').
+;; This block type takes the following parameters:
+;;  1. :reverse t       -- reverse sort order (or don't, when nil)
 
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
@@ -139,11 +139,12 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
-(defun org-dblock-write:denote-backlinks (_params)
+(defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
+              (denote-link-add-links-sort (plist-get params :reverse))
               (files (delete file (denote--retrieve-files-in-xrefs id))))
     (insert (denote-link--prepare-links files file nil))
     (join-line))) ;; remove trailing empty line
