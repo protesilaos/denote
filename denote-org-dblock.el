@@ -55,7 +55,9 @@
 ;;
 ;; With point at the #+BEGIN: line, pressing 'C-c C-c' will replace the
 ;; contents of the block with links to notes matching the search
-;; ':regexp'. See also the denote manual on 'denote-link-add-links'.
+;; ':regexp'. The regular expression can be either a regexp string or
+;; a sexp form (the latter is translated via rx).
+;; See also the denote manual on 'denote-link-add-links'.
 ;;
 ;; Inserting a block can be done via the Org-mode entry point
 ;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
@@ -64,7 +66,8 @@
 ;;
 ;; Org Dynamic blocks of the denote-links type can have the follwoing
 ;; arguments (in any order):
-;;  1. :regexp "string" -- the search input (required)
+;;  1. :regexp input    -- the search input (required), either as a
+;;                         regexp string or a sexp (in rx notation)
 ;;  2. :missing-only t  -- to only include missing links
 ;;  3. :reverse t       -- reverse sort order (or don't, when nil)
 ;;  4. :block-name "n"  -- to include a name for later processing
@@ -124,8 +127,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 ;; Similarly, we can create a 'denote-backlinks' block that inserts
 ;; links to notes that link to the current note.
 
-;; Note that this block type doesn't take any additional parameters
-;; (such as ':missing-only').
+;; This block type takes the following parameters:
+;;  1. :reverse t       -- reverse sort order (or don't, when nil)
 
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
@@ -136,11 +139,12 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
 
-(defun org-dblock-write:denote-backlinks (_params)
+(defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
+              (denote-link-add-links-sort (plist-get params :reverse))
               (files (delete file (denote--retrieve-files-in-xrefs id))))
     (insert (denote-link--prepare-links files file nil))
     (join-line))) ;; remove trailing empty line
