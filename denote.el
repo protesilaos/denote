@@ -1127,6 +1127,20 @@ for new note creation.  The default is `org'.")
              (plist-get (cdr type) :extension))
            denote-file-types)))
 
+;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
+;; option, but I am keeping it as a private variable for now.
+(defvar denote--encryption-file-extensions '(".gpg" ".age")
+  "List of strings specifying file extensions for encryption.")
+
+(defun denote--extensions-with-encryption ()
+  "Derive `denote--extensions' including `denote--encryption-file-extensions'."
+  (let ((file-extensions (denote--extensions))
+        all)
+    (dolist (ext file-extensions)
+      (dolist (enc denote--encryption-file-extensions)
+        (push (concat ext enc) all)))
+    (append file-extensions all)))
+
 (defun denote--file-type-keys ()
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
