@@ -592,14 +592,9 @@ Omit FILE if it matches the value of user option
   "Return non-nil if FILE has supported extension.
 Also account for the possibility of an added .gpg suffix.
 Supported extensions are those implied by `denote-file-type'."
-  (let* ((extensions (denote--extensions))
-         (valid-extensions (append extensions
-                                   (mapcar (lambda (e)
-                                             (concat e ".gpg"))
-                                           extensions))))
-    (seq-some
-     (lambda (e) (string-suffix-p e file))
-     valid-extensions)))
+  (seq-some (lambda (e)
+              (string-suffix-p e file))
+            (denote--extensions-with-encryption)))
 
 (define-obsolete-function-alias
   'denote--file-supported-extension-p
