@@ -745,8 +745,9 @@ With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
          (dirs (list (project-root project)))
          (all-files (project-files project dirs))
          (completion-ignore-case read-file-name-completion-ignore-case))
-    (funcall project-read-file-name-function
-             "Select note: " all-files nil 'denote--title-history initial-text)))
+    (when all-files
+      (funcall project-read-file-name-function
+               "Select note: " all-files nil 'denote--title-history initial-text))))
 
 (define-obsolete-function-alias
   'denote--retrieve-read-file-prompt
@@ -1752,7 +1753,7 @@ further edit their last input, using it as the newly created
 note's actual title.  At the `denote-title-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element]."
   (interactive (list (denote-file-prompt)))
-  (if (file-exists-p target)
+  (if (and target (file-exists-p target))
       (find-file target)
     (call-interactively #'denote)))
 
