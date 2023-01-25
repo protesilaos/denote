@@ -2577,13 +2577,14 @@ whitespace-only), insert an ID-ONLY link."
                         selected-text))
          (identifier-only (or id-only (string-empty-p description)))
          (file-type (denote-filetype-heuristics (buffer-file-name))))
-    (insert
-     (denote-link--format-link
-      target
-      (denote-link--file-type-format file-type identifier-only)
-      description))
-    (unless (derived-mode-p 'org-mode)
-      (make-button beg (point) 'type 'denote-link-button))))
+    (when target
+      (insert
+       (denote-link--format-link
+        target
+        (denote-link--file-type-format file-type identifier-only)
+        description))
+      (unless (derived-mode-p 'org-mode)
+        (make-button beg (point) 'type 'denote-link-button)))))
 
 (defalias 'denote-link-insert-link 'denote-link
   "Alias of `denote-link' command.")
@@ -2698,7 +2699,7 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
-  (if (file-exists-p target)
+  (if (and target (file-exists-p target))
       (denote-link target id-only)
     (call-interactively #'denote-link-after-creating)))
 
@@ -3091,9 +3092,9 @@ file."
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
-  (concat
-   "denote:"
-   (denote-retrieve-filename-identifier (denote-file-prompt))))
+  (if-let ((file (denote-file-prompt)))
+      (concat "denote:" (denote-retrieve-filename-identifier file))
+    (user-error "No files in `denote-directory'")))
 
 (declare-function org-link-store-props "ol.el" (&rest plist))
 (defvar org-store-link-plist)
