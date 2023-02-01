@@ -144,10 +144,10 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let* ((file (buffer-file-name))
               (id (denote-retrieve-filename-identifier file))
-              (denote-link-add-links-sort (plist-get params :reverse))
               (files (delete file (denote--retrieve-files-in-xrefs id))))
-    (insert (denote-link--prepare-links files file nil))
-    (join-line))) ;; remove trailing empty line
+    (let ((denote-link-add-links-sort (plist-get params :reverse)))
+      (insert (denote-link--prepare-links files file nil))
+      (join-line)))) ;; remove trailing empty line
 
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
