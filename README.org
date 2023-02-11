@@ -532,6 +532,92 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+** Create note with specific prompts using Org capture
+
+[ Part of {{{development-version}}}. ]
+
+This section assumes knowledge of how Denote+org-capture work, as
+explained in the previous section ([[#h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881][Create note using Org capture]]).
+
+#+findex: denote-org-capture-with-prompts
+The previous section shows how to define an Org capture template that
+always prompts for a title and keywords.  There are, however, cases
+where the user wants more control over what kind of input Denote will
+prompt for.  To this end, we provide the function
+~denote-org-capture-with-prompts~.  Below we explain it and then show
+some examples of how to use it.
+
+The ~denote-org-capture-with-prompts~ is like ~denote-org-capture~ but
+with optional prompt parameters.
+
+When called without arguments, it does not prompt for anything.  It
+just returns the front matter with title and keyword fields empty and
+the date and identifier fields specified.  It also makes the file name
+consist of only the identifier plus the Org file name extension.
+
+[[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]].
+
+Otherwise, it produces a minibuffer prompt for every non-nil value
+that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
+and =TEMPLATE= arguments.  The prompts are those used by the standard
+~denote~ command and all of its utility commands.
+
+[[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]].
+
+When returning the contents that fill in the Org capture template, the
+sequence is as follows: front matter, =TEMPLATE=, and then the value
+of the user option ~denote-org-capture-specifiers~.
+
+Important note: in the case of =SUBDIRECTORY= actual subdirectories
+must exist---Denote does not create them.  Same principle for
+=TEMPLATE= as templates must exist and are specified in the user
+option ~denote-templates~.
+
+This is how one can incorporate ~denote-org-capture-with-prompts~ in
+their Org capture templates.  Instead of passing a generic ~t~ which
+makes it hard to remember what the argument means, we use semantic
+keywords like =:title= for our convenience (internally this does not
+matter as the value still counts as non-nil, so =:foo= for =TITLE= is
+treated the same as =:title= or ~t~).
+
+#+begin_src emacs-lisp
+;; This prompts for TITLE, KEYWORDS, and SUBDIRECTORY
+(add-to-list 'org-capture-templates
+             '("N" "New note with prompts (with denote.el)" plain
+               (file denote-last-path)
+               (function
+                (lambda ()
+                  (denote-org-capture-with-prompts :title :keywords :subdirectory)))
+               :no-save t
+               :immediate-finish nil
+               :kill-buffer t
+               :jump-to-captured t))
+
+;; This prompts only for SUBDIRECTORY
+(add-to-list 'org-capture-templates
+             '("N" "New note with prompts (with denote.el)" plain
+               (file denote-last-path)
+               (function
+                (lambda ()
+                  (denote-org-capture-with-prompts nil nil :subdirectory)))
+               :no-save t
+               :immediate-finish nil
+               :kill-buffer t
+               :jump-to-captured t))
+
+;; This prompts for TITLE and SUBDIRECTORY
+(add-to-list 'org-capture-templates
+             '("N" "New note with prompts (with denote.el)" plain
+               (file denote-last-path)
+               (function
+                (lambda ()
+                  (denote-org-capture-with-prompts :title nil :subdirectory)))
+               :no-save t
+               :immediate-finish nil
+               :kill-buffer t
+               :jump-to-captured t))
+#+end_src
+
 ** Maintain separate directory silos for notes
 :PROPERTIES:
 :CUSTOM_ID: h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5
@@ -3716,14 +3802,14 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Ota (nobiot), Norwid Behrnd, Peter Prevos, Philip Kaludercic,
   Quiliro Ordóñez, Stefan Monnier, Stefan Thesing, Thibaut Benjamin.
 
-+ Ideas and/or user feedback :: Abin Simon, Alan Schmitt, Alfredo
-  Borrás, Benjamin Kästner, Colin McLear, Damien Cassou, Elias Storms,
-  Federico Stilman, Florian, Frank Ehmsen, Guo Yong, Hanspeter Gisler,
-  Jack Baty, Jeremy Friesen, Juanjo Presa, Johan Bolmsjö, Kaushal
-  Modi, M. Hadi Timachi, Mirko Hernandez, Paul van Gelder, Peter
-  Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
-  Taoufik, Viktor Haag, Yi Liu, Ypot, atanasj, drcxd, hpgisler,
-  pRot0ta1p, rbenit68, sienic, sundar bp.
++ Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
+  Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
+  Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
+  Yong, Hanspeter Gisler, Jack Baty, Jeremy Friesen, Juanjo Presa,
+  Johan Bolmsjö, Kaushal Modi, M. Hadi Timachi, Mirko Hernandez, Paul
+  van Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer
+  Emacs, Sven Seebeck, Taoufik, Viktor Haag, Yi Liu, Ypot, atanasj,
+  drcxd, hpgisler, pRot0ta1p, rbenit68, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

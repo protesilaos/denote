@@ -3196,6 +3196,44 @@ Consult the manual for template samples."
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
+;;;###autoload
+(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
+  "Like `denote-org-capture' but with optional prompt parameters.
+
+When called without arguments, do not prompt for anything.  Just
+return the front matter with title and keyword fields empty and
+the date and identifier fields specified.  Also make the file
+name consist of only the identifier plus the Org file name
+extension.
+
+Otherwise produce a minibuffer prompt for every non-nil value
+that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, and
+TEMPLATE arguments.  The prompts are those used by the standard
+`denote' command and all of its utility commands.
+
+When returning the contents that fill in the Org capture
+template, the sequence is as follows: front matter, TEMPLATE, and
+then the value of the user option `denote-org-capture-specifiers'.
+
+Important note: in the case of SUBDIRECTORY actual subdirectories
+must exist---Denote does not create them.  Same principle for
+TEMPLATE as templates must exist and are specified in the user
+option `denote-templates'."
+  (let* ((title (if title (denote-title-prompt) ""))
+         (kws (if keywords (denote-keywords-prompt) nil))
+         (directory (file-name-as-directory (if subdirectory (denote-subdirectory-prompt) (denote-directory))))
+         (date (if date (denote--valid-date (denote-date-prompt)) (current-time)))
+         (id (format-time-string denote-id-format date))
+         (template (if template (denote-template-prompt) ""))
+         (front-matter (denote--format-front-matter
+                        title (denote--date date 'org) kws
+                        (format-time-string denote-id-format date) 'org)))
+    (denote-barf-duplicate-id id)
+    (setq denote-last-path
+          (denote--path title kws directory id 'org))
+    (denote--keywords-add-to-history kws)
+    (concat front-matter template denote-org-capture-specifiers)))
+
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
   (when-let* ((file denote-last-path)
