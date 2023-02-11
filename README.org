@@ -533,6 +533,9 @@ capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
 ** Create note with specific prompts using Org capture
+:PROPERTIES:
+:CUSTOM_ID: h:95b78582-9086-47e8-967f-62373e2369a0
+:END:
 
 [ Part of {{{development-version}}}. ]
 
