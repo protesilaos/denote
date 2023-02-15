@@ -149,7 +149,7 @@ directory and also checks if a safe local value should be used."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
-(defcustom denote-silo-nesting-depth 1
+(defcustom denote-silo-nesting-depth 2
   "How many levels up to check if current file is in a silo.
 Silos have a directory-local variable that isolates them from the
 default value of the variable `denote-directory'.  When the silo
@@ -157,7 +157,7 @@ is a flat directory, Denote can easily know about it.  Otherwise
 it needs to search the parents of the current directory in order
 to determine if the current file belongs to a silo.
 
-The default value is 1, meaning that Denote will check the
+The default value is 2, meaning that Denote will check the
 current directory and its parent directory to determine if either
 of those paths constitute a silo.  If they are, Denote will
 return the given path, else it will use the default (global)
@@ -520,11 +520,8 @@ things accordingly.")
                   (val (buffer-local-value
                         'denote-directory
                         ;; TODO 2023-02-12: Clean up the created buffer
-                        (get-buffer-create (find-file-noselect path))))
-                  (silo-path (if (symbolp val)
-                                 default-directory
-                               val)))
-        silo-path))))
+                        (get-buffer-create (find-file-noselect path)))))
+        path))))
 
 (defun denote--get-silo-path (&optional file levels)
   "Try to determine if FILE belongs to a silo.
@@ -534,16 +531,15 @@ Operate recursively up to optional LEVELS.  If LEVELS is nil, use
 
 If no silo is found, return nil.  See the function
 `denote-directory'."
-  (let ((file-or-dir (if (file-directory-p file) default-directory (file-name-directory file))))
+  (when-let ((file-or-dir (if (and file (file-directory-p file)) file default-directory)))
     (or (denote--silo-p file-or-dir)
-        (when-let* ((file (if (and file (file-exists-p file)) file file-or-dir))
-                    (path (file-name-parent-directory file)))
+        (let ((path file-or-dir))
           (catch 'value
-            (dotimes (_n (1- (or levels denote-silo-nesting-depth)))
+            (dotimes (_n (or levels denote-silo-nesting-depth))
               (if (denote--silo-p path)
                   (throw 'value path)
-                (setq path (file-name-parent-directory path))))
-            path)))))
+                (setq path (file-name-parent-directory path)))))
+          (denote--silo-p path)))))
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."

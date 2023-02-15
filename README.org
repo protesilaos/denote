@@ -785,7 +785,7 @@ if the current file belongs to a silo.
 
 #+vindex: denote-silo-nesting-depth
 To this end, the user can specify a natural number as the value of the
-user option ~denote-silo-nesting-depth~.  The default value is =1=,
+user option ~denote-silo-nesting-depth~.  The default value is =2=,
 meaning that Denote will check the current directory and its parent
 directory to determine if either of those paths constitute a silo.  If
 they are, Denote will return the given path, else it will use the
