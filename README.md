@@ -7,6 +7,12 @@ about, without reference to any other metadata.  Denote basically
 streamlines the creation of such files while providing facilities to
 link between them.
 
+Denote's file-naming scheme is not limited to "notes".  It can be used
+for all types of file, including those that are not editable in Emacs,
+such as videos.  Naming files in a constistent way makes their
+filtering and retrieval considerably easier.  Denote provides relevant
+facilities to rename files, regardless of file type.
+
 [Watch the video demo that was produced before version 0.1.0 of the
 package](https://protesilaos.com/codelog/2022-06-18-denote-demo/).
 
