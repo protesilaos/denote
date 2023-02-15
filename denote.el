@@ -149,6 +149,27 @@ directory and also checks if a safe local value should be used."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
+(defcustom denote-silo-nesting-depth 1
+  "How many levels up to check if current file is in a silo.
+Silos have a directory-local variable that isolates them from the
+default value of the variable `denote-directory'.  When the silo
+is a flat directory, Denote can easily know about it.  Otherwise
+it needs to search the parents of the current directory in order
+to determine if the current file belongs to a silo.
+
+The default value is 1, meaning that Denote will check the
+current directory and its parent directory to determine if either
+of those paths constitute a silo.  If they are, Denote will
+return the given path, else it will use the default (global)
+value of the variable `denote-directory'.
+
+Levels of depth are needed to allow silos to have subdirectories.
+Otherwise they are assume to be flat."
+  :group 'denote
+  :type 'natnum
+  :package-version '(denote . "1.3.0")
+  :link '(info-link "(denote) Maintain separate directories for notes"))
+
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
   "List of strings with predefined keywords for `denote'.
@@ -490,13 +511,47 @@ things accordingly.")
         `(metadata (category . ,category))
       (complete-with-action action candidates string pred))))
 
+(defun denote--silo-p (path)
+  "Return path to silo if PATH is a silo."
+  (when (and path (file-directory-p path))
+    (with-temp-buffer
+      (when-let* ((files (directory-files path))
+                  ((member ".dir-locals.el" files))
+                  (val (buffer-local-value
+                        'denote-directory
+                        ;; TODO 2023-02-12: Clean up the created buffer
+                        (get-buffer-create (find-file-noselect path))))
+                  (silo-path (if (symbolp val)
+                                 default-directory
+                               val)))
+        silo-path))))
+
+(defun denote--get-silo-path (&optional file levels)
+  "Try to determine if FILE belongs to a silo.
+
+Operate recursively up to optional LEVELS.  If LEVELS is nil, use
+`denote-silo-nesting-depth'.
+
+If no silo is found, return nil.  See the function
+`denote-directory'."
+  (let ((file-or-dir (if (file-directory-p file) default-directory (file-name-directory file))))
+    (or (denote--silo-p file-or-dir)
+        (when-let* ((file (if (and file (file-exists-p file)) file file-or-dir))
+                    (path (file-name-parent-directory file)))
+          (catch 'value
+            (dotimes (_n (1- (or levels denote-silo-nesting-depth)))
+              (if (denote--silo-p path)
+                  (throw 'value path)
+                (setq path (file-name-parent-directory path))))
+            path)))))
+
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
-  (let* ((val (or (buffer-local-value 'denote-directory (current-buffer))
-                  denote-directory))
-         (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
-    (unless (file-directory-p path)
-      (make-directory path t))
+  (let ((path (or (denote--get-silo-path)
+                  (when (and (stringp denote-directory)
+                             (not (file-directory-p denote-directory)))
+                    (make-directory denote-directory t))
+                  (default-value 'denote-directory))))
     (file-name-as-directory (expand-file-name path))))
 
 (defun denote--slug-no-punct (str)
