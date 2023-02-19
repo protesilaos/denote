@@ -799,13 +799,17 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
   'denote-directory-files-matching-regexp
   "1.0.0")
 
+(defun denote-all-files ()
+  "Return the list of Denote files in variable `denote-directory'."
+  (let* ((project-find-functions #'denote-project-find)
+         (project (project-current nil (denote-directory)))
+         (dirs (list (project-root project))))
+    (project-files project dirs)))
+
 (defun denote-file-prompt (&optional initial-text)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
-  (let* ((project-find-functions #'denote-project-find)
-         (project (project-current nil (denote-directory)))
-         (dirs (list (project-root project)))
-         (all-files (project-files project dirs))
+  (let* ((all-files (denote-all-files))
          (completion-ignore-case read-file-name-completion-ignore-case))
     (when all-files
       (funcall project-read-file-name-function
@@ -3605,11 +3609,7 @@ This include the definition itself."
                                                          (eql 'denote)))
   "Return list of Denote identifers as completion table."
 
-  (let* ((project-find-functions #'denote-project-find)
-         (project (project-current nil (denote-directory)))
-         (dirs (list (project-root project)))
-         (all-files (project-files project dirs)))
-    (mapcar #'denote-retrieve-filename-identifier all-files)))
+  (mapcar #'denote-retrieve-filename-identifier (denote-all-files)))
 
 (provide 'denote)
 ;;; denote.el ends here
