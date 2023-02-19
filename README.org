@@ -1654,7 +1654,7 @@ The command ~denote-link-backlinks~ produces a bespoke buffer which
 displays backlinks to the current note.  A "backlink" is a link back
 to the present entry.
 
-By default, the backlinks' buffer is desinged to display the file name
+By default, the backlinks' buffer is designed to display the file name
 of the note linking to the current entry.  Each file name is presented
 on its own line, like this:
 
@@ -1669,7 +1669,7 @@ Backlinks to "On being honest" (20220614T130812)
 #+vindex: denote-backlinks-show-context
 When the user option ~denote-backlinks-show-context~ is non-nil, the
 backlinks' buffer displays the line on which a link to the current
-note occurs.  It also shows multiple occurances, if present.  It looks
+note occurs.  It also shows multiple occurrences, if present.  It looks
 like this (and has the appropriate fontification):
 
 #+begin_example
