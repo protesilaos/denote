@@ -514,15 +514,14 @@ things accordingly.")
 
 (defun denote--silo-p (path)
   "Return path to silo if PATH is a silo."
-  (when (and path (file-directory-p path))
-    (with-temp-buffer
-      (when-let* ((files (directory-files path))
-                  ((member ".dir-locals.el" files))
-                  (val (buffer-local-value
-                        'denote-directory
-                        ;; TODO 2023-02-12: Clean up the created buffer
-                        (get-buffer-create (find-file-noselect path)))))
-        path))))
+  (when-let (((and path (file-directory-p path)))
+             (dir-locals (dir-locals-find-file path)))
+    (cond
+     ((listp dir-locals)
+      (car dir-locals))
+     ((stringp dir-locals)
+      dir-locals)
+     (t nil))))
 
 (defun denote--get-silo-path (&optional file levels)
   "Try to determine if FILE belongs to a silo.
