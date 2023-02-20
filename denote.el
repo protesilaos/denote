@@ -2128,15 +2128,16 @@ with minibuffer completion for one.
 Add a front matter in the format of the NEW-FILE-TYPE at the
 beginning of the file.
 
-The title is retrieved from a line starting with a title field in
-the file's contents, depending on the previous file type (e.g.
-#+title for Org). The same process applies for keywords and id.
+Retrieve the title of FILE from a line starting with a title
+field in its front matter, depending on the previous file
+type (e.g.  #+title for Org).  The same process applies for
+keywords.
 
 As a final step, ask for confirmation, showing the difference
 between old and new file names.
 
 Important note: No attempt is made to modify any other elements
-of the file. This needs to be done manually."
+of the file.  This needs to be done manually."
   (interactive
    (list
     (denote--rename-dired-file-or-prompt)
