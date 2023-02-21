@@ -491,10 +491,10 @@ things accordingly.")
         `(metadata (category . ,category))
       (complete-with-action action candidates string pred))))
 
-(defun denote--silo-p (path)
-  "Return path to silo if PATH is a silo."
-  (when-let (((and path (file-directory-p path)))
-             (dir-locals (dir-locals-find-file path)))
+(defun denote--default-directory-is-silo-p ()
+  "Return path to silo if `default-directory' is a silo."
+  (when-let ((dir-locals (dir-locals-find-file default-directory))
+             ((alist-get 'denote-directory dir-local-variables-alist)))
     (cond
      ((listp dir-locals)
       (car dir-locals))
@@ -504,7 +504,7 @@ things accordingly.")
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
-  (let ((path (or (denote--silo-p default-directory)
+  (let ((path (or (denote--default-directory-is-silo-p)
                   (when (and (stringp denote-directory)
                              (not (file-directory-p denote-directory)))
                     (make-directory denote-directory t))
