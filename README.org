@@ -3117,6 +3117,14 @@ might change them without further notice.
   command and are used to construct new front matter values if
   appropriate.
 
+#+findex: denote-rewrite-keywords
++ Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
+  outright according to =FILE-TYPE=.  Do the same as
+  ~denote-rewrite-front-matter~ for keywords, but do not ask for
+  confirmation.  This is for use in ~denote-keywords-add~,
+  ~denote-keywords-remove~, ~denote-dired-rename-marked-files~, or
+  related.
+
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
   variable ~denote-directory~.  Note that the ~denote-directory~
