@@ -1968,9 +1968,9 @@ operation on multiple files."
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (line-end-position)))))))
 
-(defun denote--rewrite-front-matter (file title keywords file-type)
-  "Rewrite front matter of note after `denote-dired-rename-file'.
-The FILE, TITLE, KEYWORDS, and FILE-TYPE are passed from the
+(defun denote-rewrite-front-matter (file title keywords file-type)
+  "Rewrite front matter of note after `denote-rename-file'.
+The FILE, TITLE, KEYWORDS, and FILE-TYPE are given by the
 renaming command and are used to construct new front matter
 values if appropriate."
   (when-let* ((old-title-line (denote-retrieve-title-line file file-type))
@@ -1997,6 +1997,11 @@ values if appropriate."
             (goto-char (line-beginning-position))
             (insert new-keywords-line)
             (delete-region (point) (line-end-position))))))))
+
+(define-obsolete-function-alias
+  'denote--rewrite-front-matter
+  'denote-rewrite-front-matter
+  "1.3.0")
 
 ;;;;; The renaming commands and their prompts
 
@@ -2114,7 +2119,7 @@ files)."
       (denote-update-dired-buffers)
       (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
-            (denote--rewrite-front-matter new-name title keywords file-type)
+            (denote-rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
 ;;;###autoload
