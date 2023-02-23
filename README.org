@@ -3115,7 +3115,7 @@ might change them without further notice.
   note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
   =KEYWORDS=, and =FILE-TYPE= arguments are given by the renaming
   command and are used to construct new front matter values if
-  appropriate.
+  appropriate.  [Part of {{{development-version}}}.]
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
@@ -3123,7 +3123,7 @@ might change them without further notice.
   ~denote-rewrite-front-matter~ for keywords, but do not ask for
   confirmation.  This is for use in ~denote-keywords-add~,
   ~denote-keywords-remove~, ~denote-dired-rename-marked-files~, or
-  related.
+  related.  [Part of {{{development-version}}}.]
 
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
