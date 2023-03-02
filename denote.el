@@ -1021,7 +1021,7 @@ Each element is of the form (SYMBOL PROPERTY-LIST).  SYMBOL is
 one of those specified in `denote-file-type' or an arbitrary
 symbol that defines a new file type.
 
-PROPERTY-LIST is a plist that consists of 8 elements:
+PROPERTY-LIST is a plist that consists of the following elements:
 
 - `:extension' is a string with the file extension including the
   period.

@@ -3139,7 +3139,7 @@ might change them without further notice.
   one of those specified in ~denote-file-type~ or an arbitrary symbol
   that defines a new file type.
 
-  =PROPERTY-LIST= is a plist that consists of eight elements:
+  =PROPERTY-LIST= is a plist that consists of the following elements:
 
   1. =:extension= is a string with the file extension including the
      period.
@@ -3868,7 +3868,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Johan Bolmsjö, Kaushal Modi, M. Hadi Timachi, Mirko Hernandez, Paul
   van Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer
   Emacs, Sven Seebeck, Taoufik, Viktor Haag, Yi Liu, Ypot, atanasj,
-  drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
+  doolio, drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic,
+  sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
