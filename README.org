@@ -3443,6 +3443,9 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
 
 + Peter Prevos: /Simulating Text Files with R to Test the Emacs Denote
   Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>
+  
++ Stefan Thesing: /Denote as a Zettelkasten/, 2023-03-02,
+  <https://www.thesing-online.de/blog/denote-as-a-zettelkasten>
 
 * Alternatives to Denote
 :PROPERTIES:
