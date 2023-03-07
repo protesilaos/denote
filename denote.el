@@ -736,11 +736,14 @@ whatever matches `denote-excluded-directories-regexp'."
             (and (denote-file-has-identifier-p file)
                  (string-prefix-p id (file-name-nondirectory file))))
           (denote-directory-files))))
-    (if (length< files 2) (car files)
-      (seq-find (lambda (file) (and (denote-file-is-note-p file)
-                                    (or (string= denote-file-type (file-name-extension file))
-                                        (string= "org" (file-name-extension file)))))
-                files))))
+    (if (length< files 2)
+        (car files)
+      (seq-find
+       (lambda (file)
+         (and (denote-file-is-note-p file)
+              (or (string= denote-file-type (file-name-extension file))
+                  (string= "org" (file-name-extension file)))))
+       files))))
 
 (define-obsolete-function-alias
   'denote--get-note-path-by-id
