@@ -1268,30 +1268,38 @@ holds the relevant value.  In simple terms:
 :CUSTOM_ID: h:1a953736-86c2-420b-b566-fb22c97df197
 :END:
 
-File names have three fields and two sets of field delimiters between
-them:
+By default, file names have three fields and two sets of field
+delimiters between them:
 
 : DATE--TITLE__KEYWORDS.EXTENSION
 
-The first field delimiter is the double hyphen, while the second is the
-double underscore.  These practically serve as anchors for easier
-searching.  Consider this example:
+When a signature is present, this becomes:
 
-: 20220621T062327--introduction-to-denote__denote_emacs.txt
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
-You will notice that there are two matches for the word =denote=: one in
-the title field and another in the keywords' field.  Because of the
-distinct field delimiters, if we search for =-denote= we only match the
-first instance while =_denote= targets the second one.  When sorting
-through your notes, this kind of specificity is invaluable---and you get
-it for free from the file names alone!
+[ Signatures are part of {{{development-version}}}. ]
 
-Users can get a lot of value out of this simple arrangement, even if
-they have no knowledge of regular expressions.  One thing to consider,
-for maximum effect, is to avoid using multi-word keywords as those get
-hyphenated like the title and will thus interfere with the above: either
-set the user option ~denote-allow-multi-word-keywords~ to nil or simply
-insert single words at the relevant prompts.
+Field delimiters practically serve as anchors for easier searching.
+Consider this example:
+
+: 20220621T062327==1a2--introduction-to-denote__denote_emacs.txt
+
+You will notice that there are two matches for the word =denote=: one
+in the title field and another in the keywords' field.  Because of the
+distinct field delimiters, if we search for =-denote= we only match
+the first instance while =_denote= targets the second one.  When
+sorting through your notes, this kind of specificity is
+invaluable---and you get it for free from the file names alone!
+Similarly, a search for ==1= will show all notes that are related to
+each other by virtue of their signature.
+
+Users can get a lot of value out of this simple yet effective
+arrangement, even if they have no knowledge of regular expressions.
+One thing to consider, for maximum effect, is to avoid using
+multi-word keywords as those get hyphenated like the title and will
+thus interfere with the above: either set the user option
+~denote-allow-multi-word-keywords~ to nil or simply insert single
+words at the relevant prompts.
 
 * Front matter
 :PROPERTIES:
