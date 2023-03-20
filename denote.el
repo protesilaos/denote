@@ -1272,7 +1272,7 @@ To only return an existing identifier, refer to the function
   "1.0.0")
 
 (defun denote-retrieve-filename-signature (file)
-  "Extract signature from FILE name."
+  "Extract signature from FILE name, if present, else return nil."
   (when (denote-file-has-signature-p file)
     (string-match denote-signature-regexp file)
     (match-string 1 file)))
