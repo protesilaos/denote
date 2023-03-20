@@ -412,6 +412,18 @@ commands for note creation:
   The ~denote-create-note-with-template~ is an alias of the command
   ~denote-template~, meant to help with discoverability.
 
++ Create note with a signature :: The ~denote-signature~ command first
+  prompts for an arbitrary string to use in the optional =SIGNATURE=
+  field of the file name and then asks for a title and keywords.
+  Signatures are arbitrary strings of alphanumeric characters which
+  can be used to establish sequential relations between file at the
+  level of their file name (e.g. 1, 1a, 1b, 1b1, 1b2, ...). [Part of
+  {{{development-version}}}.]
+
+  The ~denote-create-note-using-signature~ is an alias of the command
+  ~denote-signature~ intended to make the functionality more
+  discoverable. [Also part of {{{development-version}}}.]
+
 **** Write your own convenience commands
 :PROPERTIES:
 :CUSTOM_ID: h:11946562-7eb0-4925-a3b5-92d75f1f5895
