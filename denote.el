@@ -2476,7 +2476,7 @@ and seconds."
 (defface denote-faces-signature '((t :inherit font-lock-warning-face))
   "Face for file name signature in Dired buffers."
   :group 'denote-faces
-  :package-version '(denote . "1.3.0"))
+  :package-version '(denote . "2.0.0"))
 
 (defface denote-faces-delimiter
   '((((class color) (min-colors 88) (background light))
