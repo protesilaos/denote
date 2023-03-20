@@ -6,7 +6,7 @@
 #+startup:               content
 #+macro:                 stable-version 1.2.0
 #+macro:                 release-date 2022-12-16
-#+macro:                 development-version 1.3.0-dev
+#+macro:                 development-version 2.0.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -149,11 +149,16 @@ Obligations, Tasks, and Engagements.
 #+findex: denote-date
 #+findex: denote-subdirectory
 #+findex: denote-template
+#+findex: denote-signature
 There are five ways to write a note with Denote: invoke the ~denote~,
-~denote-type~, ~denote-date~, ~denote-subdirectory~, ~denote-template~
-commands, or leverage the ~org-capture-templates~ by setting up a
-template which calls the function ~denote-org-capture~.  We explain all
-of those in the subsequent sections.
+~denote-type~, ~denote-date~, ~denote-subdirectory~,
+~denote-template~, ~denote-signature~ commands, or leverage the
+~org-capture-templates~ by setting up a template which calls the
+function ~denote-org-capture~.  We explain all of those in the
+subsequent sections.
+
+[ The ~denote-signature~ and related are part of
+{{{development-version}}}. ]
 
 ** Standard note creation
 :PROPERTIES:
@@ -237,6 +242,16 @@ The value is a list of symbols, which includes any of the following:
   of that KEY is used to populate the new note with content, which is
   added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
 
+- =signature=: - Prompts for an arbitrary string that can be used to
+  establish a sequential relationship between files (e.g. 1, 1a, 1b,
+  1b1, 1b2, ...).  Signatures have no strictly defined function and
+  are up to the user to apply as they see fit.  One use-case is to
+  implement Niklas Luhmann's Zettelkasten system for a sequence of
+  notes (Folgezettel).  Signatures are not included in a file's front
+  matter and are not shown in the description of a link.  They are
+  reserved solely for creating a sequence in a file listing, at least
+  for the time being. [Part of {{{development-version}}}.]
+
 The prompts occur in the given order.
 
 If the value of this user option is nil, no prompts are used.  The
@@ -262,8 +277,9 @@ Finally, this user option only affects the interactive use of the
 ~denote~ command (advanced users can call it from Lisp).  For ad-hoc
 interactive actions that do not change the default behaviour of the
 ~denote~ command, users can invoke these convenience commands:
-~denote-type~, ~denote-subdirectory~, ~denote-date~.  They are described
-in the subsequent section ([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
+~denote-type~, ~denote-subdirectory~, ~denote-date~,
+~denote-signature~.  They are described in the subsequent section
+([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
 
 *** The ~denote-templates~ option
 :PROPERTIES:
@@ -395,6 +411,18 @@ commands for note creation:
   #+findex: denote-create-note-with-template
   The ~denote-create-note-with-template~ is an alias of the command
   ~denote-template~, meant to help with discoverability.
+
++ Create note with a signature :: The ~denote-signature~ command first
+  prompts for an arbitrary string to use in the optional =SIGNATURE=
+  field of the file name and then asks for a title and keywords.
+  Signatures are arbitrary strings of alphanumeric characters which
+  can be used to establish sequential relations between file at the
+  level of their file name (e.g. 1, 1a, 1b, 1b1, 1b2, ...). [Part of
+  {{{development-version}}}.]
+
+  The ~denote-create-note-using-signature~ is an alias of the command
+  ~denote-signature~ intended to make the functionality more
+  discoverable. [Also part of {{{development-version}}}.]
 
 **** Write your own convenience commands
 :PROPERTIES:
@@ -1119,14 +1147,15 @@ difference between old and new file names.
 :END:
 
 #+vindex: denote-directory
-Notes are stored the ~denote-directory~.  The default path is
+Notes are stored in the ~denote-directory~.  The default path is
 =~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
 meaning that it has no subdirectories, or it can be a directory tree.
 Either way, Denote takes care to only consider "notes" as valid
 candidates in the relevant operations and will omit other files or
 directories.
 
-Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
+Every note produced by Denote follows this pattern by default
+([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
 : DATE--TITLE__KEYWORDS.EXTENSION
 
@@ -1134,7 +1163,7 @@ The =DATE= field represents the date in year-month-day format followed
 by the capital letter =T= (for "time") and the current time in
 hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
-note.
+note and, as such, is also known as the file's ID or identifier.
 
 The =TITLE= field is the title of the note, as provided by the user.  It
 automatically gets downcased and hyphenated.  An entry about "Economics
@@ -1180,10 +1209,41 @@ invoking =M-x re-builder=).
 
 [[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
 
+As an optional extension to the above, file names can include a string
+of alphanumeric characters in the =SIGNATURE= field.  Signatures have
+no clearly defined purpose and are up to the user to define.  One
+use-case is to use them to establish sequential relations between
+files (e.g. 1, 1a, 1b, 1b1, 1b2, ...).  A full file name with a
+signature looks like this:
+
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
+
+The =SIGNATURE= field is anchored by the equals sign and thus retains
+the aforementioned searching/anchoring feature of =--= and =__=.
+
+Signatures are an optional extension to Denote's file-naming scheme.
+They can be added to newly created files on demand, with the command
+~denote-signature~, or by modifying the value of the user option
+~denote-prompts~.
+
+The ~denote-prompts~ can be configured in such ways to yield the
+following file name permutations:
+
+: DATE.EXT
+: DATE--TITLE.EXT
+: DATE__KEYWORDS.EXT
+: DATE==SIGNATURE.EXT
+: DATE==SIGNATURE--TITLE.EXT
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXT
+: DATE==SIGNATURE__KEYWORDS.EXT
+
+When in doubt, stick to the default design.
+
 While Denote is an Emacs package, notes should work long-term and not
 depend on the functionality of a specific program.  The file-naming
 scheme we apply guarantees that a listing is readable in a variety of
-contexts.
+contexts.  The Denote file-naming scheme is, in essence, an effective,
+low-tech invention.
 
 ** Sluggified title and keywords
 :PROPERTIES:
@@ -1208,30 +1268,38 @@ holds the relevant value.  In simple terms:
 :CUSTOM_ID: h:1a953736-86c2-420b-b566-fb22c97df197
 :END:
 
-File names have three fields and two sets of field delimiters between
-them:
+By default, file names have three fields and two sets of field
+delimiters between them:
 
 : DATE--TITLE__KEYWORDS.EXTENSION
 
-The first field delimiter is the double hyphen, while the second is the
-double underscore.  These practically serve as anchors for easier
-searching.  Consider this example:
+When a signature is present, this becomes:
 
-: 20220621T062327--introduction-to-denote__denote_emacs.txt
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
-You will notice that there are two matches for the word =denote=: one in
-the title field and another in the keywords' field.  Because of the
-distinct field delimiters, if we search for =-denote= we only match the
-first instance while =_denote= targets the second one.  When sorting
-through your notes, this kind of specificity is invaluable---and you get
-it for free from the file names alone!
+[ Signatures are part of {{{development-version}}}. ]
 
-Users can get a lot of value out of this simple arrangement, even if
-they have no knowledge of regular expressions.  One thing to consider,
-for maximum effect, is to avoid using multi-word keywords as those get
-hyphenated like the title and will thus interfere with the above: either
-set the user option ~denote-allow-multi-word-keywords~ to nil or simply
-insert single words at the relevant prompts.
+Field delimiters practically serve as anchors for easier searching.
+Consider this example:
+
+: 20220621T062327==1a2--introduction-to-denote__denote_emacs.txt
+
+You will notice that there are two matches for the word =denote=: one
+in the title field and another in the keywords' field.  Because of the
+distinct field delimiters, if we search for =-denote= we only match
+the first instance while =_denote= targets the second one.  When
+sorting through your notes, this kind of specificity is
+invaluable---and you get it for free from the file names alone!
+Similarly, a search for ==1= will show all notes that are related to
+each other by virtue of their signature.
+
+Users can get a lot of value out of this simple yet effective
+arrangement, even if they have no knowledge of regular expressions.
+One thing to consider, for maximum effect, is to avoid using
+multi-word keywords as those get hyphenated like the title and will
+thus interfere with the above: either set the user option
+~denote-allow-multi-word-keywords~ to nil or simply insert single
+words at the relevant prompts.
 
 * Front matter
 :PROPERTIES:
@@ -2801,6 +2869,7 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c n n") #'denote)
   (define-key map (kbd "C-c n N") #'denote-type)
   (define-key map (kbd "C-c n d") #'denote-date)
+  (define-key map (kbd "C-c n z") #'denote-signature) ; "zettelkasten" mnemonic
   (define-key map (kbd "C-c n s") #'denote-subdirectory)
   (define-key map (kbd "C-c n t") #'denote-template)
   ;; If you intend to use Denote with a variety of file types, it is
@@ -2868,13 +2937,17 @@ might change them without further notice.
 + Variable ~denote-id-regexp~ :: Regular expression to match
   ~denote-id-format~.
 
+#+vindex: denote-signature-regexp
++ Variable ~denote-signature-regexp~ :: Regular expression to match
+  the =SIGNATURE= field in a file name.
+
 #+vindex: denote-title-regexp
 + Variable ~denote-title-regexp~ :: Regular expression to match the
-  TITLE field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  =TITLE= field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+vindex: denote-keywords-regexp
 + Variable ~denote-keywords-regexp~ :: Regular expression to match the
-  KEYWORDS field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  =KEYWORDS= field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+vindex: denote-excluded-punctuation-regexp
 + Variable ~denote-excluded-punctuation-regexp~ :: Punctionation that
@@ -2899,6 +2972,10 @@ might change them without further notice.
 #+findex: denote-file-has-identifier-p
 + Function ~denote-file-has-identifier-p~ :: Return non-nil if =FILE=
   has a Denote identifier.
+
+#+findex: denote-file-has-signature-p
++ Function ~denote-file-has-signature-p~ :: Return non-nil if =FILE=
+  has a signature. [Part of {{{development-version}}}.]
 
 #+findex: denote-file-has-supported-extension-p
 + Function ~denote-file-has-supported-extension-p~ :: Return non-nil
@@ -3019,6 +3096,11 @@ might change them without further notice.
   one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
+#+findex: denote-retrieve-filename-signature
++ Function ~denote-retrieve-filename-signature~ :: Extract signature
+  from =FILE= name, if present, else return nil. [Part of
+  {{{development-version}}}.]
+
 #+findex: denote-retrieve-or-create-file-identifier
 + Function ~denote-retrieve-or-create-file-identifier~ :: Return
   =FILE= identifier, generating one if appropriate.  The conditions
@@ -3058,6 +3140,10 @@ might change them without further notice.
 #+findex: denote-retrieve-keywords-line
 + Function ~denote-retrieve-keywords-line~ :: Return keywords line
   from =FILE= front matter per =FILE-TYPE=.
+
+#+findex: denote-signature-prompt
++ Function ~denote-signature-prompt~ :: Prompt for signature
+  string. [Part of {{{development-version}}}.]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
