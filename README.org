@@ -2937,13 +2937,17 @@ might change them without further notice.
 + Variable ~denote-id-regexp~ :: Regular expression to match
   ~denote-id-format~.
 
+#+vindex: denote-signature-regexp
++ Variable ~denote-signature-regexp~ :: Regular expression to match
+  the =SIGNATURE= field in a file name.
+
 #+vindex: denote-title-regexp
 + Variable ~denote-title-regexp~ :: Regular expression to match the
-  TITLE field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  =TITLE= field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+vindex: denote-keywords-regexp
 + Variable ~denote-keywords-regexp~ :: Regular expression to match the
-  KEYWORDS field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  =KEYWORDS= field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+vindex: denote-excluded-punctuation-regexp
 + Variable ~denote-excluded-punctuation-regexp~ :: Punctionation that
@@ -2968,6 +2972,10 @@ might change them without further notice.
 #+findex: denote-file-has-identifier-p
 + Function ~denote-file-has-identifier-p~ :: Return non-nil if =FILE=
   has a Denote identifier.
+
+#+findex: denote-file-has-signature-p
++ Function ~denote-file-has-signature-p~ :: Return non-nil if =FILE=
+  has a signature. [Part of {{{development-version}}}.]
 
 #+findex: denote-file-has-supported-extension-p
 + Function ~denote-file-has-supported-extension-p~ :: Return non-nil
@@ -3088,6 +3096,11 @@ might change them without further notice.
   one, refer to the ~denote-retrieve-or-create-file-identifier~
   function.
 
+#+findex: denote-retrieve-filename-signature
++ Function ~denote-retrieve-filename-signature~ :: Extract signature
+  from =FILE= name, if present, else return nil. [Part of
+  {{{development-version}}}.]
+
 #+findex: denote-retrieve-or-create-file-identifier
 + Function ~denote-retrieve-or-create-file-identifier~ :: Return
   =FILE= identifier, generating one if appropriate.  The conditions
@@ -3127,6 +3140,10 @@ might change them without further notice.
 #+findex: denote-retrieve-keywords-line
 + Function ~denote-retrieve-keywords-line~ :: Return keywords line
   from =FILE= front matter per =FILE-TYPE=.
+
+#+findex: denote-signature-prompt
++ Function ~denote-signature-prompt~ :: Prompt for signature
+  string. [Part of {{{development-version}}}.]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
