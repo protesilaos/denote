@@ -1236,16 +1236,16 @@ the function `denote-retrieve-or-create-file-identifier'."
         (match-string 0 file))
     (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
+(define-obsolete-function-alias
+  'denote--retrieve-filename-identifier
+  'denote-retrieve-filename-identifier
+  "1.0.0")
+
 (defun denote-retrieve-filename-signature (file)
   "Extract signature from FILE name."
   (when (denote-file-has-signature-p file)
     (string-match denote-signature-regexp file)
     (match-string 1 file)))
-
-(define-obsolete-function-alias
-  'denote--retrieve-filename-identifier
-  'denote-retrieve-filename-identifier
-  "1.0.0")
 
 (defun denote-retrieve-or-create-file-identifier (file &optional date)
   "Return FILE identifier, generating one if appropriate.
