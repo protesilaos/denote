@@ -223,7 +223,15 @@ The value is a list of symbols, which includes any of the following:
   value of that KEY is used to populate the new note with
   content, which is added after the front matter.
 
-- TODO 2022-12-23: document `signature'.
+- `signature': Prompts for an arbitrary string that can be used
+  to establish a sequential relationship between files (e.g. 1,
+  1a, 1b, 1b1, 1b2, ...).  Signatures have no strictly defined
+  function and are up to the user to apply as they see fit.  One
+  use-case is to implement Niklas Luhmann's Zettelkasten system
+  for a sequence of notes (Folgezettel).  Signatures are not
+  included in a file's front matter and are not shown in the
+  description of a link.  They are reserved solely for creating a
+  sequence in a file listing, at least for the time being.
 
 The prompts occur in the given order.
 
