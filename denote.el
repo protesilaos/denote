@@ -1238,11 +1238,9 @@ the function `denote-retrieve-or-create-file-identifier'."
 
 (defun denote-retrieve-filename-signature (file)
   "Extract signature from FILE name."
-  (if (denote-file-has-signature-p file)
-      (progn
-        (string-match denote-signature-regexp file)
-        (match-string 1 file))
-    (error "Cannot find `%s' as a file with a Denote signature" file)))
+  (when (denote-file-has-signature-p file)
+    (string-match denote-signature-regexp file)
+    (match-string 1 file)))
 
 (define-obsolete-function-alias
   'denote--retrieve-filename-identifier
