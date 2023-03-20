@@ -1241,12 +1241,6 @@ the function `denote-retrieve-or-create-file-identifier'."
   'denote-retrieve-filename-identifier
   "1.0.0")
 
-(defun denote-retrieve-filename-signature (file)
-  "Extract signature from FILE name."
-  (when (denote-file-has-signature-p file)
-    (string-match denote-signature-regexp file)
-    (match-string 1 file)))
-
 (defun denote-retrieve-or-create-file-identifier (file &optional date)
   "Return FILE identifier, generating one if appropriate.
 
@@ -1276,6 +1270,12 @@ To only return an existing identifier, refer to the function
   'denote--file-name-id
   'denote-retrieve-or-create-file-identifier
   "1.0.0")
+
+(defun denote-retrieve-filename-signature (file)
+  "Extract signature from FILE name."
+  (when (denote-file-has-signature-p file)
+    (string-match denote-signature-regexp file)
+    (match-string 1 file)))
 
 (defun denote-retrieve-filename-title (file)
   "Extract title from FILE name, else return `file-name-base'.
