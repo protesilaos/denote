@@ -1147,14 +1147,15 @@ difference between old and new file names.
 :END:
 
 #+vindex: denote-directory
-Notes are stored the ~denote-directory~.  The default path is
+Notes are stored in the ~denote-directory~.  The default path is
 =~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
 meaning that it has no subdirectories, or it can be a directory tree.
 Either way, Denote takes care to only consider "notes" as valid
 candidates in the relevant operations and will omit other files or
 directories.
 
-Every note produced by Denote follows this pattern ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
+Every note produced by Denote follows this pattern by default
+([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
 : DATE--TITLE__KEYWORDS.EXTENSION
 
@@ -1162,7 +1163,7 @@ The =DATE= field represents the date in year-month-day format followed
 by the capital letter =T= (for "time") and the current time in
 hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
-note.
+note and, as such, is also known as the file's ID or identifier.
 
 The =TITLE= field is the title of the note, as provided by the user.  It
 automatically gets downcased and hyphenated.  An entry about "Economics
@@ -1208,10 +1209,41 @@ invoking =M-x re-builder=).
 
 [[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
 
+As an optional extension to the above, file names can include a string
+of alphanumeric characters in the =SIGNATURE= field.  Signatures have
+no clearly defined purpose and are up to the user to define.  One
+use-case is to use them to establish sequential relations between
+files (e.g. 1, 1a, 1b, 1b1, 1b2, ...).  A full file name with a
+signature looks like this:
+
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
+
+The =SIGNATURE= field is anchored by the equals sign and thus retains
+the aforementioned searching/anchoring feature of =--= and =__=.
+
+Signatures are an optional extension to Denote's file-naming scheme.
+They can be added to newly created files on demand, with the command
+~denote-signature~, or by modifying the value of the user option
+~denote-prompts~.
+
+The ~denote-prompts~ can be configured in such ways to yield the
+following file name permutations:
+
+: DATE.EXT
+: DATE--TITLE.EXT
+: DATE__KEYWORDS.EXT
+: DATE==SIGNATURE.EXT
+: DATE==SIGNATURE--TITLE.EXT
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXT
+: DATE==SIGNATURE__KEYWORDS.EXT
+
+When in doubt, stick to the default design.
+
 While Denote is an Emacs package, notes should work long-term and not
 depend on the functionality of a specific program.  The file-naming
 scheme we apply guarantees that a listing is readable in a variety of
-contexts.
+contexts.  The Denote file-naming scheme is, in essence, an effective,
+low-tech invention.
 
 ** Sluggified title and keywords
 :PROPERTIES:
