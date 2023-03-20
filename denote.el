@@ -1407,7 +1407,8 @@ construct path to DIR."
    (denote-sluggify-keywords keywords)
    (denote-sluggify title)
    (denote--file-extension file-type)
-   (denote--slug-no-punct signature)))
+   (when signature
+     (denote--slug-no-punct signature))))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
