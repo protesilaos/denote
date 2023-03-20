@@ -149,11 +149,16 @@ Obligations, Tasks, and Engagements.
 #+findex: denote-date
 #+findex: denote-subdirectory
 #+findex: denote-template
+#+findex: denote-signature
 There are five ways to write a note with Denote: invoke the ~denote~,
-~denote-type~, ~denote-date~, ~denote-subdirectory~, ~denote-template~
-commands, or leverage the ~org-capture-templates~ by setting up a
-template which calls the function ~denote-org-capture~.  We explain all
-of those in the subsequent sections.
+~denote-type~, ~denote-date~, ~denote-subdirectory~,
+~denote-template~, ~denote-signature~ commands, or leverage the
+~org-capture-templates~ by setting up a template which calls the
+function ~denote-org-capture~.  We explain all of those in the
+subsequent sections.
+
+[ The ~denote-signature~ and related are part of
+{{{development-version}}}. ]
 
 ** Standard note creation
 :PROPERTIES:
