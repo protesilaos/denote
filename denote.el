@@ -276,7 +276,8 @@ convenience commands: `denote-type', `denote-subdirectory',
                      (const :tag "Date" date)
                      (const :tag "File type extension" file-type)
                      (const :tag "Subdirectory" subdirectory)
-                     (const :tag "Template" template))))
+                     (const :tag "Template" template)
+                     (const :tag "Signature" signature))))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
