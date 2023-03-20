@@ -267,7 +267,7 @@ behaviour of the `denote' command, users can invoke these
 convenience commands: `denote-type', `denote-subdirectory',
 `denote-date', `denote-template', `denote-signature'."
   :group 'denote
-  :package-version '(denote . "0.5.0")
+  :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
