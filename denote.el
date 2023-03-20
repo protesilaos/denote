@@ -245,15 +245,20 @@ follows (read the manual for the technicalities):
 
     DATE--TITLE__KEYWORDS.EXT
 
-If either or both of the `title' and `keywords' prompts are not
-included in the value of this variable, file names will be any of
-those permutations:
+Depending on the inclusion of the `title', `keywords', and
+`signature' prompts, file names will be any of those
+permutations:
 
     DATE.EXT
     DATE--TITLE.EXT
     DATE__KEYWORDS.EXT
+    DATE==SIGNATURE.EXT
+    DATE==SIGNATURE--TITLE.EXT
+    DATE==SIGNATURE--TITLE__KEYWORDS.EXT
+    DATE==SIGNATURE__KEYWORDS.EXT
 
-When in doubt, always include the `title' and `keywords' prompts.
+When in doubt, always include the `title' and `keywords'
+prompts (the default style).
 
 Finally, this user option only affects the interactive use of the
 `denote' command (advanced users can call it from Lisp).  For
