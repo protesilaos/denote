@@ -2491,9 +2491,9 @@ and seconds."
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 (defvar denote-faces--file-name-regexp
   (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
-          "\\(?:\\(?3:==\\)\\(?4:[[:alnum:][:nonascii:]]*\\)\\)?"
-          "\\(?:\\(?5:--\\)\\(?6:[[:alnum:][:nonascii:]-]*\\)\\)?"
-          "\\(?:\\(?7:__\\)\\(?8:[[:alnum:][:nonascii:]_-]*\\)\\)?"
+          "\\(?:\\(?3:==\\)\\(?4:[[:alnum:][:nonascii:]]*?\\)\\)?"
+          "\\(?:\\(?5:--\\)\\(?6:[[:alnum:][:nonascii:]-]*?\\)\\)?"
+          "\\(?:\\(?7:__\\)\\(?8:[[:alnum:][:nonascii:]_-]*?\\)\\)?"
           "\\(?9:\\..*\\)?$")
   "Regexp of file names for fontification.")
 
