@@ -2320,15 +2320,17 @@ proceed with the renaming."
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote-filetype-heuristics file))
             (title (denote-retrieve-title-value file file-type))
-            (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote-retrieve-or-create-file-identifier file))
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
-                       dir id keywords (denote-sluggify title) extension
-                       ;; The `denote-retrieve-filename-signature' is
+                       ;; The `denote-retrieve-keywords-value' and
+                       ;; `denote-retrieve-filename-signature' are
                        ;; not inside the `if-let*' because we do not
-                       ;; want to throw an exception if it is nil.
+                       ;; want to throw an exception if any is nil.
+                       dir id
+                       (or (denote-retrieve-keywords-value file file-type) nil)
+                       (denote-sluggify title) extension
                        (or (denote-retrieve-filename-signature file) nil))))
       (when (or auto-confirm
                 (denote-rename-file-prompt file new-name))
