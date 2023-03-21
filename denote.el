@@ -2323,10 +2323,13 @@ proceed with the renaming."
             (keywords (denote-retrieve-keywords-value file file-type))
             (extension (file-name-extension file t))
             (id (denote-retrieve-or-create-file-identifier file))
-            (signature (denote-retrieve-filename-signature file))
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
-                       dir id keywords (denote-sluggify title) extension signature)))
+                       dir id keywords (denote-sluggify title) extension
+                       ;; The `denote-retrieve-filename-signature' is
+                       ;; not inside the `if-let*' because we do not
+                       ;; want to throw an exception if it is nil.
+                       (or (denote-retrieve-filename-signature file) nil))))
       (when (or auto-confirm
                 (denote-rename-file-prompt file new-name))
         (denote-rename-file-and-buffer file new-name)
