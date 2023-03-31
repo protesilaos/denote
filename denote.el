@@ -1847,9 +1847,9 @@ If file does not exist, invoke `denote' to create a file.
 
 If TARGET file does not exist, add the user input that was used
 to search for it to the minibuffer history of the
-`denote-title-prompt'.  The user can then retrieve and possibly
+`denote-file-prompt'.  The user can then retrieve and possibly
 further edit their last input, using it as the newly created
-note's actual title.  At the `denote-title-prompt' type
+note's actual title.  At the `denote-file-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element]."
   (interactive (list (denote-file-prompt)))
   (if (and target (file-exists-p target))
