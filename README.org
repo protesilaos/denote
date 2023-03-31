@@ -38,6 +38,7 @@ Current development target is {{{development-version}}}.
     + GitHub: <https://github.com/protesilaos/denote>
     + GitLab: <https://gitlab.com/protesilaos/denote>
 + Mailing list: <https://lists.sr.ht/~protesilaos/denote>
++ Video demo: <https://protesilaos.com/codelog/2022-06-18-denote-demo/>
 + Backronyms: Denote Everything Neatly; Omit The Excesses.  Don't Ever
   Note Only The Epiphenomenal.
 
