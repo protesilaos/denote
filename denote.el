@@ -3237,8 +3237,7 @@ This command is meant to be used from a Dired buffer."
     "---"
 	["Rename file" denote-rename-file
      :help "Rename file interactively"
-	 :enable (or (derived-mode-p 'dired-mode)
-				 (derived-mode-p 'text-mode))]
+	 :enable (derived-mode-p 'dired-mode 'text-mode)]
 	["Rename this file using front matter" denote-rename-file-using-front-matter
      :help "Rename the current file using its front matter as input"
 	 :enable (derived-mode-p 'text-mode)]
