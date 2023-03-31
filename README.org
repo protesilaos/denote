@@ -3954,12 +3954,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
   Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
-  Yong, Hanspeter Gisler, Jack Baty, Jeremy Friesen, Juanjo Presa,
-  Johan Bolmsjö, Kaushal Modi, M. Hadi Timachi, Mirko Hernandez, Paul
-  van Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer
-  Emacs, Sven Seebeck, Taoufik, Viktor Haag, Yi Liu, Ypot, atanasj,
-  doolio, drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic,
-  sundar bp.
+  Yong, Hanspeter Gisler, Jack Baty, Jeremy Friesen, Jonathan Sahar,
+  Juanjo Presa, Johan Bolmsjö, Kaushal Modi, M. Hadi Timachi, Mirko
+  Hernandez, Paul van Gelder, Peter Prevos, Shreyas Ragavan, Stefan
+  Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor Haag, Yi Liu,
+  Ypot, atanasj, doolio, drcxd, hpgisler, pRot0ta1p, rbenit68,
+  relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

@@ -799,6 +799,9 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
          (dirs (list (project-root project))))
     (project-files project dirs)))
 
+(defvar denote--file-history nil
+  "Minibuffer history of `denote-file-prompt'.")
+
 (defun denote-file-prompt (&optional initial-text)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
@@ -806,7 +809,7 @@ With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
          (completion-ignore-case read-file-name-completion-ignore-case))
     (when all-files
       (funcall project-read-file-name-function
-               "Select note: " all-files nil 'denote--title-history initial-text))))
+               "Select note: " all-files nil 'denote--file-history initial-text))))
 
 (define-obsolete-function-alias
   'denote--retrieve-read-file-prompt
