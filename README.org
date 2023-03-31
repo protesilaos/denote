@@ -897,6 +897,25 @@ is non-nil.
 
 The match is performed with ~string-match-p~.
 
+** Use Denote commands from the menu bar or context menu
+
+[ Part of {{{development-version}}}. ]
+
+Denote registers a submenu for the ~menu-bar-mode~.  Users will find
+the entry called "Denote".  From there they can use their pointer to
+select a command.  For a sample of how this looks, read the
+development log: <https://protesilaos.com/codelog/2023-03-31-emacs-denote-menu/>.
+
+Emacs also provides support for operations through a context menu.
+This is typically the set of actions that are made available via a
+right mouse click.  Users who enable ~context-menu-mode~ can register
+the Denote entry for it by adding the following to their configuration
+file:
+
+#+begin_src emacs-lisp
+(add-hook 'context-menu-functions #'denote-context-menu)
+#+end_src
+
 * Renaming files
 :PROPERTIES:
 :CUSTOM_ID: h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca
@@ -2905,6 +2924,12 @@ Everything is in place to set up the package.
 
 ;; Also check the commands `denote-link-after-creating',
 ;; `denote-link-or-create'.  You may want to bind them to keys as well.
+
+
+;; If you want to have Denote commands available via a right click
+;; context menu, use the following and then enable
+;; `context-menu-mode'.
+(add-hook 'context-menu-functions #'denote-context-menu)
 #+end_src
 
 * For developers or advanced users
