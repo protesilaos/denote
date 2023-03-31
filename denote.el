@@ -2858,9 +2858,9 @@ The established link will then be targeting that new file.
 
 If TARGET file does not exist, add the user input that was used
 to search for it to the minibuffer history of the
-`denote-title-prompt'.  The user can then retrieve and possibly
+`denote-file-prompt'.  The user can then retrieve and possibly
 further edit their last input, using it as the newly created
-note's actual title.  At the `denote-title-prompt' type
+note's actual title.  At the `denote-file-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element].
 
 With optional ID-ONLY as a prefix argument create a link that

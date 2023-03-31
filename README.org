@@ -1703,9 +1703,9 @@ this end, Denote provides two convenience commands:
   established link will then be targeting that new file.
 
   If =TARGET= file does not exist, add the user input that was used to
-  search for it to the history of the ~denote-title-prompt~.  The user
+  search for it to the history of the ~denote-file-prompt~.  The user
   can then retrieve and possibly further edit their last input, using
-  it as the newly created note's actual title.  At the ~denote-title-prompt~
+  it as the newly created note's actual title.  At the ~denote-file-prompt~
   type =M-p= with the default key bindings, which calls ~previous-history-element~.
 
   With optional =ID-ONLY= as a prefix argument create a link with just
