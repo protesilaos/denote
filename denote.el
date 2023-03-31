@@ -3224,31 +3224,31 @@ This command is meant to be used from a Dired buffer."
 (easy-menu-define denote-global-menu global-map
   "Menu with all Denote commands, each available in the right context."
   '("Denote"
-    ["Create note" denote
+    ["Create a note" denote
      :help "Create a new note in the `denote-directory'"]
-	["Create note with given file type" denote-type
+	["Create a note with given file type" denote-type
      :help "Create a new note with a given file type in the `denote-directory'"]
-	["Create note in subdirectory" denote-subdirectory
+	["Create a note in subdirectory" denote-subdirectory
      :help "Create a new note in a subdirectory of the `denote-directory'"]
-	["Create note with date" denote-date
+	["Create a note with date" denote-date
      :help "Create a new note with a given date in the `denote-directory'"]
-	["Create note with signature" denote-signature
+	["Create a note with signature" denote-signature
      :help "Create a new note with a given signature in the `denote-directory'"]
     "---"
-	["Rename file" denote-rename-file
+	["Rename a file" denote-rename-file
      :help "Rename file interactively"
 	 :enable (derived-mode-p 'dired-mode 'text-mode)]
-	["Rename this file using front matter" denote-rename-file-using-front-matter
+	["Rename this file using its front matter" denote-rename-file-using-front-matter
      :help "Rename the current file using its front matter as input"
 	 :enable (derived-mode-p 'text-mode)]
     ["Rename Dired marked files" denote-dired-rename-marked-files
 	 :help "Rename marked files in Dired"
 	 :enable (derived-mode-p 'dired-mode)]
-	["Rename Dired marked files using front matter" denote-dired-rename-marked-files-using-front-matter
+	["Rename Dired marked files using their front matter" denote-dired-rename-marked-files-using-front-matter
 	 :help "Rename marked files in Dired using their front matter as input"
 	 :enable (derived-mode-p 'dired-mode)]
     "---"
-    ["Insert link" denote-link
+    ["Insert a link" denote-link
      :help "Insert link to a file in the `denote-directory'"
 	 :enable (derived-mode-p 'text-mode)]
 	["Insert links with regexp" denote-link-add-links
