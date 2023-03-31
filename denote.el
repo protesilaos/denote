@@ -3224,8 +3224,7 @@ This command is meant to be used from a Dired buffer."
 
 ;;;;; Define menu
 
-(easy-menu-define denote-global-menu global-map
-  "Menu with all Denote commands, each available in the right context."
+(defvar denote--menu-contents
   '("Denote"
     ["Create a note" denote
      :help "Create a new note in the `denote-directory'"]
@@ -3268,7 +3267,23 @@ This command is meant to be used from a Dired buffer."
 	 :help "Apply colors to Denote file name components in Dired"
 	 :enable (derived-mode-p 'dired-mode)
 	 :style toggle
-     :selected (bound-and-true-p denote-dired-mode)]))
+     :selected (bound-and-true-p denote-dired-mode)])
+  "Contents of the Denote menu.")
+
+(easy-menu-define denote-global-menu global-map
+  "Menu with all Denote commands, each available in the right context."
+  denote--menu-contents)
+
+(defun denote-context-menu (menu _click)
+  "Populate MENU with Denote commands at CLICK."
+  (define-key menu [denote-separator] menu-bar-separator)
+  (let ((easy-menu (make-sparse-keymap "Denote")))
+    (easy-menu-define nil easy-menu nil
+      denote--menu-contents)
+    (dolist (item (reverse (lookup-key easy-menu [menu-bar])))
+      (when (consp item)
+        (define-key menu (vector (car item)) (cdr item)))))
+  menu)
 
 ;;;;; Register `denote:' custom Org hyperlink
 
