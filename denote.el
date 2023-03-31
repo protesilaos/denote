@@ -3219,6 +3219,55 @@ This command is meant to be used from a Dired buffer."
                  id-only))
         (denote-link-buttonize-buffer)))))
 
+;;;;; Define menu
+
+(easy-menu-define denote-global-menu global-map
+  "Menu with all Denote commands, each available in the right context."
+  '("Denote"
+    ["Create note" denote
+     :help "Create new note in `denote-directory'"]
+	["Create note with given file type" denote-type
+     :help "Create a new note with a given file type in `denote-directory'"]
+	["Create note in subdirectory" denote-subdirectory
+     :help "Create a new note in a `denote-directory' subdirectory"]
+	["Create note with date" denote-date
+     :help "Create a new note with a given date in `denote-directory'"]
+	["Create note with signature" denote-signature
+     :help "Create a new note with a given signature in `denote-directory'"]
+    "---"
+	["Rename file" denote-rename-file
+     :help "Rename file interactively"
+	 :enable (or (derived-mode-p 'dired-mode)
+				 (derived-mode-p 'text-mode))]
+	["Rename this file using front matter" denote-rename-file-using-front-matter
+     :help "Rename the current file using its front matter as input"
+	 :enable (derived-mode-p 'text-mode)]
+    "---"
+    ["Insert link" denote-link
+     :help "Insert link to file in `denote-directory'"
+	 :enable (derived-mode-p 'text-mode)]
+	["Insert links with regexp" denote-link-add-links
+     :help "Insert links to files matching regexp in `denote-directory'"
+	 :enable (derived-mode-p 'text-mode)]
+	["Show backlinks" denote-link-backlinks
+     :help "Insert link to file in `denote-directory'"
+	 :enable (derived-mode-p 'text-mode)]
+    "---"
+	["Highlight Dired file names" denote-dired-mode
+	 :help "Apply colors to Denote file name components in Dired"
+	 :enable (derived-mode-p 'dired-mode)
+	 :style toggle
+     :selected (bound-and-true-p denote-dired-mode)]
+	["Insert Dired marked files as links" denote-link-dired-marked-notes
+	 :help "Rename marked files in Dired as links in a Denote buffer"
+	 :enable (derived-mode-p 'dired-mode)]
+    ["Rename Dired marked files" denote-dired-rename-marked-files
+	 :help "Rename marked files in Dired"
+	 :enable (derived-mode-p 'dired-mode)]
+	["Rename Dired marked files using front matter" denote-dired-rename-marked-files-using-front-matter
+	 :help "Rename marked files in Dired using their front matter as input"
+	 :enable (derived-mode-p 'dired-mode)]))
+
 ;;;;; Register `denote:' custom Org hyperlink
 
 (declare-function org-link-open-as-file "ol" (path arg))
