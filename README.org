@@ -3402,6 +3402,52 @@ might change them without further notice.
   matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
   strings.  Consult the ~denote-file-types~ for how this is used.
 
+* Troubleshoot Denote in a pristine environment
+:PROPERTIES:
+:CUSTOM_ID: h:9c4467d5-6480-4681-80fb-cd9717bf8b3b
+:END:
+
+Sometimes we get reports on bugs that may not be actually caused by
+some error in the Denote code base.  To help gain insight into what
+the problem is, we need to be able to reproduce the issue in a minimum
+viable system.  Below is one way to achieve this.
+
+1. Find where your =denote.el= file is stored on your filesystem.
+
+2. Assuming you have already installed the package, one way to do this
+   is to invoke =M-x find-library= and search for ~denote~.  It will
+   take you to the source file.  There do =M-x eval-expression=, which
+   will bring up a minibuffer prompt.  At the prompt evaluate:
+
+#+begin_example emacs-lisp
+(kill-new (expand-file-name (buffer-file-name)))
+#+end_example
+
+3. The above will save the full file system path to your kill ring.
+
+4. In a terminal emulator or an =M-x shell= buffer execute:
+
+#+begin_example
+emacs -Q
+#+end_example
+
+5. This will open a new instance of Emacs in a pristine environment.
+   Only the default settings are loaded.
+
+6. In the =*scratch*= buffer of =emacs -Q=, add your configurations
+   like the following and try to reproduce the issue:
+
+#+begin_example emacs-lisp
+(require 'denote "/full/path/to/what/you/got/denote.el")
+
+;; Your configurations here
+#+end_example
+
+Then try to see if your problem still occurs.  If it does, then the
+fault is with Denote.  Otherwise there is something external to it
+that we need to account for.  Whatever the case, this exercise helps
+us get a better sense of the specifics.
+
 * Contributing
 :PROPERTIES:
 :CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
