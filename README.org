@@ -899,6 +899,9 @@ is non-nil.
 The match is performed with ~string-match-p~.
 
 ** Use Denote commands from the menu bar or context menu
+:PROPERTIES:
+:CUSTOM_ID: h:c4290e15-e97e-4a9b-b8db-6b9738e37e78
+:END:
 
 [ Part of {{{development-version}}}. ]
 
