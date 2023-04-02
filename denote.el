@@ -2799,9 +2799,7 @@ whitespace-only), insert an ID-ONLY link."
             (regexp (denote--link-in-context-regexp file-type))
             (files (denote-link--expand-identifiers regexp)))
       (find-file
-       (denote-get-path-by-id
-        (denote-extract-id-from-string
-         (denote-link--find-file-prompt files))))
+       (denote-link--find-file-prompt files))
     (user-error "No links found in the current buffer")))
 
 ;;;###autoload
