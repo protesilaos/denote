@@ -1275,7 +1275,7 @@ low-tech invention.
 
 Denote has to be highly opinionated about which characters can be used
 in file names and the file's front matter in order to enforce its
-file-naming scheme.  The private variable ~denote--punctuation-regexp~
+file-naming scheme.  The variable ~denote-excluded-punctuation-regexp~
 holds the relevant value.  In simple terms:
 
 + What we count as "illegal characters" are converted into hyphens.
