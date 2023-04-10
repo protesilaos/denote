@@ -2129,7 +2129,7 @@ Of course, you can always set up the function so that it asks for a
   "Create an entry tagged 'journal', while prompting for a title."
   (interactive)
   (denote
-   (denote--title-prompt) ; ask for title, instead of using human-readable date
+   (denote-title-prompt) ; ask for title, instead of using human-readable date
    '("journal")))
 #+end_src
 
@@ -2192,7 +2192,7 @@ Prompt for title and keywords of the new note."
   (if-let (((region-active-p))
            (text (buffer-substring-no-properties beg end)))
       (progn
-        (denote (denote--title-prompt) (denote--keywords-prompt))
+        (denote (denote-title-prompt) (denote-keywords-prompt))
         (insert text))
     (user-error "No region is available")))
 #+end_src
@@ -2882,7 +2882,7 @@ Everything is in place to set up the package.
   "Create an entry tagged 'journal', while prompting for a title."
   (interactive)
   (denote
-   (denote--title-prompt)
+   (denote-title-prompt)
    '("journal")))
 
 ;; Denote DOES NOT define any key bindings.  This is for the user to
