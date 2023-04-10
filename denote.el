@@ -460,7 +460,7 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-id-format'.")
 
-(defconst denote-signature-regexp "==\\([[:alnum:][:nonascii:]]*\\)"
+(defconst denote-signature-regexp "==\\([[:alnum:][:nonascii:]=]*\\)"
   "Regular expression to match the SIGNATURE field in a file name.")
 
 (define-obsolete-variable-alias
@@ -554,6 +554,20 @@ leading and trailing hyphen."
   'denote--sluggify
   'denote-sluggify
   "1.0.0")
+
+(defun denote--slug-put-equals (str)
+  "Replace spaces and underscores with equals signs in STR.
+Also replace multiple equals signs with a single one and remove
+any leading and trailing signs."
+  (replace-regexp-in-string
+   "^=\\|=$" ""
+   (replace-regexp-in-string
+    "=\\{2,\\}" "="
+    (replace-regexp-in-string "_\\|\s+" "=" str))))
+
+(defun denote-sluggify-signature (str)
+  "Make STR an appropriate slug for signatures."
+  (downcase (denote--slug-put-equals (denote--slug-no-punct str))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
@@ -1423,7 +1437,7 @@ construct path to DIR."
    (denote-sluggify title)
    (denote--file-extension file-type)
    (when signature
-     (denote--slug-no-punct signature))))
+     (denote-sluggify-signature signature))))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
