@@ -779,9 +779,12 @@ whatever matches `denote-excluded-directories-regexp'."
         (car files)
       (seq-find
        (lambda (file)
-         (and (denote-file-is-note-p file)
-              (or (string= denote-file-type (file-name-extension file))
-                  (string= "org" (file-name-extension file)))))
+         (let ((file-extension (file-name-extension file :period)))
+           (and (denote-file-is-note-p file)
+                (or (string= (denote--file-extension denote-file-type)
+                             file-extension)
+                    (string= ".org" file-extension)
+                    (member file-extension (denote--extensions))))))
        files))))
 
 (define-obsolete-function-alias
