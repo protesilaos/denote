@@ -711,6 +711,28 @@ FILE must be an absolute path."
   (string-prefix-p (denote-directory)
                    (expand-file-name default-directory)))
 
+(defun denote--exclude-directory-regexp-p (file)
+  "Return non-nil if FILE matches `denote-excluded-directories-regexp'."
+  (and denote-excluded-directories-regexp
+       (string-match-p denote-excluded-directories-regexp file)))
+
+(defun denote--directory-all-files-recursively ()
+  "Return list of all files in variable `denote-directory'.
+Avoids traversing dotfiles (unconditionally) and whatever matches
+`denote-excluded-directories-regexp'."
+  (directory-files-recursively
+     (denote-directory)
+     directory-files-no-dot-files-regexp
+     :include-directories
+     (lambda (f)
+       (cond
+        ((string-match-p "\\`\\." f) nil)
+        ((string-match-p "/\\." f) nil)
+        ((denote--exclude-directory-regexp-p f) nil)
+        ((file-readable-p f))
+        (t)))
+     :follow-symlinks))
+
 (defun denote-directory-files ()
   "Return list of absolute file paths in variable `denote-directory'.
 
@@ -726,17 +748,7 @@ value, as explained in its doc string."
    (seq-remove
     (lambda (f)
       (not (denote-file-has-identifier-p f)))
-    (directory-files-recursively
-     (denote-directory)
-     directory-files-no-dot-files-regexp
-     :include-directories
-     (lambda (f)
-       (cond
-        ((when-let ((regexp denote-excluded-directories-regexp))
-           (not (string-match-p regexp f))))
-        ((file-readable-p f))
-        (t)))
-     :follow-symlinks))))
+    (denote--directory-all-files-recursively))))
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
@@ -750,7 +762,7 @@ Filter `denote-directory-files' using `denote-file-is-note-p'."
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
-Omit dotfiles (such as .git) unconditionally.  Also exclude
+Omit dotfiles (such as .git) unconditionally. Also exclude
 whatever matches `denote-excluded-directories-regexp'."
   (seq-remove
    (lambda (filename)
@@ -758,9 +770,8 @@ whatever matches `denote-excluded-directories-regexp'."
        (or (not (file-directory-p filename))
            (string-match-p "\\`\\." rel)
            (string-match-p "/\\." rel)
-           (when-let ((regexp denote-excluded-directories-regexp))
-             (string-match-p regexp rel)))))
-   (directory-files-recursively (denote-directory) ".*" t t)))
+           (denote--exclude-directory-regexp-p rel))))
+   (denote--directory-all-files-recursively)))
 
 (define-obsolete-function-alias
   'denote--subdirs
