@@ -762,7 +762,7 @@ Filter `denote-directory-files' using `denote-file-is-note-p'."
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
-Omit dotfiles (such as .git) unconditionally. Also exclude
+Omit dotfiles (such as .git) unconditionally.  Also exclude
 whatever matches `denote-excluded-directories-regexp'."
   (seq-remove
    (lambda (filename)
