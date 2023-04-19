@@ -4042,8 +4042,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Juanjo Presa, Johan Bolmsjö, Kai von Fintel, Kaushal Modi, M. Hadi
   Timachi, Mirko Hernandez, Paul van Gelder, Peter Prevos, Shreyas
   Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor
-  Haag, Yi Liu, Ypot, atanasj, doolio, drcxd, hpgisler, pRot0ta1p,
-  rbenit68, relict007, sienic, sundar bp.
+  Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio, drcxd, hpgisler,
+  pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
