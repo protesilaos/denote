@@ -1864,9 +1864,26 @@ is set to \\='(signature title keywords)."
   ;; We do not need to check if `file-name-history' is initialised
   ;; because it is defined in files.el.  My understanding is that it
   ;; is always loaded.
-  (when-let ((title (expand-file-name (car file-name-history))))
+  (when-let ((title (expand-file-name (car denote--file-history))))
     (string-match (denote-directory) title)
     (substring title (match-end 0))))
+
+(defun denote--append-extracted-string-to-history (history)
+  "Append `denote--extract-title-from-file-history' to HISTORY."
+  (append
+   (list (denote--extract-title-from-file-history))
+   history))
+
+(defun denote--command-with-title-history (command)
+  "Call COMMAND with modified title history.
+Allow COMMAND to gain access to the return value of
+`denote--append-extracted-string-to-history' for the
+`denote--title-history'.  This is what makes
+`denote-open-or-create' and `denote-link-or-create' return the
+last input on demand when prompting for a title."
+  (let ((denote--title-history
+         (denote--append-extracted-string-to-history denote--title-history)))
+    (call-interactively command)))
 
 ;;;###autoload
 (defun denote-open-or-create (target)
@@ -1882,7 +1899,7 @@ note's actual title.  At the `denote-file-prompt' type
   (interactive (list (denote-file-prompt)))
   (if (and target (file-exists-p target))
       (find-file target)
-    (call-interactively #'denote)))
+    (denote--command-with-title-history #'denote)))
 
 ;;;###autoload
 (defun denote-keywords-add (keywords)
@@ -2895,7 +2912,7 @@ file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (and target (file-exists-p target))
       (denote-link target id-only)
-    (call-interactively #'denote-link-after-creating)))
+    (denote--command-with-title-history #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
   "Alias of `denote-link-or-create' command.")
