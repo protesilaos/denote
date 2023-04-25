@@ -4030,10 +4030,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Benjamin Kästner, Charanjit Singh, Clemens Radermacher, Colin
   McLear, Damien Cassou, Eduardo Grajeda, Elias Storms, Eshel Yaron,
   Florian, Graham Marlow, Hilde Rhyne, Jack Baty, Jean-Philippe Gagné
-  Guay, Jürgen Hötzel, Kaushal Modi, Kyle Meyer, Marc Fargas, Matthew
-  Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter Prevos, Philip
-  Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan Thesing, Thibaut
-  Benjamin, Tomasz Hołubowicz.
+  Guay, Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kyle Meyer, Marc
+  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
+  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
+  Thesing, Thibaut Benjamin, Tomasz Hołubowicz.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
