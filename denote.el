@@ -1385,14 +1385,24 @@ Run `denote-desluggify' on title if the extraction is sucessful."
       title
     (denote-retrieve-filename-title file)))
 
+(defun denote--retrieve-location-in-xrefs (identifier)
+  "Return list of xrefs for IDENTIFIER with their respective location.
+Limit the search to text files, per `denote-directory-text-only-files'."
+  (mapcar #'xref-match-item-location
+          (xref-matches-in-files identifier
+                                 (denote-directory-text-only-files))))
+
+(defun denote--retrieve-group-in-xrefs (identifier)
+  "Access location of xrefs for IDENTIFIER and group them per file.
+See `denote--retrieve-locations-in-xrefs'."
+  (mapcar #'xref-location-group
+          (denote--retrieve-location-in-xrefs identifier)))
+
 (defun denote--retrieve-files-in-xrefs (identifier)
-  "Return sorted, deduplicated file names from IDENTIFIER."
+  "Return sorted, deduplicated file names with IDENTIFIER in their contents."
   (sort
    (delete-dups
-    (mapcar #'xref-location-group
-            (mapcar #'xref-match-item-location
-                    (xref-matches-in-files identifier
-                                           (denote-directory-text-only-files)))))
+    (denote--retrieve-group-in-xrefs identifier))
    #'string-lessp))
 
 ;;;; New note
