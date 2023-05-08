@@ -3411,6 +3411,16 @@ might change them without further notice.
   matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
   strings.  Consult the ~denote-file-types~ for how this is used.
 
+[ The following two functions are part of {{{development-version}}}. ]
+
+#+findex: denote-link-return-links
++ Function ~denote-link-return-links~ :: Return list of links in
+  current or optional =FILE=.  Also see ~denote-link-return-backlinks~.
+
+#+findex: denote-link-return-backlinks
++ Function ~denote-link-return-backlinks~ :: Return list of links in
+  current or optional =FILE=.  Also see ~denote-link-return-links~.
+
 * Troubleshoot Denote in a pristine environment
 :PROPERTIES:
 :CUSTOM_ID: h:9c4467d5-6480-4681-80fb-cd9717bf8b3b
