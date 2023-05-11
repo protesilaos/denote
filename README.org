@@ -2152,7 +2152,8 @@ If a journal for the current day exists, visit it.  If multiple
 entries exist, prompt with completion for a choice between them.
 Else create a new file."
   (interactive)
-  (let* ((string (denote-sluggify (format-time-string "%A %e %B %Y")))
+  (let* ((today (format-time-string "%A %e %B %Y"))
+         (string (denote-sluggify today))
          (files (denote-directory-files-matching-regexp string)))
     (cond
      ((> (length files) 1)
@@ -2161,7 +2162,7 @@ Else create a new file."
       (find-file (car files)))
      (t
       (denote
-       (format-time-string "%A %e %B %Y")
+       today
        '("journal"))))))
 #+end_src
 
