@@ -2138,6 +2138,11 @@ Of course, you can always set up the function so that it asks for a
    '("journal")))
 #+end_src
 
+*** Journaling with a timer
+:PROPERTIES:
+:CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
+:END:
+
 Sometimes journaling is done with the intent to hone one's writing
 skills.  Perhaps you are learning a new language or wish to communicate
 your ideas with greater clarity and precision.  As with everything that
