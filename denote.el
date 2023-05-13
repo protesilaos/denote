@@ -2848,13 +2848,12 @@ whitespace-only), insert an ID-ONLY link."
 (defun denote-link-return-links (&optional file)
   "Return list of links in current or optional FILE.
 Also see `denote-link-return-backlinks'."
-  (if-let* ((current-file (or file (buffer-file-name)))
-            (file-type (denote-filetype-heuristics current-file))
-            (regexp (denote--link-in-context-regexp file-type))
-            (links (with-current-buffer (find-file-noselect current-file)
-                     (denote-link--expand-identifiers regexp))))
-      links
-    (user-error "No links found in `%s'" current-file)))
+  (when-let* ((current-file (or file (buffer-file-name)))
+              (file-type (denote-filetype-heuristics current-file))
+              (regexp (denote--link-in-context-regexp file-type))
+              (links (with-current-buffer (find-file-noselect current-file)
+                       (denote-link--expand-identifiers regexp))))
+    links))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias of `denote-link-return-links'.")
@@ -2865,16 +2864,16 @@ Also see `denote-link-return-backlinks'."
   (interactive)
   (find-file
    (denote-link--find-file-prompt
-    (denote-link-return-links))))
+    (or (denote-link-return-links)
+        (user-error "No links found")))))
 
 (defun denote-link-return-backlinks (&optional file)
   "Return list of backlinks in current or optional FILE.
 Also see `denote-link-return-links'."
-  (if-let* ((current-file (or file (buffer-file-name)))
-            (id (denote-retrieve-filename-identifier current-file))
-            (backlinks (delete current-file (denote--retrieve-files-in-xrefs id))))
-      backlinks
-    (user-error "No backlinks found in `%s'" current-file)))
+  (when-let* ((current-file (or file (buffer-file-name)))
+              (id (denote-retrieve-filename-identifier current-file))
+              (backlinks (delete current-file (denote--retrieve-files-in-xrefs id))))
+    backlinks))
 
 ;;;###autoload
 (defun denote-link-find-backlink ()
@@ -2886,7 +2885,8 @@ Like `denote-link-find-file', but select backlink to follow."
    (denote-get-path-by-id
     (denote-extract-id-from-string
      (denote-link--find-file-prompt
-      (denote-link-return-backlinks))))))
+      (or (denote-link-return-backlinks)
+          (user-error "No backlinks found")))))))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
