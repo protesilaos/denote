@@ -2849,6 +2849,7 @@ whitespace-only), insert an ID-ONLY link."
   "Return list of links in current or optional FILE.
 Also see `denote-link-return-backlinks'."
   (when-let* ((current-file (or file (buffer-file-name)))
+              ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
               (links (with-current-buffer (find-file-noselect current-file)
