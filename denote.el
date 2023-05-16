@@ -721,17 +721,17 @@ FILE must be an absolute path."
 Avoids traversing dotfiles (unconditionally) and whatever matches
 `denote-excluded-directories-regexp'."
   (directory-files-recursively
-     (denote-directory)
-     directory-files-no-dot-files-regexp
-     :include-directories
-     (lambda (f)
-       (cond
-        ((string-match-p "\\`\\." f) nil)
-        ((string-match-p "/\\." f) nil)
-        ((denote--exclude-directory-regexp-p f) nil)
-        ((file-readable-p f))
-        (t)))
-     :follow-symlinks))
+   (denote-directory)
+   directory-files-no-dot-files-regexp
+   :include-directories
+   (lambda (f)
+     (cond
+      ((string-match-p "\\`\\." f) nil)
+      ((string-match-p "/\\." f) nil)
+      ((denote--exclude-directory-regexp-p f) nil)
+      ((file-readable-p f))
+      (t)))
+   :follow-symlinks))
 
 (defun denote-directory-files ()
   "Return list of absolute file paths in variable `denote-directory'.
