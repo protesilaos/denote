@@ -2804,6 +2804,145 @@ See `denote-file-prompt-original'."
     (call-interactively #'denote-link)))
 #+end_src
 
+** Avoid duplicate identifiers when exporting Denote notes
+:PROPERTIES:
+:CUSTOM_ID: h:4a8c4546-26b3-4195-8b2c-b08a519986a4
+:END:
+
+When exporting Denote notes to, for example, an HTML or PDF file,
+there is a high probability that the same file name is used with a new
+extension.  This is problematic because it creates files with
+duplicate identifiers.  The =20230515T085612--example_keyword.org=
+produces a =20230515T085612--example_keyword.pdf=.  Any link to the
+=20230515T085612= will thus break: it does not honor Denote's
+expectation of finding unique identifiers.  This is not the fault of
+Denote: exporting is done by the user without Denote's involvement.
+
+Org Mode and Markdown use different approaches to exporting files.  No
+recommended method is available for plain text files as there is no
+standardised export functionality for this format (the user can always
+create a new note using the file type they want on a case-by-case
+basis: .
+
+*** Export Denote notes with Org Mode
+:PROPERTIES:
+:CUSTOM_ID: h:67669d9d-17c3-45bd-8227-da57d8bc3b73
+:END:
+
+Org Mode has a built-in configurable export engine.  You can prevent
+duplicate identifiers when exporting manually for each exported file
+or by advising the Org export function.
+
+**** Manually configure Org export
+:PROPERTIES:
+:CUSTOM_ID: h:bf791e28-73e5-4ed8-88bc-e4e9b3ebaedb
+:END:
+
+Insert =#+export_file_name: FILENAME= in the front matter before
+exporting to force a filename called whatever the value of =FILENAME=
+is.  The =FILENAME= does not specify the file type extension, such as
+=.pdf=.  This is up to the export engine.  For example, a Denote note
+with a complete file name of =20230515T085612--example_keyword.org=
+and a front matter entry of =#+export_file_name: hello= will be
+exported as =hello.pdf=.
+
+The advantage of this manual method is that it gives the user full
+control over the resulting file name.  The disadvantage is that it
+depends on the user's behaviour.  Forgetting to add a new name can
+lead to duplicate identifiers, as already noted in the introduction to
+this section ([[#h:4a8c4546-26b3-4195-8b2c-b08a519986a4][Export Denote notes]]).
+
+**** Automatically store Org exports in another folder
+:PROPERTIES:
+:CUSTOM_ID: h:7a61a370-78e5-42a1-9650-98fee140723f
+:END:
+
+It is possible to automatically place all exports in another folder by
+making Org's function ~org-export-output-file-name~ create the target
+directory if needed and move the exported file there.  Remember that
+advising Elisp code must be handled with care, as it might break the
+original function in subtle ways.
+
+#+begin_src emacs-lisp
+(defvar my-org-export-output-directory-prefix "./export_"
+  "Prefix of directory used for org-mode export.
+
+The single dot means that the directory is created on the same
+level as the one where the Org file that performs the exporting
+is.  Use two dots to place the directory on a level above the
+current one.
+
+If this directory is part of `denote-directory', make sure it is
+not read by Denote.  See `denote-excluded-directories-regexp'.
+This way there will be no known duplicate Denote identifiers
+produced by the Org export mechanism.")
+
+(defun my-org-export-create-directory (fn extension &rest args)
+  "Move Org export file to its appropriate directory.
+
+Append the file type EXTENSION of the exported file to
+`my-org-export-output-directory-prefix' and, if absent, create a
+directory named accordingly.
+
+Install this as advice around `org-export-output-file-name'.  The
+EXTENSION is supplied by that function.  ARGS are its remaining
+arguments."
+  (let ((export-dir (format "%s%s" my-org-export-output-directory-prefix extension)))
+    (unless (file-directory-p export-dir)
+      (make-directory export-dir)))
+  (apply fn extension args))
+
+(advice-add #'org-export-output-file-name :around #'my-org-export-create-directory)
+#+end_src
+
+The target export directory should not be a subdirectory of
+~denote-directory~, as that will result in duplicate identifiers.
+Exclude it with the ~denote-excluded-directories-regexp~ user option
+([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]).
+
+[ NOTE: I (Protesilaos) am not a LaTeX user and cannot test the
+  following. ]
+
+Using a different directory will require some additional configuration
+when exporting using LaTeX.  The export folder cannot be inside the
+path of the ~denote-directory~ to prevent Denote from recognising it
+as an attachment:
+<https://emacs.stackexchange.com/questions/45751/org-export-to-different-directory>.
+
+**** Org Mode Publishing
+:PROPERTIES:
+:CUSTOM_ID: h:2f3451ed-2fc4-4f36-bcf2-112939963e20
+:END:
+
+Org Mode also has a publishing tool for exporting a collection of
+files. Some user might apply this approach to convert their note
+collection to a public or private website.
+
+The ~org-publish-project-alist~ variable drives the publishing
+process, including the publishing directory.
+
+The publishing directory should not be a subdirectory of
+~denote-directory~, as that will result in duplicate identifiers.
+Exclude it with the ~denote-excluded-directories-regexp~ user option
+([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]).
+
+*** Export Denote notes with Markdown
+:PROPERTIES:
+:CUSTOM_ID: h:44c6a34a-e9ad-4f43-a24f-12f2c5a8467e
+:END:
+
+Exporting from Markdown requires an external processor (e.g.,
+Markdown.pl, Pandoc, or MultiMarkdown).  The ~markdown-command~
+variable defines the command line used in export, for example:
+
+#+begin_src emacs-lisp
+(setq markdown-command "multimarkdown")
+#+end_src
+
+The export process thus occurs outside of Emacs.  Users need to read
+the documentation of their preferred processor to prevent the creation
+of duplicate Denote identifiers.
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
