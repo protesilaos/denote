@@ -2804,6 +2804,69 @@ See `denote-file-prompt-original'."
     (call-interactively #'denote-link)))
 #+end_src
 
+** Rename files with Denote in the Image Dired thumbnails buffer
+:PROPERTIES:
+:CUSTOM_ID: h:e666ced6-da75-4bdb-9be3-82c2f4455ee9
+:END:
+
+Just as with the ~denote-dired-rename-marked-files~, we can use Denote
+in the Image Dired buffer ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).  Here is
+the custom code:
+
+#+begin_src emacs-lisp
+(autoload 'image-dired--with-marked "image-dired")
+(autoload 'image-dired-original-file-name "image-dired-util")
+
+(defun my-denote-image-dired-rename-marked-files (keywords)
+  "Like `denote-dired-rename-marked-files' but for Image Dired.
+Prompt for KEYWORDS and rename all marked files in the Image
+Dired buffer to have a Denote-style file name with the given
+KEYWORDS.
+
+IMPORTANT NOTE: if there are marked files in the corresponding
+Dired buffers, those will be targeted as well.  This is not the
+fault of Denote: it is how Dired and Image Dired work in tandem.
+To only rename the marked thumbnails, start by unmarking
+everything in Dired.  Then mark the items in Image Dired and
+invoke this command."
+  (interactive (list (denote-keywords-prompt)) image-dired-thumbnail-mode)
+  (image-dired--with-marked
+   (when-let* ((file (image-dired-original-file-name))
+               (dir (file-name-directory file))
+               (id (denote-retrieve-or-create-file-identifier file))
+               (file-type (denote-filetype-heuristics file))
+               (title (denote--retrieve-title-or-filename file file-type))
+               (extension (file-name-extension file t))
+               (new-name (denote-format-file-name dir id keywords title extension))
+               (default-directory dir))
+     (denote-rename-file-and-buffer file new-name))))
+#+end_src
+
+While the ~my-denote-image-dired-rename-marked-files~ renames files in
+the helpful Denote-compliant way, users may still need to not prepend
+a unique identifier and not sluggify (hyphenate and downcase) the
+image's existing file name.  To this end, the following custom command
+can be used instead:
+
+#+begin_src emacs-lisp
+(defun my-image-dired-rename-marked-files (keywords)
+  "Like `denote-dired-rename-marked-files' but for Image Dired.
+Prompt for keywords and rename all marked files in the Image
+Dired buffer to have Denote-style keywords, but none of the other
+conventions of Denote's file-naming scheme."
+  (interactive (list (denote-keywords-prompt)) image-dired-thumbnail-mode)
+  (image-dired--with-marked
+   (when-let* ((file (image-dired-original-file-name))
+               (dir (file-name-directory file))
+               (file-type (denote-filetype-heuristics file))
+               (title (denote--retrieve-title-or-filename file file-type))
+               (extension (file-name-extension file t))
+               (kws (denote--keywords-combine keywords))
+               (new-name (concat dir title "__" kws extension))
+               (default-directory dir))
+     (denote-rename-file-and-buffer file new-name))))
+#+end_src
+
 ** Avoid duplicate identifiers when exporting Denote notes
 :PROPERTIES:
 :CUSTOM_ID: h:4a8c4546-26b3-4195-8b2c-b08a519986a4
