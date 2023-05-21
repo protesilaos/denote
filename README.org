@@ -2875,8 +2875,8 @@ conventions of Denote's file-naming scheme."
 When exporting Denote notes to, for example, an HTML or PDF file,
 there is a high probability that the same file name is used with a new
 extension.  This is problematic because it creates files with
-duplicate identifiers.  The =20230515T085612--example_keyword.org=
-produces a =20230515T085612--example_keyword.pdf=.  Any link to the
+duplicate identifiers.  The =20230515T085612--example__keyword.org=
+produces a =20230515T085612--example__keyword.pdf=.  Any link to the
 =20230515T085612= will thus break: it does not honor Denote's
 expectation of finding unique identifiers.  This is not the fault of
 Denote: exporting is done by the user without Denote's involvement.
@@ -2905,7 +2905,7 @@ Insert =#+export_file_name: FILENAME= in the front matter before
 exporting to force a filename called whatever the value of =FILENAME=
 is.  The =FILENAME= does not specify the file type extension, such as
 =.pdf=.  This is up to the export engine.  For example, a Denote note
-with a complete file name of =20230515T085612--example_keyword.org=
+with a complete file name of =20230515T085612--example__keyword.org=
 and a front matter entry of =#+export_file_name: hello= will be
 exported as =hello.pdf=.
 
