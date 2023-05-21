@@ -2621,7 +2621,7 @@ version control framework or the exceptionally well-crafted =magit=
 package will get the job done (VC can work with other backends besides
 Git).
 
-** Variants of ~denote-open-or-create~
+** Make variants of ~denote-open-or-create~
 :PROPERTIES:
 :CUSTOM_ID: h:ad91ca39-cf10-4e16-b224-fdf78f093883
 :END:
@@ -2688,7 +2688,7 @@ For templates, refer to `denote-templates'."
     (call-interactively #'denote-open-or-create)))
 #+end_src
 
-** Variants of ~denote-link-or-create~
+** Make variants of ~denote-link-or-create~
 :PROPERTIES:
 :CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
 :END:
@@ -2764,7 +2764,7 @@ For templates, refer to `denote-templates'."
     (call-interactively #'denote-link-or-create)))
 #+end_src
 
-** Using the tree-based file prompt for select commands
+** Use the tree-based file prompt for select commands
 :PROPERTIES:
 :CUSTOM_ID: h:8f9e0971-8b30-4e7b-af79-8fed257dbcfa
 :END:
