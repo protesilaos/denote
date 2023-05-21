@@ -2822,7 +2822,7 @@ Org Mode and Markdown use different approaches to exporting files.  No
 recommended method is available for plain text files as there is no
 standardised export functionality for this format (the user can always
 create a new note using the file type they want on a case-by-case
-basis: .
+basis: [[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
 
 *** Export Denote notes with Org Mode
 :PROPERTIES:
