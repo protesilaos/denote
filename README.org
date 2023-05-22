@@ -1193,20 +1193,26 @@ automatically gets downcased and hyphenated.  An entry about "Economics
 in the Euro Area" produces an =economics-in-the-euro-area= string for
 the =TITLE= of the file name.
 
-#+vindex: denote-allow-multi-word-keywords
 The =KEYWORDS= field consists of one or more entries demarcated by an
-underscore (the separator is inserted automatically).  Each keyword is a
-string provided by the user at the relevant prompt which broadly
-describes the contents of the entry.  Keywords that need to be more than
-one-word-long must be written with hyphens: any other character, such as
-spaces or the plus sign is automatically converted into a hyphen.  So
-when =emacs_library= appears in a file name, it is interpreted as two
-distinct keywords, whereas =emacs-library= is one keyword.  This is
-reflected in how the keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
-While Denote supports multi-word keywords by default, the user option
-~denote-allow-multi-word-keywords~ can be set to nil to forcibly join
-all words into one, meaning that an input of =word1 word2= will be
-written as =word1word2=.
+underscore (the separator is inserted automatically).  Each keyword is
+a string provided by the user at the relevant prompt which broadly
+describes the contents of the entry.
+
+[ The ~denote-allow-multi-word-keywords~ has a ~nil~ value as part of
+  {{{development-version}}}. ]
+
+#+vindex: denote-allow-multi-word-keywords
+Optionally, when the user option ~denote-allow-multi-word-keywords~ is
+non-nil, keywords that need to be more than one-word-long are written
+with hyphens: any other character, such as spaces or the plus sign is
+automatically converted into a hyphen.  So when =emacs_library=
+appears in a file name, it is interpreted as two distinct keywords,
+whereas =emacs-library= is one keyword.  This is reflected in how the
+keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).  While Denote
+optional supports multi-word keywords, default ~nil~ value of
+~denote-allow-multi-word-keywords~ forcibly joins all words into one,
+meaning that an input of =word1 word2= will be written as
+=word1word2=.
 
 #+vindex: denote-file-type
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
@@ -1324,8 +1330,8 @@ each other by virtue of their signature.
 Users can get a lot of value out of this simple yet effective
 arrangement, even if they have no knowledge of regular expressions.
 One thing to consider, for maximum effect, is to avoid using
-multi-word keywords as those get hyphenated like the title and will
-thus interfere with the above: either set the user option
+multi-word keywords as those can get hyphenated like the title and
+will thus interfere with the above: either set the user option
 ~denote-allow-multi-word-keywords~ to nil or simply insert single
 words at the relevant prompts.
 
@@ -3086,8 +3092,9 @@ Everything is in place to set up the package.
 ;; include an example here to avoid potential confusion.
 
 
-;; We allow multi-word keywords by default.  The author's personal
-;; preference is for single-word keywords for a more rigid workflow.
+;; We do not allow multi-word keywords by default.  The author's
+;; personal preference is for single-word keywords for a more rigid
+;; workflow.
 (setq denote-allow-multi-word-keywords t)
 
 (setq denote-date-format nil) ; read doc string

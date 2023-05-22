@@ -291,7 +291,7 @@ If nil, show the keywords in their given order."
   :package-version '(denote . "0.1.0")
   :type 'boolean)
 
-(defcustom denote-allow-multi-word-keywords t
+(defcustom denote-allow-multi-word-keywords nil
   "If non-nil keywords can consist of multiple words.
 Words are automatically separated by a hyphen when using the
 `denote' command or related.  The hyphen is the only legal
@@ -299,11 +299,15 @@ character---no spaces, no other characters.  If, for example, the
 user types <word1_word2> or <word1 word2>, it is converted to
 <word1-word2>.
 
-When nil, do not allow keywords to consist of multiple words.
-Reduce them to a single word, such as by turning <word1_word2> or
-<word1 word2> into <word1word2>."
+When nil (the default), do not allow keywords to consist of
+multiple words.  Reduce them to a single word, such as by turning
+<word1_word2> or <word1 word2> into <word1word2>.
+
+[ The author of Denote encourages you to use single words for
+  keywords and, if needed, rely on multiple separate keywords to
+  derive meaning.]"
   :group 'denote
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "2.0.0")
   :type 'boolean)
 
 (defcustom denote-file-type nil
