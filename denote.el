@@ -2113,7 +2113,7 @@ This is for use in `denote-keywords-add',`denote-keywords-remove',
 (define-obsolete-function-alias
   'denote--rewrite-keywords
   'denote-rewrite-keywords
-  "1.3.0")
+  "2.0.0")
 
 (defun denote-rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-rename-file'.
@@ -2148,7 +2148,7 @@ values if appropriate."
 (define-obsolete-function-alias
   'denote--rewrite-front-matter
   'denote-rewrite-front-matter
-  "1.3.0")
+  "2.0.0")
 
 ;;;;; The renaming commands and their prompts
 
