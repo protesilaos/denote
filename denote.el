@@ -624,7 +624,7 @@ any leading and trailing signs."
 
 (defun denote-file-is-note-p (file)
   "Return non-nil if FILE is an actual Denote note.
-For our purposes, a note must note be a directory, must satisfy
+For our purposes, a note must not be a directory, must satisfy
 `file-regular-p', its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name,
 and use one of the extensions implied by `denote-file-type'."
