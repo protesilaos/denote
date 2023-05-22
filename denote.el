@@ -520,12 +520,16 @@ things accordingly.")
       dir-locals)
      (t nil))))
 
+(defun denote--make-denote-directory ()
+  "Make the variable `denote-directory' and its parents, if needed."
+  (when (and (stringp denote-directory)
+             (not (file-directory-p denote-directory)))
+    (make-directory denote-directory :parents)))
+
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
   (let ((path (or (denote--default-directory-is-silo-p)
-                  (when (and (stringp denote-directory)
-                             (not (file-directory-p denote-directory)))
-                    (make-directory denote-directory t))
+                  (denote--make-denote-directory)
                   (default-value 'denote-directory))))
     (file-name-as-directory (expand-file-name path))))
 
