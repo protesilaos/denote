@@ -594,10 +594,13 @@ any leading and trailing signs."
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
-  (mapcar (if denote-allow-multi-word-keywords
-              #'denote-sluggify
-            #'denote-sluggify-and-join)
-          keywords))
+  (if (listp keywords)
+    (mapcar
+     (if denote-allow-multi-word-keywords
+         #'denote-sluggify
+       #'denote-sluggify-and-join)
+     keywords)
+    (error "`%s' is not a list" keywords)))
 
 (define-obsolete-function-alias
   'denote--sluggify-keywords
