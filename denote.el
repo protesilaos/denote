@@ -538,7 +538,10 @@ things accordingly.")
     (file-name-as-directory (expand-file-name path))))
 
 (defun denote--slug-no-punct (str)
-  "Convert STR to a file name slug."
+  "Remove punctuation from STR.
+Concretely, replace with spaces anything that matches the
+`denote-excluded-punctuation-regexp' and
+`denote-excluded-punctuation-extra-regexp'."
   (replace-regexp-in-string
    (concat denote-excluded-punctuation-regexp
            denote-excluded-punctuation-extra-regexp)
