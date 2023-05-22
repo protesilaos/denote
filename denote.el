@@ -607,8 +607,14 @@ any leading and trailing signs."
   'denote-sluggify-keywords
   "1.0.0")
 
+;; TODO 2023-05-22: Review name of `denote-desluggify' to signify what
+;; the doc string warns about.
 (defun denote-desluggify (str)
-  "Upcase first char in STR and dehyphenate STR, inverting `denote-sluggify'."
+  "Upcase first char in STR and dehyphenate STR, inverting `denote-sluggify'.
+The intent of this function is to be used on individual strings,
+such as the TITLE component of a Denote file name, but not on the
+entire file name.  Put differently, it does not work with
+signatures and keywords."
   (let ((str (replace-regexp-in-string "-" " " str)))
     (aset str 0 (upcase (aref str 0)))
     str))
