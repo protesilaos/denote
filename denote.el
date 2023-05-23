@@ -663,13 +663,7 @@ and use one of the extensions implied by `denote-file-type'."
     (string-match-p denote-signature-regexp
                     (file-name-nondirectory file))))
 
-(defun denote-file-directory-p (file)
-  "Return non-nil if FILE is a directory.
-Omit FILE if it matches the value of user option
-`denote-excluded-directories-regexp'."
-  (and (file-directory-p file)
-       denote-excluded-directories-regexp
-       (not (string-match-p denote-excluded-directories-regexp file))))
+(make-obsolete 'denote-file-directory-p nil "2.0.0")
 
 (defun denote-file-has-supported-extension-p (file)
   "Return non-nil if FILE has supported extension.

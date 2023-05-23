@@ -149,14 +149,5 @@ and use one of the extensions implied by `denote-file-type'."
   (should
    (denote-file-has-signature-p "20230522T154900==sig--test__keyword.txt")))
 
-;; TODO 2023-05-22: Check the solution to the FIXME above and proceed
-;; accordingly.
-
-;; (ert-deftest denote-test--denote-file-directory-p ()
-;;   "Test that `denote-file-directory-p' returns non-nil on a directory.
-;; The function should return nil if the directory it checks for is
-;; matched by the user option `denote-excluded-directories-regexp'."
-;;   (should
-
 (provide 'denote-test)
 ;;; denote-test.el ends here
