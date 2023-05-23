@@ -141,13 +141,13 @@ and use one of the extensions implied by `denote-file-type'."
 
 (ert-deftest denote-test--denote-file-has-identifier-p ()
   "Test that `denote-file-has-identifier-p' checks for a Denote identifier."
-  (should
-   (denote-file-has-identifier-p "20230522T154900--test__keyword.txt")))
+  (should (denote-file-has-identifier-p "20230522T154900--test__keyword.txt"))
+  (should (null (denote-file-has-identifier-p "T154900--test__keyword.txt"))))
 
 (ert-deftest denote-test--denote-file-has-signature-p ()
   "Test that `denote-file-has-signature-p' checks for a Denote signature."
-  (should
-   (denote-file-has-signature-p "20230522T154900==sig--test__keyword.txt")))
+  (should (denote-file-has-signature-p "20230522T154900==sig--test__keyword.txt"))
+  (should (null (denote-file-has-signature-p "20230522T154900--test__keyword.txt"))))
 
 (provide 'denote-test)
 ;;; denote-test.el ends here
