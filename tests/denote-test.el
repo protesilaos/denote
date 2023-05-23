@@ -1,4 +1,4 @@
-;;; denote.el --- Unit tests for Denote -*- lexical-binding: t -*-
+;;; denote-test.el --- Unit tests for Denote -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2023  Free Software Foundation, Inc.
 
