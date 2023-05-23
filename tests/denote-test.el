@@ -46,7 +46,7 @@
   (should (null (denote--make-denote-directory))))
 
 (ert-deftest denote-test--denote-directory ()
-  "Test that `denote-directory' returns an absolute directory name."
+  "Test that variable `denote-directory' returns an absolute directory name."
   (let ((path (denote-directory)))
     (should (and (file-directory-p path)
                  (file-name-absolute-p path)))))
