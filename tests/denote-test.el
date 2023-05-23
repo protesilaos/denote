@@ -124,21 +124,20 @@ The function also account for the value of the user option
                 (denote--file-empty-p file)
               (delete-file file)))))
 
-;; FIXME 2023-05-22: It does not return non-nil even though I am
-;; giving it what should be a file in `denote-directory'.
-;; (ert-deftest denote-test--denote-file-is-note-p ()
-
-;;   "Test that `denote-file-is-note-p' checks that files is a Denote note.
-;; For our purposes, a note must note be a directory, must satisfy
-;; `file-regular-p', its path must be part of the variable
-;; `denote-directory', it must have a Denote identifier in its name,
-;; and use one of the extensions implied by `denote-file-type'."
-;;   (should (let* ((tmp (temporary-file-directory))
-;;                  (denote-directory tmp)
-;;                  (file (concat tmp "20230522T154900--test__keyword.txt")))
-;;             (prog1
-;;                 (denote-file-is-note-p file)
-;;               (delete-file file)))))
+(ert-deftest denote-test--denote-file-is-note-p ()
+  "Test that `denote-file-is-note-p' checks that files is a Denote note.
+For our purposes, a note must note be a directory, must satisfy
+`file-regular-p', its path must be part of the variable
+`denote-directory', it must have a Denote identifier in its name,
+and use one of the extensions implied by `denote-file-type'."
+  (should (let* ((tmp (temporary-file-directory))
+                 (denote-directory tmp)
+                 (file (concat tmp "20230522T154900--test__keyword.txt")))
+            (with-current-buffer (find-file-noselect file)
+              (write-file file))
+            (prog1
+                (denote-file-is-note-p file)
+              (delete-file file)))))
 
 (ert-deftest denote-test--denote-file-has-identifier-p ()
   "Test that `denote-file-has-identifier-p' checks for a Denote identifier."
