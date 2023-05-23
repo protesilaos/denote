@@ -4218,7 +4218,7 @@ the tracking of changes.
 :CUSTOM_ID: h:893eec49-d7be-4603-bcff-fcc247244011
 :END:
 
-Denotes leverages the built-in =xref= library to search for the
+Denote leverages the built-in =xref= library to search for the
 identifier of the current file and return any links to it.  For users
 of Emacs version 28 or higher, there exists a user option to specify
 the program that performs this search: ~xref-search-program~.  The
