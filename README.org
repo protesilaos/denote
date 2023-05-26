@@ -3126,11 +3126,23 @@ Everything is in place to set up the package.
 ;; showed in this manual.  We define it here and add it to a key binding
 ;; below.
 (defun my-denote-journal ()
-  "Create an entry tagged 'journal', while prompting for a title."
+  "Create an entry tagged 'journal' with the date as its title.
+If a journal for the current day exists, visit it.  If multiple
+entries exist, prompt with completion for a choice between them.
+Else create a new file."
   (interactive)
-  (denote
-   (denote-title-prompt)
-   '("journal")))
+  (let* ((today (format-time-string "%A %e %B %Y"))
+         (string (denote-sluggify today))
+         (files (denote-directory-files-matching-regexp string)))
+    (cond
+     ((> (length files) 1)
+      (find-file (completing-read "Select file: " files nil :require-match)))
+     (files
+      (find-file (car files)))
+     (t
+      (denote
+       today
+       '("journal"))))))
 
 ;; Denote DOES NOT define any key bindings.  This is for the user to
 ;; decide.  For example:
