@@ -3275,6 +3275,19 @@ might change them without further notice.
 + Function ~denote-file-is-writable-and-supported-p~ :: Return non-nil
   if =FILE= is writable and has supported extension.
 
+#+findex: denote-file-type-extensions
++ Function ~denote-file-type-extensions~ :: Return all file type
+  extensions in ~denote-file-types~. [Part of {{{development-version}}}.]
+
+#+variable: denote-encryption-file-extensions
++ Variable ~denote-encryption-file-extensions~ :: List of strings
+  specifying file extensions for encryption.
+
+#+function: denote-file-type-extensions-with-encryption
++ Function ~denote-file-type-extensions-with-encryption~ :: Derive
+  ~denote-file-type-extensions~ plus ~denote-encryption-file-extensions~.
+  [Part of {{{development-version}}}.]
+
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
   candidates.  If ~denote-infer-keywords~ is non-nil, infer keywords

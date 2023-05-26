@@ -671,7 +671,7 @@ Also account for the possibility of an added .gpg suffix.
 Supported extensions are those implied by `denote-file-type'."
   (seq-some (lambda (e)
               (string-suffix-p e file))
-            (denote--extensions-with-encryption)))
+            (denote-file-type-extensions-with-encryption)))
 
 (define-obsolete-function-alias
   'denote--file-supported-extension-p
@@ -809,7 +809,7 @@ whatever matches `denote-excluded-directories-regexp'."
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
                     (string= ".org" file-extension)
-                    (member file-extension (denote--extensions))))))
+                    (member file-extension (denote-file-type-extensions))))))
        files))))
 
 (define-obsolete-function-alias
@@ -1220,24 +1220,39 @@ for new note creation.  The default is `org'.")
    (alist-get file-type denote-file-types)
    :link-in-context-regexp))
 
-(defun denote--extensions ()
-  "Return all extensions in `denote-file-types'."
+(define-obsolete-function-alias
+  'denote--extensions
+  'denote-file-type-extensions
+  "2.0.0")
+
+(defun denote-file-type-extensions ()
+  "Return all file type extensions in `denote-file-types'."
   (delete-dups
    (mapcar (lambda (type)
              (plist-get (cdr type) :extension))
            denote-file-types)))
 
+(define-obsolete-variable-alias
+  'denote--encryption-file-extensions
+  'denote-encryption-file-extensions
+  "2.0.0")
+
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
-;; option, but I am keeping it as a private variable for now.
-(defvar denote--encryption-file-extensions '(".gpg" ".age")
+;; option, but I am keeping it as a generic variable for now.
+(defvar denote-encryption-file-extensions '(".gpg" ".age")
   "List of strings specifying file extensions for encryption.")
 
-(defun denote--extensions-with-encryption ()
-  "Derive `denote--extensions' including `denote--encryption-file-extensions'."
-  (let ((file-extensions (denote--extensions))
+(define-obsolete-function-alias
+  'denote--extensions-with-encryption
+  'denote-file-type-extensions-with-encryption
+  "2.0.0")
+
+(defun denote-file-type-extensions-with-encryption ()
+  "Derive `denote-file-type-extensions' plus `denote-encryption-file-extensions'."
+  (let ((file-extensions (denote-file-type-extensions))
         all)
     (dolist (ext file-extensions)
-      (dolist (enc denote--encryption-file-extensions)
+      (dolist (enc denote-encryption-file-extensions)
         (push (concat ext enc) all)))
     (append file-extensions all)))
 
