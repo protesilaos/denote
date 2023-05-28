@@ -46,6 +46,7 @@ the return value of `current-buffer'."
               (title (denote--retrieve-title-or-filename file type)))
     (rename-buffer title :unique)))
 
+;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
   "Automatically rename Denote buffers to be easier to read."
   :global t
