@@ -2009,6 +2009,11 @@ implementation details of ~denote-rename-buffer-with-title~ or
 ~denote-rename-buffer-with-identifier~ for guidance on how to write a
 custom function.
 
+Note that renaming a buffer is not the same as renaming a file
+([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).  The former is just for convenience inside of Emacs.
+Whereas the latter is for writing changes to disk, making them
+available to all programs.
+
 * Use Org dynamic blocks
 :PROPERTIES:
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
