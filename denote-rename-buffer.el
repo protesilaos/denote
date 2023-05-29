@@ -85,7 +85,11 @@ Add this to `find-file-hook'."
 
 ;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
-  "Automatically rename Denote buffers to be easier to read."
+  "Automatically rename Denote buffers to be easier to read.
+A buffer is renamed upon visiting the underlying file.  This
+means that existing buffers are not renamed until they are
+visited again in a new buffer (files are visited with the command
+`find-file' or related)."
   :global t
   (if denote-rename-buffer-mode
       (add-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)
