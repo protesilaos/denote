@@ -1984,11 +1984,11 @@ its standand attachments' facility).
 
 #+findex: denote-rename-buffer-mode
 The ~denote-rename-buffer-mode~ minor mode provides the means to
-automatically rename the buffer of a Denote file name upon visiting
-the file.  A buffer is renamed upon visiting the underlying file.
-This means that existing buffers are not renamed until they are
-visited again in a new buffer (files are visited with the command
-~find-file~ or related).  Enable the mode thus:
+automatically rename the buffer of a Denote file upon visiting the
+file.  A buffer is renamed upon visiting the underlying file.  This
+means that existing buffers are not renamed until they are visited
+again in a new buffer (files are visited with the command ~find-file~
+or related).  Enable the mode thus:
 
 #+begin_src emacs-lisp
 (denote-rename-buffer-mode 1)
