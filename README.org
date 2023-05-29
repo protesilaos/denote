@@ -1969,6 +1969,40 @@ multimedia in a systematic way (and, perhaps, use them as attachments
 for the notes Denote produces if you are writing Org notes and are using
 its standand attachments' facility).
 
+* Automatically rename Denote buffers
+:PROPERTIES:
+:CUSTOM_ID: h:3ca4db16-8f26-4d7d-b748-bac48ae32d69
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-rename-buffer-mode
+The ~denote-rename-buffer-mode~ minor mode provides the means to
+automatically rename the buffer of a Denote file name upon visiting
+the file.  A buffer is renamed upon visiting the underlying file.
+This means that existing buffers are not renamed until they are
+visited again in a new buffer (files are visited with the command
+~find-file~ or related).  Enable the mode thus:
+
+#+begin_src emacs-lisp
+(denote-rename-buffer-mode 1)
+#+end_src
+
+The default behaviour is to rename the buffer based on the file's
+title, which is retrieved from the front matter or from the =TITLE=
+component of the file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+#+vindex: denote-rename-buffer-function
+Customize the user option ~denote-rename-buffer-function~ to affect
+how buffers are renamed.  Its value must be the symbol of a function.
+The default is the ~denote-rename-buffer-with-title~, with an
+alternative of ~denote-rename-buffer-with-identifier~.
+
+The user option also accepts an arbitrary function.  Refer to the
+implementation details of ~denote-rename-buffer-with-title~ or
+~denote-rename-buffer-with-identifier~ for guidance on how to write a
+custom function.
+
 * Use Org dynamic blocks
 :PROPERTIES:
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
