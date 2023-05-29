@@ -936,14 +936,20 @@ tools to make use of that information (e.g. Org's export mechanism).
 The renaming mechanism takes care to keep this data in sync with the
 file name, when the user performs a change.
 
-Renaming is useful for managing existing files created with Denote, but
-also for converting older text files to Denote notes.
+Renaming is useful for managing existing files created with Denote,
+but also for converting older text files to Denote notes.  Denote's
+file-naming scheme is not specific to notes or text files: it is
+relevant for all sorts of items, such as multimedia and PDFs that form
+part of the user's longer-term storage.  While Denote does not manage
+such files (e.g. doesn't create links to them), it already has all the
+mechanisms to facilitate the task of renaming them.
 
-Lastly, Denote's file-naming scheme is not specific to notes or text
-files: it is useful for all sorts of items, such as multimedia and PDFs
-that form part of the user's longer-term storage.  While Denote does not
-manage such files (e.g. doesn't create links to them), it already has
-all the mechanisms to facilitate the task of renaming them.
+Apart from renaming files, Denote can also rename only the buffer.
+The idea is that the underlying file name is correct but it can be
+easier to use shorter buffer names when displaying them on the mode
+line or switching between then with commands like ~switch-to-buffer~.
+
+[[#h:3ca4db16-8f26-4d7d-b748-bac48ae32d69][Automatically rename Denote buffers]].
 
 ** Rename a single file
 :PROPERTIES:
