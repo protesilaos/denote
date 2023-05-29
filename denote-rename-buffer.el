@@ -24,35 +24,72 @@
 
 ;;; Commentary:
 ;;
-;; Rename Denote buffers to be shorter and easier to read.
+;; Rename Denote buffers to be shorter and easier to read.  Enable
+;; `denote-rename-buffer-mode' to automatically rename the buffer of a
+;; Denote file.  The renaming function is specified in the user option
+;; `denote-rename-buffer-function'.
 
 ;;; Code:
 
 (require 'denote)
 
-(defgroup denote-rename-buffer nil
+(defgroup denote-rename-buffer-with-title nil
   "Rename Denote buffers to be shorter and easier to read."
-  :group 'denote)
+  :group 'denote
+  :link '(info-link "(denote) Top")
+  :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-;; TODO 2023-05-28: Provide a `denote-rename-buffer-pattern' user option.
+(defcustom denote-rename-buffer-function #'denote-rename-buffer-with-title
+  "Symbol of function that is called to rename the Denote file buffer.
 
-(defun denote-rename-buffer (&optional buffer)
+The function is called without arguments from the
+`find-file-hook' when `denote-rename-buffer-mode' is enabled (or
+when the user manually sets up the hook).
+
+See the function `denote-rename-buffer-with-title' (the default
+value) for a reference implementation."
+  :type '(choice
+          (const :tag "Rename using only the title" denote-rename-buffer-with-title)
+          (const :tag "Rename using only the identifier" denote-rename-buffer-with-identifier)
+          (function :tag "Use a custom renaming function"))
+  :group 'denote-rename-buffer-with-title)
+
+(defun denote-rename-buffer--common-check (buffer)
+  "Determine if BUFFER shall be renamed.
+Return the file path and the type of it as a cons cell."
+  (when-let* ((file (buffer-file-name buffer))
+              ((denote-file-has-identifier-p file))
+              (type (denote-filetype-heuristics file)))
+    (cons file type)))
+
+(defun denote-rename-buffer-with-title (&optional buffer)
   "Retrieve Denote file of BUFFER and rename BUFFER based on the file title.
 BUFFER is an object that satisfies `bufferp'.  If nil, then use
 the return value of `current-buffer'."
-  (when-let* ((file (buffer-file-name (or buffer (current-buffer))))
-              ((denote-file-has-identifier-p file))
-              (type (denote-filetype-heuristics file))
-              (title (denote--retrieve-title-or-filename file type)))
+  (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
+              (title (denote--retrieve-title-or-filename (car file-and-type) (cdr file-and-type))))
     (rename-buffer title :unique)))
+
+(defun denote-rename-buffer-with-identifier (&optional buffer)
+  "Retrieve Denote file of BUFFER and rename BUFFER based on the file identifier.
+BUFFER is an object that satisfies `bufferp'.  If nil, then use
+the return value of `current-buffer'."
+  (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
+              (identifier (denote-retrieve-filename-identifier (car file-and-type))))
+    (rename-buffer identifier :unique)))
+
+(defun denote-rename-buffer-rename-function-or-fallback ()
+  "Call `denote-rename-buffer-function' or its fallback to rename with title.
+Add this to `find-file-hook'."
+  (funcall (or denote-rename-buffer-function #'denote-rename-buffer-with-title)))
 
 ;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
   "Automatically rename Denote buffers to be easier to read."
   :global t
   (if denote-rename-buffer-mode
-      (add-hook 'find-file-hook #'denote-rename-buffer)
-    (remove-hook 'find-file-hook #'denote-rename-buffer)))
+      (add-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)
+    (remove-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)))
 
-(provide 'denote-rename-buffer)
+(provide 'denote-rename-buffer-with-title)
 ;;; denote-rename-buffer.el ends here
