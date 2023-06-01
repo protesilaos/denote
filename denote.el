@@ -117,7 +117,8 @@
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
   :group 'files
-  :link '(info-link "(denote) Top"))
+  :link '(info-link "(denote) Top")
+  :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
 ;;;; User options
 
