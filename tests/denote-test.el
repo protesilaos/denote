@@ -187,5 +187,30 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (member ".org.age" extensions)
                 (member ".txt.age" extensions)))))
 
+(ert-deftest denote-test--denote--format-front-matter ()
+  "Test that `denote--format-front-matter' formats front matter correctly."
+  (should (and (equal (denote--format-front-matter "" "" '("") "" 'text)
+                      "title:      
+date:       
+tags:       
+identifier: 
+---------------------------
+
+")
+               (equal
+                ;; (denote--format-front-matter
+                ;;  "Some test" (denote--date nil 'org) '("one" "two")
+                ;;  (format-time-string denote-id-format nil) 'org)
+                (denote--format-front-matter
+                 "Some test" "2023-06-05" '("one" "two")
+                 "20230605T102234" 'text)
+                "title:      Some test
+date:       2023-06-05
+tags:       one  two
+identifier: 20230605T102234
+---------------------------
+
+"))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
