@@ -1473,9 +1473,9 @@ Apply `downcase' to KEYWORDS."
 (defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
 
-TITLE, DATE, KEYWORDS, FILENAME, ID are all strings which are
-provided by `denote'.  FILETYPE is one of the values of
-`denote-file-type'."
+TITLE, DATE, and ID are all strings or functions that return a
+string.  KEYWORDS is a list of strings.  FILETYPE is one of the
+values of `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title (denote--format-front-matter-title title filetype))
          (kws (denote--format-front-matter-keywords keywords filetype)))
