@@ -149,5 +149,43 @@ and use one of the extensions implied by `denote-file-type'."
   (should (denote-file-has-signature-p "20230522T154900==sig--test__keyword.txt"))
   (should (null (denote-file-has-signature-p "20230522T154900--test__keyword.txt"))))
 
+(ert-deftest denote-test--denote-file-has-supported-extension-p ()
+  "Test that `denote-file-has-supported-extension-p' matches a supported extension."
+  (should
+   (member
+    (file-name-extension "20230522T154900==sig--test__keyword.txt" :period)
+    (denote-file-type-extensions-with-encryption)))
+  (should
+   (null
+    (member
+     (file-name-extension "20230522T154900==sig--test__keyword" :period)
+     (denote-file-type-extensions-with-encryption)))))
+
+(ert-deftest denote-test--denote-file-type-extensions ()
+  "Test that `denote-file-type-extensions' returns file extensions.
+We check for the common file type extensions, though the user can
+theoretically set `denote-file-types' to nil and handle things on
+their own.  We do not have to test for that scenario, because
+such a user will be redefining large parts of Denote's behaviour
+with regard to file types."
+  (let ((extensions (denote-file-type-extensions)))
+    (should (or (member ".md" extensions)
+                (member ".org" extensions)
+                (member ".txt" extensions)))))
+
+(ert-deftest denote-test--denote-file-type-extensions-with-encryption ()
+  "Test that `denote-file-type-extensions-with-encryption' covers encryption.
+Extend what we do in `denote-test--denote-file-type-extensions'."
+  (let ((extensions (denote-file-type-extensions-with-encryption)))
+    (should (or (member ".md" extensions)
+                (member ".org" extensions)
+                (member ".txt" extensions)
+                (member ".md.gpg" extensions)
+                (member ".org.gpg" extensions)
+                (member ".txt.gpg" extensions)
+                (member ".md.age" extensions)
+                (member ".org.age" extensions)
+                (member ".txt.age" extensions)))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
