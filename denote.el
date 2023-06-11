@@ -2591,7 +2591,7 @@ and seconds."
   "Regexp of file names for fontification.")
 
 (defconst denote-faces-file-name-keywords
-  `((,(concat " " denote-faces--file-name-regexp)
+  `((,(concat "[\t\s]+" denote-faces--file-name-regexp)
      (1 'denote-faces-date)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
