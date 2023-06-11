@@ -537,7 +537,14 @@ Use this to `let' bind a directory path, thus overriding what the
 function `denote-directory' ordinarily returns.")
 
 (defun denote-directory ()
-  "Return path of variable `denote-directory' as a proper directory."
+  "Return path of variable `denote-directory' as a proper directory.
+Custom Lisp code can `let' bind the value of the variable
+`denote-user-enforced-denote-directory' to override what this
+function returns.
+
+Otherwise, the order of precedence is to first check for a silo
+before falling back to the value of the variable
+`denote-directory'."
   (let ((path (or denote-user-enforced-denote-directory
                   (denote--default-directory-is-silo-p)
                   (denote--make-denote-directory)

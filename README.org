@@ -3386,7 +3386,12 @@ might change them without further notice.
 + Function ~denote-directory~ :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a
   directory-local value for what we internally refer to as "silos"
-  ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+  ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).  Custom Lisp code can
+  ~let~ bind the value of the variable ~denote-user-enforced-denote-directory~
+  to override what this function returns.
+
+  [ NOTE that the variable ~denote-user-enforced-denote-directory~ is
+    part of {{{development-version}}}. ]
 
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
