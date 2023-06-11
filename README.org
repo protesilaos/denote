@@ -806,7 +806,7 @@ sufficient.  The manual shall be expanded accordingly.
 
 We implement silos as directory-local values of the user option
 ~denote-directory~.  This means that all Denote commands read from the
-local value if they are invoked from that context.  For example, is
+local value if they are invoked from that context.  For example, if
 =~/Videos/recordings= is a silo and =~/Documents/notes= is the
 default/global value of ~denote-directory~ all Denote commands will
 read the video's path when called from there (e.g. by using Emacs'
@@ -814,44 +814,48 @@ read the video's path when called from there (e.g. by using Emacs'
 
 [[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]].
 
+#+vindex: denote-user-enforced-denote-directory
 There are cases where the user (i) wants to maintain multiple silos
 and (ii) prefers an interactive way to switch between them without
 going through Dired.  Since this is specific to the user's workflow,
-it is easier to have some custom code for it. The following should be
+it is easier to have some custom code for it.  The following should be
 added to the user's Denote configuration:
 
+[ NOTE that the variable ~denote-user-enforced-denote-directory~ is
+  part of {{{development-version}}}. ]
+
 #+begin_src emacs-lisp
-  (defvar my-denote-silo-directories
-    `("/home/prot/Videos/recordings"
-      "/home/prot/Documents/books"
-      ;; You don't actually need to include the `denote-directory' here
-      ;; if you use the regular commands in their global context.  I am
-      ;; including it for completeness.
-      ,denote-directory)
-    "List of file paths pointing to my Denote silos.
+(defvar my-denote-silo-directories
+  `("/home/prot/Videos/recordings"
+    "/home/prot/Documents/books"
+    ;; You don't actually need to include the `denote-directory' here
+    ;; if you use the regular commands in their global context.  I am
+    ;; including it for completeness.
+    ,denote-directory)
+  "List of file paths pointing to my Denote silos.
   This is a list of strings.")
 
-  (defvar my-denote-commands-for-silos
-    '(denote
-      denote-date
-      denote-subdirectory
-      denote-template
-      denote-type)
-    "List of Denote commands to call after selecting a silo.
+(defvar my-denote-commands-for-silos
+  '(denote
+    denote-date
+    denote-subdirectory
+    denote-template
+    denote-type)
+  "List of Denote commands to call after selecting a silo.
   This is a list of symbols that specify the note-creating
   interactive functions that Denote provides.")
 
-  (defun my-denote-pick-silo-then-command (silo command)
-    "Select SILO and run Denote COMMAND in it.
+(defun my-denote-pick-silo-then-command (silo command)
+  "Select SILO and run Denote COMMAND in it.
   SILO is a file path from `my-denote-silo-directories', while
   COMMAND is one among `my-denote-commands-for-silos'."
-    (interactive
-     (list (completing-read "Select a silo: " my-denote-silo-directories nil t)
-           (intern (completing-read
-                    "Run command in silo: "
-                    my-denote-commands-for-silos nil t))))
-    (let ((user-enforced-denote-directory silo))
-      (call-interactively command)))
+  (interactive
+   (list (completing-read "Select a silo: " my-denote-silo-directories nil t)
+         (intern (completing-read
+                  "Run command in silo: "
+                  my-denote-commands-for-silos nil t))))
+  (let ((denote-user-enforced-denote-directory silo))
+    (call-interactively command)))
 #+end_src
 
 With this in place, =M-x my-denote-pick-silo-then-command= will use
@@ -2315,43 +2319,45 @@ It will create a note using the heading's text and tags for the new
 file.  The contents of the subtree become the contents of the new note
 and are removed from the old one.
 
+[ NOTE that the variable ~denote-user-enforced-denote-directory~ is
+  part of {{{development-version}}}. ]
+
 #+begin_src emacs-lisp
-  (defun my-denote-org-extract-subtree (&optional silo)
-    "Create new Denote note using current Org subtree.
-  Make the new note use the Org file type, regardless of the value
-  of `denote-file-type'.
+(defun my-denote-org-extract-subtree (&optional silo)
+  "Create new Denote note using current Org subtree.
+Make the new note use the Org file type, regardless of the value
+of `denote-file-type'.
 
-  With an optional SILO argument as a
-  prefix (\\[universal-argument]), ask user to select a SILO from
-  `my-denote-silo-directories`.
+With an optional SILO argument as a prefix (\\[universal-argument]),
+ask user to select a SILO from `my-denote-silo-directories'.
 
-  Use the subtree title as the note's title.  If available, use the
-  tags of the heading are used as note keywords.
+Use the subtree title as the note's title.  If available, use the
+tags of the heading are used as note keywords.
 
-  Delete the original subtree."
-    (interactive
-     (list (when current-prefix-arg
-             (completing-read "Select a silo: " my-denote-silo-directories nil t))))
-    (if-let ((text (org-get-entry))
-             (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
-        (let ((element (org-element-at-point))
-              (tags (org-get-tags))
-              (user-enforced-denote-directory silo))
-          (delete-region (org-entry-beginning-position)
-                         (save-excursion (org-end-of-subtree t) (point)))
-          (denote heading
-                  tags
-                  'org
-                  nil
-                  (or
-                   ;; Check PROPERTIES drawer for :created: or :date:
-                   (org-element-property :CREATED element)
-                   (org-element-property :DATE element)
-                   ;; Check the subtree for CLOSED
-                   (org-element-property :raw-value
-                                         (org-element-property :closed element))))
-          (insert text))
-      (user-error "No subtree to extract; aborting")))
+Delete the original subtree."
+  (interactive
+   (list (when current-prefix-arg
+           (completing-read "Select a silo: " my-denote-silo-directories nil t))))
+  (if-let ((text (org-get-entry))
+           (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
+      (let ((element (org-element-at-point))
+            (tags (org-get-tags))
+            (denote-user-enforced-denote-directory silo))
+        (delete-region (org-entry-beginning-position)
+                       (save-excursion (org-end-of-subtree t) (point)))
+        (denote heading
+                tags
+                'org
+                nil
+                (or
+                 ;; Check PROPERTIES drawer for :created: or :date:
+                 (org-element-property :CREATED element)
+                 (org-element-property :DATE element)
+                 ;; Check the subtree for CLOSED
+                 (org-element-property :raw-value
+                                       (org-element-property :closed element))))
+        (insert text))
+    (user-error "No subtree to extract; aborting")))
 #+end_src
 
 Have a different workflow?  Feel welcome to discuss it in any of our

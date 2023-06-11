@@ -531,16 +531,14 @@ things accordingly.")
              (not (file-directory-p denote-directory)))
     (make-directory denote-directory :parents)))
 
-(defvar user-enforced-denote-directory nil
-  "Meant to be used to hard-code the denote-directory in a let binding.
-
-This is useful when the user is writing Lisp code. It helps them
-be sure nothing else can override the value of the
-denote-directory they want.")
+(defvar denote-user-enforced-denote-directory nil
+  "Value of the variable `denote-directory'.
+Use this to `let' bind a directory path, thus overriding what the
+function `denote-directory' ordinarily returns.")
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory."
-  (let ((path (or user-enforced-denote-directory
+  (let ((path (or denote-user-enforced-denote-directory
                   (denote--default-directory-is-silo-p)
                   (denote--make-denote-directory)
                   (default-value 'denote-directory))))
