@@ -33,7 +33,7 @@
 
 (require 'denote)
 
-(defgroup denote-rename-buffer-with-title nil
+(defgroup denote-rename-buffer nil
   "Rename Denote buffers to be shorter and easier to read."
   :group 'denote
   :link '(info-link "(denote) Top")
@@ -52,7 +52,7 @@ value) for a reference implementation."
           (const :tag "Rename using only the title" denote-rename-buffer-with-title)
           (const :tag "Rename using only the identifier" denote-rename-buffer-with-identifier)
           (function :tag "Use a custom renaming function"))
-  :group 'denote-rename-buffer-with-title)
+  :group 'denote-rename-buffer)
 
 (defun denote-rename-buffer--common-check (buffer)
   "Determine if BUFFER shall be renamed.
