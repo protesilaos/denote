@@ -2371,7 +2371,7 @@ The operation does the following:
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
-        (when (yes-or-no-p "Add front matter or rewrite front matter of keywords (buffers are not saved)?")
+        (when (yes-or-no-p "Add front matter if necessary (buffers are not saved)?")
           (progn
             (dolist (file marks)
               (let* ((dir (file-name-directory file))
