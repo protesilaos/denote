@@ -212,5 +212,26 @@ identifier: 20230605T102234
 
 "))))
 
+;; ;; NOTE 2023-06-30: The following needs to be reviewed.
+;;
+;; (ert-deftest denote-test--denote-format-file-name ()
+;;   "Test that `denote-format-file-name' returns all expected paths."
+;;   (let ((title "Some test")
+;;         (id (format-time-string denote-id-format (current-time-string "2023-06-05")))
+;;         (kws '("one" "two"))
+;;         (type 'text))
+;;     (should
+;;      (equal
+;;      (denote-format-file-name
+;;              (denote--path title
+;;                            kws
+;;                            (denote-directory)
+;;                            id
+;;                            type)
+;;              id
+;;              (denote-sluggify-keywords kws)
+;;              (denote-sluggify title)
+;;              (denote--file-extension type))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
