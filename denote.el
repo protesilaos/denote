@@ -111,7 +111,6 @@
 (require 'seq)
 (require 'xref)
 (require 'dired)
-(require 'xdg)
 (eval-when-compile (require 'subr-x))
 
 (defgroup denote ()
@@ -125,7 +124,7 @@
 ;; About the autoload: (info "(elisp) File Local Variables")
 
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (eq val 'local) (eq val 'default-directory))))
-(defcustom denote-directory (expand-file-name "notes" (xdg-user-dir "DOCUMENTS"))
+(defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
 
 A safe local value of either `default-directory' or `local' can
@@ -146,7 +145,7 @@ the function `denote-directory' instead: it returns the path as a
 directory and also checks if a safe local value should be used."
   :group 'denote
   :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
-  :package-version '(denote . "0.5.0")
+  :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
