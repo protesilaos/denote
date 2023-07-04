@@ -1826,7 +1826,7 @@ packages such as `marginalia' and `embark')."
 ;;;;; Convenience commands as `denote' variants
 
 (defalias 'denote-create-note 'denote
-  "Alias of `denote' command.")
+  "Alias for `denote' command.")
 
 ;;;###autoload
 (defun denote-type ()
@@ -1840,7 +1840,7 @@ is set to \\='(file-type title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-type 'denote-type
-  "Alias of `denote-type' command.")
+  "Alias for `denote-type' command.")
 
 ;;;###autoload
 (defun denote-date ()
@@ -1859,7 +1859,7 @@ is set to \\='(date title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-date 'denote-date
-  "Alias of `denote-date' command.")
+  "Alias for `denote-date' command.")
 
 ;;;###autoload
 (defun denote-subdirectory ()
@@ -1876,7 +1876,7 @@ set to \\='(subdirectory title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-in-subdirectory 'denote-subdirectory
-  "Alias of `denote-subdirectory' command.")
+  "Alias for `denote-subdirectory' command.")
 
 ;;;###autoload
 (defun denote-template ()
@@ -1894,7 +1894,7 @@ set to \\='(template title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-with-template 'denote-template
-  "Alias of `denote-template' command.")
+  "Alias for `denote-template' command.")
 
 ;;;###autoload
 (defun denote-signature ()
@@ -1908,7 +1908,7 @@ is set to \\='(signature title keywords)."
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-signature 'denote-signature
-  "Alias of `denote-signature' command.")
+  "Alias for `denote-signature' command.")
 
 ;;;;; Other convenience commands
 
