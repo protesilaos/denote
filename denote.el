@@ -27,13 +27,14 @@
 ;;; Commentary:
 
 ;; Denote aims to be a simple-to-use, focused-in-scope, and effective
-;; note-taking tool for Emacs.
+;; note-taking and file-naming tool for Emacs.
 ;;
-;; Denote is based on the idea that notes should follow a predictable and
-;; descriptive file-naming scheme.  The file name must offer a clear
-;; indication of what the note is about, without reference to any other
-;; metadata.  Denote basically streamlines the creation of such files
-;; while providing facilities to link between them.
+;; Denote is based on the idea that files should follow a predictable
+;; and descriptive file-naming scheme.  The file name must offer a
+;; clear indication of what the contents are about, without reference
+;; to any other metadata.  Denote basically streamlines the creation
+;; of such files or file names while providing facilities to link
+;; between them (where those files are editable).
 ;;
 ;; Denote's file-naming scheme is not limited to "notes".  It can be used
 ;; for all types of file, including those that are not editable in Emacs,
