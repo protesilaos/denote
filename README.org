@@ -1616,8 +1616,11 @@ other links.
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
 :END:
 
-#+findex: denote-link-add-links
-The command ~denote-link-add-links~ adds links at point matching a
+[ The ~denote-add-links~ is the new name of ~denote-link-add-links~,
+  as part of {{{development-version}}}. ]
+
+#+findex: denote-add-links
+The command ~denote-add-links~ adds links at point matching a
 regular expression or plain string.  The links are inserted as a
 typographic list, such as:
 
@@ -1632,7 +1635,7 @@ as explained further above about the ~denote-link~ command.  The current
 note is excluded from the matching entries (adding a link to itself is
 pointless).
 
-When called with a prefix argument (=C-u=) ~denote-link-add-links~ will
+When called with a prefix argument (=C-u=) ~denote-add-links~ will
 format all links as =[[denote:IDENTIFIER]]=, hence a typographic list:
 
 #+begin_example
@@ -1678,14 +1681,17 @@ purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 :CUSTOM_ID: h:0c1fdaab-5a6b-4792-9694-fed53cd042e6
 :END:
 
-#+findex: denote-link-add-missing-links
-As a variation on the ~denote-link-add-links~ command, one may wish to
-only include 'missing links', i.e. links that are not yet present in
-the current file.
+[ The ~denote-add-missing-links~ is the new name of
+  ~denote-link-add-missing-links~, as part of {{{development-version}}}. ]
 
-This can be achieved with ~denote-link-add-missing-links~. The command
-is similar to ~denote-link-add-links~, but will only include links to
-notes that are not yet linked to ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
+#+findex: denote-add-missing-links
+As a variation on the ~denote-add-links~ command, one may wish to only
+include 'missing links', i.e. links that are not yet present in the
+current file.
+
+This can be achieved with ~denote-add-missing-links~. The command is
+similar to ~denote-add-links~, but will only include links to notes
+that are not yet linked to ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
 
 ** Insert links from marked files in Dired
 :PROPERTIES:
@@ -1694,11 +1700,11 @@ notes that are not yet linked to ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Ins
 
 #+findex: denote-link-dired-marked-notes
 The command ~denote-link-dired-marked-notes~ is similar to
-~denote-link-add-links~ in that it inserts in the buffer a typographic
-list of links to Denote notes ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  Though
-instead of reading a regular expression, it lets the user mark files in
-Dired and link to them.  This should be easier for users of all skill
-levels, instead of having to write a potentially complex regular
+~denote-add-links~ in that it inserts in the buffer a typographic list
+of links to Denote notes ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  Though
+instead of reading a regular expression, it lets the user mark files
+in Dired and link to them.  This should be easier for users of all
+skill levels, instead of having to write a potentially complex regular
 expression.
 
 If there are multiple buffers that visit a Denote note, this command
@@ -1776,10 +1782,11 @@ this end, Denote provides two convenience commands:
 :CUSTOM_ID: h:c73f1f68-e214-49d5-b369-e694f6a5d708
 :END:
 
-#+findex: denote-link-backlinks
-The command ~denote-link-backlinks~ produces a bespoke buffer which
+#+findex: denote-backlinks
+The command ~denote-backlinks~ produces a bespoke buffer which
 displays backlinks to the current note.  A "backlink" is a link back
-to the present entry.
+to the present entry. [ The ~denote-backlinks~ is the new name of
+~denote-link-backlinks~, as part of {{{development-version}}}.]
 
 By default, the backlinks' buffer is designed to display the file name
 of the note linking to the current entry.  Each file name is presented
@@ -1835,7 +1842,7 @@ to the relevant environment variable.
 [[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
 
 Backlinks to the current file can also be visited by using the
-minibuffer completion interface with the ~denote-link-find-backlink~
+minibuffer completion interface with the ~denote-find-backlink~
 command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
 #+vindex: denote-link-backlinks-display-buffer-action
@@ -1868,8 +1875,8 @@ insights.  For example, you might want to read your journal entries from
 the past year to reflect on your experiences, evolution as a person, and
 the like.
 
-The commands ~denote-link-add-links~, ~denote-link-dired-marked-notes~
-are suited for this task.
+The commands ~denote-add-links~, ~denote-link-dired-marked-notes~ are
+suited for this task.
 
 [[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]].
 
@@ -1897,38 +1904,47 @@ knowledge derived from the deliberate self-reflection.
 :CUSTOM_ID: h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4
 :END:
 
-#+findex: denote-link-find-file
+#+findex: denote-find-link
 Denote has a major-mode-agnostic mechanism to collect all linked file
 references in the current buffer and return them as an appropriately
 formatted list.  This list can then be used in interactive commands.
-The ~denote-link-find-file~ is such a command.  It uses minibuffer
-completion to visit a file that is linked to from the current note.  The
-candidates have the correct metadata, which is ideal for integration
-with other standards-compliant tools ([[#h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece][Extending Denote]]).  For instance,
-a package such as =marginalia= will display accurate annotations, while
-the =embark= package will be able to work its magic such as in exporting
-the list into a filtered Dired buffer (i.e. a familiar Dired listing
-with only the files of the current minibuffer session).
+The ~denote-find-link~ is such a command.  It uses minibuffer
+completion to visit a file that is linked to from the current note.
+The candidates have the correct metadata, which is ideal for
+integration with other standards-compliant tools ([[#h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece][Extending Denote]]).
+For instance, a package such as =marginalia= will display accurate
+annotations, while the =embark= package will be able to work its magic
+such as in exporting the list into a filtered Dired buffer (i.e. a
+familiar Dired listing with only the files of the current minibuffer
+session).  [ The ~denote-find-link~ is the new name of
+~denote-link-find-file~, as part of {{{development-version}}}.]
 
-#+findex: denote-link-find-backlink
+#+findex: denote-find-backlink
 To visit backlinks to the current note via the minibuffer, use
-~denote-link-find-backlink~.  This is an alternative to placing
-backlinks in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+~denote-find-backlink~.  This is an alternative to placing backlinks
+in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]). [The command is renamed
+as part of {{{development-version}}}.]
 
 ** Miscellaneous information about links
 :PROPERTIES:
 :CUSTOM_ID: h:dd8f2231-8d77-49b9-acc4-af525c68b271
 :END:
 
-#+findex: denote-link-insert-link
-#+findex: denote-link-show-backlinks-buffer
+#+findex: denote-insert-link
+#+findex: denote-show-backlinks-buffer
 #+findex: denote-link-insert-links-matching-regexp
 For convenience, the ~denote-link~ command has an alias called
-~denote-link-insert-link~.  The ~denote-link-backlinks~ can also be used
-as ~denote-link-show-backlinks-buffer~.  While ~denote-link-add-links~
-is aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
-these aliases is to offer alternative, more descriptive names of select
-commands.
+~denote-insert-link~.  The ~denote-backlinks~ can also be used as
+~denote-show-backlinks-buffer~.  While ~denote-add-links~ is
+aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
+these aliases is to offer alternative, more descriptive names of
+select commands.
+
+[ The ~denote-insert-link~ is the new name of ~denote-link-insert-link~,
+  as part of {{{development-version}}}.]
+
+[ The ~denote-show-backlinks-buffer~ is the new name of
+  ~denote-link-show-backlinks-buffer~, as part of {{{development-version}}}.]
 
 * Fontification in Dired
 :PROPERTIES:
@@ -2052,8 +2068,8 @@ and populates the block's contents accordingly.
 
 Denote leverages Org dynamic blocks to streamline the inclusion of (i)
 links to notes whose name matches a given search query (like
-~denote-link-add-links~) and (ii) backlinks to the current note (similar to
-~denote-link-find-backlink~).
+~denote-add-links~) and (ii) backlinks to the current note (similar to
+~denote-find-backlink~).
 
 These two types of blocks are named =denote-links= and =denote-backlinks=
 respectively.  The latter does not accept any parameters, while the
@@ -2068,8 +2084,8 @@ A dynamic block looks like this:
 
 Here we have the =denote-links= type, with the =:regexp= parameter.
 The value of the =:regexp= parameter is the same as that of the
-command ~denote-link-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  It
-can only use the notation of the ~rx~ macro, as explained in the Emacs
+command ~denote-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  It can
+only use the notation of the ~rx~ macro, as explained in the Emacs
 Lisp Reference Manual (evaluate: =(info "(elisp) Rx Notation")=).  The
 linked entry provides practical examples of patterns that make good
 use of Denote's file-naming scheme ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
@@ -2095,9 +2111,9 @@ missing links when the block is evaluated anew.
 
 Depending on one's workflow, the dynamic block can be instructed to
 list only those links which are missing from the current buffer
-(similar to ~denote-link-add-missing-links~).  Adding the =:missing-only=
-parameter with a non-~nil~ value achieves this effect. The =#+BEGIN= line
-looks like this:
+(similar to ~denote-add-missing-links~).  Adding the =:missing-only=
+parameter with a non-~nil~ value achieves this effect. The =#+BEGIN=
+line looks like this:
 
 : #+BEGIN: denote-links :regexp "_journal" :missing-only t
 
@@ -2526,13 +2542,13 @@ it a try (I use =C-c C-e=).  In the produced buffer, activate the
 context-dependent actions using a prefix key (simplifying in the
 interest of brevity).
 
-For our purposes, Embark can be used to produce a Dired listing directly
-from the minibuffer.  Suppose the current note has links to three other
-notes.  You might use the ~denote-link-find-file~ command to pick one
-via the minibuffer.  But why not turn those three links into their own
-Dired listing?  While in the minibuffer, invoke ~embark-act~ which you
-may have already bound to =C-.= and then follow it up with =E= (for the
-~embark-export~ command).
+For our purposes, Embark can be used to produce a Dired listing
+directly from the minibuffer.  Suppose the current note has links to
+three other notes.  You might use the ~denote-find-link~ command to
+pick one via the minibuffer.  But why not turn those three links into
+their own Dired listing?  While in the minibuffer, invoke ~embark-act~
+which you may have already bound to =C-.= and then follow it up with
+=E= (for the ~embark-export~ command).
 
 This pattern can be repeated with any list of candidates, meaning that
 you can narrow the list by providing some input before eventually
@@ -3242,10 +3258,10 @@ Else create a new file."
   ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
   ;; `markdown-mode-map', and/or `text-mode-map'.
   (define-key map (kbd "C-c n i") #'denote-link) ; "insert" mnemonic
-  (define-key map (kbd "C-c n I") #'denote-link-add-links)
-  (define-key map (kbd "C-c n b") #'denote-link-backlinks)
-  (define-key map (kbd "C-c n f f") #'denote-link-find-file)
-  (define-key map (kbd "C-c n f b") #'denote-link-find-backlink)
+  (define-key map (kbd "C-c n I") #'denote-add-links)
+  (define-key map (kbd "C-c n b") #'denote-backlinks)
+  (define-key map (kbd "C-c n f f") #'denote-find-link)
+  (define-key map (kbd "C-c n f b") #'denote-find-backlink)
   ;; Note that `denote-rename-file' can work from any context, not just
   ;; Dired bufffers.  That is why we bind it here to the `global-map'.
   (define-key map (kbd "C-c n r") #'denote-rename-file)
@@ -3923,7 +3939,7 @@ low-priority ideas you may want to help with ([[#h:1ebe4865-c001-4747-a6f2-0fe45
   This would be useful for some sort of "export" operation where the
   absolute file path is necessary and where the Denote linking mechanism
   is not available.  Though this could be handled by the exporter, by
-  doing something like what ~denote-link-find-file~ does.
+  doing something like what ~denote-find-link~ does.
 
 - Add command that rewrites full names in links, if they are invalid.
   This would complement the renaming mechanism.  Personally, I think old

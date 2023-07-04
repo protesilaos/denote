@@ -2852,8 +2852,13 @@ whitespace-only), insert an ID-ONLY link."
       (unless (derived-mode-p 'org-mode)
         (make-button beg (point) 'type 'denote-link-button)))))
 
-(defalias 'denote-link-insert-link 'denote-link
-  "Alias of `denote-link' command.")
+(define-obsolete-function-alias
+  'denote-link-insert-link
+  'denote-insert-link
+  "2.0.0")
+
+(defalias 'denote-insert-link 'denote-link
+  "Alias for `denote-link' command.")
 
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
@@ -2877,7 +2882,7 @@ whitespace-only), insert an ID-ONLY link."
     found-files))
 
 (defvar denote-link--find-file-history nil
-  "History for `denote-link-find-file'.")
+  "History for `denote-find-link'.")
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
@@ -2900,10 +2905,15 @@ Also see `denote-link-return-backlinks'."
     links))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
-  "Alias of `denote-link-return-links'.")
+  "Alias for `denote-link-return-links'.")
+
+(define-obsolete-function-alias
+  'denote-link-find-file
+  'denote-find-link
+  "2.0.0")
 
 ;;;###autoload
-(defun denote-link-find-file ()
+(defun denote-find-link ()
   "Use minibuffer completion to visit linked file."
   (interactive)
   (find-file
@@ -2919,11 +2929,16 @@ Also see `denote-link-return-links'."
               (backlinks (delete current-file (denote--retrieve-files-in-xrefs id))))
     backlinks))
 
+(define-obsolete-function-alias
+  'denote-link-find-backlink
+  'denote-find-backlink
+  "2.0.0")
+
 ;;;###autoload
-(defun denote-link-find-backlink ()
+(defun denote-find-backlink ()
   "Use minibuffer completion to visit backlink to current file.
 
-Like `denote-link-find-file', but select backlink to follow."
+Like `denote-find-link', but select backlink to follow."
   (interactive)
   (find-file
    (denote-get-path-by-id
@@ -2985,7 +3000,7 @@ file's title.  This has the same meaning as in `denote-link'."
     (denote--command-with-title-history #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
-  "Alias of `denote-link-or-create' command.")
+  "Alias for `denote-link-or-create' command.")
 
 ;;;;; Link buttons
 
@@ -3161,8 +3176,13 @@ ALIST is not used in favour of using
                        nil)))))
     (denote-link--display-buffer buf)))
 
+(define-obsolete-function-alias
+  'denote-link-backlinks
+  'denote-backlinks
+  "2.0.0")
+
 ;;;###autoload
-(defun denote-link-backlinks ()
+(defun denote-backlinks ()
   "Produce a buffer with backlinks to the current note.
 
 The backlinks' buffer shows the file name of the note linking to
@@ -3188,8 +3208,13 @@ default, it will show up below the current window."
                           (delete file (denote-directory-text-only-files)))
          nil)))))
 
-(defalias 'denote-link-show-backlinks-buffer 'denote-link-backlinks
-  "Alias of `denote-link-backlinks' command.")
+(define-obsolete-function-alias
+  'denote-link-show-backlinks-buffer
+  'denote-show-backlinks-buffer
+  "2.0.0")
+
+(defalias 'denote-show-backlinks-buffer 'denote-backlinks
+  "Alias for `denote-backlinks' command.")
 
 ;;;;; Add links matching regexp
 
@@ -3218,10 +3243,15 @@ When ID-ONLY is non-nil, use a generic link format.  See
     (buffer-string)))
 
 (defvar denote-link--add-links-history nil
-  "Minibuffer history for `denote-link-add-links'.")
+  "Minibuffer history for `denote-add-links'.")
+
+(define-obsolete-function-alias
+  'denote-link-add-links
+  'denote-add-links
+  "2.0.0")
 
 ;;;###autoload
-(defun denote-link-add-links (regexp &optional id-only)
+(defun denote-add-links (regexp &optional id-only)
   "Insert links to all notes matching REGEXP.
 Use this command to reference multiple files at once.
 Particularly useful for the creation of metanotes (read the
@@ -3243,13 +3273,18 @@ inserts links with just the identifier."
           (denote-link-buttonize-buffer beg (point)))
       (message "No links matching `%s'" regexp))))
 
-(defalias 'denote-link-insert-links-matching-regexp 'denote-link-add-links
-  "Alias of `denote-link-add-links' command.")
+(defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
+  "Alias for `denote-add-links' command.")
+
+(define-obsolete-function-alias
+  'denote-link-add-missing-links
+  'denote-add-missing-links
+  "2.0.0")
 
 ;;;###autoload
-(defun denote-link-add-missing-links (regexp &optional id-only)
+(defun denote-add-missing-links (regexp &optional id-only)
   "Insert missing links to all notes matching REGEXP.
-Similar to `denote-link-add-links' but insert only links not yet
+Similar to `denote-add-links' but insert only links not yet
 present in the current buffer.
 
 Optional ID-ONLY has the same meaning as in `denote-link': it
@@ -3366,13 +3401,13 @@ This command is meant to be used from a Dired buffer."
     ["Insert a link" denote-link
      :help "Insert link to a file in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
-    ["Insert links with regexp" denote-link-add-links
+    ["Insert links with regexp" denote-add-links
      :help "Insert links to files matching regexp in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
     ["Insert Dired marked files as links" denote-link-dired-marked-notes
      :help "Rename marked files in Dired as links in a Denote buffer"
      :enable (derived-mode-p 'dired-mode)]
-    ["Show file backlinks" denote-link-backlinks
+    ["Show file backlinks" denote-backlinks
      :help "Insert link to a file in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
     "---"
