@@ -2341,7 +2341,7 @@ of the file.  This needs to be done manually."
         (denote--add-front-matter new-name title keywords id new-file-type)))))
 
 ;;;###autoload
-(defun denote-dired-rename-marked-files ()
+(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt)
   "Rename marked files in Dired to Denote file name.
 
 The operation does the following:
@@ -2360,18 +2360,21 @@ The operation does the following:
 
 - if the file is recognized as a Denote note, add a front matter
   or rewrite it to include the new keywords.  A confirmation to
-  carry out this step is performed once at the outset.  Note that
-  the affected buffers are not saved.  The user can thus check
-  them to confirm that the new front matter does not cause any
-  problems (e.g. with the command `diff-buffer-with-file').
-  Multiple buffers can be saved with `save-some-buffers' (read
-  its doc string).  The addition of front matter takes place only
-  if the given file has the appropriate file type extension (per
-  the user option `denote-file-type')."
-  (interactive nil dired-mode)
+  carry out this step is performed once at the outset, unless
+  optional SKIP-FRONT-MATTER-PROMPT is non-nil (such as with a
+  universal prefix argument).  Note that the affected buffers are
+  not saved.  The user can thus check them to confirm that the
+  new front matter does not cause any problems (e.g. with the
+  command `diff-buffer-with-file').  Multiple buffers can be
+  saved with `save-some-buffers' (read its doc string).  The
+  addition of front matter takes place only if the given file has
+  the appropriate file type extension (per the user option
+  `denote-file-type')."
+  (interactive "P" dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
-        (when (yes-or-no-p "Add front matter if necessary (buffers are not saved)?")
+        (when (or skip-front-matter-prompt
+                  (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
           (progn
             (dolist (file marks)
               (let* ((dir (file-name-directory file))

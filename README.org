@@ -1059,14 +1059,19 @@ following:
   applied to all file names;
 
 - if the file is recognized as a Denote note, this command adds or
-  rewrites front matter to include the new keywords.  A confirmation to
-  carry out this step is performed once at the outset.  Note that the
-  affected buffers are not saved.  The user can thus check them to
-  confirm that the new front matter does not cause any problems
-  (e.g. with the command ~diff-buffer-with-file~).  Multiple buffers can
-  be saved with ~save-some-buffers~ (read its doc string).  The addition
-  of front matter takes place only if the given file has the appropriate
-  file type extension (per the user option ~denote-file-type~).
+  rewrites front matter to include the new keywords.  A confirmation
+  to carry out this step is performed once at the outset, unless
+  optional =SKIP-FRONT-MATTER-PROMPT= is non-nil (such as with a
+  universal prefix argument).  Note that the affected buffers are not
+  saved.  The user can thus check them to confirm that the new front
+  matter does not cause any problems (e.g. with the command
+  ~diff-buffer-with-file~).  Multiple buffers can be saved with
+  ~save-some-buffers~ (read its doc string).  The addition of front
+  matter takes place only if the given file has the appropriate file
+  type extension (per the user option ~denote-file-type~).
+
+[ The optional =SKIP-FRONT-MATTER-PROMPT= is added to
+  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
 
 ** Rename a single file based on its front matter
 :PROPERTIES:
@@ -4423,12 +4428,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
   Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
-  Yong, Hanspeter Gisler, Jack Baty, Jeremy Friesen, Jonathan Sahar,
-  Juanjo Presa, Johan Bolmsjö, Kai von Fintel, Kaushal Modi, M. Hadi
-  Timachi, Mirko Hernandez, Niall Dooley, Paul van Gelder, Peter
-  Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
-  Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio,
-  drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
+  Yong, Hanspeter Gisler, Jack Baty, Jay Rajput, Jeremy Friesen,
+  Jonathan Sahar, Juanjo Presa, Johan Bolmsjö, Kai von Fintel, Kaushal
+  Modi, M. Hadi Timachi, Mirko Hernandez, Niall Dooley, Paul van
+  Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
+  Sven Seebeck, Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot,
+  atanasj, doolio, drcxd, hpgisler, pRot0ta1p, rbenit68, relict007,
+  sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
