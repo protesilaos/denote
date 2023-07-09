@@ -4429,7 +4429,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
   Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
   Yong, Hanspeter Gisler, Jack Baty, Jay Rajput, Jeremy Friesen,
-  Jonathan Sahar, Juanjo Presa, Johan Bolmsjö, Kai von Fintel, Kaushal
+  Jonathan Sahar, Johan Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal
   Modi, M. Hadi Timachi, Mirko Hernandez, Niall Dooley, Paul van
   Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
   Sven Seebeck, Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot,
