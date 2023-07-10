@@ -2919,6 +2919,8 @@ See `denote-file-prompt-original'."
 :CUSTOM_ID: h:e666ced6-da75-4bdb-9be3-82c2f4455ee9
 :END:
 
+[[#h:2d5ee9bf-e8f2-426c-8bf7-bf78bc88d1ee][Rename files with Denote using ~dired-preview~]]
+
 Just as with the ~denote-dired-rename-marked-files~, we can use Denote
 in the Image Dired buffer ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).  Here is
 the custom code:
@@ -2975,6 +2977,57 @@ conventions of Denote's file-naming scheme."
                (new-name (concat dir title "__" kws extension))
                (default-directory dir))
      (denote-rename-file-and-buffer file new-name))))
+#+end_src
+
+** Rename files with Denote using ~dired-preview~
+:PROPERTIES:
+:CUSTOM_ID: h:2d5ee9bf-e8f2-426c-8bf7-bf78bc88d1ee
+:END:
+
+The ~dired-preview~ package (by me/Protesilaos) automatically displays
+a preview of the file at point in Dired.  This can be helpful in
+tandem with Denote when we want to rename multiple files by taking a
+quick look at their contents.
+
+The command ~denote-dired-rename-marked-files~ will generate
+Denote-style file names based on the keywords it prompts for.
+Identifiers are derived from each file's modification date
+([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).  There is no need for any custom
+code in this scenario.
+
+As noted in the section about Image Dired, the user may sometimes not
+need a fully fledged Denote-style file name but only append Denote-like
+keywords to each file name (e.g. =Original Name__denote_test.jpg=
+instead of =20230710T195843--original-name__denote_test.jpg=).
+
+[[#h:e666ced6-da75-4bdb-9be3-82c2f4455ee9][Rename files with Denote in the Image Dired thumbnails buffer]]
+
+In such a workflow, it is unlikely to be dealing with ordinary text
+files where front matter can be helpful.  A custom command does not
+need to behave like what Denote provides out-of-the-box, but can
+instead append keywords to file names without conducting any further
+actions.  We thus have:
+
+#+begin_src emacs-lisp
+(defun my-denote-dired-rename-marked-files-keywords-only ()
+  "Like `denote-dired-rename-marked-files' but only for keywords in file names.
+
+Prompt for keywords and rename all marked files in the Dired
+buffer to only have Denote-style keywords, but none of the other
+conventions of Denote's file-naming scheme."
+  (interactive nil dired-mode)
+  (if-let ((marks (dired-get-marked-files)))
+      (let ((keywords (denote-keywords-prompt)))
+        (dolist (file marks)
+          (let* ((dir (file-name-directory file))
+                 (file-type (denote-filetype-heuristics file))
+                 (title (denote--retrieve-title-or-filename file file-type))
+                 (extension (file-name-extension file t))
+                 (kws (denote--keywords-combine keywords))
+                 (new-name (concat dir title "__" kws extension)))
+            (denote-rename-file-and-buffer file new-name)))
+        (revert-buffer))
+    (user-error "No marked files; aborting")))
 #+end_src
 
 ** Avoid duplicate identifiers when exporting Denote notes
