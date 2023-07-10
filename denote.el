@@ -2375,22 +2375,21 @@ The operation does the following:
       (let ((keywords (denote-keywords-prompt)))
         (when (or skip-front-matter-prompt
                   (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
-          (progn
-            (dolist (file marks)
-              (let* ((dir (file-name-directory file))
-                     (id (denote-retrieve-or-create-file-identifier file))
-                     (signature (denote-retrieve-filename-signature file))
-                     (file-type (denote-filetype-heuristics file))
-                     (title (denote--retrieve-title-or-filename file file-type))
-                     (extension (file-name-extension file t))
-                     (new-name (denote-format-file-name
-                                dir id keywords (denote-sluggify title) extension signature)))
-                (denote-rename-file-and-buffer file new-name)
-                (when (denote-file-is-writable-and-supported-p new-name)
-                  (if (denote--edit-front-matter-p new-name file-type)
-                      (denote-rewrite-keywords new-name keywords file-type)
-                    (denote--add-front-matter new-name title keywords id file-type)))))
-            (revert-buffer))))
+          (dolist (file marks)
+            (let* ((dir (file-name-directory file))
+                   (id (denote-retrieve-or-create-file-identifier file))
+                   (signature (denote-retrieve-filename-signature file))
+                   (file-type (denote-filetype-heuristics file))
+                   (title (denote--retrieve-title-or-filename file file-type))
+                   (extension (file-name-extension file t))
+                   (new-name (denote-format-file-name
+                              dir id keywords (denote-sluggify title) extension signature)))
+              (denote-rename-file-and-buffer file new-name)
+              (when (denote-file-is-writable-and-supported-p new-name)
+                (if (denote--edit-front-matter-p new-name file-type)
+                    (denote-rewrite-keywords new-name keywords file-type)
+                  (denote--add-front-matter new-name title keywords id file-type)))))
+          (revert-buffer)))
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
