@@ -27,7 +27,7 @@
 ;; This file provides a specialized Org-mode extension to Denote: it
 ;; introduces Org Dynamic blocks that collect links to Denote notes
 ;; based on a provided regexp.  In short, this automates
-;; 'denote-link-add-links'.
+;; 'denote-add-links'.
 ;;
 ;; For more information, read the commented code below or refer to the
 ;; Denote manual
@@ -44,7 +44,7 @@
 ;; Org-mode has Dynamic blocks the content of which can be computed
 ;; dynamically based on their header. This functionality can be
 ;; leveraged to create automated lists of links to specific notes
-;; (similar to 'denote-link-add-links', but with the added benefit
+;; (similar to 'denote-add-links', but with the added benefit
 ;; that the list can be updated easily).
 ;;
 ;; A dynamic block of the 'denote-links' type looks like this:
@@ -57,7 +57,7 @@
 ;; contents of the block with links to notes matching the search
 ;; ':regexp'. The regular expression can be either a regexp string or
 ;; a sexp form (the latter is translated via rx).
-;; See also the denote manual on 'denote-link-add-links'.
+;; See also the denote manual on 'denote-add-links'.
 ;;
 ;; Inserting a block can be done via the Org-mode entry point
 ;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
@@ -101,7 +101,7 @@
 
 ;; By using the `org-dblock-write:' format, Org-mode knows how to
 ;; compute the dynamic block. Inner workings of this function copied
-;; from `denote-link-add-links'.
+;; from `denote-add-links'.
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
@@ -115,7 +115,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
       (insert "#+name: " block-name "\n"))
     (if missing-only
         (progn
-          (denote-link-add-missing-links rx)
+          (denote-add-missing-links rx)
           (join-line)) ;; remove trailing empty line left by denote-link--prepare-links
       (when-let ((files (delete current-file
                                 (denote-directory-files-matching-regexp rx))))
