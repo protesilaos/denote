@@ -1619,10 +1619,10 @@ where the former does not read dates without a time component."
 ;; `denote' command does call `denote-barf-duplicate-id'.
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
-  (seq-some (lambda (file)
-              (string-prefix-p identifier (file-name-nondirectory file)))
-            (append (denote-directory-files)
-                    (denote--buffer-file-names))))
+  (seq-some
+   (lambda (file)
+     (string-prefix-p identifier (file-name-nondirectory file)))
+   (append (denote-directory-files) (denote--buffer-file-names))))
 
 (defun denote-barf-duplicate-id (identifier)
   "Throw a `user-error' if IDENTIFIER already exists."
