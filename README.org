@@ -1073,6 +1073,16 @@ following:
 [ The optional =SKIP-FRONT-MATTER-PROMPT= is added to
   ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
 
+With optional =ENSURE-UNIQUE-IDS= as a double prefix argument,
+process the file identifiers of the marked files to ensure there
+is no duplicate among them.  When renaming files in Dired, it is
+possible to produce duplicate identifiers.  This can happen when
+multiple files share the same modification time, which can be
+casually done with the ~touch~ command, ~git~, and others.
+
+[ The optional =ENSURE-UNIQUE-IDS= is added to
+  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
+
 ** Rename a single file based on its front matter
 :PROPERTIES:
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
@@ -3583,6 +3593,14 @@ might change them without further notice.
     as an identifier.
 
   - As a fallback, derive an identifier from the current time.
+
+  [ The =FILES= argument is part of {{{development-version}}}. ]
+
+  With optional =FILES= as a list of file names, test that the
+  identifier is unique among them.
+
+  With optional =FILES= as non-nil, test that the identifier is unique
+  among all files and buffers in variable ~denote-directory~.
 
   To only return an existing identifier, refer to the function
   ~denote-retrieve-filename-identifier~.

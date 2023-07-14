@@ -1315,7 +1315,7 @@ the function `denote-retrieve-or-create-file-identifier'."
   'denote-retrieve-filename-identifier
   "1.0.0")
 
-(defun denote-retrieve-or-create-file-identifier (file &optional date)
+(defun denote-retrieve-or-create-file-identifier (file &optional date files)
   "Return FILE identifier, generating one if appropriate.
 
 The conditions are as follows:
@@ -1331,14 +1331,29 @@ The conditions are as follows:
 
 - As a fallback, derive an identifier from the current time.
 
+With optional FILES as a list of file names, test that the
+identifier is unique among them.
+
+With optional FILES as non-nil, test that the identifier is
+unique among all files and buffers in variable
+`denote-directory'.
+
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
-  (cond
-   ((string-match denote-id-regexp file)
-    (substring file (match-beginning 0) (match-end 0)))
-   (date (denote-prompt-for-date-return-id))
-   ((denote--file-attributes-time file))
-   (t (format-time-string denote-id-format))))
+  (let ((id
+         (cond
+          ((string-match denote-id-regexp file)
+           (substring file (match-beginning 0) (match-end 0)))
+          (date (denote-prompt-for-date-return-id))
+          ((denote--file-attributes-time file))
+          (t (format-time-string denote-id-format)))))
+    (cond
+     ((and files (listp files))
+      (denote--return-new-identifier-if-duplicate id files))
+     (files
+      (denote--return-new-identifier-if-duplicate id))
+     (t
+      id))))
 
 (define-obsolete-function-alias
   'denote--file-name-id
@@ -1617,12 +1632,29 @@ where the former does not read dates without a time component."
 ;; otherwise the identifier is always unique (we trust that no-one
 ;; writes multiple notes within fractions of a second).  Though the
 ;; `denote' command does call `denote-barf-duplicate-id'.
-(defun denote--id-exists-p (identifier)
-  "Return non-nil if IDENTIFIER already exists."
+(defun denote--id-exists-p (identifier &optional files)
+  "Return non-nil if IDENTIFIER already exists.
+With optional FILES, check for IDENTIFIER among them.  Else refer
+to files or buffers in the variable `denote-directory'."
   (seq-some
    (lambda (file)
      (string-prefix-p identifier (file-name-nondirectory file)))
-   (append (denote-directory-files) (denote--buffer-file-names))))
+   (or files
+       (append (denote-directory-files) (denote--buffer-file-names)))))
+
+(defun denote--increment-identifier (identifier)
+  "Increment IDENTIFIER.
+Preserve the date component and append to it the current time."
+  (let* ((datetime (split-string identifier "T"))
+         (date (car datetime)))
+    (concat date "T" (format-time-string "%H%M%S"))))
+
+(defun denote--return-new-identifier-if-duplicate (identifier &optional files)
+  "Return new unique identifier if IDENTIFIER already exists.
+The meaning of FILES is the same as in `denote--id-exists-p'."
+  (while (denote--id-exists-p identifier files)
+    (setq identifier (denote--increment-identifier identifier)))
+  identifier)
 
 (defun denote-barf-duplicate-id (identifier)
   "Throw a `user-error' if IDENTIFIER already exists."
@@ -2285,7 +2317,7 @@ files)."
       (denote-keywords-prompt)
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
-         (id (denote-retrieve-or-create-file-identifier file date))
+         (id (denote-retrieve-or-create-file-identifier file date :unique))
          (signature (denote-retrieve-filename-signature file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
@@ -2342,7 +2374,7 @@ of the file.  This needs to be done manually."
         (denote--add-front-matter new-name title keywords id new-file-type)))))
 
 ;;;###autoload
-(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt)
+(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt ensure-unique-ids)
   "Rename marked files in Dired to Denote file name.
 
 The operation does the following:
@@ -2370,15 +2402,28 @@ The operation does the following:
   saved with `save-some-buffers' (read its doc string).  The
   addition of front matter takes place only if the given file has
   the appropriate file type extension (per the user option
-  `denote-file-type')."
+  `denote-file-type').
+
+With optional ENSURE-UNIQUE-IDS as a double prefix argument,
+process the file identifiers of the marked files to ensure there
+is no duplicate among them.  When renaming files in Dired, it is
+possible to produce duplicate identifiers.  This can happen when
+multiple files share the same modification time, which can be
+casually done with the `touch' command, `git', and others."
   (interactive "P" dired-mode)
+  (when current-prefix-arg
+    (if (>= (car current-prefix-arg) 16)
+        (setq skip-front-matter-prompt t
+              ensure-unique-ids t)
+      (setq skip-front-matter-prompt t
+            ensure-unique-ids nil)))
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
         (when (or skip-front-matter-prompt
                   (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
-                   (id (denote-retrieve-or-create-file-identifier file))
+                   (id (denote-retrieve-or-create-file-identifier file nil (when ensure-unique-ids marks)))
                    (signature (denote-retrieve-filename-signature file))
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
@@ -2389,7 +2434,10 @@ The operation does the following:
               (when (denote-file-is-writable-and-supported-p new-name)
                 (if (denote--edit-front-matter-p new-name file-type)
                     (denote-rewrite-keywords new-name keywords file-type)
-                  (denote--add-front-matter new-name title keywords id file-type)))))
+                  (denote--add-front-matter new-name title keywords id file-type)))
+              (when ensure-unique-ids
+                (setq marks (delete file marks))
+                (push new-name marks))))
           (revert-buffer)))
     (user-error "No marked files; aborting")))
 
@@ -2530,7 +2578,7 @@ relevant front matter."
   (when (denote-file-is-writable-and-supported-p file)
     (denote--add-front-matter
      file title keywords
-     (denote-retrieve-or-create-file-identifier file)
+     (denote-retrieve-or-create-file-identifier file nil :unique)
      (denote-filetype-heuristics file))))
 
 ;;;; The Denote faces
