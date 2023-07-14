@@ -2412,11 +2412,8 @@ multiple files share the same modification time, which can be
 casually done with the `touch' command, `git', and others."
   (interactive "P" dired-mode)
   (when current-prefix-arg
-    (if (>= (car current-prefix-arg) 16)
-        (setq skip-front-matter-prompt t
-              ensure-unique-ids t)
-      (setq skip-front-matter-prompt t
-            ensure-unique-ids nil)))
+    (setq skip-front-matter-prompt t
+          ensure-unique-ids (when (>= (car current-prefix-arg) 16) t)))
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
         (when (or skip-front-matter-prompt
