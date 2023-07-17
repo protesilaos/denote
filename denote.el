@@ -1620,13 +1620,14 @@ where the former does not read dates without a time component."
 
 (defun denote--buffer-file-names ()
   "Return file names of Denote buffers."
-  (seq-keep
-   (lambda (buffer)
-     (when-let (((buffer-live-p buffer))
-                (file (buffer-file-name buffer))
-                ((denote-file-is-note-p file)))
-       file))
-   (buffer-list)))
+  (delq nil
+        (mapcar
+         (lambda (buffer)
+           (when-let (((buffer-live-p buffer))
+                      (file (buffer-file-name buffer))
+                      ((denote-file-is-note-p file)))
+             file))
+         (buffer-list))))
 
 ;; In normal usage, this should only be relevant for `denote-date',
 ;; otherwise the identifier is always unique (we trust that no-one
