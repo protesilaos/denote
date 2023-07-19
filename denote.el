@@ -2580,7 +2580,7 @@ relevant front matter."
   (when (denote-file-is-writable-and-supported-p file)
     (denote--add-front-matter
      file title keywords
-     (denote-retrieve-or-create-file-identifier file nil :unique)
+     (denote-retrieve-or-create-file-identifier file nil)
      (denote-filetype-heuristics file))))
 
 ;;;; The Denote faces
