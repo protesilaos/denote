@@ -4508,15 +4508,15 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Vedang Manerikar, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
-  Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
-  Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
-  Yong, Hanspeter Gisler, Jack Baty, Jay Rajput, Jean-Charles
-  Bagneris, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö, Juanjo
-  Presa, Kai von Fintel, Kaushal Modi, M. Hadi Timachi, Mirko
-  Hernandez, Niall Dooley, Paul van Gelder, Peter Prevos, Shreyas
-  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor
-  Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio, drcxd, hpgisler,
-  pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
+  Schmitt, Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Colin
+  McLear, Damien Cassou, Elias Storms, Federico Stilman, Florian,
+  Frank Ehmsen, Guo Yong, Hanspeter Gisler, Jack Baty, Jay Rajput,
+  Jean-Charles Bagneris, Jeremy Friesen, Jonathan Sahar, Johan
+  Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal Modi, M. Hadi
+  Timachi, Mirko Hernandez, Niall Dooley, Paul van Gelder, Peter
+  Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
+  Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio,
+  drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

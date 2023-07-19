@@ -1350,7 +1350,7 @@ To only return an existing identifier, refer to the function
     (cond
      ((and files (listp files))
       (denote--return-new-identifier-if-duplicate id files))
-     (files
+     ((and files (not (denote-file-has-identifier-p file)))
       (denote--return-new-identifier-if-duplicate id))
      (t
       id))))
