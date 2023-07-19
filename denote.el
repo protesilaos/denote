@@ -2379,65 +2379,73 @@ of the file.  This needs to be done manually."
         (denote--add-front-matter new-name title keywords id new-file-type)))))
 
 ;;;###autoload
-(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt ensure-unique-ids)
-  "Rename marked files in Dired to Denote file name.
+(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt no-unique-id-check)
+  "Rename marked files in Dired to a Denote file name.
 
-The operation does the following:
+Specifically, do the following:
 
-- the file's existing file name is retained and becomes the TITLE
-  field, per Denote's file-naming scheme;
+- retain the file's existing name and make it the TITLE field,
+  per Denote's file-naming scheme;
 
-- the TITLE is sluggified and downcased, per our conventions;
+- downcase and sluggify the TITLE, per our conventions;
 
-- an identifier is prepended to the TITLE;
+- prepend an identifier to the TITLE;
 
-- the file's extension is retained;
+- preserve the file's extension, if any;
 
-- a prompt is asked once for the KEYWORDS field and the input is
-  applied to all file names;
+- prompt once for KEYWORDS and apply the user's input to the
+  corresponding field in the file name;
 
-- if the file is recognized as a Denote note, add a front matter
-  or rewrite it to include the new keywords.  A confirmation to
-  carry out this step is performed once at the outset, unless
-  optional SKIP-FRONT-MATTER-PROMPT is non-nil (such as with a
-  universal prefix argument).  Note that the affected buffers are
-  not saved.  The user can thus check them to confirm that the
-  new front matter does not cause any problems (e.g. with the
-  command `diff-buffer-with-file').  Multiple buffers can be
-  saved with `save-some-buffers' (read its doc string).  The
-  addition of front matter takes place only if the given file has
-  the appropriate file type extension (per the user option
-  `denote-file-type').
+- add or rewrite existing front matter to the underlying file, if
+  it is recognized as a Denote note (per `denote-file-type'),
+  such that it includes the new keywords;
 
-With optional ENSURE-UNIQUE-IDS as a double prefix argument,
-process the file identifiers of the marked files to ensure there
-is no duplicate among them.  When renaming files in Dired, it is
-possible to produce duplicate identifiers.  This can happen when
-multiple files share the same modification time, which can be
-casually done with the `touch' command, `git', and others."
-  (interactive "P" dired-mode)
-  (when current-prefix-arg
-    (setq skip-front-matter-prompt t
-          ensure-unique-ids (when (>= (car current-prefix-arg) 16) t)))
+- prompt at the outset for a confirmation, unless optional
+  SKIP-FRONT-MATTER-PROMPT is non-nil (such as with a universal
+  prefix argument).
+
+  [ Note that the affected buffers are not saved.  Users can thus
+    check them to confirm that the new front matter does not
+    cause any problems (e.g. with the `diff-buffer-with-file'
+    command).  Multiple buffers can be saved in one go with
+    `save-some-buffers' (read its doc string). ]
+
+With the optional NO-UNIQUE-ID-CHECK as non-nil (such as as a
+double prefix argument), do not process the file identifiers of
+the marked files for potential duplicates.  The default is to
+check for duplicates and increment them such that they become
+unique.  The reason this optional argument exists is for those
+who want to speed up the process, perhaps because they know ahead
+of time all identifiers will be unique or do not care about them.
+
+[ When renaming files in Dired, it is possible to produce
+  duplicate identifiers.  This can happen when multiple files
+  share the same modification time, which can be casually done
+  with the `touch' command, `git', and others. ]"
+  (interactive
+   (list
+    (when current-prefix-arg
+      (setq skip-front-matter-prompt t
+            no-unique-id-check (when (>= (car current-prefix-arg) 16) t))))
+   dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
         (when (or skip-front-matter-prompt
                   (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
-                   (id (denote-retrieve-or-create-file-identifier file nil (when ensure-unique-ids marks)))
+                   (id (denote-retrieve-or-create-file-identifier file nil (unless no-unique-id-check marks)))
                    (signature (denote-retrieve-filename-signature file))
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
                    (extension (file-name-extension file t))
-                   (new-name (denote-format-file-name
-                              dir id keywords (denote-sluggify title) extension signature)))
+                   (new-name (denote-format-file-name dir id keywords (denote-sluggify title) extension signature)))
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
                 (if (denote--edit-front-matter-p new-name file-type)
                     (denote-rewrite-keywords new-name keywords file-type)
                   (denote--add-front-matter new-name title keywords id file-type)))
-              (when ensure-unique-ids
+              (unless no-unique-id-check
                 (setq marks (delete file marks))
                 (push new-name marks))))
           (revert-buffer)))

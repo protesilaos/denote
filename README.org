@@ -1047,47 +1047,52 @@ not---manage such files).
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
 
+[ The optional =SKIP-FRONT-MATTER-PROMPT= and =NO-UNIQUE-ID-CHECK= are added to
+  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
+
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
-Dired to conform with our file-naming scheme.  The operation does the
-following:
+Dired to conform with our file-naming scheme.  Specifically, it does
+the following:
 
-- the file's existing file name is retained and becomes the =TITLE=
-  field, per Denote's file-naming scheme;
+- retains the file's existing name and make it the =TITLE= field, per
+  Denote's file-naming scheme;
 
-- the =TITLE= is sluggified and downcased, per our conventions;
+- downcases and sluggifies the =TITLE=, per our conventions;
 
-- an identifier is prepended to the =TITLE=;
+- prepends an identifier to the =TITLE=;
 
-- the file's extension is retained;
+- preserves the file's extension, if any;
 
-- a prompt is asked once for the =KEYWORDS= field and the input is
-  applied to all file names;
+- prompts once for =KEYWORDS= and applies the user's input to the
+  corresponding field in the file name;
 
-- if the file is recognized as a Denote note, this command adds or
-  rewrites front matter to include the new keywords.  A confirmation
-  to carry out this step is performed once at the outset, unless
-  optional =SKIP-FRONT-MATTER-PROMPT= is non-nil (such as with a
-  universal prefix argument).  Note that the affected buffers are not
-  saved.  The user can thus check them to confirm that the new front
-  matter does not cause any problems (e.g. with the command
-  ~diff-buffer-with-file~).  Multiple buffers can be saved with
-  ~save-some-buffers~ (read its doc string).  The addition of front
-  matter takes place only if the given file has the appropriate file
-  type extension (per the user option ~denote-file-type~).
+- adds or rewrites existing front matter to the underlying file, if it
+  is recognized as a Denote note (per the ~denote-file-type~ user
+  option), such that it includes the new keywords.
 
-[ The optional =SKIP-FRONT-MATTER-PROMPT= is added to
-  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
+- prompts at the outset for a confirmation, unless optional
+  =SKIP-FRONT-MATTER-PROMPT= is non-nil (such as with a universal
+  prefix argument).
 
-With optional =ENSURE-UNIQUE-IDS= as a double prefix argument,
-process the file identifiers of the marked files to ensure there
-is no duplicate among them.  When renaming files in Dired, it is
-possible to produce duplicate identifiers.  This can happen when
-multiple files share the same modification time, which can be
-casually done with the ~touch~ command, ~git~, and others.
+  [ Note that the affected buffers are not saved.  Users can thus
+    check them to confirm that the new front matter does not cause any
+    problems (e.g. with the `diff-buffer-with-file' command).  Multiple
+    buffers can be saved in one go with `save-some-buffers' (read its
+    doc string). ]
 
-[ The optional =ENSURE-UNIQUE-IDS= is added to
-  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
+With the optional =NO-UNIQUE-ID-CHECK= as non-nil (such as as a double
+prefix argument), it does not process the file identifiers of the
+marked files for potential duplicates.  The default is to check for
+duplicates and increment them such that they become unique.  The
+reason this optional argument exists is for those who want to speed up
+the process, perhaps because they know ahead of time all identifiers
+will be unique or do not care about them.
+
+[ When renaming files in Dired, it is possible to produce duplicate
+  identifiers.  This can happen when multiple files share the same
+  modification time, which can be casually done with the `touch'
+  command, `git', and others. ]
 
 ** Rename a single file based on its front matter
 :PROPERTIES:
@@ -4505,13 +4510,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Benjamin Kästner, Colin McLear, Damien
   Cassou, Elias Storms, Federico Stilman, Florian, Frank Ehmsen, Guo
-  Yong, Hanspeter Gisler, Jack Baty, Jay Rajput, Jeremy Friesen,
-  Jonathan Sahar, Johan Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal
-  Modi, M. Hadi Timachi, Mirko Hernandez, Niall Dooley, Paul van
-  Gelder, Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
-  Sven Seebeck, Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot,
-  atanasj, doolio, drcxd, hpgisler, pRot0ta1p, rbenit68, relict007,
-  sienic, sundar bp.
+  Yong, Hanspeter Gisler, Jack Baty, Jay Rajput, Jean-Charles
+  Bagneris, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö, Juanjo
+  Presa, Kai von Fintel, Kaushal Modi, M. Hadi Timachi, Mirko
+  Hernandez, Niall Dooley, Paul van Gelder, Peter Prevos, Shreyas
+  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, Viktor
+  Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio, drcxd, hpgisler,
+  pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
