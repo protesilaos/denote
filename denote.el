@@ -2689,12 +2689,10 @@ and seconds."
   "Integration between Denote and Dired."
   :group 'denote)
 
-(defcustom denote-dired-directories
-  ;; We use different ways to specify a path for demo purposes.
-  (list denote-directory
-        ;; (thread-last denote-directory (expand-file-name "attachments"))
-        (expand-file-name "~/Documents/vlog"))
-  "List of directories where `denote-dired-mode' should apply to."
+(defcustom denote-dired-directories (list denote-directory)
+  "List of directories where `denote-dired-mode' should apply to.
+For this to take effect, add `denote-dired-mode-in-directories',
+to the `dired-mode-hook'."
   :type '(repeat directory)
   :package-version '(denote . "0.1.0")
   :link '(info-link "(denote) Fontification in Dired")
