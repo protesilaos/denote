@@ -996,6 +996,12 @@ identifier based on the following conditions:
 
 - As a fallback, derive an identifier from the current time.
 
+- If the resulting identifier is not unique among the files in the
+  variable `denote-directory', increment it such that it becomes
+  unique.
+
+[ The check for duplicate identifiers is part of {{{development-version}}}. ]
+
 The default =TITLE= is retrieved from a line starting with a title field
 in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 Else, the file name is used as a default value at the minibuffer prompt.

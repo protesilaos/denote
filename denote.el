@@ -2265,6 +2265,10 @@ create an identifier based on the following conditions:
 
 - As a fallback, derive an identifier from the current time.
 
+- If the resulting identifier is not unique among the files in
+  the variable `denote-directory', increment it such that it
+  becomes unique.
+
 The default TITLE is retrieved from a line starting with a title
 field in the file's contents, depending on the given file
 type (e.g. #+title for Org).  Else, the file name is used as a
