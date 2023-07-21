@@ -585,7 +585,7 @@ request of Alan Schmitt:
   GitHub mirror: <https://github.com/protesilaos/denote/pull/145>.
 
 - Authored lots of other ancillary changes/features to the code base
-  or the manual (yes, this change log is how I "cut the long store
+  or the manual (yes, this change log is how I "cut the long story
   short").
 
 * Version 1.2.0 on 2022-12-12
