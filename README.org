@@ -4,9 +4,9 @@
 #+language:              en
 #+options:               ':t toc:nil author:t email:t num:t
 #+startup:               content
-#+macro:                 stable-version 1.2.0
-#+macro:                 release-date 2022-12-16
-#+macro:                 development-version 2.0.0-dev
+#+macro:                 stable-version 2.0.0
+#+macro:                 release-date 2023-07-21
+#+macro:                 development-version 2.1.0-dev
 #+export_file_name:      denote.texi
 #+texinfo_filename:      denote.info
 #+texinfo_dir_category:  Emacs misc features
@@ -159,9 +159,6 @@ There are five ways to write a note with Denote: invoke the ~denote~,
 function ~denote-org-capture~.  We explain all of those in the
 subsequent sections.
 
-[ The ~denote-signature~ and related are part of
-{{{development-version}}}. ]
-
 ** Standard note creation
 :PROPERTIES:
 :CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
@@ -252,7 +249,7 @@ The value is a list of symbols, which includes any of the following:
   notes (Folgezettel).  Signatures are not included in a file's front
   matter and are not shown in the description of a link.  They are
   reserved solely for creating a sequence in a file listing, at least
-  for the time being. [Part of {{{development-version}}}.]
+  for the time being.
 
 The prompts occur in the given order.
 
@@ -419,12 +416,11 @@ commands for note creation:
   field of the file name and then asks for a title and keywords.
   Signatures are arbitrary strings of alphanumeric characters which
   can be used to establish sequential relations between file at the
-  level of their file name (e.g. 1, 1a, 1b, 1b1, 1b2, ...). [Part of
-  {{{development-version}}}.]
+  level of their file name (e.g. 1, 1a, 1b, 1b1, 1b2, ...).
 
   The ~denote-create-note-using-signature~ is an alias of the command
   ~denote-signature~ intended to make the functionality more
-  discoverable. [Also part of {{{development-version}}}.]
+  discoverable.
 
 **** Write your own convenience commands
 :PROPERTIES:
@@ -579,8 +575,6 @@ the ~denote-org-capture-specifiers~.
 :PROPERTIES:
 :CUSTOM_ID: h:95b78582-9086-47e8-967f-62373e2369a0
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 This section assumes knowledge of how Denote+org-capture work, as
 explained in the previous section ([[#h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881][Create note using Org capture]]).
@@ -822,9 +816,6 @@ going through Dired.  Since this is specific to the user's workflow,
 it is easier to have some custom code for it.  The following should be
 added to the user's Denote configuration:
 
-[ NOTE that the variable ~denote-user-enforced-denote-directory~ is
-  part of {{{development-version}}}. ]
-
 #+begin_src emacs-lisp
 (defvar my-denote-silo-directories
   `("/home/prot/Videos/recordings"
@@ -920,8 +911,6 @@ The match is performed with ~string-match-p~.
 :CUSTOM_ID: h:c4290e15-e97e-4a9b-b8db-6b9738e37e78
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 Denote registers a submenu for the ~menu-bar-mode~.  Users will find
 the entry called "Denote".  From there they can use their pointer to
 select a command.  For a sample of how this looks, read the
@@ -1000,8 +989,6 @@ identifier based on the following conditions:
   variable `denote-directory', increment it such that it becomes
   unique.
 
-[ The check for duplicate identifiers is part of {{{development-version}}}. ]
-
 The default =TITLE= is retrieved from a line starting with a title field
 in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 Else, the file name is used as a default value at the minibuffer prompt.
@@ -1046,9 +1033,6 @@ not---manage such files).
 :PROPERTIES:
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
-
-[ The optional =SKIP-FRONT-MATTER-PROMPT= and =NO-UNIQUE-ID-CHECK= are added to
-  ~denote-dired-rename-marked-files~ as part of {{{development-version}}}. ]
 
 #+findex: denote-dired-rename-marked-files
 The ~denote-dired-rename-marked-files~ command renames marked files in
@@ -1190,8 +1174,6 @@ respective front matter.
 :CUSTOM_ID: h:85b65995-89fd-4978-bba3-7bb6c8d6f945
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+findex: denote-change-file-type
 The command ~denote-change-file-type~ provides the convenience of
 converting a note taken in one file type, say, =.txt= into another
@@ -1246,9 +1228,6 @@ The =KEYWORDS= field consists of one or more entries demarcated by an
 underscore (the separator is inserted automatically).  Each keyword is
 a string provided by the user at the relevant prompt which broadly
 describes the contents of the entry.
-
-[ The ~denote-allow-multi-word-keywords~ has a ~nil~ value as part of
-  {{{development-version}}}. ]
 
 #+vindex: denote-allow-multi-word-keywords
 Optionally, when the user option ~denote-allow-multi-word-keywords~ is
@@ -1328,8 +1307,6 @@ low-tech invention.
 :CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
 :END:
 
-[ Signatures are part of {{{development-version}}}. ]
-
 Denote has to be highly opinionated about which characters can be used
 in file names and the file's front matter in order to enforce its
 file-naming scheme.  The variable ~denote-excluded-punctuation-regexp~
@@ -1359,8 +1336,6 @@ delimiters between them:
 When a signature is present, this becomes:
 
 : DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
-
-[ Signatures are part of {{{development-version}}}. ]
 
 Field delimiters practically serve as anchors for easier searching.
 Consider this example:
@@ -1642,9 +1617,6 @@ other links.
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
 :END:
 
-[ The ~denote-add-links~ is the new name of ~denote-link-add-links~,
-  as part of {{{development-version}}}. ]
-
 #+findex: denote-add-links
 The command ~denote-add-links~ adds links at point matching a
 regular expression or plain string.  The links are inserted as a
@@ -1706,9 +1678,6 @@ purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 :PROPERTIES:
 :CUSTOM_ID: h:0c1fdaab-5a6b-4792-9694-fed53cd042e6
 :END:
-
-[ The ~denote-add-missing-links~ is the new name of
-  ~denote-link-add-missing-links~, as part of {{{development-version}}}. ]
 
 #+findex: denote-add-missing-links
 As a variation on the ~denote-add-links~ command, one may wish to only
@@ -1811,8 +1780,7 @@ this end, Denote provides two convenience commands:
 #+findex: denote-backlinks
 The command ~denote-backlinks~ produces a bespoke buffer which
 displays backlinks to the current note.  A "backlink" is a link back
-to the present entry. [ The ~denote-backlinks~ is the new name of
-~denote-link-backlinks~, as part of {{{development-version}}}.]
+to the present entry.
 
 By default, the backlinks' buffer is designed to display the file name
 of the note linking to the current entry.  Each file name is presented
@@ -1942,14 +1910,12 @@ For instance, a package such as =marginalia= will display accurate
 annotations, while the =embark= package will be able to work its magic
 such as in exporting the list into a filtered Dired buffer (i.e. a
 familiar Dired listing with only the files of the current minibuffer
-session).  [ The ~denote-find-link~ is the new name of
-~denote-link-find-file~, as part of {{{development-version}}}.]
+session).
 
 #+findex: denote-find-backlink
 To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
-in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]). [The command is renamed
-as part of {{{development-version}}}.]
+in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
 
 ** Miscellaneous information about links
 :PROPERTIES:
@@ -1965,12 +1931,6 @@ For convenience, the ~denote-link~ command has an alias called
 aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
 these aliases is to offer alternative, more descriptive names of
 select commands.
-
-[ The ~denote-insert-link~ is the new name of ~denote-link-insert-link~,
-  as part of {{{development-version}}}.]
-
-[ The ~denote-show-backlinks-buffer~ is the new name of
-  ~denote-link-show-backlinks-buffer~, as part of {{{development-version}}}.]
 
 * Fontification in Dired
 :PROPERTIES:
@@ -2038,8 +1998,6 @@ its standand attachments' facility).
 :PROPERTIES:
 :CUSTOM_ID: h:3ca4db16-8f26-4d7d-b748-bac48ae32d69
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+findex: denote-rename-buffer-mode
 The ~denote-rename-buffer-mode~ minor mode provides the means to
@@ -2361,9 +2319,6 @@ to split off and invokes the command ~my-denote-org-extract-subtree~.
 It will create a note using the heading's text and tags for the new
 file.  The contents of the subtree become the contents of the new note
 and are removed from the old one.
-
-[ NOTE that the variable ~denote-user-enforced-denote-directory~ is
-  part of {{{development-version}}}. ]
 
 #+begin_src emacs-lisp
 (defun my-denote-org-extract-subtree (&optional silo)
@@ -3441,7 +3396,7 @@ might change them without further notice.
 
 #+findex: denote-file-has-signature-p
 + Function ~denote-file-has-signature-p~ :: Return non-nil if =FILE=
-  has a signature. [Part of {{{development-version}}}.]
+  has a signature.
 
 #+findex: denote-file-has-supported-extension-p
 + Function ~denote-file-has-supported-extension-p~ :: Return non-nil
@@ -3455,7 +3410,7 @@ might change them without further notice.
 
 #+findex: denote-file-type-extensions
 + Function ~denote-file-type-extensions~ :: Return all file type
-  extensions in ~denote-file-types~. [Part of {{{development-version}}}.]
+  extensions in ~denote-file-types~.
 
 #+variable: denote-encryption-file-extensions
 + Variable ~denote-encryption-file-extensions~ :: List of strings
@@ -3464,8 +3419,7 @@ might change them without further notice.
 #+function: denote-file-type-extensions-with-encryption
 + Function ~denote-file-type-extensions-with-encryption~ :: Derive
   ~denote-file-type-extensions~ plus ~denote-encryption-file-extensions~.
-  [Part of {{{development-version}}}.]
-
+  
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
   candidates.  If ~denote-infer-keywords~ is non-nil, infer keywords
@@ -3485,10 +3439,7 @@ might change them without further notice.
   ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).  Custom Lisp code can
   ~let~ bind the value of the variable ~denote-user-enforced-denote-directory~
   to override what this function returns.
-
-  [ NOTE that the variable ~denote-user-enforced-denote-directory~ is
-    part of {{{development-version}}}. ]
-
+  
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
   paths in variable ~denote-directory~.  Files only need to have an
@@ -3542,8 +3493,8 @@ might change them without further notice.
   =this-is-a-test= to =This is a test=.
 
 #+findex: denote-sluggify-signature
-+ Function ~denote-sluggify-signature~ :: Make STR an appropriate slug
-  for signatures. [Part of {{{development-version}}}]
++ Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
+  slug for signatures.
 
 #+findex: denote-sluggify-keywords
 + Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
@@ -3586,8 +3537,7 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
-  from =FILE= name, if present, else return nil. [Part of
-  {{{development-version}}}.]
+  from =FILE= name, if present, else return nil.
 
 #+findex: denote-retrieve-or-create-file-identifier
 + Function ~denote-retrieve-or-create-file-identifier~ :: Return
@@ -3604,9 +3554,7 @@ might change them without further notice.
     as an identifier.
 
   - As a fallback, derive an identifier from the current time.
-
-  [ The =FILES= argument is part of {{{development-version}}}. ]
-
+  
   With optional =FILES= as a list of file names, test that the
   identifier is unique among them.
 
@@ -3639,7 +3587,7 @@ might change them without further notice.
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature
-  string. [Part of {{{development-version}}}.]
+  string.
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
@@ -3697,7 +3645,7 @@ might change them without further notice.
   note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
   =KEYWORDS=, and =FILE-TYPE= arguments are given by the renaming
   command and are used to construct new front matter values if
-  appropriate.  [Part of {{{development-version}}}.]
+  appropriate.
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
@@ -3705,7 +3653,7 @@ might change them without further notice.
   ~denote-rewrite-front-matter~ for keywords, but do not ask for
   confirmation.  This is for use in ~denote-keywords-add~,
   ~denote-keywords-remove~, ~denote-dired-rename-marked-files~, or
-  related.  [Part of {{{development-version}}}.]
+  related.
 
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
@@ -3868,8 +3816,6 @@ might change them without further notice.
 + Function ~denote-extract-keywords-from-front-matter~ :: Format front
   matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
   strings.  Consult the ~denote-file-types~ for how this is used.
-
-[ The following two functions are part of {{{development-version}}}. ]
 
 #+findex: denote-link-return-links
 + Function ~denote-link-return-links~ :: Return list of links in
