@@ -1349,7 +1349,7 @@ the function `denote-retrieve-or-create-file-identifier'."
   'denote-retrieve-filename-identifier
   "1.0.0")
 
-(defun denote-retrieve-or-create-file-identifier (file &optional date files)
+(defun denote-retrieve-or-create-file-identifier (file &optional date)
   "Return FILE identifier, generating one if appropriate.
 
 The conditions are as follows:
@@ -1365,13 +1365,6 @@ The conditions are as follows:
 
 - As a fallback, derive an identifier from the current time.
 
-With optional FILES as a list of file names, test that the
-identifier is unique among them.
-
-With optional FILES as non-nil, test that the identifier is
-unique among all files and buffers in variable
-`denote-directory'.
-
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
   (let ((id
@@ -1381,13 +1374,7 @@ To only return an existing identifier, refer to the function
           (date (denote-prompt-for-date-return-id))
           ((denote--file-attributes-time file))
           (t (format-time-string denote-id-format)))))
-    (cond
-     ((and files (listp files))
-      (denote--return-new-identifier-if-duplicate id files))
-     ((and files (not (denote-file-has-identifier-p file)))
-      (denote--return-new-identifier-if-duplicate id))
-     (t
-      id))))
+    (denote--return-new-identifier-if-duplicate id)))
 
 (define-obsolete-function-alias
   'denote--file-name-id
@@ -1668,15 +1655,12 @@ where the former does not read dates without a time component."
 ;; otherwise the identifier is always unique (we trust that no-one
 ;; writes multiple notes within fractions of a second).  Though the
 ;; `denote' command does call `denote-barf-duplicate-id'.
-(defun denote--id-exists-p (identifier &optional files)
-  "Return non-nil if IDENTIFIER already exists.
-With optional FILES, check for IDENTIFIER among them.  Else refer
-to files or buffers in the variable `denote-directory'."
+(defun denote--id-exists-p (identifier)
+  "Return non-nil if IDENTIFIER already exists."
   (seq-some
    (lambda (file)
      (string-prefix-p identifier (file-name-nondirectory file)))
-   (or files
-       (append (denote-directory-files) (denote--buffer-file-names)))))
+   (append (denote-directory-files) (denote--buffer-file-names))))
 
 (defun denote--increment-identifier (identifier)
   "Increment IDENTIFIER.
@@ -1685,10 +1669,9 @@ Preserve the date component and append to it the current time."
          (date (car datetime)))
     (concat date "T" (format-time-string "%H%M%S"))))
 
-(defun denote--return-new-identifier-if-duplicate (identifier &optional files)
-  "Return new unique identifier if IDENTIFIER already exists.
-The meaning of FILES is the same as in `denote--id-exists-p'."
-  (while (denote--id-exists-p identifier files)
+(defun denote--return-new-identifier-if-duplicate (identifier)
+  "Return new unique identifier if IDENTIFIER already exists."
+  (while (denote--id-exists-p identifier)
     (setq identifier (denote--increment-identifier identifier)))
   identifier)
 
@@ -2396,7 +2379,7 @@ files)."
       (denote-keywords-prompt)
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
-         (id (denote-retrieve-or-create-file-identifier file date :unique))
+         (id (denote-retrieve-or-create-file-identifier file date))
          (signature (denote-retrieve-filename-signature file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
@@ -2508,7 +2491,7 @@ of time all identifiers will be unique or do not care about them.
                   (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
-                   (id (denote-retrieve-or-create-file-identifier file nil (unless no-unique-id-check marks)))
+                   (id (denote-retrieve-or-create-file-identifier file))
                    (signature (denote-retrieve-filename-signature file))
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
