@@ -1662,6 +1662,31 @@ where the former does not read dates without a time component."
      (string-prefix-p identifier (file-name-nondirectory file)))
    (append (denote-directory-files) (denote--buffer-file-names))))
 
+(defun denote--get-all-used-ids ()
+  "Return a hash-table of all used identifiers.
+It checks files in variable `denote-directory' and active buffer files."
+  (let* ((ids (make-hash-table :test 'equal))
+         (file-names (mapcar
+                      (lambda (file) (file-name-nondirectory file))
+                      (denote-directory-files)))
+         (names (append file-names (denote--buffer-file-names))))
+    (dolist (name names)
+      (let ((id (when (string-match (concat "\\`" denote--id-regexp) name)
+                  (match-string-no-properties 0 name))))
+        (puthash id t ids)))
+    ids))
+
+(defun denote--find-first-unused-id (id used-ids)
+  "Return the first unused id starting at ID from USED-IDS.
+USED-IDS is a hash-table of all used IDs. If ID is already used,
+increment it 1 second at a time until an available id is found."
+  (let ((time (date-to-time id)))
+    (while (gethash
+            (format-time-string denote--id-format time)
+            used-ids)
+      (setq time (time-add time 1)))
+    (format-time-string denote--id-format time)))
+
 (defun denote--increment-identifier (identifier)
   "Increment IDENTIFIER.
 Preserve the date component and append to it the current time."
