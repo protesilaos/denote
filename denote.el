@@ -2655,9 +2655,14 @@ and seconds."
   :group 'denote-faces
   :package-version '(denote . "0.1.0"))
 
+(defface denote-faces-time-delimiter '((t :inherit shadow))
+  "Face for the delimiter between date and time in Dired buffers."
+  :group 'denote-faces
+  :package-version '(denote . "2.1.0"))
+
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 (defvar denote-faces--file-name-regexp
-  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?2:T[0-9]\\{6\\}\\)"
+  (concat "\\(?1:[0-9]\\{8\\}\\)\\(?10:T\\)\\(?2:[0-9]\\{6\\}\\)"
           "\\(?:\\(?3:==\\)\\(?4:[[:alnum:][:nonascii:]=]*?\\)\\)?"
           "\\(?:\\(?5:--\\)\\(?6:[[:alnum:][:nonascii:]-]*?\\)\\)?"
           "\\(?:\\(?7:__\\)\\(?8:[[:alnum:][:nonascii:]_-]*?\\)\\)?"
@@ -2667,6 +2672,7 @@ and seconds."
 (defconst denote-faces-file-name-keywords
   `((,(concat "[\t\s]+" denote-faces--file-name-regexp)
      (1 'denote-faces-date)
+     (10 'denote-faces-time-delimiter nil t)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
      (4 'denote-faces-signature nil t)
@@ -2678,9 +2684,10 @@ and seconds."
   "Keywords for fontification of file names.")
 
 (defconst denote-faces-file-name-keywords-for-backlinks
-  `((,(concat "^\\(?10:.*/\\)?" denote-faces--file-name-regexp)
-     (10 'denote-faces-subdirectory nil t)
+  `((,(concat "^\\(?11:.*/\\)?" denote-faces--file-name-regexp)
+     (11 'denote-faces-subdirectory nil t)
      (1 'denote-faces-date)
+     (10 'denote-faces-time-delimiter nil t)
      (2 'denote-faces-time)
      (3 'denote-faces-delimiter nil t)
      (4 'denote-faces-signature nil t)
