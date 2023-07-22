@@ -1651,10 +1651,6 @@ where the former does not read dates without a time component."
              file))
          (buffer-list))))
 
-;; In normal usage, this should only be relevant for `denote-date',
-;; otherwise the identifier is always unique (we trust that no-one
-;; writes multiple notes within fractions of a second).  Though the
-;; `denote' command does call `denote-barf-duplicate-id'.
 (defun denote--id-exists-p (identifier)
   "Return non-nil if IDENTIFIER already exists."
   (seq-some
@@ -1700,15 +1696,11 @@ Preserve the date component and append to it the current time."
     (setq identifier (denote--increment-identifier identifier)))
   identifier)
 
-(defun denote-barf-duplicate-id (identifier)
-  "Throw a `user-error' if IDENTIFIER already exists."
-  (when (denote--id-exists-p identifier)
-    (user-error "`%s' already exists; aborting new note creation" identifier)))
-
 (define-obsolete-function-alias
   'denote--barf-duplicate-id
   'denote-barf-duplicate-id
   "1.0.0")
+(make-obsolete 'denote-barf-duplicate-id nil "2.0.1")
 
 (defconst denote-commands-for-new-notes
   '(denote
@@ -1790,7 +1782,9 @@ When called from Lisp, all arguments are optional.
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
-         (id (format-time-string denote-id-format date))
+         (id (denote--find-first-unused-id
+              (format-time-string denote-id-format date)
+              (denote--get-all-used-ids)))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
                       (denote-directory)))
@@ -1798,7 +1792,6 @@ When called from Lisp, all arguments are optional.
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
-    (denote-barf-duplicate-id id)
     (denote--prepare-note title kws date id directory file-type template signature)
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)))
@@ -3848,12 +3841,13 @@ option `denote-templates'."
          (kws (if keywords (denote-keywords-prompt) nil))
          (directory (file-name-as-directory (if subdirectory (denote-subdirectory-prompt) (denote-directory))))
          (date (if date (denote--valid-date (denote-date-prompt)) (current-time)))
-         (id (format-time-string denote-id-format date))
+         (id (denote--find-first-unused-id
+              (format-time-string denote-id-format date)
+              (denote--get-all-used-ids)))
          (template (if template (denote-template-prompt) ""))
          (front-matter (denote--format-front-matter
                         title (denote--date date 'org) kws
                         (format-time-string denote-id-format date) 'org)))
-    (denote-barf-duplicate-id id)
     (setq denote-last-path
           (denote--path title kws directory id 'org))
     (denote--keywords-add-to-history kws)
