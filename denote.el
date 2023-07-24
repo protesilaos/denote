@@ -1690,19 +1690,6 @@ increment it 1 second at a time until an available id is found."
       (setq time (time-add time 1)))
     (format-time-string denote--id-format time)))
 
-(defun denote--increment-identifier (identifier)
-  "Increment IDENTIFIER.
-Preserve the date component and append to it the current time."
-  (let* ((datetime (split-string identifier "T"))
-         (date (car datetime)))
-    (concat date "T" (format-time-string "%H%M%S"))))
-
-(defun denote--return-new-identifier-if-duplicate (identifier)
-  "Return new unique identifier if IDENTIFIER already exists."
-  (while (denote--id-exists-p identifier)
-    (setq identifier (denote--increment-identifier identifier)))
-  identifier)
-
 (define-obsolete-function-alias
   'denote--barf-duplicate-id
   'denote-barf-duplicate-id
