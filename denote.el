@@ -1334,15 +1334,18 @@ contain the newline."
 
 ;;;; Front matter or content retrieval functions
 
-(defun denote-retrieve-filename-identifier (file)
+(defun denote-retrieve-filename-identifier (file &optional no-error)
   "Extract identifier from FILE name.
-To return an existing identifier or create a new one, refer to
-the function `denote-retrieve-or-create-file-identifier'."
-  (if (denote-file-has-identifier-p file)
-      (progn
-        (string-match denote-id-regexp file)
-        (match-string 0 file))
-    (error "Cannot find `%s' as a file with a Denote identifier" file)))
+If NO-ERROR is nil and an identifier is not found, return an
+error, else return nil.
+
+To create a new one, refer to the function
+`denote-create-unique-file-identifier'."
+  (let ((file-name (file-name-nondirectory file)))
+    (if (string-match (concat "\\`" denote-id-regexp) file-name)
+        (match-string-no-properties 0 file-name)
+      (when (not no-error)
+        (error "Cannot find `%s' as a file with a Denote identifier" file)))))
 
 (define-obsolete-function-alias
   'denote--retrieve-filename-identifier
