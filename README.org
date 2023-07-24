@@ -3038,7 +3038,7 @@ invoke this command."
   (image-dired--with-marked
    (when-let* ((file (image-dired-original-file-name))
                (dir (file-name-directory file))
-               (id (denote-retrieve-or-create-file-identifier file))
+               (id (denote-retrieve-filename-identifier file))
                (file-type (denote-filetype-heuristics file))
                (title (denote--retrieve-title-or-filename file file-type))
                (extension (file-name-extension file t))
@@ -3626,34 +3626,28 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
-  from =FILE= name.  To return an existing identifier or create a new
-  one, refer to the ~denote-retrieve-or-create-file-identifier~
-  function.
+  from =FILE= name.  To create a new one, refer to the
+  ~denote-create-unique-file-identifier~ function.
 
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
   from =FILE= name, if present, else return nil.
 
-#+findex: denote-retrieve-or-create-file-identifier
-+ Function ~denote-retrieve-or-create-file-identifier~ :: Return
-  =FILE= identifier, generating one if appropriate.  The conditions
-  are as follows:
+#+findex: denote-create-unique-file-identifier
++ Function ~denote-create-unique-file-identifier~ :: Create a new unique
+  =FILE= identifier.  The conditions are as follows:
 
-  - If =FILE= has an identifier, return it.
+  - If =DATE= is non-nil, invoke ~denote-prompt-for-date-return-id~.
 
-  - If =FILE= does not have an identifier and optional =DATE= is
-    non-nil, invoke ~denote-prompt-for-date-return-id~.
-
-  - If =FILE= does not have an identifier and DATE is nil, use the
-    file attributes to determine the last modified date and format it
-    as an identifier.
+  - If =DATE= is nil, use the file attributes to determine the last
+    modified date and format it as an identifier.
 
   - As a fallback, derive an identifier from the current time.
   
-  With optional =FILES= as a list of file names, test that the
+  With optional =USED-IDS= as a hash table of identifiers, test that the
   identifier is unique among them.
 
-  With optional =FILES= as non-nil, test that the identifier is unique
+  With optional =USED-IDS= as nil, test that the identifier is unique
   among all files and buffers in variable ~denote-directory~.
 
   To only return an existing identifier, refer to the function
