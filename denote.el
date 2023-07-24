@@ -1352,37 +1352,41 @@ To create a new one, refer to the function
   'denote-retrieve-filename-identifier
   "1.0.0")
 
-(defun denote-retrieve-or-create-file-identifier (file &optional date)
-  "Return FILE identifier, generating one if appropriate.
+(defun denote-create-unique-file-identifier (file &optional date used-ids)
+  "Generate a unique identifier for FILE.
 
 The conditions are as follows:
 
-- If FILE has an identifier, return it.
+- If optional DATE is non-nil, invoke
+  `denote-prompt-for-date-return-id'.
 
-- If FILE does not have an identifier and optional DATE is
-  non-nil, invoke `denote-prompt-for-date-return-id'.
-
-- If FILE does not have an identifier and DATE is nil, use the
-  file attributes to determine the last modified date and format
-  it as an identifier.
+- If DATE is nil, use the file attributes to determine the last
+  modified date and format it as an identifier.
 
 - As a fallback, derive an identifier from the current time.
 
+If USED-IDS hash-table is non-nil, use it, else create and
+populate a new one.
+
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
-  (let ((id
-         (cond
-          ((string-match denote-id-regexp file)
-           (substring file (match-beginning 0) (match-end 0)))
-          (date (denote-prompt-for-date-return-id))
-          ((denote--file-attributes-time file))
-          (t (format-time-string denote-id-format)))))
-    (denote--return-new-identifier-if-duplicate id)))
+  (let ((id (cond
+             (date (denote-prompt-for-date-return-id))
+             ((denote--file-attributes-time file))
+             (t (format-time-string denote-id-format)))))
+    (if used-ids
+        (denote--find-first-unused-id id used-ids)
+      (denote--find-first-unused-id id (denote--get-all-used-ids)))))
 
 (define-obsolete-function-alias
   'denote--file-name-id
   'denote-retrieve-or-create-file-identifier
   "1.0.0")
+
+(define-obsolete-function-alias
+  'denote-retrieve-or-create-file-identifier
+  'denote-retrieve-filename-identifier
+  "2.0.1")
 
 (defun denote-retrieve-filename-signature (file)
   "Extract signature from FILE name, if present, else return nil."
@@ -2400,7 +2404,8 @@ files)."
       (denote-keywords-prompt)
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
-         (id (denote-retrieve-or-create-file-identifier file date))
+         (id (or (denote-retrieve-filename-identifier file :no-error)
+                 (denote-create-unique-file-identifier file date)))
          (signature (denote-retrieve-filename-signature file))
          (extension (file-name-extension file t))
          (file-type (denote-filetype-heuristics file))
@@ -2441,7 +2446,7 @@ of the file.  This needs to be done manually."
     (denote--valid-file-type (or (denote-file-type-prompt) denote-file-type))))
   (let* ((dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
-         (id (denote-retrieve-or-create-file-identifier file))
+         (id (or (denote-retrieve-filename-identifier file :no-error) ""))
          (title (denote-retrieve-title-value file old-file-type))
          (keywords (denote-retrieve-keywords-value file old-file-type))
          (old-extension (file-name-extension file t))
@@ -2457,7 +2462,7 @@ of the file.  This needs to be done manually."
         (denote--add-front-matter new-name title keywords id new-file-type)))))
 
 ;;;###autoload
-(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt no-unique-id-check)
+(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt)
   "Rename marked files in Dired to a Denote file name.
 
 Specifically, do the following:
@@ -2486,33 +2491,21 @@ Specifically, do the following:
     check them to confirm that the new front matter does not
     cause any problems (e.g. with the `diff-buffer-with-file'
     command).  Multiple buffers can be saved in one go with
-    `save-some-buffers' (read its doc string).  ]
-
-With the optional NO-UNIQUE-ID-CHECK as non-nil (such as as a
-double prefix argument), do not process the file identifiers of
-the marked files for potential duplicates.  The default is to
-check for duplicates and increment them such that they become
-unique.  The reason this optional argument exists is for those
-who want to speed up the process, perhaps because they know ahead
-of time all identifiers will be unique or do not care about them.
-
-[ When renaming files in Dired, it is possible to produce
-  duplicate identifiers.  This can happen when multiple files
-  share the same modification time, which can be casually done
-  with the `touch' command, `git', and others.  ]"
-  (interactive
-   (when current-prefix-arg
-     (list
-      t
-      (when (>= (car current-prefix-arg) 16) t)))
-   dired-mode)
+    `save-some-buffers' (read its doc string). ]"
+  (interactive (list current-prefix-arg) dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-prompt)))
+      (let ((keywords (denote-keywords-prompt))
+            (used-ids)) ; We only set it below if necessary (ie if some files lack an identifier).
         (when (or skip-front-matter-prompt
                   (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
+          (setq used-ids (when (seq-some
+                                (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
+                                marks)
+                           (denote--get-all-used-ids)))
           (dolist (file marks)
             (let* ((dir (file-name-directory file))
-                   (id (denote-retrieve-or-create-file-identifier file))
+                   (id (or (denote-retrieve-filename-identifier file :no-error)
+                           (denote-create-unique-file-identifier file nil used-ids)))
                    (signature (denote-retrieve-filename-signature file))
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
@@ -2523,9 +2516,8 @@ of time all identifiers will be unique or do not care about them.
                 (if (denote--edit-front-matter-p new-name file-type)
                     (denote-rewrite-keywords new-name keywords file-type)
                   (denote--add-front-matter new-name title keywords id file-type)))
-              (unless no-unique-id-check
-                (setq marks (delete file marks))
-                (push new-name marks))))
+              (when used-ids
+                (puthash id t used-ids))))
           (revert-buffer)))
     (user-error "No marked files; aborting")))
 
@@ -2561,7 +2553,8 @@ proceed with the renaming."
   (if-let* ((file-type (denote-filetype-heuristics file))
             (title (denote-retrieve-title-value file file-type))
             (extension (file-name-extension file t))
-            (id (denote-retrieve-or-create-file-identifier file))
+            (id (or (denote-retrieve-filename-identifier file :no-error)
+                    (denote-create-unique-file-identifier file)))
             (dir (file-name-directory file))
             (new-name (denote-format-file-name
                        ;; The `denote-retrieve-keywords-value' and
@@ -2610,12 +2603,14 @@ This command is useful for synchronizing multiple file names with
 their respective front matter."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
-                   #'denote-file-is-writable-and-supported-p
+                   (lambda (m)
+                     (and (denote-file-is-writable-and-supported-p m)
+                          (denote-retrieve-filename-identifier m :no-error)))
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
-                 (id (denote-retrieve-or-create-file-identifier file))
+                 (id (denote-retrieve-filename-identifier file :no-error))
                  (signature (denote-retrieve-filename-signature file))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote-retrieve-title-value file file-type))
@@ -2663,10 +2658,11 @@ relevant front matter."
     (buffer-file-name)
     (denote-title-prompt)
     (denote-keywords-prompt)))
-  (when (denote-file-is-writable-and-supported-p file)
+  (when (and (denote-file-is-writable-and-supported-p file)
+             (denote-retrieve-filename-identifier file :no-error))
     (denote--add-front-matter
      file title keywords
-     (denote-retrieve-or-create-file-identifier file nil)
+     (denote-retrieve-filename-identifier file)
      (denote-filetype-heuristics file))))
 
 ;;;; The Denote faces
