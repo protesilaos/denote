@@ -773,9 +773,8 @@ Remember that the variable `denote-directory' accepts a dir-local
 value, as explained in its doc string."
   (mapcar
    #'expand-file-name
-   (seq-remove
-    (lambda (f)
-      (not (denote-file-has-identifier-p f)))
+   (seq-filter
+    #'denote-file-has-identifier-p
     (denote--directory-all-files-recursively))))
 
 (defun denote-directory-text-only-files ()
@@ -897,7 +896,7 @@ This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
   (let ((kw (mapcan #'denote-extract-keywords-from-path (denote-directory-files))))
     (if-let ((regexp denote-excluded-keywords-regexp))
-        (seq-filter (lambda (k) (not (string-match-p regexp k))) kw)
+        (seq-remove (apply-partially #'string-match-p regexp) kw)
       kw)))
 
 (defun denote-keywords ()
