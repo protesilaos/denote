@@ -4446,12 +4446,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Contributions to code or the manual :: Abin Simon, Adam Růžička,
   Alan Schmitt, Benjamin Kästner, Bruno Boal, Charanjit Singh, Clemens
   Radermacher, Colin McLear, Damien Cassou, Eduardo Grajeda, Elias
-  Storms, Eshel Yaron, Florian, Graham Marlow, Hilde Rhyne, Jack Baty,
-  Jean-Charles Bagneris, Jean-Philippe Gagné Guay, Jürgen Hötzel,
-  Kaushal Modi, Kai von Fintel, Kyle Meyer, Marc Fargas, Matthew
-  Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter Prevos, Philip
-  Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan Thesing, Thibaut
-  Benjamin, Tomasz Hołubowicz, Vedang Manerikar, relict007.
+  Storms, Eshel Yaron, Florian, Graham Marlow, Hilde Rhyne, Ivan
+  Sokolov, Jack Baty, Jean-Charles Bagneris, Jean-Philippe Gagné Guay,
+  Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kyle Meyer, Marc
+  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
+  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
+  Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar,
+  relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Colin
