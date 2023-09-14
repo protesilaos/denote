@@ -58,7 +58,6 @@ value) for a reference implementation."
   "Determine if BUFFER shall be renamed.
 Return the file path and the type of it as a cons cell."
   (when-let* ((file (buffer-file-name buffer))
-              ((file-exists-p file))
               ((denote-file-has-identifier-p file))
               (type (denote-filetype-heuristics file)))
     (cons file type)))
