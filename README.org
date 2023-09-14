@@ -171,6 +171,10 @@ value).  Once the title is supplied, the ~denote~ command will then ask
 for keywords.  The resulting note will have a file name as already
 explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
 
+#+vindex: denote-after-new-note-hook
+The ~denote~ command runs the hook ~denote-after-new-note-hook~ after
+creating the new note. [ Part of {{{development-version}}}. ]
+
 The file type of the new note is determined by the user option
 ~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 

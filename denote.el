@@ -1668,9 +1668,14 @@ The meaning of FILES is the same as in `denote--id-exists-p'."
 
 ;;;;; The `denote' command and its prompts
 
+(defvar denote-after-new-note-hook nil
+  "Normal hook that runs after the `denote' command.")
+
 ;;;###autoload
 (defun denote (&optional title keywords file-type subdirectory date template signature)
   "Create a new note with the appropriate metadata and file name.
+
+Run the `denote-after-new-note-hook' after creating the new note.
 
 When called interactively, the metadata and file name are prompted
 according to the value of `denote-prompts'.
@@ -1733,7 +1738,8 @@ When called from Lisp, all arguments are optional.
          (signature (or signature "")))
     (denote-barf-duplicate-id id)
     (denote--prepare-note title kws date id directory file-type template signature)
-    (denote--keywords-add-to-history keywords)))
+    (denote--keywords-add-to-history keywords)
+    (run-hooks 'denote-after-new-note-hook)))
 
 (defvar denote--title-history nil
   "Minibuffer history of `denote-title-prompt'.")
