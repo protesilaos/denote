@@ -2215,77 +2215,61 @@ specialised third-party packages.  This section covers the details.
 :CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
 :END:
 
-While there are subtle technical differences between a journal and a
-diary, we will consider those equivalent in the interest of brevity:
-they both describe a personal space that holds a record of your thoughts
-about your experiences and/or view of events in the world.
+[ Rewritten as part of {{{development-version}}}, which now includes
+  the optional =denote-journal-extras.el= file that the user can load
+  as part of their Denote setup. ]
 
-Suppose you are committed to writing an entry every day.  Unlike what we
-demonstrated before, your writing will follow a regular naming pattern.
-You know that the title of the new note must always look like =Tuesday
-14 June 2022= and the keyword has to be =journal= or =diary=.  As such,
-you want to automate the task instead of being prompted each time, as is
-the norm with ~denote~ and the relevant commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
-This is easy to accomplish because ~denote~ can be called from Lisp and
-given the required arguments of =TITLE= and =KEYWORDS= directly.  All
-you need is a simple wrapper function:
+Denote provides a general-purpose mechanism to create new files that
+broadly count as "notes" ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  Such files can be daily
+entries in a journal.  While it is possible to use the generic
+~denote~ command to maintain a journal, we provide an optional set of
+convenience options and commands as part of =denote-journal-extras.el=.
+To use those, add the following the Denote configuration:
 
 #+begin_src emacs-lisp
-(defun my-denote-journal ()
-  "Create an entry tagged 'journal' with the date as its title."
-  (interactive)
-  (denote
-   (format-time-string "%A %e %B %Y") ; format like Tuesday 14 June 2022
-   '("journal"))) ; multiple keywords are a list of strings: '("one" "two")
+(require 'denote-journal-extras.el)
 #+end_src
 
-By invoking ~my-denote-journal~ you will go straight into the newly
-created note and commit to your writing outright.
+#+findex: denote-journal-extras-new-entry
+#+vindex: denote-journal-extras-keyword
+#+vindex: denote-journal-extras-directory
+The command ~denote-journal-extras-new-entry~ creates a new entry in
+the journal.  Such a file has the ~denote-journal-extras-keyword~,
+which is =journal= by default ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  The user can
+set this keyword to an arbitrary string (single word is preferred).
+New journal entries can be stored in the ~denote-directory~ or
+subdirectory thereof.  To make it easier for the user, the new journal
+entry will be placed in ~denote-journal-extras-directory~, which
+defaults to a subdirectory of ~denote-directory~ called =journal=.
 
-Of course, you can always set up the function so that it asks for a
-=TITLE= but still automatically applies the =journal= tag:
+#+vindex: denote-journal-extras-title-format
+Furthermore, the command ~denote-journal-extras-new-entry~ will use
+the current date as the title of the new entry.  The exact format is
+controlled by the user option ~denote-journal-extras-title-format~.
+Refer to its documentation for the available formats.  If the value of
+this user option is ~nil~, then ~denote-journal-extras-new-entry~ will
+prompt for a title.
 
-#+begin_src emacs-lisp
-(defun denote-journal-with-title ()
-  "Create an entry tagged 'journal', while prompting for a title."
-  (interactive)
-  (denote
-   (denote-title-prompt) ; ask for title, instead of using human-readable date
-   '("journal")))
-#+end_src
+In terms of workflow, using the current date as the title is better
+for maintaining a daily journal.  A prompt for an arbitrary title is
+more suitable for those who like to keep a record of something like a
+thought or event (though this can also be achieved by the regular
+~denote~ command or maybe ~denote-subdirectory~).
 
-The above snippets do not check if a daily entry exists: they always
-create a new one.  The idea is that one may want to write multiple
-journal entries per day.  Another approach is to create a single entry
-on a given day, in which case the command must be repurposed to
-surface the existing note, if present.  As with ~my-denote-journal~
-above, the title is formatted as =Tuesday 14 June 2022=.
-
-#+begin_src emacs-lisp
-(defun my-denote-journal ()
-  "Create an entry tagged 'journal' with the date as its title.
-If a journal for the current day exists, visit it.  If multiple
-entries exist, prompt with completion for a choice between them.
-Else create a new file."
-  (interactive)
-  (let* ((today (format-time-string "%A %e %B %Y"))
-         (string (denote-sluggify today))
-         (files (denote-directory-files-matching-regexp string)))
-    (cond
-     ((> (length files) 1)
-      (find-file (completing-read "Select file: " files nil :require-match)))
-     (files
-      (find-file (car files)))
-     (t
-      (denote
-       today
-       '("journal"))))))
-#+end_src
+#+vindex: denote-journa-extras-hook
+The ~denote-journal-extras-new-entry~ command calls the normal hook
+~denote-journa-extras-hook~ after it is done.  The user can leverage
+this to produce consequences therefrom, such as to set a timer with
+the ~tmr~ package from GNU ELPA ([[#h:4af1f81e-e93a-43cc-b344-960032a16d42][Journaling with a timer]]).
 
 *** Journaling with a timer
 :PROPERTIES:
 :CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
 :END:
+
+[ Revised as part of {{{development-version}}} to conform with how we
+  now tend to the needs of users who use Denote for journaling
+  purposes ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]). ]
 
 Sometimes journaling is done with the intent to hone one's writing
 skills.  Perhaps you are learning a new language or wish to communicate
@@ -2295,29 +2279,49 @@ write, write!
 
 One way to test your progress is to set a timer.  It helps you gauge
 your output and its quality.  To use a timer with Emacs, consider the
-=tmr= package:
+~tmr~ package.  A new timer can be set with something like this:
 
 #+begin_src emacs-lisp
-(defun my-denote-journal-with-tmr ()
-  "Like `my-denote-journal', but also set a 10-minute timer.
-The `tmr' command is part of the `tmr' package."
-  (interactive)
-  (denote
-   (format-time-string "%A %e %B %Y")
-   '("journal"))
-  (tmr "10" "Practice writing in my journal")) ; set 10 minute timer with a description
+;; Set 10 minute timer with the given description
+(tmr "10" "Practice writing in my journal")
+#+end_src
+
+To make this timer start as soon as a new journal entry is created
+with the command ~denote-journal-extras-new-entry~, add a function to
+the ~denote-journa-extras-hook~.  For example:
+
+#+begin_src emacs-lisp
+;; Add an anonymous function, which is more difficult to modify after
+;; the fact:
+(add-hook 'denote-journa-extras-hook (lambda ()
+                                       (tmr "10" "Practice writing in my journal")))
+
+;; Or write a small function that you can then modify without
+;; revaluating the hook:
+(defun my-denote-tmr ()
+  (tmr "10" "Practice writing in my journal"))
+
+(add-hook 'denote-journa-extras-hook 'my-denote-tmr)
+
+;; Or to make it fully featured, define variables for the duration and
+;; the description and set it up so that you only need to modify
+;; those:
+(defvar my-denote-tmr-duration "10")
+
+(defvar my-denote-tmr-description "Practice writing in my journal")
+
+(defun my-denote-tmr ()
+  (tmr my-denote-tmr-duration my-denote-tmr-description))
+
+(add-hook 'denote-journa-extras-hook 'my-denote-tmr)
 #+end_src
 
 Once the timer elapses, stop writing and review your performance.
 Practice makes perfect!
 
-[ As Denote matures, we may add hooks to control what happens before or
-  after the creation of a new note.  We shall also document more
-  examples of tasks that can be accomplished with this package. ]
+Sources for ~tmr~:
 
-Sources for =tmr=:
-
-+ Package name (GNU ELPA): =tmr=
++ Package name (GNU ELPA): ~tmr~
 + Official manual: <https://protesilaos.com/emacs/tmr>
 + Change log: <https://protesilaos.com/emacs/denote-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
@@ -3303,32 +3307,9 @@ Everything is in place to set up the package.
 ;; OR if only want it in `denote-dired-directories':
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 
-;; Here is a custom, user-level command from one of the examples we
-;; showed in this manual.  We define it here and add it to a key binding
-;; below.
-(defun my-denote-journal ()
-  "Create an entry tagged 'journal' with the date as its title.
-If a journal for the current day exists, visit it.  If multiple
-entries exist, prompt with completion for a choice between them.
-Else create a new file."
-  (interactive)
-  (let* ((today (format-time-string "%A %e %B %Y"))
-         (string (denote-sluggify today))
-         (files (denote-directory-files-matching-regexp string)))
-    (cond
-     ((> (length files) 1)
-      (find-file (completing-read "Select file: " files nil :require-match)))
-     (files
-      (find-file (car files)))
-     (t
-      (denote
-       today
-       '("journal"))))))
-
 ;; Denote DOES NOT define any key bindings.  This is for the user to
 ;; decide.  For example:
 (let ((map global-map))
-  (define-key map (kbd "C-c n j") #'my-denote-journal) ; our custom command
   (define-key map (kbd "C-c n n") #'denote)
   (define-key map (kbd "C-c n N") #'denote-type)
   (define-key map (kbd "C-c n d") #'denote-date)
