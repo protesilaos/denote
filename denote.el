@@ -445,6 +445,12 @@ The match is performed with `string-match-p'."
   :package-version '(denote . "1.2.0")
   :type 'string)
 
+(defcustom denote-after-new-note-hook nil
+  "Normal hook that runs after the `denote' command."
+  :group 'denote
+  :package-version '(denote . "2.1.0")
+  :type 'hook)
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -1667,9 +1673,6 @@ The meaning of FILES is the same as in `denote--id-exists-p'."
   "1.0.0")
 
 ;;;;; The `denote' command and its prompts
-
-(defvar denote-after-new-note-hook nil
-  "Normal hook that runs after the `denote' command.")
 
 ;;;###autoload
 (defun denote (&optional title keywords file-type subdirectory date template signature)
