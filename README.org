@@ -2262,6 +2262,15 @@ The ~denote-journal-extras-new-entry~ command calls the normal hook
 this to produce consequences therefrom, such as to set a timer with
 the ~tmr~ package from GNU ELPA ([[#h:4af1f81e-e93a-43cc-b344-960032a16d42][Journaling with a timer]]).
 
+#+findex: denote-journal-extras-new-or-existing-entry
+The command ~denote-journal-extras-new-or-existing-entry~ locates an
+existing journal entry or creates a new one.  A journal entry is one
+that has ~denote-journal-extras-keyword~ as part of its file name.  If
+there are multiple journal entries for the current date, it prompts
+for one among them using minibuffer completion.  If there is only one,
+it visits it outright.  If there is no journal entry, it creates one
+by calling ~denote-journal-extra-new-entry~ (as described above).
+
 *** Journaling with a timer
 :PROPERTIES:
 :CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
