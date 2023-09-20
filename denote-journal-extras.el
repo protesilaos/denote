@@ -77,7 +77,7 @@ for a title."
           (const :tag "Monday 19 September 2023 08:49 PM" :value "%A %e %B %Y %I:%M %^p" day-date-month-year-12h)
           (string :tag "Custom string with `format-time-string' specifiers")))
 
-(defcustom denote-journa-extras-hook nil
+(defcustom denote-journal-extras-hook nil
   "Normal hook called after `denote-journal-extras-new-entry'.
 Use this to, for example, set a timer after starting a new
 journal entry (refer to the `tmr' package on GNU ELPA)."
@@ -120,7 +120,7 @@ created file."
     (denote
      (denote-journal-extras-daily--title-format)
      `(,denote-journal-extras-keyword))
-    (run-hooks 'denote-journa-extras-hook)))
+    (run-hooks 'denote-journal-extras-hook)))
 
 (defun denote-journal-extras--entry-today ()
   "Return list of files matching a journal for today."

@@ -2258,9 +2258,9 @@ more suitable for those who like to keep a record of something like a
 thought or event (though this can also be achieved by the regular
 ~denote~ command or maybe ~denote-subdirectory~).
 
-#+vindex: denote-journa-extras-hook
+#+vindex: denote-journal-extras-hook
 The ~denote-journal-extras-new-entry~ command calls the normal hook
-~denote-journa-extras-hook~ after it is done.  The user can leverage
+~denote-journal-extras-hook~ after it is done.  The user can leverage
 this to produce consequences therefrom, such as to set a timer with
 the ~tmr~ package from GNU ELPA ([[#h:4af1f81e-e93a-43cc-b344-960032a16d42][Journaling with a timer]]).
 
@@ -2299,20 +2299,20 @@ your output and its quality.  To use a timer with Emacs, consider the
 
 To make this timer start as soon as a new journal entry is created
 with the command ~denote-journal-extras-new-entry~, add a function to
-the ~denote-journa-extras-hook~.  For example:
+the ~denote-journal-extras-hook~.  For example:
 
 #+begin_src emacs-lisp
 ;; Add an anonymous function, which is more difficult to modify after
 ;; the fact:
-(add-hook 'denote-journa-extras-hook (lambda ()
-                                       (tmr "10" "Practice writing in my journal")))
+(add-hook 'denote-journal-extras-hook (lambda ()
+                                        (tmr "10" "Practice writing in my journal")))
 
 ;; Or write a small function that you can then modify without
 ;; revaluating the hook:
 (defun my-denote-tmr ()
   (tmr "10" "Practice writing in my journal"))
 
-(add-hook 'denote-journa-extras-hook 'my-denote-tmr)
+(add-hook 'denote-journal-extras-hook 'my-denote-tmr)
 
 ;; Or to make it fully featured, define variables for the duration and
 ;; the description and set it up so that you only need to modify
@@ -2324,7 +2324,7 @@ the ~denote-journa-extras-hook~.  For example:
 (defun my-denote-tmr ()
   (tmr my-denote-tmr-duration my-denote-tmr-description))
 
-(add-hook 'denote-journa-extras-hook 'my-denote-tmr)
+(add-hook 'denote-journal-extras-hook 'my-denote-tmr)
 #+end_src
 
 Once the timer elapses, stop writing and review your performance.
