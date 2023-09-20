@@ -1799,6 +1799,14 @@ this end, Denote provides two convenience commands:
   the buffer in order to (i) establish valid links, and (ii) retrieve
   whatever front matter from the target file.
 
+#+findex: denote-link-after-creating-with-command
++ ~denote-link-after-creating-with-command~ :: This command is like
+  ~denote-link-after-creating~ except it prompts for a note-creating
+  command ([[*Points of entry][Points of entry]]).  Use this to, for example, call
+  ~denote-signature~ so that the newly created note has a signature as
+  part of its file name.  Optional =ID-ONLY= has the same meaning as
+  in the command ~denote-link-after-creating~.
+
 #+findex: denote-link-or-create
 + ~denote-link-or-create~ :: Use ~denote-link~ on =TARGET= file,
   creating it if necessary.
@@ -2859,6 +2867,10 @@ For templates, refer to `denote-templates'."
 :PROPERTIES:
 :CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
 :END:
+
+[ As part of {{{development-version}}} we provide the command
+  ~denote-link-after-creating-with-command~.  It supersedes what we
+  document in this section. ]
 
 #+findex: denote-link-or-create
 The command ~denote-link-or-create~ uses ~denote-link~ on a =TARGET=

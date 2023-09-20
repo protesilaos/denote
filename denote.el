@@ -3097,6 +3097,8 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'.
 
+For a variant of this, see `denote-link-after-creating-with-command'.
+
 IMPORTANT NOTE: Normally, `denote' does not save the buffer it
 produces for the new note.  This is a safety precaution to not
 write to disk unless the user wants it (e.g. the user may choose
@@ -3110,6 +3112,25 @@ file."
   (let (path)
     (save-window-excursion
       (call-interactively #'denote)
+      (save-buffer)
+      (setq path (buffer-file-name)))
+    (denote-link path id-only)))
+
+;;;###autoload
+(defun denote-link-after-creating-with-command (command &optional id-only)
+  "Like `denote-link-after-creating' but prompt for note-making COMMAND.
+Use this to, for example, call `denote-signature' so that the
+newly created note has a signature as part of its file name.
+
+Optional ID-ONLY has the same meaning as in the command
+`denote-link-after-creating'."
+  (interactive
+   (list
+    (denote-command-prompt)
+    current-prefix-arg))
+  (let (path)
+    (save-window-excursion
+      (call-interactively command)
       (save-buffer)
       (setq path (buffer-file-name)))
     (denote-link path id-only)))
