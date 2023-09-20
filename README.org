@@ -152,12 +152,14 @@ Obligations, Tasks, and Engagements.
 #+findex: denote-subdirectory
 #+findex: denote-template
 #+findex: denote-signature
-There are five ways to write a note with Denote: invoke the ~denote~,
-~denote-type~, ~denote-date~, ~denote-subdirectory~,
+There are five main ways to write a note with Denote: invoke the
+~denote~, ~denote-type~, ~denote-date~, ~denote-subdirectory~,
 ~denote-template~, ~denote-signature~ commands, or leverage the
 ~org-capture-templates~ by setting up a template which calls the
 function ~denote-org-capture~.  We explain all of those in the
-subsequent sections.
+subsequent sections.  Other more specialised commands exist as well,
+which one shall learn about as they read through this manual.  We do
+not want to overwhelm the user with options at this stage.
 
 ** Standard note creation
 :PROPERTIES:
@@ -2344,28 +2346,49 @@ Sources for ~tmr~:
 :CUSTOM_ID: h:2f8090f1-50af-4965-9771-d5a91a0a87bd
 :END:
 
-Sometimes it makes sense to gather notes in a single file and later
-review it to make multiple notes out of it.  With the following code,
-the user marks a region and then invokes the command
-~my-denote-create-new-note-from-region~: it prompts for a title and
-keywords and then uses the region's contents to fill in the newly
-created note.
+[ Rewritten as part of {{{development-version}}} to include the
+  ~denote-region~ command which supersedes a custom function that was
+  once documented herein. ]
+
+#+findex: denote-region
+The command ~denote-region~ takes the contents of the active region
+and then prompts for a title and keywords.  Once a new note is
+created, it inserts the contents of the region therein.  This is
+useful to quickly elaborate on some snippet of text or capture it for
+future reference.
+
+If there is no active region, ~denote-region~ simply calls the
+~denote~ command which will behave the way it does ordinarily.
+
+#+vindex: denote-region-after-new-note-functions
+When the ~denote-region~ command is called with an active region, it
+finalises its work by calling ~denote-region-after-new-note-functions~.
+This is an abnormal hook, meaning that the functions added to it are
+called with arguments.  The arguments are two, representing the
+beginning and end positions of the newly inserted text.
+
+A common use-case for Org mode users is to call the command
+~org-insert-structure-template~ after a region is inserted.  Emacs
+will thus prompt for a structure template, such as the one
+corresponding to a source block.  In this case the function added to
+~denote-region-after-new-note-functions~ does not actually need
+aforementioned arguments: it can simply declare those as ignored by
+prefixing the argument names with an underscore (an underscore is
+enough, but it is better to include a name for clarity).  For example,
+the following will prompt for a structure template as soon as
+~denote-region~ is done:
 
 #+begin_src emacs-lisp
-(defun my-denote-create-new-note-from-region (beg end)
-  "Create note whose contents include the text between BEG and END.
-Prompt for title and keywords of the new note."
-  (interactive "r")
-  (if-let (((region-active-p))
-           (text (buffer-substring-no-properties beg end)))
-      (progn
-        (denote (denote-title-prompt) (denote-keywords-prompt))
-        (insert text))
-    (user-error "No region is available")))
+(defun my-denote-region-org-structure-template (_beg _end)
+  (when (derived-mode-p 'org-mode)
+    (activate-mark)
+    (call-interactively 'org-insert-structure-template)))
+
+(add-hook 'denote-region-after-new-note-functions #'my-denote-region-org-structure-template)
 #+end_src
 
-Have a different workflow?  Feel welcome to discuss it in any of our
-official channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
+Remember that ~denote-region-after-new-note-functions~ are not called
+if ~denote-region~ is used without an active region.
 
 ** Split an Org subtree into its own note
 :PROPERTIES:

@@ -451,6 +451,31 @@ The match is performed with `string-match-p'."
   :package-version '(denote . "2.1.0")
   :type 'hook)
 
+(defcustom denote-region-after-new-note-functions nil
+  "Abnormal hook called after `denote-region'.
+Functions in this hook are called with two arguments,
+representing the beginning and end buffer positions of the region
+that was inserted in the new note.  These are called only if
+`denote-region' is invoked while a region is active.
+
+A common use-case is to call `org-insert-structure-template'
+after a region is inserted.  This case does not actually require
+the aforementioned arguments, in which case the function can
+simply declare them as ignored by prefixing the argument names
+with an underscore.  For example, the following will prompt for a
+structure template as soon as `denote-region' is done:
+
+    (defun my-denote-region-org-structure-template (_beg _end)
+      (when (derived-mode-p \\='org-mode)
+        (activate-mark)
+        (call-interactively \\='org-insert-structure-template)))
+
+    (add-hook \\='denote-region-after-new-note-functions
+              #\\='my-denote-region-org-structure-template)"
+  :group 'denote
+  :package-version '(denote . "2.1.0")
+  :type 'hook)
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -1951,6 +1976,25 @@ is set to \\='(signature title keywords)."
 
 (defalias 'denote-create-note-using-signature 'denote-signature
   "Alias for `denote-signature' command.")
+
+;;;###autoload
+(defun denote-region ()
+  "Call `denote' and insert therein the text of the active region.
+Prompt for title and keywords.  With no active region, call
+`denote' ordinarily (refer to its documentation for the
+technicalities)."
+  (declare (interactive-only t))
+  (interactive)
+  (if-let (((region-active-p))
+           ;; We capture the text early, otherwise it will be empty
+           ;; the moment `insert' is called.
+           (text (buffer-substring-no-properties (region-beginning) (region-end))))
+      (progn
+        (denote (denote-title-prompt) (denote-keywords-prompt))
+        (push-mark (point))
+        (insert text)
+        (run-hook-with-args 'denote-region-after-new-note-functions (mark) (point)))
+    (call-interactively 'denote)))
 
 ;;;;; Other convenience commands
 
