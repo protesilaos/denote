@@ -908,13 +908,10 @@ prompts for a directory among ~denote-silo-extras-directories~ and runs
 the ~denote-open-or-create~ command from there.
 
 #+findex: denote-silo-extras-select-silo-then-command
-#+vindex: denote-silo-extras-commands
 The command ~denote-silo-extras-select-silo-then-command~ prompts with
 minibuffer completion for a directory among ~denote-silo-extras-directories~.
 Once the user selects a silo, a second prompt asks for a Denote
 note-creation command to call from inside that silo ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
-The list of available commands is specified in the user option
-~denote-silo-extras-commands~.
 
 ** Exclude certain directories from all operations
 :PROPERTIES:
@@ -3679,6 +3676,11 @@ might change them without further notice.
   more advanced date selection utility if the user option
   ~denote-date-prompt-use-org-read-date~ is non-nil.  It requires Org
   ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
+
+#+findex: denote-command-prompt
++ Function ~denote-command-prompt~ ::  Prompt for command among
+  ~denote-commands-for-new-notes~ ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). [ Part of
+  {{{development-version}}}. ]
 
 #+findex: denote-prompt-for-date-return-id
 + Function ~denote-prompt-for-date-return-id~ :: Use

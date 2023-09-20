@@ -51,20 +51,6 @@ as the variable `denote-directory'."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type '(repeat directory))
 
-(defcustom denote-silo-extras-commands
-  '(denote
-    denote-date
-    denote-subdirectory
-    denote-template
-    denote-type
-    denote-signature)
-  "List of commands to call after selecting a silo.
-This is used by the `denote-silo-extras-select-silo-then-command'
-command."
-  :group 'denote-silo-extras
-  :link '(info-link "(denote) Maintain separate directories for notes")
-  :type '(repeat function))
-
 (defvar denote-silo-extras--directory-history nil
   "Minibuffer history for `denote-silo-extras--directory-prompt'.")
 
@@ -75,17 +61,6 @@ command."
      (format-prompt "Select a silo" default)
      denote-silo-extras-directories nil :require-match
      nil 'denote-silo-extras--directory-history)))
-
-(defvar denote-silo-extras--command-history nil
-  "Minibuffer history for `denote-silo-extras--command-prompt'.")
-
-(defun denote-silo-extras--command-prompt ()
-  "Prompt for command among `denote-silo-extras-commands'."
-  (let ((default (car denote-silo-extras--command-history)))
-    (completing-read
-     (format-prompt "Run command in silo" default)
-     denote-silo-extras-commands nil :require-match
-     nil 'denote-silo-extras--command-history)))
 
 ;;;###autoload
 (defun denote-silo-extras-create-note (&optional silo)
@@ -117,7 +92,7 @@ COMMAND is one among `denote-silo-extras-commands'."
   (interactive
    (list
     (denote-silo-extras--directory-prompt)
-    (denote-silo-extras--command-prompt)))
+    (denote-command-prompt)))
   (let ((denote-user-enforced-denote-directory silo))
     (call-interactively command)))
 

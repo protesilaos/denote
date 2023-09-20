@@ -1697,6 +1697,26 @@ The meaning of FILES is the same as in `denote--id-exists-p'."
   'denote-barf-duplicate-id
   "1.0.0")
 
+(defconst denote-commands-for-new-notes
+  '(denote
+    denote-date
+    denote-subdirectory
+    denote-template
+    denote-type
+    denote-signature)
+  "List of commands for `denote-command-prompt' that create a new note.")
+
+(defvar denote--command-prompt-history nil
+  "Minibuffer history for `denote-command-prompt'.")
+
+(defun denote-command-prompt ()
+  "Prompt for command among `denote-commands-for-new-notes'."
+  (let ((default (car denote--command-prompt-history)))
+    (completing-read
+     (format-prompt "Run command in silo" default)
+     denote-commands-for-new-notes nil :require-match
+     nil 'denote--command-prompt-history)))
+
 ;;;;; The `denote' command and its prompts
 
 ;;;###autoload
