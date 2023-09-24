@@ -2020,10 +2020,8 @@ technicalities)."
 
 (defun denote--extract-title-from-file-history ()
   "Extract last file title input from `file-name-history'."
-  ;; We do not need to check if `file-name-history' is initialised
-  ;; because it is defined in files.el.  My understanding is that it
-  ;; is always loaded.
-  (when-let ((title (expand-file-name (car denote--file-history))))
+  (when-let ((file (car denote--file-history))
+             (title (expand-file-name file)))
     (string-match (denote-directory) title)
     (substring title (match-end 0))))
 

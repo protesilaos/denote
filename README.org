@@ -4528,7 +4528,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
   Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
   Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar,
-  relict007.
+  ezchi, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Colin
