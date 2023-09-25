@@ -892,13 +892,14 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (let* ((files (if files-matching-regexp
+  (when-let ((files (if files-matching-regexp
                     (denote-directory-files-matching-regexp files-matching-regexp)
                   (denote-all-files)))
-         (completion-ignore-case read-file-name-completion-ignore-case))
-    (when files
-      (funcall project-read-file-name-function
-               "Select note: " files nil 'denote--file-history))))
+             (completion-ignore-case read-file-name-completion-ignore-case)
+             (file (funcall project-read-file-name-function
+                            "Select note: " files nil 'denote--file-history)))
+    (add-to-history 'denote--file-history file)
+    file))
 
 (define-obsolete-function-alias
   'denote--retrieve-read-file-prompt
