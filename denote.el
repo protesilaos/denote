@@ -2498,10 +2498,10 @@ of time all identifiers will be unique or do not care about them.
   share the same modification time, which can be casually done
   with the `touch' command, `git', and others. ]"
   (interactive
-   (list
-    (when current-prefix-arg
-      (setq skip-front-matter-prompt t
-            no-unique-id-check (when (>= (car current-prefix-arg) 16) t))))
+   (when current-prefix-arg
+     (list
+      t
+      (when (>= (car current-prefix-arg) 16) t)))
    dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
