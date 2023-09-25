@@ -1720,7 +1720,7 @@ The meaning of FILES is the same as in `denote--id-exists-p'."
      (completing-read
       (format-prompt "Run note-creating Denote command" default)
       denote-commands-for-new-notes nil :require-match
-      nil 'denote--command-prompt-history))))
+      nil 'denote--command-prompt-history default))))
 
 ;;;;; The `denote' command and its prompts
 
