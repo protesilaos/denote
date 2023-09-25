@@ -3169,7 +3169,12 @@ file."
       (call-interactively #'denote)
       (save-buffer)
       (setq path (buffer-file-name)))
-    (denote-link path id-only)))
+    (let ((type (denote-filetype-heuristics path)))
+      (denote-link
+       path
+       type
+       (denote--link-get-description path type)
+       id-only))))
 
 ;;;###autoload
 (defun denote-link-after-creating-with-command (command &optional id-only)
@@ -3188,7 +3193,14 @@ Optional ID-ONLY has the same meaning as in the command
       (call-interactively command)
       (save-buffer)
       (setq path (buffer-file-name)))
-    (denote-link path id-only)))
+    (let ((type (denote-filetype-heuristics path)))
+      (denote-link
+       path
+       type
+       (if (eq command 'denote-signature)
+           (denote--link-get-description-with-signature path type)
+         (denote--link-get-description path type))
+       id-only))))
 
 ;;;###autoload
 (defun denote-link-or-create (target &optional id-only)
@@ -3210,7 +3222,7 @@ consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (and target (file-exists-p target))
-      (denote-link target id-only)
+      (denote-link target (denote-filetype-heuristics target) target id-only)
     (denote--command-with-title-history #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
