@@ -2483,7 +2483,7 @@ Specifically, do the following:
     check them to confirm that the new front matter does not
     cause any problems (e.g. with the `diff-buffer-with-file'
     command).  Multiple buffers can be saved in one go with
-    `save-some-buffers' (read its doc string). ]
+    `save-some-buffers' (read its doc string).  ]
 
 With the optional NO-UNIQUE-ID-CHECK as non-nil (such as as a
 double prefix argument), do not process the file identifiers of
@@ -2496,7 +2496,7 @@ of time all identifiers will be unique or do not care about them.
 [ When renaming files in Dired, it is possible to produce
   duplicate identifiers.  This can happen when multiple files
   share the same modification time, which can be casually done
-  with the `touch' command, `git', and others. ]"
+  with the `touch' command, `git', and others.  ]"
   (interactive
    (when current-prefix-arg
      (list
