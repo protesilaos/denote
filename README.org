@@ -1618,20 +1618,20 @@ The following sections delve into the details.
 :END:
 
 #+findex: denote-link
-The ~denote-link~ command inserts a link at point to an entry specified
+The ~denote-link~ command inserts a link at point to a file specified
 at the minibuffer prompt.  Links are formatted depending on the file
-type of current note.  In Org and plain text buffers, links are
-formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown they
-are expressed as =[TITLE](denote:IDENTIFIER)=.
+type of the current note.  In Org and plain text buffers, links are
+formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown
+they are expressed as =[TITLE](denote:IDENTIFIER)=.
 
-When ~denote-link~ is called with a prefix argument (=C-u= by default),
-it formats links like =[[denote:IDENTIFIER]]=.  The user might prefer
-its simplicity.
+When ~denote-link~ is called with a prefix argument (=C-u= by
+default), it formats links like =[[denote:IDENTIFIER]]=.  The user
+might prefer its simplicity.
 
 The description of the link is taken from the target file's front
 matter or, if that is not available, from the file name.  If the
 region is active, its text is used as the link's description instead.
-If the active region has no text, the inserted link used just the
+If the active region has no text, the inserted link uses just the
 identifier, as with the =C-u= prefix mentioned above.
 
 Inserted links are automatically buttonized and remain active for as
