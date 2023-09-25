@@ -888,14 +888,17 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
 (defvar denote--file-history nil
   "Minibuffer history of `denote-file-prompt'.")
 
-(defun denote-file-prompt (&optional initial-text)
+(defun denote-file-prompt (&optional files-matching-regexp)
   "Prompt for file with identifier in variable `denote-directory'.
-With optional INITIAL-TEXT, use it to prepopulate the minibuffer."
-  (let* ((all-files (denote-all-files))
+With optional FILES-MATCHING-REGEXP, filter the candidates per
+the given regular expression."
+  (let* ((files (if files-matching-regexp
+                    (denote-directory-files-matching-regexp files-matching-regexp)
+                  (denote-all-files)))
          (completion-ignore-case read-file-name-completion-ignore-case))
-    (when all-files
+    (when files
       (funcall project-read-file-name-function
-               "Select note: " all-files nil 'denote--file-history initial-text))))
+               "Select note: " files nil 'denote--file-history))))
 
 (define-obsolete-function-alias
   'denote--retrieve-read-file-prompt
