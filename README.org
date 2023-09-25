@@ -1721,6 +1721,26 @@ above is for interactive usage.
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
+** Insert link to file with signature
+:PROPERTIES:
+:CUSTOM_ID: h:066e5221-9844-474b-8858-398398646f86
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-link-with-signature
+The command ~denote-link-with-signature~ prompts for a file among
+those that contain a ===SIGNATURE= and inserts a link to it.  The
+description of the link includes the text of the signature and that of
+the file's title, if any.  For example, a link to the following file:
+
+: 20230925T144303==abc--my-first-signature-note__denote_testing.txt
+
+will get this link: =[[denote:20230925T144303][abc My first signature note]]=.
+
+For more advanced uses, especially when called from Lisp, refer to the
+doc string of the ~denote-link~ function.
+
 ** Insert links, but only those missing from current buffer
 :PROPERTIES:
 :CUSTOM_ID: h:0c1fdaab-5a6b-4792-9694-fed53cd042e6
@@ -4538,10 +4558,11 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Frank Ehmsen, Guo Yong, Hanspeter Gisler, Jack Baty, Jay Rajput,
   Jean-Charles Bagneris, Jeremy Friesen, Jonathan Sahar, Johan
   Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal Modi, M. Hadi
-  Timachi, Mirko Hernandez, Niall Dooley, Paul van Gelder, Peter
-  Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
-  Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, doolio,
-  drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
+  Timachi, Mark Olson, Mirko Hernandez, Niall Dooley, Paul van Gelder,
+  Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven
+  Seebeck, Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj,
+  doolio, drcxd, hpgisler, pRot0ta1p, rbenit68, relict007, sienic,
+  sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

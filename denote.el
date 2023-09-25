@@ -3022,6 +3022,35 @@ treats the active region specially, is up to it."
 (defalias 'denote-insert-link 'denote-link
   "Alias for `denote-link' command.")
 
+(defun denote--link-get-description-with-signature (file file-type)
+  "Return `denote-link-with-signature' description.
+Retrieve the title and signature from FILE with FILE-TYPE."
+  (let* ((signature (denote-retrieve-filename-signature file))
+         (title (denote-retrieve-title-value file file-type))
+         (specifiers (if (and title
+                              (not (string-empty-p title)))
+                         "%s %s"
+                       "%s")))
+    (format specifiers signature title)))
+
+;;;###autoload
+(defun denote-link-with-signature ()
+  "Insert link to file with signature.
+Prompt for file using minibuffer completion, limiting the list of
+candidates to files with a signature in their file name.
+
+The description of the link includes the signature followed by
+the file's title, if any.  For this case, the signature is
+assumed present.
+
+For more advanced uses, especially when called from Lisp, refer
+to the `denote-link' function."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((file (denote-file-prompt "="))
+        (type (denote-filetype-heuristics (buffer-file-name))))
+    (denote-link file type (denote--link-get-description-with-signature file type))))
+
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
   (let (matches)
