@@ -1716,10 +1716,11 @@ The meaning of FILES is the same as in `denote--id-exists-p'."
 (defun denote-command-prompt ()
   "Prompt for command among `denote-commands-for-new-notes'."
   (let ((default (car denote--command-prompt-history)))
-    (completing-read
-     denote-commands-for-new-notes nil :require-match
-     nil 'denote--command-prompt-history)))
+    (intern
+     (completing-read
       (format-prompt "Run note-creating Denote command" default)
+      denote-commands-for-new-notes nil :require-match
+      nil 'denote--command-prompt-history))))
 
 ;;;;; The `denote' command and its prompts
 
