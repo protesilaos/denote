@@ -3176,6 +3176,7 @@ file."
        (denote--link-get-description path type)
        id-only))))
 
+;; FIXME 2023-09-25: Consolidate this with the above.
 ;;;###autoload
 (defun denote-link-after-creating-with-command (command &optional id-only)
   "Like `denote-link-after-creating' but prompt for note-making COMMAND.
