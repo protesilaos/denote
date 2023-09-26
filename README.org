@@ -1634,6 +1634,10 @@ region is active, its text is used as the link's description instead.
 If the active region has no text, the inserted link uses just the
 identifier, as with the =C-u= prefix mentioned above.
 
+[ For more advanced uses, refer to the doc string of the ~denote-link~
+  function.  The ~denote-link~ gained new arguments as part of
+  {{{development-version}}}. ]
+
 Inserted links are automatically buttonized and remain active for as
 long as the buffer is available.  In Org this is handled by the major
 mode: the =denote:= hyperlink type works exactly like the standard
@@ -1738,8 +1742,8 @@ the file's title, if any.  For example, a link to the following file:
 
 will get this link: =[[denote:20230925T144303][abc My first signature note]]=.
 
-For more advanced uses, especially when called from Lisp, refer to the
-doc string of the ~denote-link~ function.
+For more advanced uses, refer to the doc string of the ~denote-link~
+function.
 
 ** Insert links, but only those missing from current buffer
 :PROPERTIES:
