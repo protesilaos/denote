@@ -1415,11 +1415,18 @@ Run `denote-desluggify' on title if the extraction is sucessful."
   'denote-retrieve-filename-title
   "1.0.0")
 
+(defmacro denote--file-with-temp-buffer (file &rest body)
+  "If FILE exists, insert its contents in a temp buffer and call BODY."
+  (declare (indent 1))
+  `(when (file-exists-p ,file)
+     (with-temp-buffer
+       (insert-file-contents ,file)
+       (goto-char (point-min))
+       ,@body)))
+
 (defun denote-retrieve-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
+  (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
@@ -1431,9 +1438,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 
 (defun denote-retrieve-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
+  (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
@@ -1444,9 +1449,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 
 (defun denote-retrieve-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
+  (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
@@ -1458,9 +1461,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 
 (defun denote-retrieve-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
+  (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
@@ -2214,9 +2215,7 @@ block if appropriate."
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (goto-char (point-min))
+  (denote--file-with-temp-buffer file
     (re-search-forward regexp nil t 1)))
 
 (defun denote--edit-front-matter-p (file file-type)
