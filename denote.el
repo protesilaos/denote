@@ -2995,7 +2995,7 @@ link format is always [[denote:IDENTIFIER]].
 
 When called from Lisp, FILE is a string representing a full file
 system path.  FILE-TYPE is a symbol as described in
-`denote-file-type'.  DESCRIPTION is a string.  Whether the called
+`denote-file-type'.  DESCRIPTION is a string.  Whether the caller
 treats the active region specially, is up to it."
   (interactive
    (let ((file (denote-file-prompt))
