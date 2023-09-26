@@ -2983,7 +2983,7 @@ FILE-TYPE."
 When called interactively, prompt for FILE using completion.  In
 this case, derive FILE-TYPE from the selected FILE, as well as
 the DESCRIPTION from the title of FILE.  The title comes either
-from the front matter or the file name.  With an action region,
+from the front matter or the file name.  With an active region,
 the DESCRIPTION is the text of the region, despite the
 aforementioned.  If active region is empty (i.e whitespace-only),
 insert an ID-ONLY link.
