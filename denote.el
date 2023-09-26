@@ -3045,8 +3045,8 @@ The description of the link includes the signature followed by
 the file's title, if any.  For this case, the signature is
 assumed present.
 
-For more advanced uses, especially when called from Lisp, refer
-to the `denote-link' function."
+For more advanced uses with Lisp, refer to the `denote-link'
+function."
   (declare (interactive-only t))
   (interactive)
   (let ((file (denote-file-prompt "="))
