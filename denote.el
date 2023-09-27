@@ -3222,7 +3222,12 @@ consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive (list (denote-file-prompt) current-prefix-arg))
   (if (and target (file-exists-p target))
-      (denote-link target (denote-filetype-heuristics target) target id-only)
+      (let ((type (denote-filetype-heuristics target)))
+        (denote-link
+         target
+         type
+         (denote--link-get-description target type)
+         id-only))
     (denote--command-with-title-history #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
