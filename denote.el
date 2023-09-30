@@ -1674,7 +1674,7 @@ It checks files in variable `denote-directory' and active buffer files."
                       (denote-directory-files)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
-      (let ((id (when (string-match (concat "\\`" denote--id-regexp) name)
+      (let ((id (when (string-match (concat "\\`" denote-id-regexp) name)
                   (match-string-no-properties 0 name))))
         (puthash id t ids)))
     ids))
@@ -1685,10 +1685,10 @@ USED-IDS is a hash-table of all used IDs. If ID is already used,
 increment it 1 second at a time until an available id is found."
   (let ((time (date-to-time id)))
     (while (gethash
-            (format-time-string denote--id-format time)
+            (format-time-string denote-id-format time)
             used-ids)
       (setq time (time-add time 1)))
-    (format-time-string denote--id-format time)))
+    (format-time-string denote-id-format time)))
 
 (define-obsolete-function-alias
   'denote--barf-duplicate-id
