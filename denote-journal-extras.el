@@ -105,6 +105,13 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
        ('day-date-month-year-12h "%A %e %B %Y %I:%M %^p"))))
    (t (denote-title-prompt (format-time-string "%F")))))
 
+(defun denote-journal-extras-template ()
+  "Check for journal template, and return it or prompt the user for one from `denote-templates'. Otherwise do not use a template, if `denote-templates' is empty."
+  (if-let ((denote-journal-extras-daily--template (cdr (assoc 'journal denote-templates))))
+      denote-journal-extras-daily--template
+    (when denote-templates
+      (denote-template-prompt))))
+
 ;;;###autoload
 (defun denote-journal-extras-new-entry ()
   "Create a new journal entry in variable `denote-journal-extras-directory'.
@@ -119,7 +126,9 @@ created file."
     ;; template only if one exists.  Otherwise, no template is used.
     (denote
      (denote-journal-extras-daily--title-format)
-     `(,denote-journal-extras-keyword))
+     `(,denote-journal-extras-keyword)
+     nil nil nil
+     (denote-journal-extras-template))
     (run-hooks 'denote-journal-extras-hook)))
 
 (defun denote-journal-extras--entry-today ()
