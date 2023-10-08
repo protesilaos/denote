@@ -3920,8 +3920,8 @@ might change them without further notice.
   current or optional =FILE=.  Also see ~denote-link-return-backlinks~.
 
 #+findex: denote-link-return-backlinks
-+ Function ~denote-link-return-backlinks~ :: Return list of links in
-  current or optional =FILE=.  Also see ~denote-link-return-links~.
++ Function ~denote-link-return-backlinks~ :: Return list of backlinks
+  in current or optional =FILE=.  Also see ~denote-link-return-links~.
 
 * Troubleshoot Denote in a pristine environment
 :PROPERTIES:
