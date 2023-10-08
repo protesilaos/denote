@@ -230,9 +230,10 @@ The value is a list of symbols, which includes any of the following:
   function and are up to the user to apply as they see fit.  One
   use-case is to implement Niklas Luhmann's Zettelkasten system
   for a sequence of notes (Folgezettel).  Signatures are not
-  included in a file's front matter and are not shown in the
-  description of a link.  They are reserved solely for creating a
-  sequence in a file listing, at least for the time being.
+  included in a file's front matter.  They are reserved solely
+  for creating a sequence in a file listing, at least for the
+  time being.  To insert a link that includes the signature, use
+  the command `denote-link-with-signature'.
 
 The prompts occur in the given order.
 
