@@ -78,7 +78,12 @@ extract the data you are looking for."
 (defun denote-rename-buffer-with-identifier (&optional buffer)
   "Retrieve Denote file of BUFFER and rename BUFFER based on the file identifier.
 BUFFER is an object that satisfies `bufferp'.  If nil, then use
-the return value of `current-buffer'."
+the return value of `current-buffer'.
+
+This is a generic reference implementation for use in the user
+option `denote-rename-buffer-function'.  If you need something
+else, check the Denote manual for functions/variables that
+extract the data you are looking for."
   (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
               (identifier (denote-retrieve-filename-identifier (car file-and-type))))
     (rename-buffer identifier :unique)))
