@@ -2097,6 +2097,8 @@ title, which is retrieved from the front matter or from the =TITLE=
 component of the file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+vindex: denote-rename-buffer-function
+#+findex: denote-rename-buffer-with-title
+#+findex: denote-rename-buffer-with-identifier
 Customize the user option ~denote-rename-buffer-function~ to affect
 how buffers are renamed.  Its value must be the symbol of a function.
 The default is the ~denote-rename-buffer-with-title~, with an
