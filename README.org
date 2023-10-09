@@ -4548,11 +4548,11 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Radermacher, Colin McLear, Damien Cassou, Eduardo Grajeda, Elias
   Storms, Eshel Yaron, Florian, Graham Marlow, Hilde Rhyne, Ivan
   Sokolov, Jack Baty, Jean-Charles Bagneris, Jean-Philippe Gagné Guay,
-  Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kyle Meyer, Marc
-  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
-  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
-  Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar,
-  ezchi, relict007.
+  Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kostas Andreadis, Kyle
+  Meyer, Marc Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid
+  Behrnd, Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan
+  Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
+  Manerikar, ezchi, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Colin
