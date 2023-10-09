@@ -124,11 +124,6 @@ Use `denote-journal-extras-keyword' as a keyword for the newly
 created file."
   (interactive)
   (let ((denote-user-enforced-denote-directory (denote-journal-extras-directory)))
-    ;; TODO 2023-09-18: Let's see how best to incorporate templates.
-    ;; I think it is better to use the `denote-templates' variable,
-    ;; since this is what we have it for.  Perhaps we can make the
-    ;; behaviour do-what-I-mean, such that the user is prompted for a
-    ;; template only if one exists.  Otherwise, no template is used.
     (denote
      (denote-journal-extras-daily--title-format)
      `(,denote-journal-extras-keyword)
