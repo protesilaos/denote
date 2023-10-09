@@ -603,9 +603,68 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
-(defun denote-sluggify (str)
-  "Make STR an appropriate slug for file names and related."
-  (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+(defcustom denote-file-name-letter-casing
+  '((title . downcase)
+    (signature . downcase)
+    (keywords . downcase)
+    (t . downcase))
+  "Specify the method Denote uses to affect the letter casing of file names.
+
+The value is an alist where each element is a cons cell of the
+form (COMPONENT . METHOD).
+
+- The COMPONENT is an unquoted symbol among `title', `signature',
+  `keywords', which refer to the corresponding component of the
+  file name.  The special t COMPONENT is a fallback value in case
+  the others are not specified.
+
+- The METHOD is the letter casing scheme, which is an unquoted
+  symbol of either `downcase' or `verbatim'.  A nil value has the
+  same meaning as `downcase'.  Other non-nil METHOD types are
+  reserved for possible future use.
+
+  The `downcase' METHOD converts user input for the given
+  COMPONENT into lower case.  The benefit of this approach (which
+  is the default behaviour) is that file names remain consistent
+  over the long-term.  The user never needs to account for
+  varying letter casing while working with them.
+
+  The `verbatim' METHOD means that Denote will not affect the
+  letter casing of user input when generating the given file name
+  COMPONENT.  As such, conventions like CamelCase or camelCase
+  are respected.  The user thus assumes responsibility to keep
+  file names in a good state over the long term."
+  :group 'denote
+  :type '(alist
+          :key (choice :tag "File name component"
+                       (const :tag "The --TITLE component of the file name" title)
+                       (const :tag "The ==SIGNATURE component of the file name" signature)
+                       (const :tag "The __KEYWORDS component of the file name" keywords)
+                       (const :tag "Fallback for any unspecified file name component" t))
+          :value (choice :tag "Letter casing method"
+                         (const :tag "Downcase file names (default)" downcase)
+                         (const :tag "Accept file name inputs verbatim" verbatim)))
+  :package-version '(denote . "2.1.0"))
+
+(defun denote-letter-case (component args)
+  "Apply letter casing specified by COMPONENT to ARGS.
+COMPONENT is a symbol representing a file name component, as
+described in the user option `denote-file-name-letter-casing'."
+  (if (or (eq (alist-get component denote-file-name-letter-casing) 'verbatim)
+          (eq (alist-get t denote-file-name-letter-casing) 'verbatim))
+      args
+    (funcall #'downcase args)))
+
+(defun denote-sluggify (str &optional component)
+  "Make STR an appropriate slug for file name COMPONENT.
+
+COMPONENT is a symbol used to retrieve the letter casing method
+corresponding to the file name field is references.  COMPONENT is
+described in the user option `denote-file-name-letter-casing'.
+
+A nil value of COMPONENT has the same meaning as applying
+`downcase' to STR."
+  (denote-letter-case component (denote--slug-hyphenate (denote--slug-no-punct str))))
 
 (define-obsolete-function-alias
   'denote--sluggify
@@ -622,13 +681,21 @@ any leading and trailing signs."
     "=\\{2,\\}" "="
     (replace-regexp-in-string "_\\|\s+" "=" str))))
 
-(defun denote-sluggify-signature (str)
-  "Make STR an appropriate slug for signatures."
-  (downcase (denote--slug-put-equals (denote--slug-no-punct str))))
+(defun denote-sluggify-signature (str &optional component)
+  "Make STR an appropriate slug for signatures.
+
+COMPONENT is a symbol used to retrieve the letter casing method
+corresponding to the file name field is references.  COMPONENT is
+described in the user option `denote-file-name-letter-casing'.
+
+A nil value of COMPONENT has the same meaning as applying
+`downcase' to STR."
+  (denote-letter-case component (denote--slug-put-equals (denote--slug-no-punct str))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
-  (downcase
+  (denote-letter-case
+   'keywords
    (replace-regexp-in-string
     "-" ""
     (denote--slug-hyphenate (denote--slug-no-punct str)))))
@@ -641,11 +708,12 @@ any leading and trailing signs."
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
   (if (listp keywords)
-    (mapcar
-     (if denote-allow-multi-word-keywords
-         #'denote-sluggify
-       #'denote-sluggify-and-join)
-     keywords)
+      ;; FIXME 2023-10-09: What to do with `denote-allow-multi-word-keywords
+      (mapcar
+       (if denote-allow-multi-word-keywords
+           #'denote-sluggify
+         #'denote-sluggify-and-join)
+       keywords)
     (error "`%s' is not a list" keywords)))
 
 (define-obsolete-function-alias
@@ -1024,7 +1092,10 @@ KEYWORDS is a list of strings, per `denote-keywords-prompt'."
 
 (defun denote--keywords-combine (keywords)
   "Format KEYWORDS output of `denote-keywords-prompt'."
-  (mapconcat #'downcase keywords "_"))
+  (mapconcat
+   (lambda (k)
+     (denote-letter-case 'keywords k))
+   keywords "_"))
 
 (defun denote--keywords-add-to-history (keywords)
   "Append KEYWORDS to `denote--keyword-history'."
@@ -1544,8 +1615,8 @@ are expected to be supplied by `denote' or equivalent command."
 
 (defun denote--format-front-matter-keywords (keywords file-type)
   "Format KEYWORDS according to FILE-TYPE for the file's front matter.
-Apply `downcase' to KEYWORDS."
-  (let ((kw (mapcar #'downcase (denote-sluggify-keywords keywords))))
+Apply `denote-letter-case' to KEYWORDS."
+  (let ((kw (denote-sluggify-keywords keywords)))
     (funcall (denote--keywords-value-function file-type) kw)))
 
 (make-obsolete-variable 'denote-text-front-matter-delimiter nil "0.6.0")
@@ -1568,10 +1639,10 @@ construct path to DIR."
   (denote-format-file-name
    dir id
    (denote-sluggify-keywords keywords)
-   (denote-sluggify title)
+   (denote-sluggify title 'title)
    (denote--file-extension file-type)
    (when signature
-     (denote-sluggify-signature signature))))
+     (denote-sluggify-signature signature 'signature))))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -2420,7 +2491,7 @@ files)."
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name
-                    dir id keywords (denote-sluggify title) extension signature))
+                    dir id keywords (denote-sluggify title 'title) extension signature))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
@@ -2462,7 +2533,7 @@ of the file.  This needs to be done manually."
          (old-extension (denote-get-file-extension file))
          (new-extension (denote--file-extension new-file-type))
          (new-name (denote-format-file-name
-                    dir id keywords (denote-sluggify title) new-extension))
+                    dir id keywords (denote-sluggify title 'title) new-extension))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (and (not (eq old-extension new-extension))
                (denote-rename-file-prompt file new-name))
@@ -2480,7 +2551,8 @@ Specifically, do the following:
 - retain the file's existing name and make it the TITLE field,
   per Denote's file-naming scheme;
 
-- downcase and sluggify the TITLE, per our conventions;
+- `denote-letter-case' and sluggify the TITLE, per our
+  conventions (check the user option `denote-file-name-letter-casing');
 
 - prepend an identifier to the TITLE;
 
@@ -2520,7 +2592,7 @@ Specifically, do the following:
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
                    (extension (denote-get-file-extension file))
-                   (new-name (denote-format-file-name dir id keywords (denote-sluggify title) extension signature)))
+                   (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature)))
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
                 (if (denote--edit-front-matter-p new-name file-type)
@@ -2573,7 +2645,7 @@ proceed with the renaming."
                        ;; want to throw an exception if any is nil.
                        dir id
                        (or (denote-retrieve-keywords-value file file-type) nil)
-                       (denote-sluggify title) extension
+                       (denote-sluggify title 'title) extension
                        (or (denote-retrieve-filename-signature file) nil))))
       (when (or auto-confirm
                 (denote-rename-file-prompt file new-name))
@@ -2627,7 +2699,7 @@ their respective front matter."
                  (keywords (denote-retrieve-keywords-value file file-type))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name
-                            dir id keywords (denote-sluggify title) extension signature)))
+                            dir id keywords (denote-sluggify title 'title) extension signature)))
             (denote-rename-file-and-buffer file new-name)))
         (revert-buffer))
     (user-error "No marked files; aborting")))
