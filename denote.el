@@ -285,7 +285,7 @@ convenience commands: `denote-type', `denote-subdirectory',
   "Whether to sort keywords in new files.
 
 When non-nil, the keywords of `denote' are sorted with
-`string-lessp' regardless of the order they were inserted at the
+`string-collate-lessp' regardless of the order they were inserted at the
 minibuffer prompt.
 
 If nil, show the keywords in their given order."
@@ -1073,7 +1073,7 @@ keywords."
   "Prompt for one or more keywords.
 In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
-output is sorted with `string-lessp'.
+output is sorted with `string-collate-lessp'.
 
 Process the return value with `denote-keywords-sort'."
   (denote-keywords-sort (denote--keywords-crm (denote-keywords))))
@@ -1082,7 +1082,7 @@ Process the return value with `denote-keywords-sort'."
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
 KEYWORDS is a list of strings, per `denote-keywords-prompt'."
   (if denote-sort-keywords
-      (sort keywords #'string-lessp)
+      (sort keywords #'string-collate-lessp)
     keywords))
 
 (define-obsolete-function-alias
@@ -1584,7 +1584,7 @@ See `denote--retrieve-locations-in-xrefs'."
   (sort
    (delete-dups
     (denote--retrieve-group-in-xrefs identifier))
-   #'string-lessp))
+   #'string-collate-lessp))
 
 ;;;; New note
 
@@ -2180,10 +2180,10 @@ the new front matter, per `denote-rename-file-using-front-matter'."
   "Prompt for one or more KEYWORDS.
 In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
-output is sorted with `string-lessp'."
+output is sorted with `string-collate-lessp'."
   (let ((choice (denote--keywords-crm keywords "Keyword to remove: ")))
     (if denote-sort-keywords
-        (sort choice #'string-lessp)
+        (sort choice #'string-collate-lessp)
       choice)))
 
 ;;;###autoload
