@@ -905,6 +905,11 @@ whatever matches `denote-excluded-directories-regexp'."
   'denote-directory-subdirectories
   "1.0.0")
 
+(define-obsolete-variable-alias
+  'denote--encryption-file-extensions
+  'denote-encryption-file-extensions
+  "2.0.0")
+
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
 ;; option, but I am keeping it as a generic variable for now.
 (defvar denote-encryption-file-extensions '(".gpg" ".age")
@@ -1393,11 +1398,6 @@ for new note creation.  The default is `org'.")
              (plist-get (cdr type) :extension))
            denote-file-types)))
 
-(define-obsolete-variable-alias
-  'denote--encryption-file-extensions
-  'denote-encryption-file-extensions
-  "2.0.0")
-
 (defun denote--file-type-keys ()
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
@@ -1775,7 +1775,7 @@ It checks files in variable `denote-directory' and active buffer files."
 
 (defun denote--find-first-unused-id (id used-ids)
   "Return the first unused id starting at ID from USED-IDS.
-USED-IDS is a hash-table of all used IDs. If ID is already used,
+USED-IDS is a hash-table of all used IDs.  If ID is already used,
 increment it 1 second at a time until an available id is found."
   (let ((time (date-to-time id)))
     (while (gethash
@@ -2573,7 +2573,7 @@ Specifically, do the following:
     check them to confirm that the new front matter does not
     cause any problems (e.g. with the `diff-buffer-with-file'
     command).  Multiple buffers can be saved in one go with
-    `save-some-buffers' (read its doc string). ]"
+    `save-some-buffers' (read its doc string).  ]"
   (interactive (list current-prefix-arg) dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt))
