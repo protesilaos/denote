@@ -1424,6 +1424,17 @@ What these cons cells of =(COMPONENT . METHOD)= are:
   thus assumes responsibility to keep file names in a good state over
   the long term.
 
+As an example, we can downcase the title, but preserve the letter
+casing of the signature and keyword components with this:
+
+#+begin_src emacs-lisp
+(setq denote-file-name-letter-casing
+      '((title . downcase)
+        (signature . verbatim)
+        (keywords . verbatim)
+        (t . downcase)))
+#+end_src
+
 ** Features of the file-naming scheme for searching or filtering
 :PROPERTIES:
 :CUSTOM_ID: h:1a953736-86c2-420b-b566-fb22c97df197
