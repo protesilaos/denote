@@ -837,6 +837,47 @@ whatever matches `denote-excluded-directories-regexp'."
   'denote-directory-subdirectories
   "1.0.0")
 
+;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
+;; option, but I am keeping it as a generic variable for now.
+(defvar denote-encryption-file-extensions '(".gpg" ".age")
+  "List of strings specifying file extensions for encryption.")
+
+(define-obsolete-function-alias
+  'denote--extensions-with-encryption
+  'denote-file-type-extensions-with-encryption
+  "2.0.0")
+
+(defun denote-file-type-extensions-with-encryption ()
+  "Derive `denote-file-type-extensions' plus `denote-encryption-file-extensions'."
+  (let ((file-extensions (denote-file-type-extensions))
+        all)
+    (dolist (ext file-extensions)
+      (dolist (enc denote-encryption-file-extensions)
+        (push (concat ext enc) all)))
+    (append file-extensions all)))
+
+(defun denote-get-file-extension (file)
+  "Return extension of FILE with dot included.
+Account for `denote-encryption-file-extensions'.  In other words,
+return something like .org.gpg if it is part of the file, else
+return .org."
+  (let ((outer-extension (file-name-extension file :period)))
+    (if-let (((member outer-extension denote-encryption-file-extensions))
+             (file (file-name-sans-extension file))
+             (inner-extension (file-name-extension file :period)))
+        (concat inner-extension outer-extension)
+      outer-extension)))
+
+(defun denote-get-file-extension-sans-encryption (file)
+  "Return extension of FILE with dot included and without the encryption part.
+Build on top of `denote-get-file-extension' though always return
+something like .org even if the actual file extension is
+.org.gpg."
+  (let ((extension (denote-get-file-extension file)))
+    (if (string-match (regexp-opt denote-encryption-file-extensions) extension)
+        (substring extension 0 (match-beginning 0))
+      extension)))
+
 (defun denote-get-path-by-id (id)
   "Return absolute path of ID string in `denote-directory-files'."
   (let ((files
@@ -849,7 +890,7 @@ whatever matches `denote-excluded-directories-regexp'."
         (car files)
       (seq-find
        (lambda (file)
-         (let ((file-extension (file-name-extension file :period)))
+         (let ((file-extension (denote-get-file-extension file)))
            (and (denote-file-is-note-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
@@ -1285,25 +1326,6 @@ for new note creation.  The default is `org'.")
   'denote--encryption-file-extensions
   'denote-encryption-file-extensions
   "2.0.0")
-
-;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
-;; option, but I am keeping it as a generic variable for now.
-(defvar denote-encryption-file-extensions '(".gpg" ".age")
-  "List of strings specifying file extensions for encryption.")
-
-(define-obsolete-function-alias
-  'denote--extensions-with-encryption
-  'denote-file-type-extensions-with-encryption
-  "2.0.0")
-
-(defun denote-file-type-extensions-with-encryption ()
-  "Derive `denote-file-type-extensions' plus `denote-encryption-file-extensions'."
-  (let ((file-extensions (denote-file-type-extensions))
-        all)
-    (dolist (ext file-extensions)
-      (dolist (enc denote-encryption-file-extensions)
-        (push (concat ext enc) all)))
-    (append file-extensions all)))
 
 (defun denote--file-type-keys ()
   "Return all `denote-file-types' keys."
@@ -2138,7 +2160,7 @@ extension in `denote-file-type'.
 If no file types in `denote-file-types' has the file extension,
 the file type is assumed to be the first of `denote-file-types'."
   (let* ((file-type)
-         (extension (file-name-extension file t))
+         (extension (denote-get-file-extension-sans-encryption file))
          (types (denote--file-types-with-extension extension)))
     (cond ((not types)
            (setq file-type (caar denote-file-types)))
@@ -2395,7 +2417,7 @@ files)."
          (id (or (denote-retrieve-filename-identifier file :no-error)
                  (denote-create-unique-file-identifier file date)))
          (signature (denote-retrieve-filename-signature file))
-         (extension (file-name-extension file t))
+         (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name
                     dir id keywords (denote-sluggify title) extension signature))
@@ -2437,7 +2459,7 @@ of the file.  This needs to be done manually."
          (id (or (denote-retrieve-filename-identifier file :no-error) ""))
          (title (denote-retrieve-title-value file old-file-type))
          (keywords (denote-retrieve-keywords-value file old-file-type))
-         (old-extension (file-name-extension file t))
+         (old-extension (denote-get-file-extension file))
          (new-extension (denote--file-extension new-file-type))
          (new-name (denote-format-file-name
                     dir id keywords (denote-sluggify title) new-extension))
@@ -2497,7 +2519,7 @@ Specifically, do the following:
                    (signature (denote-retrieve-filename-signature file))
                    (file-type (denote-filetype-heuristics file))
                    (title (denote--retrieve-title-or-filename file file-type))
-                   (extension (file-name-extension file t))
+                   (extension (denote-get-file-extension file))
                    (new-name (denote-format-file-name dir id keywords (denote-sluggify title) extension signature)))
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
@@ -2540,7 +2562,7 @@ proceed with the renaming."
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let* ((file-type (denote-filetype-heuristics file))
             (title (denote-retrieve-title-value file file-type))
-            (extension (file-name-extension file t))
+            (extension (denote-get-file-extension file))
             (id (or (denote-retrieve-filename-identifier file :no-error)
                     (denote-create-unique-file-identifier file)))
             (dir (file-name-directory file))
@@ -2603,7 +2625,7 @@ their respective front matter."
                  (file-type (denote-filetype-heuristics file))
                  (title (denote-retrieve-title-value file file-type))
                  (keywords (denote-retrieve-keywords-value file file-type))
-                 (extension (file-name-extension file t))
+                 (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name
                             dir id keywords (denote-sluggify title) extension signature)))
             (denote-rename-file-and-buffer file new-name)))

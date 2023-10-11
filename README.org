@@ -3511,14 +3511,27 @@ might change them without further notice.
 + Function ~denote-file-type-extensions~ :: Return all file type
   extensions in ~denote-file-types~.
 
-#+variable: denote-encryption-file-extensions
+#+vindex: denote-encryption-file-extensions
 + Variable ~denote-encryption-file-extensions~ :: List of strings
   specifying file extensions for encryption.
 
-#+function: denote-file-type-extensions-with-encryption
+#+findex: denote-file-type-extensions-with-encryption
 + Function ~denote-file-type-extensions-with-encryption~ :: Derive
   ~denote-file-type-extensions~ plus ~denote-encryption-file-extensions~.
-  
+
+#+findex: denote-get-file-extension
++ Function ~denote-get-file-extension~ :: Return extension of =FILE=
+  with dot included.  Account for ~denote-encryption-file-extensions~.
+  In other words, return something like =.org.gpg= if it is part of
+  the file, else return =.org=. [ Part of {{{development-version}}}. ]
+
+#+findex: denote-get-file-extension-sans-encryption
++ Function ~denote-get-file-extension-sans-encryption~ :: Return
+  extension of =FILE= with dot included and without the encryption
+  part.  Build on top of ~denote-get-file-extension~ though always
+  return something like =.org= even if the actual file extension is
+  =.org.gpg=. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
   candidates.  If ~denote-infer-keywords~ is non-nil, infer keywords
@@ -3538,7 +3551,7 @@ might change them without further notice.
   ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).  Custom Lisp code can
   ~let~ bind the value of the variable ~denote-user-enforced-denote-directory~
   to override what this function returns.
-  
+
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
   paths in variable ~denote-directory~.  Files only need to have an
@@ -3647,7 +3660,7 @@ might change them without further notice.
     modified date and format it as an identifier.
 
   - As a fallback, derive an identifier from the current time.
-  
+
   With optional =USED-IDS= as a hash table of identifiers, test that the
   identifier is unique among them.
 
@@ -4558,8 +4571,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Schmitt, Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Colin
   McLear, Damien Cassou, Elias Storms, Federico Stilman, Florian,
   Frank Ehmsen, Guo Yong, Hanspeter Gisler, Jack Baty, Jay Rajput,
-  Jean-Charles Bagneris, Jeremy Friesen, Jonathan Sahar, Johan
-  Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal Modi, M. Hadi
+  Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen, Jonathan Sahar,
+  Johan Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal Modi, M. Hadi
   Timachi, Mark Olson, Mirko Hernandez, Niall Dooley, Paul van Gelder,
   Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven
   Seebeck, Taoufik, Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj,

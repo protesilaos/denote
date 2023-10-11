@@ -233,5 +233,37 @@ identifier: 20230605T102234
 ;;              (denote-sluggify title)
 ;;              (denote--file-extension type))))
 
+(defun denote-test--denote-get-file-extension ()
+  "Test that `denote-get-file-extension' gets the correct file extension."
+  (should (and (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing") "")
+               (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org") ".org")
+               (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.gpg") ".org.gpg")
+               (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.age") ".org.age"))))
+
+(defun denote-test--denote-get-file-extension-sans-encryption ()
+  "Test that `denote-get-file-extension-sans-encryption' gets the file extension without encryption."
+  (should (and (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing") "")
+               (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org") ".org")
+               (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.gpg") ".org")
+               (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.age") ".org"))))
+
+(defun denote-test--denote-filetype-heuristics ()
+  "Test that `denote-filetype-heuristics' gets the correct file type."
+  (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") (caar denote-file-types))
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org") 'org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.gpg") '.org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.age") '.org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") 'org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt") 'text)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt.gpg") 'text)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt.age") 'text)
+               ;; NOTE 2023-10-11: It returns `markdown-yaml' as a fallback.  In
+               ;; an actual file, it reads the file contents to determine what
+               ;; it is and can return `markdown-toml'.  In principle, we should
+               ;; be testing this here, though I prefer to keep things simple.
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md") 'markdown-yaml)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.gpg") 'markdown-yaml)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.age") 'markdown-yaml))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
