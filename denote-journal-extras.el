@@ -42,9 +42,15 @@
   (expand-file-name "journal" denote-directory)
   "Directory for storing daily journal entries.
 This can either be the same as the variable `denote-directory' or
-a subdirectory of it."
+a subdirectory of it.
+
+A value of nil means to use the variable `denote-directory'.
+Journal entries will thus be in a flat listing together with all
+other notes.  They can still be retrieved easily by searching for
+the `denote-journal-extras-keyword'."
   :group 'denote-journal-extras
-  :type 'directory)
+  :type '(choice (directory :tag "Provide directory path (is created if missing)")
+                 (const :tag "Use the `denote-directory'" nil)))
 
 (defcustom denote-journal-extras-keyword "journal"
   "Single word keyword to tag journal entries.

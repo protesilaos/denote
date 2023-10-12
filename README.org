@@ -2277,6 +2277,11 @@ subdirectory thereof.  To make it easier for the user, the new journal
 entry will be placed in ~denote-journal-extras-directory~, which
 defaults to a subdirectory of ~denote-directory~ called =journal=.
 
+If ~denote-journal-extras-directory~ is nil, the ~denote-directory~ is
+used.  Journal entries will thus be in a flat listing together with
+all other notes.  They can still be retrieved easily by searching for
+the ~denote-journal-extras-keyword~ ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
+
 #+vindex: denote-journal-extras-title-format
 Furthermore, the command ~denote-journal-extras-new-entry~ will use
 the current date as the title of the new entry.  The exact format is
