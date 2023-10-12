@@ -69,6 +69,7 @@ Acceptable symbols and their corresponding styles are:
 
 | Symbol                  | Style                             |
 |-------------------------+-----------------------------------|
+| day                     | Monday                            |
 | day-date-month-year     | Monday 19 September 2023          |
 | day-date-month-year-24h | Monday 19 September 2023 20:49    |
 | day-date-month-year-12h | Monday 19 September 2023 08:49 PM |
@@ -78,6 +79,9 @@ for a title."
   :group 'denote-journal-extras
   :type '(choice
           (const :tag "Prompt for title with `denote-journal-extras-new-entry'" nil)
+          (const :tag "Monday"
+                 :doc "The `format-time-string' is: %A"
+                 day)
           (const :tag "Monday 19 September 2023"
                  :doc "The `format-time-string' is: %A %e %B %Y"
                  day-date-month-year)
@@ -112,6 +116,7 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
    ((symbolp denote-journal-extras-title-format)
     (format-time-string
      (pcase denote-journal-extras-title-format
+       ('day "%A")
        ('day-date-month-year "%A %e %B %Y")
        ('day-date-month-year-24h "%A %e %B %Y %H:%M")
        ('day-date-month-year-12h "%A %e %B %Y %I:%M %^p"))))

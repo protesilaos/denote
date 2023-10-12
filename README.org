@@ -2286,9 +2286,24 @@ the ~denote-journal-extras-keyword~ ([[#h:1a953736-86c2-420b-b566-fb22c97df197][
 Furthermore, the command ~denote-journal-extras-new-entry~ will use
 the current date as the title of the new entry.  The exact format is
 controlled by the user option ~denote-journal-extras-title-format~.
-Refer to its documentation for the available formats.  If the value of
-this user option is ~nil~, then ~denote-journal-extras-new-entry~ will
-prompt for a title.
+Acceptable values for ~denote-journal-extras-title-format~ and their
+corresponding styles are:
+
+| Symbol                  | Style                             |
+|-------------------------+-----------------------------------|
+| day                     | Monday                            |
+| day-date-month-year     | Monday 19 September 2023          |
+| day-date-month-year-24h | Monday 19 September 2023 20:49    |
+| day-date-month-year-12h | Monday 19 September 2023 08:49 PM |
+
+For example:
+
+#+begin_src emacs-lisp
+(setq denote-journal-extras-title-format 'day-date-month-year)
+#+end_src
+
+If the value of this user option is ~nil~, then
+~denote-journal-extras-new-entry~ will prompt for a title.
 
 In terms of workflow, using the current date as the title is better
 for maintaining a daily journal.  A prompt for an arbitrary title is
