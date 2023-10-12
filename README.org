@@ -891,7 +891,6 @@ working with silos ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate
 Start by loading the relevant library:
 
 #+begin_src emacs-lisp
-;; Register Denote's Org dynamic blocks
 (require 'denote-silo-extras)
 #+end_src
 
@@ -2186,7 +2185,6 @@ Denote can optionally integrate with Org mode's "dynamic blocks"
 facility.  Start by loading the relevant library:
 
 #+begin_src emacs-lisp
-;; Register Denote's Org dynamic blocks
 (require 'denote-org-dblock)
 #+end_src
 
