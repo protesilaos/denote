@@ -1091,7 +1091,8 @@ the following:
 - retains the file's existing name and make it the =TITLE= field, per
   Denote's file-naming scheme;
 
-- downcases and sluggifies the =TITLE=, per our conventions;
+- sluggifies the =TITLE= and adjusts its letter casing, per our
+  conventions ([[*Contol the letter casing of file names][Contol the letter casing of file names]]);
 
 - prepends an identifier to the =TITLE=;
 
@@ -1268,8 +1269,9 @@ hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
 note and, as such, is also known as the file's ID or identifier.
 
-The =TITLE= field is the title of the note, as provided by the user.  It
-automatically gets downcased and hyphenated.  An entry about "Economics
+The =TITLE= field is the title of the note, as provided by the user.
+It automatically gets downcased by default and is also hyphenated
+([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).  An entry about "Economics
 in the Euro Area" produces an =economics-in-the-euro-area= string for
 the =TITLE= of the file name.
 
@@ -1363,14 +1365,75 @@ holds the relevant value.  In simple terms:
 
 + What we count as "illegal characters" are converted into hyphens.
 
-+ Input for a file title is hyphenated and downcased.  The original
-  value is preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
++ Input for a file title is hyphenated.  The original value is
+  preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
 + Keywords should not have spaces or other delimiters.  If they do, they
-  are converted into hyphens.  Keywords are always downcased.
+  are converted into hyphens.
 
 + Signatures are like the above, but use the equals sign instead of
   hyphens.
+
+All file name components are downcases by default, though users can
+configure this behaviour ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
+
+** Contol the letter casing of file names
+:PROPERTIES:
+:CUSTOM_ID: h:6ae1ab8c-5e36-4216-8e93-f37f4447582c
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-file-name-letter-casing
+The user option ~denote-file-name-letter-casing~ controls the letter
+casing of the individual components of file names ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+The default method is to downcase everything.
+
+The value of this user option is an alist where each element is a cons
+cell of the form =(COMPONENT . METHOD)=.  For example, here is the
+default value:
+
+#+begin_example emacs-lisp
+'((title . downcase)
+  (signature . downcase)
+  (keywords . downcase)
+  (t . downcase))
+#+end_example
+
+What these cons cells of =(COMPONENT . METHOD)= are:
+
+- The =COMPONENT= is an unquoted symbol among =title=, =signature=,
+  =keywords=, which refer to the corresponding component of the file
+  name.  The special ~t~ =COMPONENT= is a fallback value in case the
+  others are not specified.
+
+- The =METHOD= is the letter casing scheme, which is an unquoted
+  symbol of either =downcase= or =verbatim=.  A nil value has the same
+  meaning as =downcase=.  Other non-nil =METHOD= types are reserved
+  for possible future use.
+
+  The =downcase= =METHOD= converts user input for the given
+  =COMPONENT= into lower case.  The benefit of this approach (which is
+  the default behaviour) is that file names remain consistent over the
+  long-term.  The user never needs to account for varying letter
+  casing while working with them.
+
+  The =verbatim= =METHOD= means that Denote will not affect the letter
+  casing of user input when generating the given file name =COMPONENT=.
+  Conventions like CamelCase or camelCase are respected.  The user
+  thus assumes responsibility to keep file names in a good state over
+  the long term.
+
+As an example, we can downcase the title, but preserve the letter
+casing of the signature and keyword components with this:
+
+#+begin_src emacs-lisp
+(setq denote-file-name-letter-casing
+      '((title . downcase)
+        (signature . verbatim)
+        (keywords . verbatim)
+        (t . downcase)))
+#+end_src
 
 ** Features of the file-naming scheme for searching or filtering
 :PROPERTIES:
