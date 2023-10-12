@@ -78,9 +78,15 @@ for a title."
   :group 'denote-journal-extras
   :type '(choice
           (const :tag "Prompt for title with `denote-journal-extras-new-entry'" nil)
-          (const :tag "Monday 19 September 2023" :value "%A %e %B %Y" day-date-month-year)
-          (const :tag "Monday 19 September 2023 20:49" :value "%A %e %B %Y %H:%M" day-date-month-year-24h)
-          (const :tag "Monday 19 September 2023 08:49 PM" :value "%A %e %B %Y %I:%M %^p" day-date-month-year-12h)
+          (const :tag "Monday 19 September 2023"
+                 :doc "The `format-time-string' is: %A %e %B %Y"
+                 day-date-month-year)
+          (const :tag "Monday 19 September 2023 20:49"
+                 :doc "The `format-time-string' is: %A %e %B %Y %H:%M"
+                 day-date-month-year-24h)
+          (const :tag "Monday 19 September 2023 08:49 PM"
+                 :doc "The `format-time-string' is: %A %e %B %Y %I:%M %^p"
+                 day-date-month-year-12h)
           (string :tag "Custom string with `format-time-string' specifiers")))
 
 (defcustom denote-journal-extras-hook nil
