@@ -491,6 +491,50 @@ and `denote-link-after-creating-with-command'."
   :link '(info-link "(denote) Choose which commands to prompt for")
   :type '(repeat symbol))
 
+(defcustom denote-file-name-letter-casing
+  '((title . downcase)
+    (signature . downcase)
+    (keywords . downcase)
+    (t . downcase))
+  "Specify the method Denote uses to affect the letter casing of file names.
+
+The value is an alist where each element is a cons cell of the
+form (COMPONENT . METHOD).
+
+- The COMPONENT is an unquoted symbol among `title', `signature',
+  `keywords', which refer to the corresponding component of the
+  file name.  The special t COMPONENT is a fallback value in case
+  the others are not specified.
+
+- The METHOD is the letter casing scheme, which is an unquoted
+  symbol of either `downcase' or `verbatim'.  A nil value has the
+  same meaning as `downcase'.  Other non-nil METHOD types are
+  reserved for possible future use.
+
+  The `downcase' METHOD converts user input for the given
+  COMPONENT into lower case.  The benefit of this approach (which
+  is the default behaviour) is that file names remain consistent
+  over the long-term.  The user never needs to account for
+  varying letter casing while working with them.
+
+  The `verbatim' METHOD means that Denote will not affect the
+  letter casing of user input when generating the given file name
+  COMPONENT.  As such, conventions like CamelCase or camelCase
+  are respected.  The user thus assumes responsibility to keep
+  file names in a good state over the long term."
+  :group 'denote
+  :type '(alist
+          :key (choice :tag "File name component"
+                       (const :tag "The --TITLE component of the file name" title)
+                       (const :tag "The ==SIGNATURE component of the file name" signature)
+                       (const :tag "The __KEYWORDS component of the file name" keywords)
+                       (const :tag "Fallback for any unspecified file name component" t))
+          :value (choice :tag "Letter casing method"
+                         (const :tag "Downcase file names (default)" downcase)
+                         (const :tag "Accept file name inputs verbatim" verbatim)))
+  :link '(info-link "(denote) Contol the letter casing of file names")
+  :package-version '(denote . "2.1.0"))
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -587,49 +631,6 @@ leading and trailing hyphen."
    (replace-regexp-in-string
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
-
-(defcustom denote-file-name-letter-casing
-  '((title . downcase)
-    (signature . downcase)
-    (keywords . downcase)
-    (t . downcase))
-  "Specify the method Denote uses to affect the letter casing of file names.
-
-The value is an alist where each element is a cons cell of the
-form (COMPONENT . METHOD).
-
-- The COMPONENT is an unquoted symbol among `title', `signature',
-  `keywords', which refer to the corresponding component of the
-  file name.  The special t COMPONENT is a fallback value in case
-  the others are not specified.
-
-- The METHOD is the letter casing scheme, which is an unquoted
-  symbol of either `downcase' or `verbatim'.  A nil value has the
-  same meaning as `downcase'.  Other non-nil METHOD types are
-  reserved for possible future use.
-
-  The `downcase' METHOD converts user input for the given
-  COMPONENT into lower case.  The benefit of this approach (which
-  is the default behaviour) is that file names remain consistent
-  over the long-term.  The user never needs to account for
-  varying letter casing while working with them.
-
-  The `verbatim' METHOD means that Denote will not affect the
-  letter casing of user input when generating the given file name
-  COMPONENT.  As such, conventions like CamelCase or camelCase
-  are respected.  The user thus assumes responsibility to keep
-  file names in a good state over the long term."
-  :group 'denote
-  :type '(alist
-          :key (choice :tag "File name component"
-                       (const :tag "The --TITLE component of the file name" title)
-                       (const :tag "The ==SIGNATURE component of the file name" signature)
-                       (const :tag "The __KEYWORDS component of the file name" keywords)
-                       (const :tag "Fallback for any unspecified file name component" t))
-          :value (choice :tag "Letter casing method"
-                         (const :tag "Downcase file names (default)" downcase)
-                         (const :tag "Accept file name inputs verbatim" verbatim)))
-  :package-version '(denote . "2.1.0"))
 
 (defun denote-letter-case (component args)
   "Apply letter casing specified by COMPONENT to ARGS.
