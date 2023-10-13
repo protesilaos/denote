@@ -2689,8 +2689,9 @@ expression to mark the matching files.  This is the command
 example, =% m _denote= will match all files that have the =denote=
 keyword ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
 
-Once the files are matched, the user has to options: (i) narrow the list
-to the matching items or (ii) exclude the matching items from the list.
+Once the files are matched, the user has two options: (i) narrow the
+list to the matching items or (ii) exclude the matching items from the
+list.
 
 For the former, we want to toggle the marks by typing =t= (calls the
 command ~dired-toggle-marks~ by default) and then hit the letter =k=
