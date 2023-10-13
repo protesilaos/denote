@@ -1321,18 +1321,14 @@ underscore (the separator is inserted automatically).  Each keyword is
 a string provided by the user at the relevant prompt which broadly
 describes the contents of the entry.
 
-#+vindex: denote-allow-multi-word-keywords
-Optionally, when the user option ~denote-allow-multi-word-keywords~ is
-non-nil, keywords that need to be more than one-word-long are written
-with hyphens: any other character, such as spaces or the plus sign is
-automatically converted into a hyphen.  So when =emacs_library=
-appears in a file name, it is interpreted as two distinct keywords,
-whereas =emacs-library= is one keyword.  This is reflected in how the
-keywords are recorded in the note ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).  While Denote
-optional supports multi-word keywords, default ~nil~ value of
-~denote-allow-multi-word-keywords~ forcibly joins all words into one,
-meaning that an input of =word1 word2= will be written as
-=word1word2=.
+Each of the keywords is a single word, with multiple keywords
+providing the multi-dimensionality needed for advanced searches
+through Denote files.  Users who need to compose a keyword out of
+multiple words are encouraged to apply a letter casing convention such
+as camelCase/CamelCase and set the ~denote-file-name-letter-casing~
+user option accordingly ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
+[ The ~denote-allow-multi-word-keywords~ is obsolete as part of
+  {{{development-version}}}. ]
 
 #+vindex: denote-file-type
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
@@ -3402,11 +3398,6 @@ Everything is in place to set up the package.
 ;; Read this manual for how to specify `denote-templates'.  We do not
 ;; include an example here to avoid potential confusion.
 
-
-;; We do not allow multi-word keywords by default.  The author's
-;; personal preference is for single-word keywords for a more rigid
-;; workflow.
-(setq denote-allow-multi-word-keywords t)
 
 (setq denote-date-format nil) ; read doc string
 

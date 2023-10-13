@@ -153,8 +153,8 @@ directory and also checks if a safe local value should be used."
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
   "List of strings with predefined keywords for `denote'.
-Also see user options: `denote-allow-multi-word-keywords',
-`denote-infer-keywords', `denote-sort-keywords'."
+Also see user options: `denote-infer-keywords',
+`denote-sort-keywords', `denote-file-name-letter-casing'."
   :group 'denote
   :package-version '(denote . "0.1.0")
   :type '(repeat string))
@@ -293,24 +293,10 @@ If nil, show the keywords in their given order."
   :package-version '(denote . "0.1.0")
   :type 'boolean)
 
-(defcustom denote-allow-multi-word-keywords nil
-  "If non-nil keywords can consist of multiple words.
-Words are automatically separated by a hyphen when using the
-`denote' command or related.  The hyphen is the only legal
-character---no spaces, no other characters.  If, for example, the
-user types <word1_word2> or <word1 word2>, it is converted to
-<word1-word2>.
-
-When nil (the default), do not allow keywords to consist of
-multiple words.  Reduce them to a single word, such as by turning
-<word1_word2> or <word1 word2> into <word1word2>.
-
-[ The author of Denote encourages you to use single words for
-  keywords and, if needed, rely on multiple separate keywords to
-  derive meaning.]"
-  :group 'denote
-  :package-version '(denote . "2.0.0")
-  :type 'boolean)
+(make-obsolete
+ 'denote-allow-multi-word-keywords
+ 'denote-file-name-letter-casing
+ "2.1.0")
 
 (defcustom denote-file-type nil
   "The file type extension for new notes.
@@ -684,12 +670,7 @@ A nil value of COMPONENT has the same meaning as applying
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
   (if (listp keywords)
-      ;; FIXME 2023-10-09: What to do with `denote-allow-multi-word-keywords
-      (mapcar
-       (if denote-allow-multi-word-keywords
-           #'denote-sluggify
-         #'denote-sluggify-and-join)
-       keywords)
+      (mapcar #'denote-sluggify-and-join keywords)
     (error "`%s' is not a list" keywords)))
 
 ;; TODO 2023-05-22: Review name of `denote-desluggify' to signify what
