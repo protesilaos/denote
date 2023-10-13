@@ -2167,6 +2167,24 @@ note's actual title.  At the `denote-file-prompt' type
     (denote--command-with-title-history #'denote)))
 
 ;;;###autoload
+(defun denote-open-or-create-with-command ()
+  "Visit TARGET file in variable `denote-directory'.
+If file does not exist, invoke `denote' to create a file.
+
+If TARGET file does not exist, add the user input that was used
+to search for it to the minibuffer history of the
+`denote-file-prompt'.  The user can then retrieve and possibly
+further edit their last input, using it as the newly created
+note's actual title.  At the `denote-file-prompt' type
+\\<minibuffer-local-map>\\[previous-history-element]."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((target (denote-file-prompt)))
+    (if (and target (file-exists-p target))
+        (find-file target)
+      (denote--command-with-title-history (denote-command-prompt)))))
+
+;;;###autoload
 (defun denote-keywords-add (keywords)
   "Prompt for KEYWORDS to add to the current note's front matter.
 When called from Lisp, KEYWORDS is a list of strings.
