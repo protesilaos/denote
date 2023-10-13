@@ -1354,7 +1354,7 @@ To only return an existing identifier, refer to the function
 (define-obsolete-function-alias
   'denote-retrieve-or-create-file-identifier
   'denote-retrieve-filename-identifier
-  "2.0.1")
+  "2.1.0")
 
 (defun denote-retrieve-filename-signature (file)
   "Extract signature from FILE name, if present, else return nil."
@@ -1613,7 +1613,7 @@ increment it 1 second at a time until an available id is found."
       (setq time (time-add time 1)))
     (format-time-string denote-id-format time)))
 
-(make-obsolete 'denote-barf-duplicate-id nil "2.0.1")
+(make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
 
 (defconst denote-commands-for-new-notes
   '(denote
