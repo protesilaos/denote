@@ -473,6 +473,7 @@ structure template as soon as `denote-region' is done:
               #\\='my-denote-region-org-structure-template)"
   :group 'denote
   :package-version '(denote . "2.1.0")
+  :link '(info-link "(denote) Create a note with the region's contents")
   :type 'hook)
 
 (defcustom denote-commands-for-new-notes
