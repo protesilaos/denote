@@ -3221,6 +3221,24 @@ Like `denote-find-link', but select backlink to follow."
       (or (denote-link-return-backlinks)
           (user-error "No backlinks found")))))))
 
+(defun denote--link-after-creating-1 (command description-fn &optional id-only)
+  "Subroutine for `denote-link-after-creating' and the like.
+COMMAND is the symbol of a file-creating command to call, such as
+`denote' or `denote-signature'.
+
+DESCRIPTION-FN is the symbol of a function that returns the
+description of a link, like `denote--link-get-description' or
+`denote--link-get-description-with-signature'.
+
+ID-ONLY has the same meaning as described in `denote-link'."
+  (let (path)
+    (save-window-excursion
+      (call-interactively command)
+      (save-buffer)
+      (setq path (buffer-file-name)))
+    (let ((type (denote-filetype-heuristics path)))
+      (denote-link path type (funcall description-fn path type) id-only))))
+
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
   "Create new note in the background and link to it directly.
@@ -3245,19 +3263,8 @@ We thus have to save the buffer in order to (i) establish valid
 links, and (ii) retrieve whatever front matter from the target
 file."
   (interactive "P")
-  (let (path)
-    (save-window-excursion
-      (call-interactively #'denote)
-      (save-buffer)
-      (setq path (buffer-file-name)))
-    (let ((type (denote-filetype-heuristics path)))
-      (denote-link
-       path
-       type
-       (denote--link-get-description path type)
-       id-only))))
+  (denote--link-after-creating-1 #'denote #'denote--link-get-description id-only))
 
-;; FIXME 2023-09-25: Consolidate this with the above.
 ;;;###autoload
 (defun denote-link-after-creating-with-command (command &optional id-only)
   "Like `denote-link-after-creating' but prompt for note-making COMMAND.
@@ -3270,19 +3277,12 @@ Optional ID-ONLY has the same meaning as in the command
    (list
     (denote-command-prompt)
     current-prefix-arg))
-  (let (path)
-    (save-window-excursion
-      (call-interactively command)
-      (save-buffer)
-      (setq path (buffer-file-name)))
-    (let ((type (denote-filetype-heuristics path)))
-      (denote-link
-       path
-       type
-       (if (eq command 'denote-signature)
-           (denote--link-get-description-with-signature path type)
-         (denote--link-get-description path type))
-       id-only))))
+  (denote--link-after-creating-1
+   command
+   (if (eq command 'denote-signature)
+       #'denote--link-get-description-with-signature
+     #'denote--link-get-description
+     id-only)))
 
 ;;;###autoload
 (defun denote-link-or-create (target &optional id-only)
