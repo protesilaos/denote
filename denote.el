@@ -3730,6 +3730,10 @@ This command is meant to be used from a Dired buffer."
      :help "Create a new note with a given date in the `denote-directory'"]
     ["Create a note with signature" denote-signature
      :help "Create a new note with a given signature in the `denote-directory'"]
+    ["Open a note or create it if missing" denote-open-or-create
+     :help "Open an existing note in the `denote-directory' or create it if missing"]
+    ["Open a note or create it with the chosen command" denote-open-or-create-with-command
+     :help "Open an existing note or create it with the chosen command if missing"]
     "---"
     ["Rename a file" denote-rename-file
      :help "Rename file interactively"
@@ -3755,6 +3759,18 @@ This command is meant to be used from a Dired buffer."
      :enable (derived-mode-p 'dired-mode)]
     ["Show file backlinks" denote-backlinks
      :help "Insert link to a file in the `denote-directory'"
+     :enable (derived-mode-p 'text-mode)]
+    ["Link to existing note or newly created one" denote-link-or-create
+     :help "Insert a link to an existing file, else create it and link to it"
+     :enable (derived-mode-p 'text-mode)]
+    ["Link to existing note or newly created one with the chosen command" denote-link-or-create-with-command
+     :help "Insert a link to an existing file, else create it with the given command and link to it"
+     :enable (derived-mode-p 'text-mode)]
+    ["Create note in the background and link to it directly" denote-link-after-creating
+     :help "Create new note and link to it from the current file"
+     :enable (derived-mode-p 'text-mode)]
+    ["Create note in the background with chosen command and link to it directly" denote-link-after-creating-with-command
+     :help "Create new note with the chosen command and link to it from the current file"
      :enable (derived-mode-p 'text-mode)]
     "---"
     ["Highlight Dired file names" denote-dired-mode
