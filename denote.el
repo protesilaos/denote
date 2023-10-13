@@ -475,6 +475,21 @@ structure template as soon as `denote-region' is done:
   :package-version '(denote . "2.1.0")
   :type 'hook)
 
+(defcustom denote-commands-for-new-notes
+  '(denote
+    denote-date
+    denote-subdirectory
+    denote-template
+    denote-type
+    denote-signature)
+  "List of commands for `denote-command-prompt' that create a new note.
+These are used by commands such as `denote-open-or-create-with-command'
+and `denote-link-after-creating-with-command'."
+  :group 'denote
+  :package-version '(denote . "2.1.0")
+  :link '(info-link "(denote) Choose which commands to prompt for")
+  :type '(repeat symbol))
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -1614,15 +1629,6 @@ increment it 1 second at a time until an available id is found."
     (format-time-string denote-id-format time)))
 
 (make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
-
-(defconst denote-commands-for-new-notes
-  '(denote
-    denote-date
-    denote-subdirectory
-    denote-template
-    denote-type
-    denote-signature)
-  "List of commands for `denote-command-prompt' that create a new note.")
 
 (defvar denote--command-prompt-history nil
   "Minibuffer history for `denote-command-prompt'.")

@@ -2177,6 +2177,27 @@ aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
 these aliases is to offer alternative, more descriptive names of
 select commands.
 
+* Choose which commands to prompt for
+:PROPERTIES:
+:CUSTOM_ID: h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-commands-for-new-notes
+The user option ~denote-commands-for-new-notes~ specifies a list of
+commands that are available at the ~denote-command-prompt~.  This
+prompt is used by Denote commands that ask the user how to create a
+new note, as described elsewhere in this manual:
+
+- [[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing note or create it if missing]]
+- [[#h:b6056e6b-93df-4e6b-a778-eebd105bac46][Link to a note or create it if missing]]
+
+The default value includes all the basic file-creating commands
+([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  Users may customise this value if (i) they only
+want to see fewer options and/or (ii) wish to include their own custom
+command in the list ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]).
+
 * Fontification in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:337f9cf0-9f66-45af-b73f-f6370472fb51
