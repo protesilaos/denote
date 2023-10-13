@@ -1887,10 +1887,17 @@ When called from Lisp, all arguments are optional.
 (defvar denote--title-history nil
   "Minibuffer history of `denote-title-prompt'.")
 
+(defvar denote-title-prompt-current-default nil
+  "Currently bound default title for `denote-title-prompt'.
+Set the value of this variable within the lexical scope of a
+command that needs to supply a default title before calling
+`denote-title-prompt' and use `unwind-protect' to set its value
+back to nil.")
+
 (defun denote-title-prompt (&optional default-title)
   "Read file title for `denote'.
 With optional DEFAULT-TITLE use it as the default value."
-  (let* ((def default-title)
+  (let* ((def (or default-title denote-title-prompt-current-default))
          (format (if (and def (not (string-empty-p def)))
                      (format "File title [%s]: " def)
                    "File title: ")))
@@ -2128,14 +2135,20 @@ technicalities)."
 
 (defun denote--command-with-title-history (command)
   "Call COMMAND with modified title history.
-Allow COMMAND to gain access to the return value of
-`denote--append-extracted-string-to-history' for the
-`denote--title-history'.  This is what makes
-`denote-open-or-create' and `denote-link-or-create' return the
-last input on demand when prompting for a title."
+
+Set the `denote-title-prompt-current-default' to the value of the
+last user input of a file title search (per `denote-file-prompt').
+
+This is what makes commands such as `denote-open-or-create' or
+`denote-link-or-create' get what the user initially typed as the
+default value for the title of the new note to be created."
   (let ((denote--title-history
          (denote--append-extracted-string-to-history denote--title-history)))
-    (call-interactively command)))
+    (unwind-protect
+        (progn
+          (setq denote-title-prompt-current-default (car denote--title-history))
+          (call-interactively command))
+      (setq denote-title-prompt-current-default nil))))
 
 ;;;###autoload
 (defun denote-open-or-create (target)

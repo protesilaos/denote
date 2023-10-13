@@ -3794,6 +3794,14 @@ might change them without further notice.
 + Function ~denote-title-prompt~ :: Read file title for ~denote~.
   With optional =DEFAULT-TITLE= use it as the default value.
 
+#+vindex: denote-title-prompt-current-default
++ Variable ~denote-title-prompt-current-default~ :: Currently bound
+  default title for ~denote-title-prompt~.  Set the value of this
+  variable within the lexical scope of a command that needs to supply
+  a default title before calling ~denote-title-prompt~ and use
+  ~unwind-protect~ to set its value back to nil. [ Part of
+  {{{development-version}}}. ]
+
 #+findex: denote-file-type-prompt
 + Function ~denote-file-type-prompt~ :: Prompt for ~denote-file-type~.
   Note that a non-nil value other than ~text~, ~markdown-yaml~, and
