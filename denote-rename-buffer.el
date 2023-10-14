@@ -43,8 +43,9 @@
   "Symbol of function that is called to rename the Denote file buffer.
 
 The function is called without arguments from the
-`find-file-hook' when `denote-rename-buffer-mode' is enabled (or
-when the user manually sets up the hook).
+`find-file-hook' and `denote-after-new-note-hook' when
+`denote-rename-buffer-mode' is enabled (or when the user manually
+sets up the hooks).
 
 See the function `denote-rename-buffer-with-title' (the default
 value) for a reference implementation."
@@ -72,7 +73,7 @@ option `denote-rename-buffer-function'.  If you need something
 else, check the Denote manual for functions/variables that
 extract the data you are looking for."
   (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
-              (title (denote--retrieve-title-or-filename (car file-and-type) (cdr file-and-type))))
+              (title (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
     (rename-buffer title :unique)))
 
 (defun denote-rename-buffer-with-identifier (&optional buffer)
@@ -90,7 +91,7 @@ extract the data you are looking for."
 
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
-Add this to `find-file-hook'."
+Add this to `find-file-hook' and `denote-after-new-note-hook'."
   (funcall (or denote-rename-buffer-function #'denote-rename-buffer-with-title)))
 
 ;;;###autoload
@@ -102,7 +103,10 @@ visited again in a new buffer (files are visited with the command
 `find-file' or related)."
   :global t
   (if denote-rename-buffer-mode
-      (add-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)
+      (progn
+        (add-hook 'denote-after-new-note-hook #'denote-rename-buffer-rename-function-or-fallback)
+        (add-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback))
+    (remove-hook 'denote-after-new-note-hook #'denote-rename-buffer-rename-function-or-fallback)
     (remove-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)))
 
 (provide 'denote-rename-buffer-with-title)
