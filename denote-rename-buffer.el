@@ -39,7 +39,7 @@
   :link '(info-link "(denote) Top")
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-(defcustom denote-rename-buffer-format "%k %t"
+(defcustom denote-rename-buffer-format "%t"
   "The format `denote-rename-buffer' should use.
 This is an arbitrary string parsed by `denote-rename-buffer',
 which treats specially the following specifiers:
