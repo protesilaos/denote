@@ -2261,39 +2261,85 @@ its standand attachments' facility).
 :CUSTOM_ID: h:3ca4db16-8f26-4d7d-b748-bac48ae32d69
 :END:
 
+[ Refactored and expanded as part of {{{development-version}}}. ]
+
 #+findex: denote-rename-buffer-mode
-The ~denote-rename-buffer-mode~ minor mode provides the means to
+The minor mode ~denote-rename-buffer-mode~ provides the means to
 automatically rename the buffer of a Denote file upon visiting the
-file.  A buffer is renamed upon visiting the underlying file.  This
-means that existing buffers are not renamed until they are visited
-again in a new buffer (files are visited with the command ~find-file~
-or related).  Enable the mode thus:
+file. This applies both to existing Denote files as well as new ones
+([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). Enable the mode thus:
 
 #+begin_src emacs-lisp
 (denote-rename-buffer-mode 1)
 #+end_src
 
-The default behaviour is to rename the buffer based on the file's
-title, which is retrieved from the front matter or from the =TITLE=
-component of the file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
-
 #+vindex: denote-rename-buffer-function
-#+findex: denote-rename-buffer-with-title
-#+findex: denote-rename-buffer-with-identifier
-Customize the user option ~denote-rename-buffer-function~ to affect
-how buffers are renamed.  Its value must be the symbol of a function.
-The default is the ~denote-rename-buffer-with-title~, with an
-alternative of ~denote-rename-buffer-with-identifier~.
-
-The user option also accepts an arbitrary function.  Refer to the
-implementation details of ~denote-rename-buffer-with-title~ or
-~denote-rename-buffer-with-identifier~ for guidance on how to write a
-custom function.
+#+findex: denote-rename-buffer
+#+vindex: denote-rename-buffer-format
+Buffers are named by applying the function specified in the user
+option ~denote-rename-buffer-function~. The default function is
+~denote-rename-buffer~: it renames the buffer based on the template
+set in the user option ~denote-rename-buffer-format~. By default, the
+formatting template targets only the =TITLE= component of the file
+name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). Other fields are explained elsewhere in
+this manual ([[#h:35507c18-35b1-41b9-9d80-52f54fcef3cb][The denote-rename-buffer-format]]).
 
 Note that renaming a buffer is not the same as renaming a file
-([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).  The former is just for convenience inside of Emacs.
+([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]). The former is just for convenience inside of Emacs.
 Whereas the latter is for writing changes to disk, making them
 available to all programs.
+
+** The ~denote-rename-buffer-format~
+:PROPERTIES:
+:CUSTOM_ID: h:35507c18-35b1-41b9-9d80-52f54fcef3cb
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+The user option ~denote-rename-buffer-format~ controls how the
+function ~denote-rename-buffer~ chooses the name of the
+buffer-to-be-renamed.
+
+The value of this user option is a string. The following specifiers
+are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]):
+
+- The =%t= is the Denote =TITLE= of the file.
+- The =%i= is the Denote =IDENTIFIER= of the file.
+- The =%d= is the same as %i (=DATE= mnemonic).
+- The =%s= is the Denote =SIGNATURE= of the file.
+- The =%k= is the Denote =KEYWORDS= of the file.
+- The =%%= is a literal percent sign.
+
+In addition, the following flags are available for each of the specifiers:
+
+- =0= :: Pad to the width, if given, with zeros instead of spaces.
+- =-= :: Pad to the width, if given, on the right instead of the left.
+- =<= :: Truncate to the width and precision, if given, on the left.
+- =>= :: Truncate to the width and precision, if given, on the right.
+- =^= :: Convert to upper case.
+- =_= :: Convert to lower case.
+
+When combined all together, the above are written thus:
+
+: %<flags><width><precision>SPECIFIER-CHARACTER
+
+Any other string it taken as-is.  Users may want, for example, to
+include some text that makes Denote buffers stand out, such as
+a =[D]= prefix.  Examples:
+
+#+begin_src emacs-lisp
+;; Use the title (default)
+(setq denote-rename-buffer-format "%t")
+
+;; Use the title and keywords with some emoji in between
+(setq denote-rename-buffer-format "%t 🤨 %k")
+
+;; Use the title with a literal "[D]" before it
+(setq denote-rename-buffer-format "[D] %t")
+#+end_src
+
+Users who need yet more flexibility are best served by writing their
+own function and assigning it to the ~denote-rename-buffer-function~.
 
 * Use Org dynamic blocks
 :PROPERTIES:
@@ -3424,6 +3470,10 @@ Everything is in place to set up the package.
 ;;
 ;; OR if only want it in `denote-dired-directories':
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+
+
+;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
+(denote-rename-buffer-mode 1)
 
 ;; Denote DOES NOT define any key bindings.  This is for the user to
 ;; decide.  For example:

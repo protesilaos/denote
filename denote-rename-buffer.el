@@ -40,28 +40,29 @@
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
 (defcustom denote-rename-buffer-format "%t"
-  "The format `denote-rename-buffer' should use.
-This is an arbitrary string parsed by `denote-rename-buffer',
-which treats specially the following specifiers:
+  "The format of the buffer name `denote-rename-buffer' should use.
+Thie value is a string that treats specially the following
+specifiers:
 
-- The %t is a placeholder for the title of the file.
-- The %i is a placeholder for the identifier of the file.
-- The %s is a placeholder for the signature of the file.
-- The %k is a placeholder for the keywords of the file.
+- The %t is the Denote TITLE of the file.
+- The %i is the Denote IDENTIFIER of the file.
+- The %d is the same as %i (DATE mnemonic).
+- The %s is the Denote SIGNATURE of the file.
+- The %k is the Denote KEYWORDS of the file.
 - The %% is a literal percent sign.
 
 In addition, the following flags are available for each of the specifiers:
 
-- 0: Pad to the width, if given, with zeros instead of spaces.
-- -: Pad to the width, if given, on the right instead of the left.
-- <: Truncate to the width and precision, if given, on the left.
-- >: Truncate to the width and precision, if given, on the right.
-- ^: Convert to upper case.
-- _: Convert to lower case.
+- 0 :: Pad to the width, if given, with zeros instead of spaces.
+- - :: Pad to the width, if given, on the right instead of the left.
+- < :: Truncate to the width and precision, if given, on the left.
+- > :: Truncate to the width and precision, if given, on the right.
+- ^ :: Convert to upper case.
+- _ :: Convert to lower case.
 
 When combined all together, the above are written thus:
 
-    %<flags><width><precision>character
+    %<flags><width><precision>SPECIFIER-CHARACTER
 
 Any other string it taken as-is.  Users may want, for example, to
 include some text that makes Denote buffers stand out, such as
@@ -121,6 +122,7 @@ Return the file path and the type of it as a cons cell."
   (format-spec denote-rename-buffer-format
                (list (cons ?t (denote-rename-buffer--get-title buffer))
                      (cons ?i (denote-rename-buffer--get-identifier buffer))
+                     (cons ?d (denote-rename-buffer--get-identifier buffer))
                      (cons ?s (denote-rename-buffer--get-signature buffer))
                      (cons ?k (denote-rename-buffer--get-keywords buffer))
                      (cons ?% "%"))
