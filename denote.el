@@ -689,13 +689,13 @@ signatures and keywords."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
-(defun denote-file-is-note-p (file)
-  "Return non-nil if FILE is an actual Denote note.
-For our purposes, a note must not be a directory, must satisfy
-`file-regular-p' and `denote-filename-is-note-p'."
-  (and (not (file-directory-p file))
-       (file-regular-p file)
-       (denote-filename-is-note-p file)))
+(defun denote-file-has-supported-extension-p (file)
+  "Return non-nil if FILE has supported extension.
+Also account for the possibility of an added .gpg suffix.
+Supported extensions are those implied by `denote-file-type'."
+  (seq-some (lambda (e)
+              (string-suffix-p e file))
+            (denote-file-type-extensions-with-encryption)))
 
 (defun denote-filename-is-note-p (filename)
   "Return non-nil if FILENAME is a valid name for a Denote note.
@@ -706,6 +706,14 @@ and use one of the extensions implied by `denote-file-type'."
        (string-match-p (concat "\\`" denote-id-regexp)
                        (file-name-nondirectory filename))
        (denote-file-has-supported-extension-p filename)))
+
+(defun denote-file-is-note-p (file)
+  "Return non-nil if FILE is an actual Denote note.
+For our purposes, a note must not be a directory, must satisfy
+`file-regular-p' and `denote-filename-is-note-p'."
+  (and (not (file-directory-p file))
+       (file-regular-p file)
+       (denote-filename-is-note-p file)))
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -720,14 +728,6 @@ and use one of the extensions implied by `denote-file-type'."
                     (file-name-nondirectory file))))
 
 (make-obsolete 'denote-file-directory-p nil "2.0.0")
-
-(defun denote-file-has-supported-extension-p (file)
-  "Return non-nil if FILE has supported extension.
-Also account for the possibility of an added .gpg suffix.
-Supported extensions are those implied by `denote-file-type'."
-  (seq-some (lambda (e)
-              (string-suffix-p e file))
-            (denote-file-type-extensions-with-encryption)))
 
 (defun denote--file-regular-writable-p (file)
   "Return non-nil if FILE is regular and writable."
