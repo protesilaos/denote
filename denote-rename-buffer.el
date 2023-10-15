@@ -63,6 +63,10 @@ Return the file path and the type of it as a cons cell."
              (type (denote-filetype-heuristics file)))
     (cons file type)))
 
+(defun denote-rename-buffer--with-unique-name (name)
+  "Call `rename-buffer' with NAME and uniquify it."
+  (rename-buffer name :unique))
+
 (defun denote-rename-buffer-with-title (&optional buffer)
   "Retrieve Denote file of BUFFER and rename BUFFER based on the file title.
 BUFFER is an object that satisfies `bufferp'.  If nil, then use
@@ -72,9 +76,9 @@ This is a generic reference implementation for use in the user
 option `denote-rename-buffer-function'.  If you need something
 else, check the Denote manual for functions/variables that
 extract the data you are looking for."
-    (rename-buffer title :unique)))
   (when-let ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
              (title (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
+    (denote-rename-buffer--with-unique-name title)))
 
 (defun denote-rename-buffer-with-identifier (&optional buffer)
   "Retrieve Denote file of BUFFER and rename BUFFER based on the file identifier.
@@ -87,7 +91,7 @@ else, check the Denote manual for functions/variables that
 extract the data you are looking for."
   (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
               (identifier (denote-retrieve-filename-identifier (car file-and-type))))
-    (rename-buffer identifier :unique)))
+    (denote-rename-buffer--with-unique-name identifier)))
 
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
