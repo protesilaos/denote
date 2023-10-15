@@ -905,6 +905,8 @@ the given regular expression."
                         (denote-directory-files-matching-regexp files-matching-regexp)
                       (denote-all-files)))
              (file (funcall project-read-file-name-function
+                            ;; FIXME 2023-10-15: Why do I get an empty history at the prompt even
+                            ;; though it is given as an argument and it is not empty?
                             "Select note: " files nil 'denote--file-history)))
     (let ((completion-ignore-case read-file-name-completion-ignore-case))
       (add-to-history 'denote--file-history file)
