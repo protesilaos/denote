@@ -39,20 +39,52 @@
   :link '(info-link "(denote) Top")
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-(defcustom denote-rename-buffer-function #'denote-rename-buffer-with-title
+(defcustom denote-rename-buffer-format "%k %t"
+  "The format `denote-rename-buffer' should use.
+This is an arbitrary string parsed by `denote-rename-buffer',
+which treats specially the following specifiers:
+
+- The %t is a placeholder for the title of the file.
+- The %i is a placeholder for the identifier of the file.
+- The %s is a placeholder for the signature of the file.
+- The %k is a placeholder for the keywords of the file.
+- The %% is a literal percent sign.
+
+In addition, the following flags are available for each of the specifiers:
+
+- 0: Pad to the width, if given, with zeros instead of spaces.
+- -: Pad to the width, if given, on the right instead of the left.
+- <: Truncate to the width and precision, if given, on the left.
+- >: Truncate to the width and precision, if given, on the right.
+- ^: Convert to upper case.
+- _: Convert to lower case.
+
+When combined all together, the above are written thus:
+
+    %<flags><width><precision>character
+
+Any other string it taken as-is.  Users may want, for example, to
+include some text that makes Denote buffers stand out, such as
+a [D] prefix."
+  :type 'string
+  :package-version '(denote . "2.1.0")
+  :group 'denote-rename-buffer)
+
+(defcustom denote-rename-buffer-function #'denote-rename-buffer
   "Symbol of function that is called to rename the Denote file buffer.
+The default `denote-rename-buffer' function uses the pattern
+described in `denote-rename-buffer-format'.
 
-The function is called without arguments from the
-`find-file-hook' and `denote-after-new-note-hook' when
-`denote-rename-buffer-mode' is enabled (or when the user manually
-sets up the hooks).
+Users can set this variable to an arbitrary function that does
+something else.  The function is called without arguments from
+the `find-file-hook' and `denote-after-new-note-hook'.
 
-See the function `denote-rename-buffer-with-title' (the default
-value) for a reference implementation."
+A nil value for this variable means that the title of the Denote
+buffer will be used, if available."
   :type '(choice
-          (const :tag "Rename using only the title" denote-rename-buffer-with-title)
-          (const :tag "Rename using only the identifier" denote-rename-buffer-with-identifier)
+          (const :tag "Rename using the `denote-rename-buffer-format'" denote-rename-buffer)
           (function :tag "Use a custom renaming function"))
+  :package-version '(denote . "2.1.0")
   :group 'denote-rename-buffer)
 
 (defun denote-rename-buffer--common-check (buffer)
@@ -63,40 +95,63 @@ Return the file path and the type of it as a cons cell."
              (type (denote-filetype-heuristics file)))
     (cons file type)))
 
+(defun denote-rename-buffer--get-title (buffer)
+  "Return Denote title of BUFFER."
+  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
+    (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
+
+(defun denote-rename-buffer--get-identifier (buffer)
+  "Return Denote identifier of BUFFER."
+  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
+    (denote-retrieve-filename-identifier (car file-and-type))))
+
+(defun denote-rename-buffer--get-signature (buffer)
+  "Return Denote signature of BUFFER."
+  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
+    (denote-retrieve-filename-signature (car file-and-type))))
+
+(defun denote-rename-buffer--get-keywords (buffer)
+  "Return Denote keywords of BUFFER."
+  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
+    (denote--keywords-combine
+     (denote-retrieve-keywords-value (car file-and-type) (cdr file-and-type)))))
+
+(defun denote-rename-buffer--format (buffer)
+  "Parse the BUFFER through the `denote-rename-buffer-format'."
+  (format-spec denote-rename-buffer-format
+               (list (cons ?t (denote-rename-buffer--get-title buffer))
+                     (cons ?i (denote-rename-buffer--get-identifier buffer))
+                     (cons ?s (denote-rename-buffer--get-signature buffer))
+                     (cons ?k (denote-rename-buffer--get-keywords buffer))
+                     (cons ?% "%"))
+               'delete))
+
 (defun denote-rename-buffer--with-unique-name (name)
   "Call `rename-buffer' with NAME and uniquify it."
   (rename-buffer name :unique))
 
-(defun denote-rename-buffer-with-title (&optional buffer)
-  "Retrieve Denote file of BUFFER and rename BUFFER based on the file title.
-BUFFER is an object that satisfies `bufferp'.  If nil, then use
-the return value of `current-buffer'.
+(defun denote-rename-buffer (&optional buffer)
+  "Rename current buffer or optional BUFFER with `denote-rename-buffer-format'.
+The symbol of this function is the default value of the user
+option `denote-rename-buffer-function' and is thus used by the
+`denote-rename-buffer-mode'."
+  (denote-rename-buffer--with-unique-name
+   (denote-rename-buffer--format (or buffer (current-buffer)))))
 
-This is a generic reference implementation for use in the user
-option `denote-rename-buffer-function'.  If you need something
-else, check the Denote manual for functions/variables that
-extract the data you are looking for."
-  (when-let ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
-             (title (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
-    (denote-rename-buffer--with-unique-name title)))
+(make-obsolete
+ 'denote-rename-buffer-with-title
+ 'denote-rename-buffer
+ "2.1.0")
 
-(defun denote-rename-buffer-with-identifier (&optional buffer)
-  "Retrieve Denote file of BUFFER and rename BUFFER based on the file identifier.
-BUFFER is an object that satisfies `bufferp'.  If nil, then use
-the return value of `current-buffer'.
-
-This is a generic reference implementation for use in the user
-option `denote-rename-buffer-function'.  If you need something
-else, check the Denote manual for functions/variables that
-extract the data you are looking for."
-  (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
-              (identifier (denote-retrieve-filename-identifier (car file-and-type))))
-    (denote-rename-buffer--with-unique-name identifier)))
+(make-obsolete
+ 'denote-rename-buffer-with-identifier
+ 'denote-rename-buffer
+ "2.1.0")
 
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
 Add this to `find-file-hook' and `denote-after-new-note-hook'."
-  (funcall (or denote-rename-buffer-function #'denote-rename-buffer-with-title)))
+  (funcall (or denote-rename-buffer-function #'denote-rename-buffer--get-title)))
 
 ;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
