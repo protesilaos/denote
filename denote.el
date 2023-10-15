@@ -1374,9 +1374,16 @@ Run `denote-desluggify' on title if the extraction is sucessful."
   "Return path to FILE or its buffer together with the appropriate function.
 Subroutine of `denote--file-with-temp-buffer'."
   (when file
-    (if (file-exists-p file)
-        (cons #'insert-file-contents buffer-file-name)
-      (cons #'insert-buffer (get-file-buffer file)))))
+    (let ((buffer (get-file-buffer file))
+          (file-exists (file-exists-p file)))
+      (cond
+       ((or (and file-exists buffer (not (buffer-modified-p buffer)))
+            file-exists)
+        (cons #'insert-file-contents file))
+       (buffer
+        (cons #'insert-buffer buffer))
+       (t
+        (error "Cannot find anything about file `%s'" file))))))
 
 (defmacro denote--file-with-temp-buffer (file &rest body)
   "If FILE exists, insert its contents in a temp buffer and call BODY."
