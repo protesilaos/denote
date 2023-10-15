@@ -1535,11 +1535,10 @@ creation."
       (insert template))))
 
 (defun denote--dir-in-denote-directory-p (directory)
-  "Return DIRECTORY if in variable `denote-directory', else nil."
-  (when (and directory
-             (string-prefix-p (denote-directory)
-                              (expand-file-name directory)))
-    directory))
+  "Return non-nil if DIRECTORY is in variable `denote-directory'."
+  (and directory
+       (string-prefix-p (denote-directory)
+                        (expand-file-name directory))))
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype given the argument FILETYPE.
