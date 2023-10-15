@@ -2305,7 +2305,7 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 
 - The =%t= is the Denote =TITLE= of the file.
 - The =%i= is the Denote =IDENTIFIER= of the file.
-- The =%d= is the same as %i (=DATE= mnemonic).
+- The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
 - The =%%= is a literal percent sign.
