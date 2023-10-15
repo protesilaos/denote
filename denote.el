@@ -748,13 +748,10 @@ FILE must be an absolute path."
   (when (string-match denote-id-regexp string)
     (match-string 0 string)))
 
-;; TODO 2022-09-26: Maybe we can consolidate this with
-;; `denote--dir-in-denote-directory-p'?  Another check for the
-;; directory prefix is done in `denote-file-is-note-p'.
-(defun denote--default-dir-has-denote-prefix ()
-  "Test `default-directory' for variable `denote-directory' prefix."
-  (string-prefix-p (denote-directory)
-                   (expand-file-name default-directory)))
+(define-obsolete-function-alias
+  'denote--default-dir-has-denote-prefix
+  'denote--dir-in-denote-directory-p
+  "2.1.0")
 
 (defun denote--exclude-directory-regexp-p (file)
   "Return non-nil if FILE matches `denote-excluded-directories-regexp'."
@@ -2087,7 +2084,7 @@ the file type is assumed to be the first of `denote-file-types'."
    (lambda (buf)
      (with-current-buffer buf
        (when (and (eq major-mode 'dired-mode)
-                  (denote--default-dir-has-denote-prefix))
+                  (denote--dir-in-denote-directory-p default-directory))
          (revert-buffer))))
    (buffer-list)))
 
