@@ -150,10 +150,16 @@ option `denote-rename-buffer-function' and is thus used by the
  'denote-rename-buffer
  "2.1.0")
 
+(defun denote-rename-buffer--fallback (&optional buffer)
+  "Fallback to rename BUFFER or `current-buffer'.
+This is called if `denote-rename-buffer-rename-function' is nil."
+  (denote-rename-buffer--with-unique-name
+   (denote-rename-buffer--get-title (or buffer (current-buffer)))))
+
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
 Add this to `find-file-hook' and `denote-after-new-note-hook'."
-  (funcall (or denote-rename-buffer-function #'denote-rename-buffer--get-title)))
+  (funcall (or denote-rename-buffer-function #'denote-rename-buffer--fallback)))
 
 ;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
