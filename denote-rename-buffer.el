@@ -58,9 +58,9 @@ value) for a reference implementation."
 (defun denote-rename-buffer--common-check (buffer)
   "Determine if BUFFER shall be renamed.
 Return the file path and the type of it as a cons cell."
-  (when-let* ((file (buffer-file-name buffer))
-              ((denote-file-has-identifier-p file))
-              (type (denote-filetype-heuristics file)))
+  (when-let ((file (buffer-file-name buffer))
+             ((denote-file-has-identifier-p file))
+             (type (denote-filetype-heuristics file)))
     (cons file type)))
 
 (defun denote-rename-buffer-with-title (&optional buffer)
@@ -72,9 +72,9 @@ This is a generic reference implementation for use in the user
 option `denote-rename-buffer-function'.  If you need something
 else, check the Denote manual for functions/variables that
 extract the data you are looking for."
-  (when-let* ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
-              (title (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
     (rename-buffer title :unique)))
+  (when-let ((file-and-type (denote-rename-buffer--common-check (or buffer (current-buffer))))
+             (title (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
 
 (defun denote-rename-buffer-with-identifier (&optional buffer)
   "Retrieve Denote file of BUFFER and rename BUFFER based on the file identifier.
