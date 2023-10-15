@@ -130,7 +130,9 @@ Return the file path and the type of it as a cons cell."
 
 (defun denote-rename-buffer--with-unique-name (name)
   "Call `rename-buffer' with NAME and uniquify it."
-  (rename-buffer name :unique))
+  (unless (or (string-empty-p name)
+              (string-blank-p name))
+    (rename-buffer name :unique)))
 
 (defun denote-rename-buffer (&optional buffer)
   "Rename current buffer or optional BUFFER with `denote-rename-buffer-format'.
