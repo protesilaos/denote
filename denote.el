@@ -692,15 +692,20 @@ signatures and keywords."
 (defun denote-file-is-note-p (file)
   "Return non-nil if FILE is an actual Denote note.
 For our purposes, a note must not be a directory, must satisfy
-`file-regular-p', its path must be part of the variable
+`file-regular-p' and `denote-filename-is-note-p'."
+  (and (not (file-directory-p file))
+       (file-regular-p file)
+       (denote-filename-is-note-p file)))
+
+(defun denote-filename-is-note-p (filename)
+  "Return non-nil if FILENAME is a valid name for a Denote note.
+For our purposes, its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name,
 and use one of the extensions implied by `denote-file-type'."
-  (let ((file-name (file-name-nondirectory file)))
-    (and (not (file-directory-p file))
-         (file-regular-p file)
-         (string-prefix-p (denote-directory) (expand-file-name file))
-         (string-match-p (concat "\\`" denote-id-regexp) file-name)
-         (denote-file-has-supported-extension-p file))))
+  (and (string-prefix-p (denote-directory) (expand-file-name filename))
+       (string-match-p (concat "\\`" denote-id-regexp)
+                       (file-name-nondirectory filename))
+       (denote-file-has-supported-extension-p filename)))
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -1588,7 +1593,7 @@ where the former does not read dates without a time component."
          (lambda (buffer)
            (when-let (((buffer-live-p buffer))
                       (file (buffer-file-name buffer))
-                      ((denote-file-is-note-p file)))
+                      ((denote-filename-is-note-p file)))
              file))
          (buffer-list))))
 
