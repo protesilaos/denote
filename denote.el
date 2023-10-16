@@ -1498,8 +1498,6 @@ Apply `denote-letter-case' to KEYWORDS."
   (let ((kw (denote-sluggify-keywords keywords)))
     (funcall (denote--keywords-value-function file-type) kw)))
 
-(make-obsolete-variable 'denote-text-front-matter-delimiter nil "0.6.0")
-
 (defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
 
@@ -3249,8 +3247,6 @@ nil)."
     (define-key m "g" #'revert-buffer)
     m)
   "Keymap for `denote-backlinks-mode'.")
-
-(make-obsolete-variable 'denote-backlink-mode-map 'denote-backlinks-mode-map "0.6.0")
 
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
   "Major mode for backlinks buffers."
