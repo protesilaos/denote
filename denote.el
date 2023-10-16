@@ -3220,11 +3220,11 @@ Expand `denote-link-backlinks-display-buffer-action'."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
-(defun denote-backlinks-next (&optional n)
+(defun denote-backlinks-next (n)
   "Use appropriate command for forward motion in backlinks buffer.
-With optional N as a numeric argument, move to the Nth button
-from point (relevant when `denote-backlinks-show-context' is
-nil)."
+With N as a numeric argument, move to the Nth button from
+point (relevant when `denote-backlinks-show-context' is nil).  A
+nil value of N is understood as 1."
   (interactive "p" denote-backlinks-mode)
   (unless (derived-mode-p 'denote-backlinks-mode)
     (user-error "Only use this in a Denote backlinks buffer"))
@@ -3232,11 +3232,11 @@ nil)."
       (xref-next-line)
     (forward-button n)))
 
-(defun denote-backlinks-prev (&optional n)
+(defun denote-backlinks-prev (n)
   "Use appropriate command for backward motion in backlinks buffer.
-With optional N as a numeric argument, move to the Nth button
-from point (relevant when `denote-backlinks-show-context' is
-nil)."
+With N as a numeric argument, move to the Nth button from
+point (relevant when `denote-backlinks-show-context' is nil).  A
+nil value of N is understood as 1."
   (interactive "p" denote-backlinks-mode)
   (unless (derived-mode-p 'denote-backlinks-mode)
     (user-error "Only use this in a Denote backlinks buffer"))
