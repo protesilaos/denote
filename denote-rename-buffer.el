@@ -88,59 +88,45 @@ buffer will be used, if available."
   :package-version '(denote . "2.1.0")
   :group 'denote-rename-buffer)
 
-(defun denote-rename-buffer--common-check (buffer)
-  "Determine if BUFFER shall be renamed.
-Return the file path and the type of it as a cons cell."
-  (when-let ((file (buffer-file-name buffer))
-             ((denote-file-has-identifier-p file))
-             (type (denote-filetype-heuristics file)))
-    (cons file type)))
+(defun denote-rename-buffer--get-title (file type)
+  "Return Denote title of FILE, given TYPE."
+  (denote-retrieve-title-value file type))
 
-(defun denote-rename-buffer--get-title (buffer)
-  "Return Denote title of BUFFER."
-  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
-    (denote-retrieve-title-value (car file-and-type) (cdr file-and-type))))
+(defun denote-rename-buffer--get-identifier (file)
+  "Return Denote identifier of FILE."
+  (denote-retrieve-filename-identifier file))
 
-(defun denote-rename-buffer--get-identifier (buffer)
-  "Return Denote identifier of BUFFER."
-  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
-    (denote-retrieve-filename-identifier (car file-and-type))))
+(defun denote-rename-buffer--get-signature (file)
+  "Return Denote signature of FILE."
+  (denote-retrieve-filename-signature file))
 
-(defun denote-rename-buffer--get-signature (buffer)
-  "Return Denote signature of BUFFER."
-  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
-    (denote-retrieve-filename-signature (car file-and-type))))
-
-(defun denote-rename-buffer--get-keywords (buffer)
-  "Return Denote keywords of BUFFER."
-  (when-let ((file-and-type (denote-rename-buffer--common-check buffer)))
-    (denote--keywords-combine
-     (denote-retrieve-keywords-value (car file-and-type) (cdr file-and-type)))))
+(defun denote-rename-buffer--get-keywords (file type)
+  "Return Denote keywords of FILE, given TYPE."
+  (denote--keywords-combine
+   (denote-retrieve-keywords-value file type)))
 
 (defun denote-rename-buffer--format (buffer)
   "Parse the BUFFER through the `denote-rename-buffer-format'."
-  (format-spec denote-rename-buffer-format
-               (list (cons ?t (denote-rename-buffer--get-title buffer))
-                     (cons ?i (denote-rename-buffer--get-identifier buffer))
-                     (cons ?d (denote-rename-buffer--get-identifier buffer))
-                     (cons ?s (denote-rename-buffer--get-signature buffer))
-                     (cons ?k (denote-rename-buffer--get-keywords buffer))
-                     (cons ?% "%"))
-               'delete))
-
-(defun denote-rename-buffer--with-unique-name (name)
-  "Call `rename-buffer' with NAME and uniquify it."
-  (unless (or (string-empty-p name)
-              (string-blank-p name))
-    (rename-buffer name :unique)))
+  (when-let ((file (buffer-file-name buffer))
+             (type (denote-filetype-heuristics file)))
+    (format-spec denote-rename-buffer-format
+                 (list (cons ?t (denote-rename-buffer--get-title file type))
+                       (cons ?i (denote-rename-buffer--get-identifier file))
+                       (cons ?d (denote-rename-buffer--get-identifier file))
+                       (cons ?s (denote-rename-buffer--get-signature file))
+                       (cons ?k (denote-rename-buffer--get-keywords file type))
+                       (cons ?% "%"))
+                 'delete)))
 
 (defun denote-rename-buffer (&optional buffer)
   "Rename current buffer or optional BUFFER with `denote-rename-buffer-format'.
 The symbol of this function is the default value of the user
 option `denote-rename-buffer-function' and is thus used by the
 `denote-rename-buffer-mode'."
-  (denote-rename-buffer--with-unique-name
-   (denote-rename-buffer--format (or buffer (current-buffer)))))
+  (when-let (((denote-file-has-identifier-p (buffer-file-name buffer)))
+             (new-name (denote-rename-buffer--format (or buffer (current-buffer))))
+             ((not (string-blank-p new-name))))
+    (rename-buffer new-name :unique)))
 
 (make-obsolete
  'denote-rename-buffer-with-title
@@ -155,8 +141,8 @@ option `denote-rename-buffer-function' and is thus used by the
 (defun denote-rename-buffer--fallback (&optional buffer)
   "Fallback to rename BUFFER or `current-buffer'.
 This is called if `denote-rename-buffer-rename-function' is nil."
-  (denote-rename-buffer--with-unique-name
-   (denote-rename-buffer--get-title (or buffer (current-buffer)))))
+  (let ((denote-rename-buffer-format "%t"))
+    (denote-rename-buffer buffer)))
 
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
