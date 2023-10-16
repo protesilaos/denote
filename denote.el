@@ -981,8 +981,15 @@ KEYWORDS is a list of strings, per `denote-keywords-prompt'."
       (sort keywords #'string-collate-lessp)
     keywords))
 
-(defun denote--keywords-combine (keywords)
-  "Format KEYWORDS output of `denote-keywords-prompt'."
+(define-obsolete-function-alias
+  'denote--keywords-combine
+  'denote-keywords-combine
+  "2.1.0")
+
+(defun denote-keywords-combine (keywords)
+  "Combine KEYWORDS list of strings into a single string.
+Keywords are separated by the underscore character, per the
+Denote file-naming scheme."
   (mapconcat
    (lambda (k)
      (denote-letter-case 'keywords k))
@@ -1427,7 +1434,7 @@ The return value is a string, with the underscrore as a separator
 between individual keywords.  To get a list of strings instead,
 use `denote-retrieve-keywords-value' (the current function uses
 that internally)."
-  (denote--keywords-combine (denote-retrieve-keywords-value file file-type)))
+  (denote-keywords-combine (denote-retrieve-keywords-value file file-type)))
 
 (defun denote-retrieve-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
@@ -1471,7 +1478,7 @@ See `denote--retrieve-locations-in-xrefs'."
   "Format file name.
 PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and optional SIGNATURE
 are expected to be supplied by `denote' or equivalent command."
-  (let ((kws (denote--keywords-combine keywords))
+  (let ((kws (denote-keywords-combine keywords))
         (file-name (concat path id)))
     (when (and signature (not (string-empty-p signature)))
       (setq file-name (concat file-name "==" signature)))

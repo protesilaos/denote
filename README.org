@@ -3643,6 +3643,12 @@ might change them without further notice.
   ~denote-sort-keywords~ is non-nil.  =KEYWORDS= is a list of strings,
   per ~denote-keywords-prompt~.
 
+#+findex: denote-keywords-combine
++ Function ~denote-keywords-combine~ :: Combine =KEYWORDS= list of
+  strings into a single string. Keywords are separated by the
+  underscore character, per the Denote file-naming scheme. [ Made
+  public as part of {{{development-version}}}. ]
+
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a
