@@ -111,9 +111,11 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
 (defun denote-journal-extras-daily--title-format ()
   "Return `denote-journal-extras-title-format' or prompt for title."
   (cond
-   ((stringp denote-journal-extras-title-format)
+   ((and denote-journal-extras-title-format
+         (stringp denote-journal-extras-title-format))
     (format-time-string denote-journal-extras-title-format))
-   ((symbolp denote-journal-extras-title-format)
+   ((and (symbolp denote-journal-extras-title-format)
+         (not (null  denote-journal-extras-title-format)))
     (format-time-string
      (pcase denote-journal-extras-title-format
        ('day "%A")
