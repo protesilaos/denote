@@ -1412,11 +1412,22 @@ Subroutine of `denote--file-with-temp-buffer'."
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote-retrieve-keywords-value (file file-type)
-  "Return keywords value from FILE front matter per FILE-TYPE."
+  "Return keywords value from FILE front matter per FILE-TYPE.
+The return value is a list of strings.  To get a combined string
+the way it would appear in a Denote file name, use
+`denote-retrieve-keywords-value-as-string'."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
+
+(defun denote-retrieve-keywords-value-as-string (file file-type)
+  "Return keywords value from FILE front matter per FILE-TYPE.
+The return value is a string, with the underscrore as a separator
+between individual keywords.  To get a list of strings instead,
+use `denote-retrieve-keywords-value' (the current function uses
+that internally)."
+  (denote--keywords-combine (denote-retrieve-keywords-value file file-type)))
 
 (defun denote-retrieve-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
