@@ -2856,7 +2856,9 @@ retrieved from the FILE, unless the FORMAT is
   "Return description for `denote-link'.
 If the region is active, make the description the text within the
 region's boundaries.  Else retrieve the title from FILE, given
-FILE-TYPE."
+FILE-TYPE.
+
+Also see `denote--link-get-description-with-signature'."
   (if-let (((region-active-p))
            (beg (region-beginning))
            (end (region-end))
@@ -2916,14 +2918,19 @@ treats the active region specially, is up to it."
 
 (defun denote--link-get-description-with-signature (file file-type)
   "Return `denote-link-with-signature' description.
-Retrieve the title and signature from FILE with FILE-TYPE."
+Retrieve the title and signature from FILE with FILE-TYPE.  If
+the region is active, use it to describe the link instead of the
+file's title.  Make the signature a prefix.  If there is no title
+or text in the active region, return the signature on its own.
+
+Also see `denote--link-get-description'."
   (let* ((signature (denote-retrieve-filename-signature file))
-         (title (denote-retrieve-title-value file file-type))
-         (specifiers (if (and title
-                              (not (string-empty-p title)))
+         (text (denote--link-get-description file file-type))
+         (specifiers (if (and text
+                              (not (string-empty-p text)))
                          "%s %s"
                        "%s")))
-    (format specifiers signature title)))
+    (format specifiers signature text)))
 
 ;;;###autoload
 (defun denote-link-with-signature ()
