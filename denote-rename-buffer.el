@@ -88,33 +88,16 @@ buffer will be used, if available."
   :package-version '(denote . "2.1.0")
   :group 'denote-rename-buffer)
 
-(defun denote-rename-buffer--get-title (file type)
-  "Return Denote title of FILE, given TYPE."
-  (denote-retrieve-title-value file type))
-
-(defun denote-rename-buffer--get-identifier (file)
-  "Return Denote identifier of FILE."
-  (denote-retrieve-filename-identifier file))
-
-(defun denote-rename-buffer--get-signature (file)
-  "Return Denote signature of FILE."
-  (denote-retrieve-filename-signature file))
-
-(defun denote-rename-buffer--get-keywords (file type)
-  "Return Denote keywords of FILE, given TYPE."
-  (denote--keywords-combine
-   (denote-retrieve-keywords-value file type)))
-
 (defun denote-rename-buffer--format (buffer)
   "Parse the BUFFER through the `denote-rename-buffer-format'."
   (when-let ((file (buffer-file-name buffer))
              (type (denote-filetype-heuristics file)))
     (format-spec denote-rename-buffer-format
-                 (list (cons ?t (denote-rename-buffer--get-title file type))
-                       (cons ?i (denote-rename-buffer--get-identifier file))
-                       (cons ?d (denote-rename-buffer--get-identifier file))
-                       (cons ?s (denote-rename-buffer--get-signature file))
-                       (cons ?k (denote-rename-buffer--get-keywords file type))
+                 (list (cons ?t (denote-retrieve-title-value file type))
+                       (cons ?i (denote-retrieve-filename-identifier file))
+                       (cons ?d (denote-retrieve-filename-identifier file))
+                       (cons ?s (denote-retrieve-filename-signature file))
+                       (cons ?k (denote-retrieve-keywords-value-as-string file type))
                        (cons ?% "%"))
                  'delete)))
 
