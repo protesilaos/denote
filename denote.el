@@ -3226,6 +3226,8 @@ With optional N as a numeric argument, move to the Nth button
 from point (relevant when `denote-backlinks-show-context' is
 nil)."
   (interactive "p" denote-backlinks-mode)
+  (unless (derived-mode-p 'denote-backlinks-mode)
+    (user-error "Only use this in a Denote backlinks buffer"))
   (if denote-backlinks-show-context
       (xref-next-line)
     (forward-button n)))
@@ -3236,6 +3238,8 @@ With optional N as a numeric argument, move to the Nth button
 from point (relevant when `denote-backlinks-show-context' is
 nil)."
   (interactive "p" denote-backlinks-mode)
+  (unless (derived-mode-p 'denote-backlinks-mode)
+    (user-error "Only use this in a Denote backlinks buffer"))
   (if denote-backlinks-show-context
       (xref-prev-line)
     (backward-button n)))
