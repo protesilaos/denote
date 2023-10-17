@@ -265,5 +265,51 @@ identifier: 20230605T102234
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.gpg") 'markdown-yaml)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.age") 'markdown-yaml))))
 
+;;;; denote-journal-extras.el
+
+(require 'denote-journal-extras)
+
+(ert-deftest denote-test--denote-journal-extras-daily--title-format ()
+  "Make sure that `denote-journal-extras-daily--title-format' yields the desired format."
+  (should (and
+           ;; These three should prompt, but I am here treating the
+           ;; prompt as if already returned a string.  The test for
+           ;; the `denote-title-prompt' can be separate.
+           (stringp
+            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
+                      (denote-journal-extras-title-format nil))
+              (denote-journal-extras-daily--title-format)))
+
+           (stringp
+            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
+                      (denote-journal-extras-title-format t))
+              (denote-journal-extras-daily--title-format)))
+
+           (stringp
+            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
+                      (denote-journal-extras-title-format :some-arbitrary-keyword))
+              (denote-journal-extras-daily--title-format)))
+
+           ;; And these return the following values
+           (string-match-p
+            "\\<.*?\\>"
+            (let ((denote-journal-extras-title-format 'day))
+              (denote-journal-extras-daily--title-format)))
+
+           (string-match-p
+            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\}"
+            (let ((denote-journal-extras-title-format 'day-date-month-year))
+              (denote-journal-extras-daily--title-format)))
+
+           (string-match-p
+            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\} [0-9]\\{,2\\}:[0-9]\\{,2\\} \\<.*?\\>"
+            (let ((denote-journal-extras-title-format 'day-date-month-year-12h))
+              (denote-journal-extras-daily--title-format)))
+
+           (string-match-p
+            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\} [0-9]\\{,2\\}:[0-9]\\{,2\\}"
+            (let ((denote-journal-extras-title-format 'day-date-month-year-24h))
+              (denote-journal-extras-daily--title-format))))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
