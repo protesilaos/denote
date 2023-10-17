@@ -233,21 +233,21 @@ identifier: 20230605T102234
 ;;              (denote-sluggify title)
 ;;              (denote--file-extension type))))
 
-(defun denote-test--denote-get-file-extension ()
+(ert-deftest denote-test--denote-get-file-extension ()
   "Test that `denote-get-file-extension' gets the correct file extension."
   (should (and (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing") "")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org") ".org")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.gpg") ".org.gpg")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.age") ".org.age"))))
 
-(defun denote-test--denote-get-file-extension-sans-encryption ()
+(ert-deftest denote-test--denote-get-file-extension-sans-encryption ()
   "Test that `denote-get-file-extension-sans-encryption' gets the file extension without encryption."
   (should (and (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing") "")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org") ".org")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.gpg") ".org")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.age") ".org"))))
 
-(defun denote-test--denote-filetype-heuristics ()
+(ert-deftest denote-test--denote-filetype-heuristics ()
   "Test that `denote-filetype-heuristics' gets the correct file type."
   (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") (caar denote-file-types))
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org") 'org)
