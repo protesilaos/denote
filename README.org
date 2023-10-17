@@ -3683,6 +3683,12 @@ might change them without further notice.
 + Function ~denote-directory-files-matching-regexp~ :: Return list of
   files matching =REGEXP= in ~denote-directory-files~.
 
+#+findex: denote-all-files
++ Function ~denote-all-files~ :: Return the list of Denote files in
+  the variable ~denote-directory~. With optional =OMIT-CURRENT=, do
+  not include the current Denote file in the returned list. [ The
+  =OMIT-CURRENT= is part of {{{development-version}}}. ]
+
 #+findex: denote-file-name-relative-to-denote-directory
 + Function ~denote-file-name-relative-to-denote-directory~ :: Return
   name of =FILE= relative to the variable ~denote-directory~.  =FILE=

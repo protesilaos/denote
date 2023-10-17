@@ -892,12 +892,17 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
      (string-match-p regexp (denote-get-file-name-relative-to-denote-directory f)))
    (denote-directory-files)))
 
-(defun denote-all-files ()
-  "Return the list of Denote files in variable `denote-directory'."
+(defun denote-all-files (&optional omit-current)
+  "Return the list of Denote files in variable `denote-directory'.
+With optional OMIT-CURRENT, do not include the current Denote
+file in the returned list."
   (let* ((project-find-functions #'denote-project-find)
          (project (project-current nil (denote-directory)))
-         (dirs (list (project-root project))))
-    (project-files project dirs)))
+         (dirs (list (project-root project)))
+         (files (project-files project dirs)))
+    (if (and omit-current (denote-file-has-identifier-p buffer-file-name))
+        (delete buffer-file-name files)
+      files)))
 
 (defvar denote--file-history nil
   "Minibuffer history of `denote-file-prompt'.")
@@ -908,7 +913,7 @@ With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
   (when-let ((files (if files-matching-regexp
                         (denote-directory-files-matching-regexp files-matching-regexp)
-                      (denote-all-files)))
+                      (denote-all-files :omit-current)))
              (file (funcall project-read-file-name-function
                             ;; FIXME 2023-10-15: Why do I get an empty history at the prompt even
                             ;; though it is given as an argument and it is not empty?
