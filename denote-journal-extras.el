@@ -110,19 +110,16 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
 
 (defun denote-journal-extras-daily--title-format ()
   "Return `denote-journal-extras-title-format' or prompt for title."
-  (cond
-   ((and denote-journal-extras-title-format
-         (stringp denote-journal-extras-title-format))
-    (format-time-string denote-journal-extras-title-format))
-   ((and (symbolp denote-journal-extras-title-format)
-         (not (null  denote-journal-extras-title-format)))
-    (format-time-string
+  (format-time-string
+   (if (and denote-journal-extras-title-format
+            (stringp denote-journal-extras-title-format))
+       denote-journal-extras-title-format
      (pcase denote-journal-extras-title-format
        ('day "%A")
        ('day-date-month-year "%A %e %B %Y")
        ('day-date-month-year-24h "%A %e %B %Y %H:%M")
-       ('day-date-month-year-12h "%A %e %B %Y %I:%M %^p"))))
-   (t (denote-title-prompt (format-time-string "%F")))))
+       ('day-date-month-year-12h "%A %e %B %Y %I:%M %^p")
+       (_ (denote-title-prompt (format-time-string "%F")))))))
 
 (defun denote-journal-extras--get-template ()
   "Return template that has `journal' key in `denote-templates'.
