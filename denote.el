@@ -2435,16 +2435,11 @@ edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like.
 
-Refrain from performing the operation if the buffer has unsaved
-changes.  Inform the user about the need to save their changes
-first.  If AUTO-CONFIRM is non-nil, then save the buffer and
-proceed with the renaming."
+If AUTO-CONFIRM is non-nil, then proceed with the renaming
+operation without prompting for confirmation.  This is what the
+command `denote-dired-rename-marked-files-using-front-matter'
+does internally."
   (interactive (list (buffer-file-name) current-prefix-arg))
-  (when (buffer-modified-p)
-    (if (or auto-confirm
-            (y-or-n-p "Would you like to save the buffer?"))
-        (save-buffer)
-      (user-error "Save buffer before proceeding")))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
@@ -2470,34 +2465,14 @@ proceed with the renaming."
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-using-front-matter ()
-  "Rename marked files in Dired using their front matter as input.
+  "Call `denote-rename-file-using-front-matter' over the Dired marked files.
+Refer to the documentation of that command for the technicalities.
+
 Marked files must count as notes for the purposes of Denote,
 which means that they at least have an identifier in their file
 name and use a supported file type, per `denote-file-type'.
-Files that do not meet this criterion are ignored.
-
-The operation does the following:
-
-- the title in the front matter becomes the TITLE component of
-  the file name, with hyphenation per Denote's file-naming
-  scheme;
-
-- the keywords in the front matter are used for the KEYWORDS
-  component of the file name and are processed accordingly, if
-  needed;
-
-- the identifier remains unchanged in the file name even if it is
-  modified in the front matter (this is done to avoid breakage
-  caused by typos and the like).
-
-NOTE that files must be saved, because Denote reads from the
-underlying file, not a modified buffer (this is done to avoid
-potential mistakes).  The return value of a modified buffer is
-the one prior to the modification, i.e. the one already written
-on disk.
-
-This command is useful for synchronizing multiple file names with
-their respective front matter."
+Files that do not meet this criterion are ignored because Denote
+cannot know if they have front matter and what that may be."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
                    (lambda (m)
@@ -2506,17 +2481,8 @@ their respective front matter."
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
-          (let* ((dir (file-name-directory file))
-                 (id (denote-retrieve-filename-identifier file :no-error))
-                 (signature (denote-retrieve-filename-signature file))
-                 (file-type (denote-filetype-heuristics file))
-                 (title (denote-retrieve-title-value file file-type))
-                 (keywords (denote-retrieve-keywords-value file file-type))
-                 (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name
-                            dir id keywords (denote-sluggify title 'title) extension signature)))
-            (denote-rename-file-and-buffer file new-name)))
-        (revert-buffer))
+          (denote-rename-file-using-front-matter file :auto-confirm))
+        (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
 
 ;;;;; Creation of front matter

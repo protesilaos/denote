@@ -1174,6 +1174,10 @@ will be unique or do not care about them.
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
 :END:
 
+[ Refactored as part of {{{development-version}}} to not require
+  saving the buffer before renaming it. This means that Denote can now
+  correctly read unsaved file contents. ]
+
 #+findex: denote-rename-file-using-front-matter
 In the previous section, we covered the more general mechanism of the
 command ~denote-rename-file~ ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).  There is also a
@@ -1206,17 +1210,18 @@ You want to change its title and keywords manually, so you modify it thus:
 #+identifier: 20220805T131044
 #+end_example
 
-The file name still shows the old title and keywords.  So after saving
-the buffer, you invoke ~denote-rename-file-using-front-matter~ and it
-updates the file name to:
+At this stage, the file name still shows the old title and keywords.
+You now invoke ~denote-rename-file-using-front-matter~ and it updates
+the file name to:
 
 : 20220805T131044--my-modified-sample-note-file__testing_denote_emacs.org
 
 The renaming is subject to a "yes or no" prompt that shows the old and
 new names, just so the user is certain about the change.
 
-If called interactively with a prefix argument =C-u= or from Lisp with
-a non-nil =AUTO-CONFIRM= argument, this "yes or no" prompt is skipped.
+If called interactively with a prefix argument (=C-u= by default) or
+from Lisp with a non-nil =AUTO-CONFIRM= argument, this "yes or no"
+prompt is skipped.
 
 The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the
@@ -1228,6 +1233,12 @@ the like.
 :CUSTOM_ID: h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8
 :END:
 
+[ Refactored as part of {{{development-version}}} to not require
+  saving the buffer before renaming it. This means that Denote can now
+  correctly read unsaved file contents. Also, the command itself is
+  simplified to be a wrapper of ~denote-rename-file-using-front-matter~
+  for the Dired marked files. ]
+
 #+findex: denote-dired-rename-marked-files-using-front-matter
 As already noted, Denote can rename a file based on the data in its
 front matter ([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).  The
@@ -1235,30 +1246,11 @@ command ~denote-dired-rename-marked-files-using-front-matter~ extends
 this principle to a batch operation which applies to all marked files in
 Dired.
 
-Marked files must count as notes for the purposes of Denote, which means
-that they at least have an identifier in their file name and use a
-supported file type, per ~denote-file-type~.  Files that do not meet
-this criterion are ignored.
-
-The operation does the following:
-
-- the title in the front matter becomes the =TITLE= component of the
-  file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]);
-
-- the keywords in the front matter are used for the =KEYWORDS= component
-  of the file name and are processed accordingly, if needed;
-
-- the identifier remains unchanged in the file name even if it is
-  modified in the front matter (this is done to avoid breakage caused by
-  typos and the like).
-
-NOTE that files must be saved, because Denote reads from the underlying
-file, not a modified buffer (this is done to avoid potential mistakes).
-The return value of a modified buffer is the one prior to the
-modification, i.e. the one already written on disk.
-
-This command is useful for synchronizing multiple file names with their
-respective front matter.
+Marked files must count as notes for the purposes of Denote, which
+means that they at least have an identifier in their file name and use
+a supported file type, per ~denote-file-type~. Files that do not meet
+this criterion are ignored, because Denote cannot know if they have
+front matter and what that may be.
 
 ** Rename file by changing only its file type
 :PROPERTIES:
