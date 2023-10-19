@@ -2483,7 +2483,7 @@ cannot know if they have front matter and what that may be."
         (dolist (file marks)
           (denote-rename-file-using-front-matter file :auto-confirm))
         (denote-update-dired-buffers))
-    (user-error "No marked files; aborting")))
+    (user-error "No marked Denote files; aborting")))
 
 ;;;;; Creation of front matter
 
