@@ -1390,11 +1390,15 @@ Run `denote-desluggify' on title if the extraction is sucessful."
   "Return path to FILE or its buffer together with the appropriate function.
 Subroutine of `denote--file-with-temp-buffer'."
   (when file
-    (let ((buffer (get-file-buffer file))
-          (file-exists (file-exists-p file)))
+    (let* ((buffer (get-file-buffer file))
+           (file-exists (file-exists-p file))
+           (buffer-modified (buffer-modified-p buffer)))
       (cond
-       ((or (and file-exists buffer (not (buffer-modified-p buffer)))
-            file-exists)
+       ((or (and file-exists
+                 buffer
+                 (not buffer-modified)
+                 (not (eq buffer-modified 'autosaved)))
+            (and file-exists (not buffer)))
         (cons #'insert-file-contents file))
        (buffer
         (cons #'insert-buffer buffer))
