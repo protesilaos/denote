@@ -2349,8 +2349,13 @@ files)."
             (denote-rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
+(define-obsolete-function-alias
+  'denote-change-file-type
+  'denote-change-file-type-and-front-matter
+  "2.1.0")
+
 ;;;###autoload
-(defun denote-change-file-type (file new-file-type)
+(defun denote-change-file-type-and-front-matter (file new-file-type)
   "Change file type of FILE and add an appropriate front matter.
 
 If in Dired, consider FILE to be the one at point, else prompt

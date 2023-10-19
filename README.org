@@ -1265,19 +1265,23 @@ respective front matter.
 :CUSTOM_ID: h:85b65995-89fd-4978-bba3-7bb6c8d6f945
 :END:
 
-#+findex: denote-change-file-type
-The command ~denote-change-file-type~ provides the convenience of
-converting a note taken in one file type, say, =.txt= into another
-like =.org=.  It presents a choice among the ~denote-file-type~
-options.
+[ The command is renamed from ~denote-change-file-type~ to
+  ~denote-change-file-type-and-front-matter~ as part of {{{development-version}}}
+  because some users thought it was performing full text conversion. ]
+
+#+findex: denote-change-file-type-and-front-matter
+The command ~denote-change-file-type-and-front-matter~ provides the
+convenience of converting a note taken in one file type, say, =.txt=
+into another like =.org=. It presents a choice among the
+~denote-file-type~ options.
 
 The conversion does NOT modify the existing front matter.  Instead, it
 prepends new front matter to the top of the file.  We do this as a
 safety precaution since the user can, in principle, add arbitrary
 extras to their front matter that we would not want to touch.
 
-If in Dired, ~denote-change-file-type~ operates on the file at point,
-else it prompts with minibuffer completion for one.
+If in Dired, ~denote-change-file-type-and-front-matter~ operates on
+the file at point, else it prompts with minibuffer completion for one.
 
 The title of the file is retrieved from a line starting with a title
 field in the file's front matter, depending on the previous file type
