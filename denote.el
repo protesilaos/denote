@@ -431,7 +431,10 @@ The match is performed with `string-match-p'."
   :type 'string)
 
 (defcustom denote-after-new-note-hook nil
-  "Normal hook that runs after the `denote' command."
+  "Normal hook that runs after the `denote' command.
+This also covers all convenience functions that call `denote'
+internally, such as `denote-signature' and `denote-type' (check
+the default value of the user option `denote-commands-for-new-notes')."
   :group 'denote
   :package-version '(denote . "2.1.0")
   :type 'hook)
