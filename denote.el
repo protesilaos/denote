@@ -1758,14 +1758,15 @@ command that needs to supply a default title before calling
 `denote-title-prompt' and use `unwind-protect' to set its value
 back to nil.")
 
-(defun denote-title-prompt (&optional default-title)
+(defun denote-title-prompt (&optional default-title prompt-text)
   "Read file title for `denote'.
-With optional DEFAULT-TITLE use it as the default value."
-  (let* ((def (or default-title denote-title-prompt-current-default))
-         (format (if (and def (not (string-empty-p def)))
-                     (format "File title [%s]: " def)
-                   "File title: ")))
-    (read-string format nil 'denote--title-history def)))
+With optional DEFAULT-TITLE use it as the default value.  With
+optional PROMPT-TEXT use it in the minibuffer instead of the
+generic prompt."
+  (let ((def (or default-title denote-title-prompt-current-default)))
+    (read-string
+     (format-prompt (or prompt-text "File title") def)
+     nil 'denote--title-history def)))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")

@@ -3828,8 +3828,10 @@ might change them without further notice.
   include the optional =PROMPT-TEXT=. ]
 
 #+findex: denote-title-prompt
-+ Function ~denote-title-prompt~ :: Read file title for ~denote~.
-  With optional =DEFAULT-TITLE= use it as the default value.
++ Function ~denote-title-prompt~ :: Read file title for ~denote~. With
+  optional =DEFAULT-TITLE= use it as the default value. With optional
+  =PROMPT-TEXT= use it in the minibuffer instead of the generic
+  prompt. [ The =PROMPT-TEXT= is part of {{{development-version}}}. ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
