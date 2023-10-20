@@ -2266,6 +2266,34 @@ Throw error is FILE is not regular, else return FILE."
              (propertize (file-name-nondirectory old-name) 'face 'error)
              (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
+;; NOTE 2023-10-20: This is work-in-progress.  I am committing it
+;; because I need to switch off the computer.  I shall continue later.
+;; DO NOT WORK ON THIS OR USE IT ANYWHERE YET.
+;;
+;; (defun denote-rename-file-1 (file title keywords date signature &optional no-confirm)
+;;   "Subroutine for `denote-rename-file', `denote-dired-rename-files'.
+;; The FILE, TITLE, KEYWORDS, DATE, and SIGNATURE are all provided
+;; by the aforementioned commands.  Check `denote' for their
+;; respective type.  If optional NO-CONFIRM is non-nil, do not ask
+;; for confirmation while renaming files, otherwise do it while
+;; displaying the relevant changes."
+;;   (let* ((dir (file-name-directory file))
+;;          (id (or (denote-retrieve-filename-identifier file :no-error)
+;;                  (denote-create-unique-file-identifier file date)))
+;;          (signature (or signature (denote-retrieve-filename-signature file)))
+;;          (extension (denote-get-file-extension file))
+;;          (file-type (denote-filetype-heuristics file))
+;;          (new-name (denote-format-file-name
+;;                     dir id keywords (denote-sluggify title 'title) extension signature))
+;;          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
+;;     (when (or no-confirm (denote-rename-file-prompt file new-name))
+;;       (denote-rename-file-and-buffer file new-name)
+;;       (denote-update-dired-buffers)
+;;       (when (denote-file-is-writable-and-supported-p new-name)
+;;         (if (denote--edit-front-matter-p new-name file-type)
+;;             (denote-rewrite-front-matter new-name title keywords file-type no-confirm)
+;;           (denote--add-front-matter new-name title keywords id file-type))))))
+
 ;;;###autoload
 (defun denote-rename-file (file title keywords &optional date)
   "Rename file and update existing front matter if appropriate.
@@ -2366,6 +2394,18 @@ files)."
  'denote-dired-rename-marked-files
  'denote-dired-rename-marked-files-with-keywords
  "2.1.0")
+
+;; NOTE 2023-10-20: See the comment above `denote-rename-file-1'
+;;
+;; (defun denote-dired-rename-files ()
+;;   "Call `denote-rename-file' over the Dired marked files.
+;; Rename each file in sequence, making all the relevant prompts.
+;;
+;; Unlike `denote-rename-file', do not prompt for confirmation of
+;; the changes made to the file.  Perform them outright."
+;;   (declare (interactive-only t))
+;;   (interactive)
+;;   )
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-with-keywords ()
