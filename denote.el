@@ -2202,22 +2202,27 @@ This is for use in `denote-keywords-add',`denote-keywords-remove',
   'denote-rewrite-keywords
   "2.0.0")
 
-(defun denote-rewrite-front-matter (file title keywords file-type)
+(defun denote-rewrite-front-matter (file title keywords file-type &optional no-confirm)
   "Rewrite front matter of note after `denote-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are given by the
 renaming command and are used to construct new front matter
-values if appropriate."
+values if appropriate.
+
+With optional NO-CONFIRM, do not prompt to confirm the rewriting
+of the front matter.  Otherwise produce a `y-or-n-p' prompt to
+that effect."
   (when-let ((old-title-line (denote-retrieve-title-line file file-type))
              (old-keywords-line (denote-retrieve-keywords-line file file-type))
              (new-title-line (denote--get-title-line-from-front-matter title file-type))
              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
-      (when (y-or-n-p (format
-                       "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
-                       (propertize old-title-line 'face 'error)
-                       (propertize new-title-line 'face 'success)
-                       (propertize old-keywords-line 'face 'error)
-                       (propertize new-keywords-line 'face 'success)))
+      (when (or no-confirm
+                (y-or-n-p (format
+                           "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
+                           (propertize old-title-line 'face 'error)
+                           (propertize new-title-line 'face 'success)
+                           (propertize old-keywords-line 'face 'error)
+                           (propertize new-keywords-line 'face 'success))))
         (save-excursion
           (save-restriction
             (widen)

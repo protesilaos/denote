@@ -3886,7 +3886,10 @@ might change them without further notice.
   note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
   =KEYWORDS=, and =FILE-TYPE= arguments are given by the renaming
   command and are used to construct new front matter values if
-  appropriate.
+  appropriate. With optional =NO-CONFIRM=, do not prompt to confirm the
+  rewriting of the front matter. Otherwise produce a ~y-or-n-p~ prompt
+  to that effect. [ The =NO-CONFIRM= argument is part of
+  {{{development-version}}}. ]
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
