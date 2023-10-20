@@ -2473,7 +2473,7 @@ Specifically, do the following:
                 (denote--add-front-matter new-name title keywords id file-type)))
             (when used-ids
               (puthash id t used-ids))))
-        (revert-buffer))
+        (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
