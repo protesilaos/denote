@@ -2434,7 +2434,8 @@ the changes made to the file: perform them outright."
                  (keywords (denote-keywords-prompt
                             (format "Rename `%s' with keywords" file-in-prompt)))
                  (signature (denote-signature-prompt
-                            (format "Rename `%s' with signature" file-in-prompt))))
+                             (denote-retrieve-filename-signature file)
+                             (format "Rename `%s' with signature (empty to ignore)" file-in-prompt))))
             (denote--rename-file-subr file id title keywords signature used-ids :no-confirm)
             (when used-ids (puthash id t used-ids))))
         (denote-update-dired-buffers))
