@@ -3833,9 +3833,10 @@ might change them without further notice.
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
-  With optional =PROMPT-TEXT= use it in the minibuffer instead of the
-  default prompt. [ The =PROMPT-TEXT= is added as part of
-  {{{development-version}}}. ]
+  With optional =DEFAULT-SIGNATURE= use it as the default minibuffer
+  value. With optional =PROMPT-TEXT= use it in the minibuffer instead
+  of the default prompt. [ The =DEFAULT-SIGNATURE= and =PROMPT-TEXT=
+  arguments are added as part of {{{development-version}}}. ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in

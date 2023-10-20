@@ -1848,13 +1848,14 @@ packages such as `marginalia' and `embark')."
 (defvar denote--signature-history nil
   "Minibuffer history of `denote-signature-prompt'.")
 
-(defun denote-signature-prompt (&optional prompt-text)
+(defun denote-signature-prompt (&optional default-signature prompt-text)
   "Prompt for signature string.
-With optional PROMPT-TEXT use it in the minibuffer instead of the
-default prompt."
+With optional DEFAULT-SIGNATURE use it as the default minibuffer
+value.  With optional PROMPT-TEXT use it in the minibuffer
+instead of the default prompt."
   (read-string
    (format-prompt (or prompt-text "Provide signature") nil)
-   nil 'denote--signature-history))
+   nil 'denote--signature-history default-signature))
 
 ;;;;; Convenience commands as `denote' variants
 
