@@ -2352,11 +2352,6 @@ files)."
             (denote-rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
-(define-obsolete-function-alias
-  'denote-change-file-type
-  'denote-change-file-type-and-front-matter
-  "2.1.0")
-
 ;;;###autoload
 (defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt)
   "Rename marked files in Dired to a Denote file name.
@@ -2527,6 +2522,11 @@ relevant front matter."
      file title keywords
      (denote-retrieve-filename-identifier file)
      (denote-filetype-heuristics file))))
+
+(define-obsolete-function-alias
+  'denote-change-file-type
+  'denote-change-file-type-and-front-matter
+  "2.1.0")
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
