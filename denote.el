@@ -2266,73 +2266,92 @@ Throw error is FILE is not regular, else return FILE."
              (propertize (file-name-nondirectory old-name) 'face 'error)
              (propertize (file-name-nondirectory new-name) 'face 'success)))))
 
-;; NOTE 2023-10-20: This is work-in-progress.  I am committing it
-;; because I need to switch off the computer.  I shall continue later.
-;; DO NOT WORK ON THIS OR USE IT ANYWHERE YET.
-;;
-;; (defun denote-rename-file-1 (file title keywords date signature &optional no-confirm)
-;;   "Subroutine for `denote-rename-file', `denote-dired-rename-files'.
-;; The FILE, TITLE, KEYWORDS, DATE, and SIGNATURE are all provided
-;; by the aforementioned commands.  Check `denote' for their
-;; respective type.  If optional NO-CONFIRM is non-nil, do not ask
-;; for confirmation while renaming files, otherwise do it while
-;; displaying the relevant changes."
-;;   (let* ((dir (file-name-directory file))
-;;          (id (or (denote-retrieve-filename-identifier file :no-error)
-;;                  (denote-create-unique-file-identifier file date)))
-;;          (signature (or signature (denote-retrieve-filename-signature file)))
-;;          (extension (denote-get-file-extension file))
-;;          (file-type (denote-filetype-heuristics file))
-;;          (new-name (denote-format-file-name
-;;                     dir id keywords (denote-sluggify title 'title) extension signature))
-;;          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-;;     (when (or no-confirm (denote-rename-file-prompt file new-name))
-;;       (denote-rename-file-and-buffer file new-name)
-;;       (denote-update-dired-buffers)
-;;       (when (denote-file-is-writable-and-supported-p new-name)
-;;         (if (denote--edit-front-matter-p new-name file-type)
-;;             (denote-rewrite-front-matter new-name title keywords file-type no-confirm)
-;;           (denote--add-front-matter new-name title keywords id file-type))))))
+;; NOTE 2023-10-20: We do not need a user option for this, though it
+;; can be useful to have it as a variable.
+(defvar denote-rename-max-mini-window-height 0.33
+  "How much to enlarge `max-mini-window-height' for renaming operations.")
+
+(defun denote--rename-file-subr (file title keywords signature &optional ask-date no-confirm)
+  "Subroutine for `denote-rename-file' and `denote-dired-rename-files'.
+
+- FILE is the target of the rename operation.
+
+- TITLE is a string that is sluggified to form the new name's
+  title component;
+
+- KEYWORDS is a list of strings that are ultimately joined into a
+  single string with `denote-keywords-combine';
+
+- SIGNATURE is a string for the file name signature component.
+
+A nil or blank value for TITLE, KEYWORDS, or SIGNATURE omits the
+given component from the file name.
+
+If optional ASK-DATE is non-nil, pass it to the function
+`denote-create-unique-file-identifier' so that it produces an
+identifier based on the user input supplied to
+`denote-date-prompt'.  Otherwise, use the current time.
+
+If optional NO-CONFIRM is non-nil, do not ask for confirmation
+while renaming files, otherwise do it while displaying the
+relevant changes."
+  (let* ((dir (file-name-directory file))
+         (id (or (denote-retrieve-filename-identifier file :no-error)
+                 (denote-create-unique-file-identifier file ask-date)))
+         (signature (or signature (denote-retrieve-filename-signature file)))
+         (extension (denote-get-file-extension file))
+         (file-type (denote-filetype-heuristics file))
+         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
+         (max-mini-window-height denote-rename-max-mini-window-height)) ; allow minibuffer to be resized
+    (when (or no-confirm (denote-rename-file-prompt file new-name))
+      (denote-rename-file-and-buffer file new-name)
+      (denote-update-dired-buffers)
+      (when (denote-file-is-writable-and-supported-p new-name)
+        (if (denote--edit-front-matter-p new-name file-type)
+            (denote-rewrite-front-matter new-name title keywords file-type no-confirm)
+          (denote--add-front-matter new-name title keywords id file-type))))))
 
 ;;;###autoload
-(defun denote-rename-file (file title keywords &optional date)
+(defun denote-rename-file (file title keywords &optional ask-date)
   "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
-with minibuffer completion for one.
+with minibuffer completion for one.  When called from Lisp, FILE
+is a filesystem path represented as a string.
 
 If FILE has a Denote-compliant identifier, retain it while
-updating the TITLE and KEYWORDS fields of the file name.  Else
-create an identifier based on the following conditions:
+updating the TITLE and KEYWORDS fields of the file name.
 
-- If FILE does not have an identifier and optional DATE is
-  non-nil (such as with a prefix argument), invoke the function
-  `denote-prompt-for-date-return-id'.  It prompts for a date and
-  uses it to derive the identifier.
+Else create an identifier based on the following conditions:
 
-- If FILE does not have an identifier and optional DATE is
-  nil (this is the case without a prefix argument), use the file
-  attributes to determine the last modified date and format it as
-  an identifier.
+1. If optional ASK-DATE is non-nil (such as with a prefix
+   argument), prompt for a date and use it to derive the
+   identifier.
 
-- As a fallback, derive an identifier from the current time.
+2. If optional ASK-DATE is nil (this is the case without a prefix
+   argument), use the file attributes to determine the last
+   modified date and format it as an identifier.
 
-- If the resulting identifier is not unique among the files in
-  the variable `denote-directory', increment it such that it
-  becomes unique.
+3. As a fallback, derive an identifier from the current time.
 
-The default TITLE is retrieved from a line starting with a title
-field in the file's contents, depending on the given file
-type (e.g. #+title for Org).  Else, the file name is used as a
-default value at the minibuffer prompt.
+4. If the resulting identifier is not unique among the files in
+   the variable `denote-directory', increment it such that it
+   becomes unique.
 
-As a final step after the FILE, TITLE, and KEYWORDS prompts, ask
-for confirmation, showing the difference between old and new file
-names.
+Use TITLE to construct the new name of FILE.  In interactive use,
+retrieve the default TITLE value from a line starting with a
+title field in the file's contents, depending on the given file
+type (e.g. #+title for Org).  Else, use the file name as a
+default value at the minibuffer prompt.  When called from Lisp,
+TITLE is a string.
 
-The file type extension (like .txt) is read from the underlying
-file and is preserved through the renaming process.  Files that
-have no extension are simply left without one.
+As a final step after the FILE, TITLE, and KEYWORDS are
+collected, ask for confirmation, showing the difference between
+old and new file names.
+
+Read the file type extension (like .txt) from the underlying file
+and preserve it through the renaming process.  Files that have no
+extension are left without one.
 
 Renaming only occurs relative to the current directory.  Files
 are not moved between directories.
@@ -2343,13 +2362,13 @@ input (this step always requires confirmation and the underlying
 buffer is not saved, so consider invoking `diff-buffer-with-file'
 to double-check the effect).  The rewrite of the FILE and
 KEYWORDS in the front matter should not affect the rest of the
-block.
+front matter.
 
 If the file doesn't have front matter but is among the supported
 file types (per `denote-file-type'), add front matter at the top
 of it and leave the buffer unsaved for further inspection.
 
-For per-file-type front matter, refer to the variables:
+For the front matter of each file type, refer to the variables:
 
 - `denote-org-front-matter'
 - `denote-text-front-matter'
@@ -2362,40 +2381,27 @@ convert existing supported file types to Denote notes, and (ii)
 rename non-note files (e.g. PDF) that can benefit from Denote's
 file-naming scheme.  The latter is a convenience we provide,
 since we already have all the requisite mechanisms in
-place (though Denote does not---and will not---manage such
-files)."
+place."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
-          (file-type (denote-filetype-heuristics file)))
+          (file-type (denote-filetype-heuristics file))
+          (file-in-prompt (propertize file 'face 'error)))
      (list
       file
       (denote-title-prompt
-       (denote--retrieve-title-or-filename file file-type))
-      (denote-keywords-prompt)
+       (denote--retrieve-title-or-filename file file-type)
+       (format "Rename `%s' with title" file-in-prompt))
+      (denote-keywords-prompt
+       (format "Rename `%s' with keywords" file-in-prompt))
       current-prefix-arg)))
-  (let* ((dir (file-name-directory file))
-         (id (or (denote-retrieve-filename-identifier file :no-error)
-                 (denote-create-unique-file-identifier file date)))
-         (signature (denote-retrieve-filename-signature file))
-         (extension (denote-get-file-extension file))
-         (file-type (denote-filetype-heuristics file))
-         (new-name (denote-format-file-name
-                    dir id keywords (denote-sluggify title 'title) extension signature))
-         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
-    (when (denote-rename-file-prompt file new-name)
-      (denote-rename-file-and-buffer file new-name)
-      (denote-update-dired-buffers)
-      (when (denote-file-is-writable-and-supported-p new-name)
-        (if (denote--edit-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords file-type)
-          (denote--add-front-matter new-name title keywords id file-type))))))
+  (denote--rename-file-subr file title keywords nil ask-date))
 
 (make-obsolete
  'denote-dired-rename-marked-files
  'denote-dired-rename-marked-files-with-keywords
  "2.1.0")
 
-;; NOTE 2023-10-20: See the comment above `denote-rename-file-1'
+;; NOTE 2023-10-20: See the comment above `denote--rename-file-subr'
 ;;
 ;; (defun denote-dired-rename-files ()
 ;;   "Call `denote-rename-file' over the Dired marked files.

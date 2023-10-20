@@ -1056,68 +1056,73 @@ line or switching between then with commands like ~switch-to-buffer~.
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate.
 
-If in Dired, the =FILE= to be renamed is the one at point, else the
-command prompts with minibuffer completion for a target file.
+If in Dired, consider =FILE= to be the one at point, else prompt with
+minibuffer completion for one. When called from Lisp, =FILE= is a
+filesystem path represented as a string.
 
 If =FILE= has a Denote-compliant identifier, retain it while updating
-the =TITLE= and =KEYWORDS= fields of the file name.  Else create an
-identifier based on the following conditions:
+the TITLE and =KEYWORDS= fields of the file name.
 
-- If =FILE= does not have an identifier and optional =DATE= is non-nil
-  (such as with a prefix argument), invoke the function
-  ~denote-prompt-for-date-return-id~.  It prompts for a date and uses
-  it to derive the identifier.
+Else create an identifier based on the following conditions:
 
-- If =FILE= does not have an identifier and optional =DATE= is nil
-  (this is the case without a prefix argument), use the file
-  attributes to determine the last modified date and format it as an
-  identifier.
+1. If optional =ASK-DATE= is non-nil (such as with a prefix argument),
+   prompt for a date and use it to derive the identifier.
 
-- As a fallback, derive an identifier from the current time.
+2. If optional =ASK-DATE= is nil (this is the case without a prefix
+   argument), use the file attributes to determine the last modified
+   date and format it as an identifier.
 
-- If the resulting identifier is not unique among the files in the
-  variable `denote-directory', increment it such that it becomes
-  unique.
+3. As a fallback, derive an identifier from the current time.
 
-The default =TITLE= is retrieved from a line starting with a title field
-in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
-Else, the file name is used as a default value at the minibuffer prompt.
+4. If the resulting identifier is not unique among the files in the
+   variable ~denote-directory~, increment it such that it becomes
+   unique.
 
-As a final step after the =FILE=, =TITLE=, and =KEYWORDS= prompts, ask
-for confirmation, showing the difference between old and new file names.
-For example:
+Use =TITLE= to construct the new name of =FILE=. In interactive use,
+retrieve the default =TITLE= value from a line starting with a title
+field in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front
+matter]]). Else, use the file name as a default value at the
+minibuffer prompt. When called from Lisp, =TITLE= is a string.
+
+As a final step after the =FILE=, =TITLE=, and =KEYWORDS= are
+collected, ask for confirmation, showing the difference between old
+and new file names. For example:
 
 #+begin_example
 Rename sample.txt to 20220612T052900--my-sample-title__testing.txt? (y or n)
 #+end_example
 
-The file type extension (e.g. =.txt=) is read from the underlying file
-and is preserved through the renaming process.  Files that have no
-extension are simply left without one.
+Read the file type extension (like =.txt=) from the underlying file
+and preserve it through the renaming process. Files that have no
+extension are left without one.
 
-Renaming only occurs relative to the current directory.  Files are not
+Renaming only occurs relative to the current directory. Files are not
 moved between directories.
 
 If the =FILE= has Denote-style front matter for the =TITLE= and
-=KEYWORDS=, this command asks to rewrite their values in order to
-reflect the new input (this step always requires confirmation and the
-underlying buffer is not saved, so consider invoking
-~diff-buffer-with-file~ to double-check the effect).  The rewrite of the
-=FILE= and =KEYWORDS= in the front matter should not affect the rest of
-the block.
+=KEYWORDS=, ask to rewrite their values in order to reflect the new
+input (this step always requires confirmation and the underlying
+buffer is not saved, so consider invoking ~diff-buffer-with-file~ to
+double-check the effect). The rewrite of the =FILE= and =KEYWORDS= in
+the front matter should not affect the rest of the front matter.
 
 If the file doesn't have front matter but is among the supported file
-types (per ~denote-file-type~), the ~denote-rename-file~ command adds
-front matter at the top of it and leaves the buffer unsaved for further
-inspection.
+types (per ~denote-file-type~), add front matter at the top of it and
+leave the buffer unsaved for further inspection.
+
+For the front matter of each file type, refer to the variables:
+
+- ~denote-org-front-matter~
+- ~denote-text-front-matter~
+- ~denote-toml-front-matter~
+- ~denote-yaml-front-matter~
 
 This command is intended to (i) rename existing Denote notes while
 updating their title and keywords in the front matter, (ii) convert
-existing supported file types to Denote notes, and (ii) rename non-note
-files (e.g. PDF) that can benefit from Denote's file-naming scheme.  The
-latter is a convenience we provide, since we already have all the
-requisite mechanisms in place (though Denote does not---and will
-not---manage such files).
+existing supported file types to Denote notes, and (ii) rename
+non-note files (e.g. PDF) that can benefit from Denote's file-naming
+scheme. The latter is a convenience we provide, since we already have
+all the requisite mechanisms in place.
 
 ** Rename multiple files at once
 :PROPERTIES:
