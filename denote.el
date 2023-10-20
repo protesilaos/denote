@@ -2434,8 +2434,6 @@ the changes made to the file: perform them outright."
                             (format "Rename `%s' with keywords" file-in-prompt)))
                  (signature (denote-signature-prompt
                             (format "Rename `%s' with signature" file-in-prompt))))
-            ;; TODO 2023-10-20: We can rework `denote-rename-file' to
-            ;; ultimately use it here.  We can then simplify this.
             (denote--rename-file-subr file id title keywords signature used-ids :no-confirm)
             (when used-ids (puthash id t used-ids))))
         (denote-update-dired-buffers))
