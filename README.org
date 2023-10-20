@@ -1052,6 +1052,9 @@ line or switching between then with commands like ~switch-to-buffer~.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
+[ Refactored as part of {{{development-version}}} to prompt for a
+  signature (plus other refinements under the hood). ]
+
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate. It is possible to do the same with
@@ -1085,9 +1088,14 @@ field in the file's contents, depending on the given file type ([[#h:13218826-56
 Else, use the file name as a default value at the minibuffer prompt.
 When called from Lisp, =TITLE= is a string.
 
-As a final step after the =FILE=, =TITLE=, and =KEYWORDS= are
-collected, ask for confirmation, showing the difference between old
-and new file names. For example:
+Add =SIGNATURE= to the file, using an existing one as the default
+value at the minibuffer prompt. When called from Lisp, =SIGNATURE= is
+a string. If the =SIGNATURE= is empty or ~nil~, it is not included in
+the new file name.
+
+As a final step after the =FILE=, =TITLE=, =KEYWORDS=, and =SIGNATURE=
+are collected, ask for confirmation, showing the difference between
+old and new file names. For example:
 
 #+begin_example
 Rename sample.txt to 20220612T052900--my-sample-title__testing.txt? (y or n)
@@ -4734,9 +4742,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen, Jonathan Sahar,
   Johan Bolmsjö, Juanjo Presa, Kai von Fintel, Kaushal Modi, M. Hadi
   Timachi, Mark Olson, Mirko Hernandez, Niall Dooley, Paul van Gelder,
-  Peter Prevos, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven
-  Seebeck, Taoufik, TJ Stankus, Viktor Haag, Wade Mealing, Yi Liu,
-  Ypot, atanasj, doolio, drcxd, hpgisler, pRot0ta1p, rbenit68,
+  Peter Prevos, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer
+  Emacs, Sven Seebeck, Taoufik, TJ Stankus, Viktor Haag, Wade Mealing,
+  Yi Liu, Ypot, atanasj, doolio, drcxd, hpgisler, pRot0ta1p, rbenit68,
   relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming

@@ -2325,7 +2325,7 @@ relevant changes."
           (denote--add-front-matter new-name title keywords id file-type))))))
 
 ;;;###autoload
-(defun denote-rename-file (file title keywords &optional ask-date)
+(defun denote-rename-file (file title keywords signature &optional ask-date)
   "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
@@ -2358,9 +2358,14 @@ type (e.g. #+title for Org).  Else, use the file name as a
 default value at the minibuffer prompt.  When called from Lisp,
 TITLE is a string.
 
-As a final step after the FILE, TITLE, and KEYWORDS are
-collected, ask for confirmation, showing the difference between
-old and new file names.
+Add SIGNATURE to the file, using an existing one as the default
+value at the minibuffer prompt.  When called from Lisp, SIGNATURE
+is a string.  If the SIGNATURE is empty or nil, it is not
+included in the new file name.
+
+As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
+are collected, ask for confirmation, showing the difference
+between old and new file names.
 
 Read the file type extension (like .txt) from the underlying file
 and preserve it through the renaming process.  Files that have no
@@ -2406,8 +2411,11 @@ place."
        (format "Rename `%s' with title" file-in-prompt))
       (denote-keywords-prompt
        (format "Rename `%s' with keywords" file-in-prompt))
+      (denote-signature-prompt
+       (denote-retrieve-filename-signature file)
+       (format "Rename `%s' with signature (empty to ignore)" file-in-prompt))
       current-prefix-arg)))
-  (denote--rename-file-subr file nil title keywords nil ask-date))
+  (denote--rename-file-subr file nil title keywords signature ask-date))
 
 ;;;###autoload
 (defun denote-dired-rename-files ()
