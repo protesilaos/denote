@@ -2308,9 +2308,11 @@ relevant changes."
          (id (or identifier
                  (denote-retrieve-filename-identifier file :no-error)
                  (denote-create-unique-file-identifier file ask-date)))
-         (signature (or signature (denote-retrieve-filename-signature file)))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
+         (title (or title (denote--retrieve-title-or-filename file file-type)))
+         (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
+         (signature (or signature (denote-retrieve-filename-signature file)))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height)) ; allow minibuffer to be resized
     (when (or no-confirm (denote-rename-file-prompt file new-name))
