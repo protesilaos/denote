@@ -2271,10 +2271,15 @@ Throw error is FILE is not regular, else return FILE."
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
-(defun denote--rename-file-subr (file title keywords signature &optional ask-date no-confirm)
+(defun denote--rename-file-subr (file identifier title keywords signature &optional ask-date no-confirm)
   "Subroutine for `denote-rename-file' and `denote-dired-rename-files'.
 
 - FILE is the target of the rename operation.
+
+- IDENTIFIER is a string unique to the file representing the
+  current date and time.  If IDENTIFIER is nil, derive a unique
+  one (with either `denote-retrieve-filename-identifier' or
+  `denote-create-unique-file-identifier');
 
 - TITLE is a string that is sluggified to form the new name's
   title component;
@@ -2296,7 +2301,8 @@ If optional NO-CONFIRM is non-nil, do not ask for confirmation
 while renaming files, otherwise do it while displaying the
 relevant changes."
   (let* ((dir (file-name-directory file))
-         (id (or (denote-retrieve-filename-identifier file :no-error)
+         (id (or identifier
+                 (denote-retrieve-filename-identifier file :no-error)
                  (denote-create-unique-file-identifier file ask-date)))
          (signature (or signature (denote-retrieve-filename-signature file)))
          (extension (denote-get-file-extension file))
@@ -2394,7 +2400,7 @@ place."
       (denote-keywords-prompt
        (format "Rename `%s' with keywords" file-in-prompt))
       current-prefix-arg)))
-  (denote--rename-file-subr file title keywords nil ask-date))
+  (denote--rename-file-subr file nil title keywords nil ask-date))
 
 (make-obsolete
  'denote-dired-rename-marked-files
