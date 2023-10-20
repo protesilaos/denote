@@ -1848,9 +1848,13 @@ packages such as `marginalia' and `embark')."
 (defvar denote--signature-history nil
   "Minibuffer history of `denote-signature-prompt'.")
 
-(defun denote-signature-prompt ()
-  "Prompt for signature string."
-  (read-string "Provide signature: " nil 'denote--signature-history))
+(defun denote-signature-prompt (&optional prompt-text)
+  "Prompt for signature string.
+With optional PROMPT-TEXT use it in the minibuffer instead of the
+default prompt."
+  (read-string
+   (format-prompt (or prompt-text "Provide signature") nil)
+   nil 'denote--signature-history))
 
 ;;;;; Convenience commands as `denote' variants
 
@@ -2402,22 +2406,43 @@ place."
       current-prefix-arg)))
   (denote--rename-file-subr file nil title keywords nil ask-date))
 
+;;;###autoload
+(defun denote-dired-rename-files ()
+  "Rename Dired marked files same way as `denote-rename-file'.
+Rename each file in sequence, making all the relevant prompts.
+Unlike `denote-rename-file', do not prompt for confirmation of
+the changes made to the file: perform them outright."
+  (declare (interactive-only t))
+  (interactive nil dired-mode)
+  (if-let ((marks (dired-get-marked-files)))
+      (let ((used-ids (when (seq-some
+                             (lambda (m)
+                               (not (denote-retrieve-filename-identifier m :no-error)))
+                             marks)
+                        (denote--get-all-used-ids))))
+        (dolist (file marks)
+          (let* ((file-type (denote-filetype-heuristics file))
+                 (file-in-prompt (propertize file 'face 'error))
+                 (id (or (denote-retrieve-filename-identifier file :no-error)
+                         (denote-create-unique-file-identifier file nil used-ids)))
+                 (title (denote-title-prompt
+                         (denote--retrieve-title-or-filename file file-type)
+                         (format "Rename `%s' with title" file-in-prompt)))
+                 (keywords (denote-keywords-prompt
+                            (format "Rename `%s' with keywords" file-in-prompt)))
+                 (signature (denote-signature-prompt
+                            (format "Rename `%s' with signature" file-in-prompt))))
+            ;; TODO 2023-10-20: We can rework `denote-rename-file' to
+            ;; ultimately use it here.  We can then simplify this.
+            (denote--rename-file-subr file id title keywords signature used-ids :no-confirm)
+            (when used-ids (puthash id t used-ids))))
+        (denote-update-dired-buffers))
+    (user-error "No marked files; aborting")))
+
 (make-obsolete
  'denote-dired-rename-marked-files
  'denote-dired-rename-marked-files-with-keywords
  "2.1.0")
-
-;; NOTE 2023-10-20: See the comment above `denote--rename-file-subr'
-;;
-;; (defun denote-dired-rename-files ()
-;;   "Call `denote-rename-file' over the Dired marked files.
-;; Rename each file in sequence, making all the relevant prompts.
-;;
-;; Unlike `denote-rename-file', do not prompt for confirmation of
-;; the changes made to the file.  Perform them outright."
-;;   (declare (interactive-only t))
-;;   (interactive)
-;;   )
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-with-keywords ()
@@ -3580,6 +3605,9 @@ This command is meant to be used from a Dired buffer."
     ["Rename this file using its front matter" denote-rename-file-using-front-matter
      :help "Rename the current file using its front matter as input"
      :enable (derived-mode-p 'text-mode)]
+    ["Rename Dired marked files interactively" denote-dired-rename-files
+     :help "Rename marked files in Dired by prompting for all file name components"
+     :enable (derived-mode-p 'dired-mode)]
     ["Rename Dired marked files with keywords" denote-dired-rename-marked-files-with-keywords
      :help "Rename marked files in Dired by prompting for keywords"
      :enable (derived-mode-p 'dired-mode)]
