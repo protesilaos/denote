@@ -1124,50 +1124,46 @@ not---manage such files).
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
 
-#+findex: denote-dired-rename-marked-files
-The ~denote-dired-rename-marked-files~ command renames marked files in
-Dired to conform with our file-naming scheme.  Specifically, it does
-the following:
+*** Rename by writing only keywords
+:PROPERTIES:
+:CUSTOM_ID: h:f365ff7e-2140-4e14-a92f-666ae97382a4
+:END:
 
-- retains the file's existing name and make it the =TITLE= field, per
+[ The command ~denote-dired-rename-marked-files~ is now called
+  ~denote-dired-rename-marked-files-with-keywords~ to better describe
+  what it actually does. To rename multiple Dired marked files while
+  being asked about each file's specifics, use the command
+  ~denote-dired-rename-files~. This change is done as part of
+  {{{development-version}}}. ]
+
+#+findex: denote-dired-rename-marked-files-with-keywords
+The ~denote-dired-rename-marked-files-with-keywords~ command renames
+marked files in Dired to conform with our file-naming scheme. It does
+so by writing keywords to them. Specifically, it does the following:
+
+- retains the file's existing name and makes it the =TITLE= field, per
   Denote's file-naming scheme;
 
-- sluggifies the =TITLE= and adjusts its letter casing, per our
-  conventions ([[*Contol the letter casing of file names][Contol the letter casing of file names]]);
+- sluggifies the =TITLE= and adjusts its letter casing, according to
+  our conventions ([[*Contol the letter casing of file names][Contol the letter casing of file names]]);
 
-- prepends an identifier to the =TITLE=;
+- prepends an identifier to the =TITLE=, if one is missing;
 
 - preserves the file's extension, if any;
 
 - prompts once for =KEYWORDS= and applies the user's input to the
-  corresponding field in the file name;
+  corresponding field in the file name, rewriting any keywords that
+  may exist;
 
 - adds or rewrites existing front matter to the underlying file, if it
   is recognized as a Denote note (per the ~denote-file-type~ user
   option), such that it includes the new keywords.
 
-- prompts at the outset for a confirmation, unless optional
-  =SKIP-FRONT-MATTER-PROMPT= is non-nil (such as with a universal
-  prefix argument).
-
-  [ Note that the affected buffers are not saved.  Users can thus
-    check them to confirm that the new front matter does not cause any
-    problems (e.g. with the `diff-buffer-with-file' command).  Multiple
-    buffers can be saved in one go with `save-some-buffers' (read its
-    doc string). ]
-
-With the optional =NO-UNIQUE-ID-CHECK= as non-nil (such as as a double
-prefix argument), it does not process the file identifiers of the
-marked files for potential duplicates.  The default is to check for
-duplicates and increment them such that they become unique.  The
-reason this optional argument exists is for those who want to speed up
-the process, perhaps because they know ahead of time all identifiers
-will be unique or do not care about them.
-
-[ When renaming files in Dired, it is possible to produce duplicate
-  identifiers.  This can happen when multiple files share the same
-  modification time, which can be casually done with the `touch'
-  command, `git', and others. ]
+[ Note that the affected buffers are not saved. Users can thus check
+  them to confirm that the new front matter does not cause any
+  problems (e.g. with the ~diff-buffer-with-file~ command). Multiple
+  buffers can be saved in one go with ~save-some-buffers~ (read its
+  doc string). ]
 
 ** Rename a single file based on its front matter
 :PROPERTIES:
@@ -3114,16 +3110,16 @@ See `denote-file-prompt-original'."
 
 [[#h:2d5ee9bf-e8f2-426c-8bf7-bf78bc88d1ee][Rename files with Denote using ~dired-preview~]]
 
-Just as with the ~denote-dired-rename-marked-files~, we can use Denote
-in the Image Dired buffer ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).  Here is
-the custom code:
+Just as with the ~denote-dired-rename-marked-files-with-keywords~,
+we can use Denote in the Image Dired buffer ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).
+Here is the custom code:
 
 #+begin_src emacs-lisp
 (autoload 'image-dired--with-marked "image-dired")
 (autoload 'image-dired-original-file-name "image-dired-util")
 
 (defun my-denote-image-dired-rename-marked-files (keywords)
-  "Like `denote-dired-rename-marked-files' but for Image Dired.
+  "Like `denote-dired-rename-marked-files-with-keywords' but for Image Dired.
 Prompt for KEYWORDS and rename all marked files in the Image
 Dired buffer to have a Denote-style file name with the given
 KEYWORDS.
@@ -3155,7 +3151,7 @@ can be used instead:
 
 #+begin_src emacs-lisp
 (defun my-image-dired-rename-marked-files (keywords)
-  "Like `denote-dired-rename-marked-files' but for Image Dired.
+  "Like `denote-dired-rename-marked-files-with-keywords' but for Image Dired.
 Prompt for keywords and rename all marked files in the Image
 Dired buffer to have Denote-style keywords, but none of the other
 conventions of Denote's file-naming scheme."
@@ -3182,11 +3178,11 @@ a preview of the file at point in Dired.  This can be helpful in
 tandem with Denote when we want to rename multiple files by taking a
 quick look at their contents.
 
-The command ~denote-dired-rename-marked-files~ will generate
-Denote-style file names based on the keywords it prompts for.
-Identifiers are derived from each file's modification date
-([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]).  There is no need for any custom
-code in this scenario.
+The command ~denote-dired-rename-marked-files-with-keywords~
+will generate Denote-style file names based on the keywords it prompts
+for. Identifiers are derived from each file's modification date
+([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files at once]]). There is no need for any custom code
+in this scenario.
 
 As noted in the section about Image Dired, the user may sometimes not
 need a fully fledged Denote-style file name but only append Denote-like
@@ -3203,7 +3199,7 @@ actions.  We thus have:
 
 #+begin_src emacs-lisp
 (defun my-denote-dired-rename-marked-files-keywords-only ()
-  "Like `denote-dired-rename-marked-files' but only for keywords in file names.
+  "Like `denote-dired-rename-marked-files-with-keywords' but only for keywords in file names.
 
 Prompt for keywords and rename all marked files in the Dired
 buffer to only have Denote-style keywords, but none of the other
@@ -3498,7 +3494,7 @@ Everything is in place to set up the package.
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
   (define-key map (kbd "C-c C-d C-i") #'denote-link-dired-marked-notes)
-  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files)
+  (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-marked-files-with-keywords)
   (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-using-front-matter))
 
 (with-eval-after-load 'org-capture
@@ -3822,10 +3818,14 @@ might change them without further notice.
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more
-  keywords.  In the case of multiple entries, those are separated by
-  the ~crm-sepator~, which typically is a comma.  In such a scenario,
-  the output is sorted with ~string-lessp~.  To sort the return value,
-  use ~denote-keywords-sort~.
+  keywords. Read entries as separate when they are demarcated by the
+  ~crm-separator~, which typically is a comma. With optional
+  =PROMPT-TEXT=, use it to prompt the user for keywords. Else use a
+  generic prompt. Process the return value with ~denote-keywords-sort~
+  and sort with ~string-collate-lessp~ if the user option
+  ~denote-sort-keywords~ is non-nil. [ Refactored as part of
+  {{{development-version}}} to refine how the sorting is done and to
+  include the optional =PROMPT-TEXT=. ]
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Read file title for ~denote~.
@@ -3891,7 +3891,7 @@ might change them without further notice.
   outright according to =FILE-TYPE=.  Do the same as
   ~denote-rewrite-front-matter~ for keywords, but do not ask for
   confirmation.  This is for use in ~denote-keywords-add~,
-  ~denote-keywords-remove~, ~denote-dired-rename-marked-files~, or
+  ~denote-keywords-remove~, ~denote-dired-rename-marked-files-with-keywords~, or
   related.
 
 #+findex: denote-update-dired-buffers

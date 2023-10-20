@@ -970,17 +970,21 @@ With optional PROMPT, use it instead of a generic text for file
 keywords."
   (delete-dups
    (completing-read-multiple
-    (or prompt "File keyword: ") keywords
-    nil nil nil 'denote--keyword-history)))
+    (format-prompt (or prompt "File keyword") nil)
+    keywords nil nil nil 'denote--keyword-history)))
 
-(defun denote-keywords-prompt ()
+(defun denote-keywords-prompt (&optional prompt-text)
   "Prompt for one or more keywords.
-In the case of multiple entries, those are separated by the
-`crm-sepator', which typically is a comma.  In such a case, the
-output is sorted with `string-collate-lessp'.
+Read entries as separate when they are demarcated by the
+`crm-separator', which typically is a comma.
 
-Process the return value with `denote-keywords-sort'."
-  (denote-keywords-sort (denote--keywords-crm (denote-keywords))))
+With optional PROMPT-TEXT, use it to prompt the user for
+keywords.  Else use a generic prompt.
+
+Process the return value with `denote-keywords-sort' and sort
+with `string-collate-lessp' if the user option
+`denote-sort-keywords' is non-nil."
+  (denote-keywords-sort (denote--keywords-crm (denote-keywords) prompt-text)))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
@@ -2352,16 +2356,21 @@ files)."
             (denote-rewrite-front-matter new-name title keywords file-type)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
+(make-obsolete
+ 'denote-dired-rename-marked-files
+ 'denote-dired-rename-marked-files-with-keywords
+ "2.1.0")
+
 ;;;###autoload
-(defun denote-dired-rename-marked-files (&optional skip-front-matter-prompt)
-  "Rename marked files in Dired to a Denote file name.
+(defun denote-dired-rename-marked-files-with-keywords ()
+  "Rename marked files in Dired to a Denote file name by appending keywords.
 
 Specifically, do the following:
 
 - retain the file's existing name and make it the TITLE field,
   per Denote's file-naming scheme;
 
-- `denote-letter-case' and sluggify the TITLE, per our
+- `denote-letter-case' and sluggify the TITLE, according to our
   conventions (check the user option `denote-file-name-letter-casing');
 
 - prepend an identifier to the TITLE;
@@ -2369,48 +2378,44 @@ Specifically, do the following:
 - preserve the file's extension, if any;
 
 - prompt once for KEYWORDS and apply the user's input to the
-  corresponding field in the file name;
+  corresponding field in the file name, rewriting any keywords
+  that may exist;
 
 - add or rewrite existing front matter to the underlying file, if
   it is recognized as a Denote note (per `denote-file-type'),
-  such that it includes the new keywords;
+  such that it includes the new keywords.
 
-- prompt at the outset for a confirmation, unless optional
-  SKIP-FRONT-MATTER-PROMPT is non-nil (such as with a universal
-  prefix argument).
-
-  [ Note that the affected buffers are not saved.  Users can thus
-    check them to confirm that the new front matter does not
-    cause any problems (e.g. with the `diff-buffer-with-file'
-    command).  Multiple buffers can be saved in one go with
-    `save-some-buffers' (read its doc string).  ]"
-  (interactive (list current-prefix-arg) dired-mode)
+[ Note that the affected buffers are not saved.  Users can thus
+  check them to confirm that the new front matter does not cause
+  any problems (e.g. with the `diff-buffer-with-file' command).
+  Multiple buffers can be saved in one go with the command
+  `save-some-buffers' (read its doc string).  ]"
+  (declare (interactive-only t))
+  (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-prompt))
+      (let ((keywords (denote-keywords-prompt "Rename marked files by writing these keywords"))
             (used-ids)) ; We only set it below if necessary (ie if some files lack an identifier).
-        (when (or skip-front-matter-prompt
-                  (yes-or-no-p "Add front matter if necessary (buffers are not saved)?"))
-          (setq used-ids (when (seq-some
-                                (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
-                                marks)
-                           (denote--get-all-used-ids)))
-          (dolist (file marks)
-            (let* ((dir (file-name-directory file))
-                   (id (or (denote-retrieve-filename-identifier file :no-error)
-                           (denote-create-unique-file-identifier file nil used-ids)))
-                   (signature (denote-retrieve-filename-signature file))
-                   (file-type (denote-filetype-heuristics file))
-                   (title (denote--retrieve-title-or-filename file file-type))
-                   (extension (denote-get-file-extension file))
-                   (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature)))
-              (denote-rename-file-and-buffer file new-name)
-              (when (denote-file-is-writable-and-supported-p new-name)
-                (if (denote--edit-front-matter-p new-name file-type)
-                    (denote-rewrite-keywords new-name keywords file-type)
-                  (denote--add-front-matter new-name title keywords id file-type)))
-              (when used-ids
-                (puthash id t used-ids))))
-          (revert-buffer)))
+        (setq used-ids (when (seq-some
+                              (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
+                              marks)
+                         (denote--get-all-used-ids)))
+        (dolist (file marks)
+          (let* ((dir (file-name-directory file))
+                 (id (or (denote-retrieve-filename-identifier file :no-error)
+                         (denote-create-unique-file-identifier file nil used-ids)))
+                 (signature (denote-retrieve-filename-signature file))
+                 (file-type (denote-filetype-heuristics file))
+                 (title (denote--retrieve-title-or-filename file file-type))
+                 (extension (denote-get-file-extension file))
+                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature)))
+            (denote-rename-file-and-buffer file new-name)
+            (when (denote-file-is-writable-and-supported-p new-name)
+              (if (denote--edit-front-matter-p new-name file-type)
+                  (denote-rewrite-keywords new-name keywords file-type)
+                (denote--add-front-matter new-name title keywords id file-type)))
+            (when used-ids
+              (puthash id t used-ids))))
+        (revert-buffer))
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
@@ -3517,8 +3522,8 @@ This command is meant to be used from a Dired buffer."
     ["Rename this file using its front matter" denote-rename-file-using-front-matter
      :help "Rename the current file using its front matter as input"
      :enable (derived-mode-p 'text-mode)]
-    ["Rename Dired marked files" denote-dired-rename-marked-files
-     :help "Rename marked files in Dired"
+    ["Rename Dired marked files with keywords" denote-dired-rename-marked-files-with-keywords
+     :help "Rename marked files in Dired by prompting for keywords"
      :enable (derived-mode-p 'dired-mode)]
     ["Rename Dired marked files using their front matter" denote-dired-rename-marked-files-using-front-matter
      :help "Rename marked files in Dired using their front matter as input"
