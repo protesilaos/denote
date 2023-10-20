@@ -1393,7 +1393,7 @@ Run `denote-desluggify' on title if the extraction is sucessful."
       (denote-desluggify title)
     (file-name-base file)))
 
-(defun denote--file-with-temp-buffer-1 (file)
+(defun denote--file-with-temp-buffer-subr (file)
   "Return path to FILE or its buffer together with the appropriate function.
 Subroutine of `denote--file-with-temp-buffer'."
   (when file
@@ -1415,7 +1415,7 @@ Subroutine of `denote--file-with-temp-buffer'."
 (defmacro denote--file-with-temp-buffer (file &rest body)
   "If FILE exists, insert its contents in a temp buffer and call BODY."
   (declare (indent 1))
-  `(when-let ((file-and-function (denote--file-with-temp-buffer-1 ,file)))
+  `(when-let ((file-and-function (denote--file-with-temp-buffer-subr ,file)))
      (with-temp-buffer
        (funcall (car file-and-function) (cdr file-and-function))
        (goto-char (point-min))
@@ -3106,7 +3106,7 @@ Like `denote-find-link', but select backlink to follow."
       (or (denote-link-return-backlinks)
           (user-error "No backlinks found")))))))
 
-(defun denote--link-after-creating-1 (command description-fn &optional id-only)
+(defun denote--link-after-creating-subr (command description-fn &optional id-only)
   "Subroutine for `denote-link-after-creating' and the like.
 COMMAND is the symbol of a file-creating command to call, such as
 `denote' or `denote-signature'.
@@ -3148,7 +3148,7 @@ We thus have to save the buffer in order to (i) establish valid
 links, and (ii) retrieve whatever front matter from the target
 file."
   (interactive "P")
-  (denote--link-after-creating-1 #'denote #'denote--link-get-description id-only))
+  (denote--link-after-creating-subr #'denote #'denote--link-get-description id-only))
 
 ;;;###autoload
 (defun denote-link-after-creating-with-command (command &optional id-only)
@@ -3162,7 +3162,7 @@ Optional ID-ONLY has the same meaning as in the command
    (list
     (denote-command-prompt)
     current-prefix-arg))
-  (denote--link-after-creating-1
+  (denote--link-after-creating-subr
    command
    (if (eq command 'denote-signature)
        #'denote--link-get-description-with-signature
