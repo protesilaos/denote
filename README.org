@@ -3840,11 +3840,14 @@ might change them without further notice.
   from =FILE= front matter per =FILE-TYPE=.
 
 #+findex: denote-signature-prompt
-+ Function ~denote-signature-prompt~ :: Prompt for signature string.
-  With optional =DEFAULT-SIGNATURE= use it as the default minibuffer
-  value. With optional =PROMPT-TEXT= use it in the minibuffer instead
-  of the default prompt. [ The =DEFAULT-SIGNATURE= and =PROMPT-TEXT=
-  arguments are added as part of {{{development-version}}}. ]
++ Function ~denote-signature-prompt~ :: Prompt for signature string
+  and apply ~denote-sluggify-signature~ to it. With optional
+  =DEFAULT-SIGNATURE= use it as the default minibuffer value. With
+  optional =PROMPT-TEXT= use it in the minibuffer instead of the
+  default prompt. [ The =DEFAULT-SIGNATURE= and =PROMPT-TEXT=
+  arguments are added as part of {{{development-version}}}. Same for
+  the parsing application of ~denote-sluggify-signature~ to the user
+  input (this was always the intent). ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in

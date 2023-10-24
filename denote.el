@@ -1849,7 +1849,7 @@ packages such as `marginalia' and `embark')."
   "Minibuffer history of `denote-signature-prompt'.")
 
 (defun denote-signature-prompt (&optional default-signature prompt-text)
-  "Prompt for signature string.
+  "Prompt for signature string and apply `denote-sluggify-signature' to it.
 With optional DEFAULT-SIGNATURE use it as the default minibuffer
 value.  With optional PROMPT-TEXT use it in the minibuffer
 instead of the default prompt."
