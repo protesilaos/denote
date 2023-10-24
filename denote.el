@@ -3529,11 +3529,8 @@ inserts links with just the identifier."
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-is-note-p' from Dired marked items."
-  (seq-filter
-   (lambda (f)
-     (and (denote-file-is-note-p f)
-          (denote--dir-in-denote-directory-p default-directory)))
-   (dired-get-marked-files)))
+  (when (denote--dir-in-denote-directory-p default-directory)
+    (seq-filter #'denote-file-is-note-p (dired-get-marked-files))))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
