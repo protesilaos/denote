@@ -2431,6 +2431,8 @@ the changes made to the file: perform them outright."
                                (not (denote-retrieve-filename-identifier m :no-error)))
                              marks)
                         (denote--get-all-used-ids))))
+        ;; FIXME 2023-10-24: There is repetition between this and
+        ;; `denote-rename-file'.  We better avoid it.
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
                  (file-in-prompt (propertize file 'face 'error))
