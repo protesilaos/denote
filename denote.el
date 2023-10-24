@@ -1853,9 +1853,10 @@ packages such as `marginalia' and `embark')."
 With optional DEFAULT-SIGNATURE use it as the default minibuffer
 value.  With optional PROMPT-TEXT use it in the minibuffer
 instead of the default prompt."
-  (read-string
-   (format-prompt (or prompt-text "Provide signature") nil)
-   nil 'denote--signature-history default-signature))
+  (denote-sluggify-signature
+   (read-string
+    (format-prompt (or prompt-text "Provide signature") nil)
+    nil 'denote--signature-history default-signature)))
 
 ;;;;; Convenience commands as `denote' variants
 
