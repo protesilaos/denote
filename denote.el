@@ -608,7 +608,8 @@ Concretely, replace with spaces anything that matches the
 `denote-excluded-punctuation-extra-regexp'."
   (replace-regexp-in-string
    (concat denote-excluded-punctuation-regexp
-           denote-excluded-punctuation-extra-regexp)
+           denote-excluded-punctuation-extra-regexp
+           "-")
    "" str))
 
 (defun denote--slug-hyphenate (str)
