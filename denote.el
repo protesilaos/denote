@@ -1763,16 +1763,11 @@ back to nil.")
   "Read file title for `denote'.
 With optional DEFAULT-TITLE use it as the default value.  With
 optional PROMPT-TEXT use it in the minibuffer instead of the
-generic prompt.
-
-Previous inputs at this prompt are available for minibuffer
-completion.  Consider `savehist-mode' to persist minibuffer
-histories between sessions."
+generic prompt."
   (let ((def (or default-title denote-title-prompt-current-default)))
-    (completing-read
+    (read-string
      (format-prompt (or prompt-text "File title") def)
-     denote--title-history
-     nil nil nil 'denote--title-history def)))
+     nil 'denote--title-history def)))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
@@ -1858,16 +1853,11 @@ packages such as `marginalia' and `embark')."
   "Prompt for signature string and apply `denote-sluggify-signature' to it.
 With optional DEFAULT-SIGNATURE use it as the default minibuffer
 value.  With optional PROMPT-TEXT use it in the minibuffer
-instead of the default prompt.
-
-Previous inputs at this prompt are available for minibuffer
-completion.  Consider `savehist-mode' to persist minibuffer
-histories between sessions."
+instead of the default prompt."
   (denote-sluggify-signature
-   (completing-read
+   (read-string
     (format-prompt (or prompt-text "Provide signature") nil)
-    denote--signature-history
-    nil nil nil 'denote--signature-history default-signature)))
+    nil 'denote--signature-history default-signature)))
 
 ;;;;; Convenience commands as `denote' variants
 
