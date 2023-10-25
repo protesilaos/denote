@@ -3844,10 +3844,13 @@ might change them without further notice.
   and apply ~denote-sluggify-signature~ to it. With optional
   =DEFAULT-SIGNATURE= use it as the default minibuffer value. With
   optional =PROMPT-TEXT= use it in the minibuffer instead of the
-  default prompt. [ The =DEFAULT-SIGNATURE= and =PROMPT-TEXT=
-  arguments are added as part of {{{development-version}}}. Same for
-  the parsing application of ~denote-sluggify-signature~ to the user
-  input (this was always the intent). ]
+  default prompt. Previous inputs at this prompt are available for
+  minibuffer completion. Consider ~savehist-mode~ to persist
+  minibuffer histories between sessions. [ The =DEFAULT-SIGNATURE= and
+  =PROMPT-TEXT= arguments, as well as previous input completion, are
+  added as part of {{{development-version}}}. Same for the parsing
+  application of ~denote-sluggify-signature~ to the user input (this
+  was always the intent). ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
@@ -3871,7 +3874,10 @@ might change them without further notice.
 + Function ~denote-title-prompt~ :: Read file title for ~denote~. With
   optional =DEFAULT-TITLE= use it as the default value. With optional
   =PROMPT-TEXT= use it in the minibuffer instead of the generic
-  prompt. [ The =PROMPT-TEXT= is part of {{{development-version}}}. ]
+  prompt. Previous inputs at this prompt are available for minibuffer
+  completion. Consider ~savehist-mode~ to persist minibuffer histories
+  between sessions. [ The =PROMPT-TEXT= and completion of previous
+  inputs are part of {{{development-version}}}. ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
