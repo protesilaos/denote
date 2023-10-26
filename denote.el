@@ -3169,8 +3169,8 @@ Optional ID-ONLY has the same meaning as in the command
    command
    (if (eq command 'denote-signature)
        #'denote--link-get-description-with-signature
-     #'denote--link-get-description
-     id-only)))
+     #'denote--link-get-description)
+   id-only))
 
 ;;;###autoload
 (defun denote-link-or-create (target &optional id-only)
