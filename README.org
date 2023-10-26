@@ -4312,6 +4312,11 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
 + Peter Prevos: /Simulating Text Files with R to Test the Emacs Denote
   Package/, 2022-07-28, <https://lucidmanager.org/productivity/testing-denote-package/>
 
++ Peter Prevos: /Emacs Writing Studio/, 2023-10-19. A configuration for authors, using Denote for taking notes, literature reviews and manage collections of images:
+  - <https://lucidmanager.org/productivity/taking-notes-with-emacs-denote/>
+  - <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>
+  - <https://lucidmanager.org/productivity/using-emacs-image-dired/>
+
 + Stefan Thesing: /Denote as a Zettelkasten/, 2023-03-02,
   <https://www.thesing-online.de/blog/denote-as-a-zettelkasten>
 
