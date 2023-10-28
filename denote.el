@@ -2812,15 +2812,24 @@ to the `dired-mode-hook'."
   :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
-;; NOTE 2022-09-12: I tried to use the `dired-font-lock-keywords', but
-;; then it overrides the standard Dired faces.  The `diredfl' package
-;; uses that method, though it redefines all Dired faces.  We don't want
-;; to do that.
-
-;; FIXME 2022-08-12: Make `denote-dired-mode' actually apply to Dired.
-;; FIXME 2022-08-12: Make `denote-dired-mode' persist after WDired.
 ;; FIXME 2022-08-12: Make `denote-dired-mode' work with diredfl.  This
 ;; may prove challenging.
+
+(defun denote-dired-add-font-lock (&rest _)
+  "Append `denote-faces-file-name-keywords' to font lock keywords."
+  ;; NOTE 2023-10-28: I tried to add the first argument and then
+  ;; experimented with various combinations of keywords, such as
+  ;; `(,@dired-font-lock-keywords ,@denote-faces-file-name-keywords).
+  ;; None of them could be unset upon disabling `denote-dired-mode'.
+  ;; As such, I am using the `when' here.
+  (when (derived-mode-p 'dired-mode)
+    (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
+
+(defun denote-dired-remove-font-lock (&rest _)
+  "Remove `denote-faces-file-name-keywords' from font lock keywords."
+  ;; See NOTE in `denote-dired-add-font-lock'.
+  (when (derived-mode-p 'dired-mode)
+    (font-lock-remove-keywords nil denote-faces-file-name-keywords)))
 
 ;;;###autoload
 (define-minor-mode denote-dired-mode
@@ -2830,8 +2839,13 @@ Add this or `denote-dired-mode-in-directories' to
   :global nil
   :group 'denote-dired
   (if denote-dired-mode
-      (font-lock-add-keywords nil denote-faces-file-name-keywords t)
-    (font-lock-remove-keywords nil denote-faces-file-name-keywords))
+      (progn
+        (denote-dired-add-font-lock)
+        (advice-add #'wdired-change-to-wdired-mode :after #'denote-dired-add-font-lock)
+        (advice-add #'wdired-finish-edit :after #'denote-dired-add-font-lock))
+    (denote-dired-remove-font-lock)
+    (advice-remove #'wdired-change-to-wdired-mode #'denote-dired-add-font-lock)
+    (advice-remove #'wdired-finish-edit #'denote-dired-add-font-lock))
   (font-lock-flush (point-min) (point-max)))
 
 (defun denote-dired--modes-dirs-as-dirs ()
