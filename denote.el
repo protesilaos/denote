@@ -2310,7 +2310,7 @@ Throw error is FILE is not regular, else return FILE."
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
-(defun denote--rename-file-subr (file identifier title keywords signature &optional ask-date no-confirm)
+(defun denote--rename-file-subr (file identifier title keywords signature &optional ask-date no-confirm used-ids)
   "Subroutine for `denote-rename-file' and `denote-dired-rename-files'.
 
 - FILE is the target of the rename operation.
@@ -2338,11 +2338,13 @@ identifier based on the user input supplied to
 
 If optional NO-CONFIRM is non-nil, do not ask for confirmation
 while renaming files, otherwise do it while displaying the
-relevant changes."
+relevant changes.
+
+If USED-IDS is non-nil, use it to create a new identifier."
   (let* ((dir (file-name-directory file))
          (id (or identifier
                  (denote-retrieve-filename-identifier file :no-error)
-                 (denote-create-unique-file-identifier file ask-date)))
+                 (denote-create-unique-file-identifier file ask-date used-ids)))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (title (or title (denote--retrieve-title-or-filename file file-type)))
@@ -2480,7 +2482,7 @@ the changes made to the file: perform them outright."
                  (signature (denote-signature-prompt
                              (denote-retrieve-filename-signature file)
                              (format "Rename `%s' with signature (empty to ignore)" file-in-prompt))))
-            (denote--rename-file-subr file id title keywords signature used-ids :no-confirm)
+            (denote--rename-file-subr file id title keywords signature t :no-confirm used-ids)
             (when used-ids (puthash id t used-ids))))
         (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
@@ -2531,7 +2533,7 @@ Specifically, do the following:
         (dolist (file marks)
           (let ((id (or (denote-retrieve-filename-identifier file :no-error)
                         (denote-create-unique-file-identifier file nil used-ids))))
-            (denote--rename-file-subr file nil nil keywords nil nil :no-confirm)
+            (denote--rename-file-subr file nil nil keywords nil nil :no-confirm used-ids)
             (when used-ids (puthash id t used-ids))))
         (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
