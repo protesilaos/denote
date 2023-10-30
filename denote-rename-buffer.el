@@ -92,14 +92,15 @@ buffer will be used, if available."
   "Parse the BUFFER through the `denote-rename-buffer-format'."
   (when-let ((file (buffer-file-name buffer))
              (type (denote-filetype-heuristics file)))
-    (format-spec denote-rename-buffer-format
-                 (list (cons ?t (denote-retrieve-title-value file type))
-                       (cons ?i (denote-retrieve-filename-identifier file))
-                       (cons ?d (denote-retrieve-filename-identifier file))
-                       (cons ?s (denote-retrieve-filename-signature file))
-                       (cons ?k (denote-retrieve-keywords-value-as-string file type))
-                       (cons ?% "%"))
-                 'delete)))
+    (string-trim
+     (format-spec denote-rename-buffer-format
+                  (list (cons ?t (denote-retrieve-title-value file type))
+                        (cons ?i (denote-retrieve-filename-identifier file))
+                        (cons ?d (denote-retrieve-filename-identifier file))
+                        (cons ?s (denote-retrieve-filename-signature file))
+                        (cons ?k (denote-retrieve-keywords-value-as-string file type))
+                        (cons ?% "%"))
+                  'delete))))
 
 (defun denote-rename-buffer (&optional buffer)
   "Rename current buffer or optional BUFFER with `denote-rename-buffer-format'.
