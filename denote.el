@@ -601,15 +601,18 @@ before falling back to the value of the variable
                   (default-value 'denote-directory))))
     (file-name-as-directory (expand-file-name path))))
 
-(defun denote--slug-no-punct (str)
+(defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
 Concretely, replace with spaces anything that matches the
 `denote-excluded-punctuation-regexp' and
-`denote-excluded-punctuation-extra-regexp'."
+`denote-excluded-punctuation-extra-regexp'.
+
+With optional EXTRA-CHARACTERS as a string, include them in the
+regexp to be replaced."
   (replace-regexp-in-string
    (concat denote-excluded-punctuation-regexp
            denote-excluded-punctuation-extra-regexp
-           "-")
+           extra-characters)
    "" str))
 
 (defun denote--slug-hyphenate (str)
@@ -661,7 +664,7 @@ described in the user option `denote-file-name-letter-casing'.
 
 A nil value of COMPONENT has the same meaning as applying
 `downcase' to STR."
-  (denote-letter-case component (denote--slug-put-equals (denote--slug-no-punct str))))
+  (denote-letter-case component (denote--slug-put-equals (denote--slug-no-punct str "-"))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
