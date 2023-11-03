@@ -2188,8 +2188,13 @@ the file type is assumed to be the first of `denote-file-types'."
     (cond
      ((derived-mode-p 'dired-mode)
       (dired-rename-file old-name new-name nil))
-     ((vc-backend old-name)
-      (vc-rename-file old-name new-name))
+     ;; FIXME 2023-11-03: The `vc-rename-file' requires the file to be
+     ;; saved, but our convention is to not save the buffer after
+     ;; changing front matter unless we absolutely have to (allows
+     ;; users to do `diff-buffer-with-file', for example).
+
+     ;; ((vc-backend old-name)
+     ;;  (vc-rename-file old-name new-name))
      (t
       (rename-file old-name new-name nil)))
     (denote--rename-buffer old-name new-name)))
