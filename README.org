@@ -2561,6 +2561,13 @@ For example:
 If the value of this user option is ~nil~, then
 ~denote-journal-extras-new-entry~ will prompt for a title.
 
+The ~denote-journal-extras-new-entry~ command also accepts an optional
+=DATE= argument. When called internactively, this is a universal
+prefix (e.g. =C-u= with the default key bindings). With =DATE=, it
+prompts for a date to create a new journal entry for. The date prompt
+can optionally use the Org date+calendar selection interface
+([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The ~denote-date-prompt-use-org-read-date~ option]]).
+
 In terms of workflow, using the current date as the title is better
 for maintaining a daily journal.  A prompt for an arbitrary title is
 more suitable for those who like to keep a record of something like a
