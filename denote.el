@@ -2148,6 +2148,12 @@ See the format of `denote-file-types'."
                 (string-equal (plist-get (cdr type) :extension) extension))
               denote-file-types))
 
+(defun denote--file-type-org-capture-p ()
+  "Return Org `denote-file-type' if this is an `org-capture' buffer."
+  (and (bound-and-true-p org-capture-mode)
+       (derived-mode-p 'org-mode)
+       (string-match-p "\\`CAPTURE.*\\.org" (buffer-name))))
+
 (defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
 Use the file extension to detect the file type of the file.
@@ -2159,22 +2165,24 @@ extension in `denote-file-type'.
 
 If no file types in `denote-file-types' has the file extension,
 the file type is assumed to be the first of `denote-file-types'."
-  (let* ((file-type)
-         (extension (denote-get-file-extension-sans-encryption file))
-         (types (denote--file-types-with-extension extension)))
-    (cond ((not types)
-           (setq file-type (caar denote-file-types)))
-          ((= (length types) 1)
-           (setq file-type (caar types)))
-          (t
-           (if-let ((found-type
-                     (seq-find
-                      (lambda (type)
-                        (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
-                      types)))
-               (setq file-type (car found-type))
-             (setq file-type (caar types)))))
-    file-type))
+  (if (denote--file-type-org-capture-p)
+      'org
+    (let* ((file-type)
+           (extension (denote-get-file-extension-sans-encryption file))
+           (types (denote--file-types-with-extension extension)))
+      (cond ((not types)
+             (setq file-type (caar denote-file-types)))
+            ((= (length types) 1)
+             (setq file-type (caar types)))
+            (t
+             (if-let ((found-type
+                       (seq-find
+                        (lambda (type)
+                          (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                        types)))
+                 (setq file-type (car found-type))
+               (setq file-type (caar types)))))
+      file-type)))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
