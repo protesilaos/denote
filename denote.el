@@ -2357,7 +2357,7 @@ relevant changes."
          (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
          (signature (or signature (denote-retrieve-filename-signature file)))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
-         (max-mini-window-height denote-rename-max-mini-window-height)) ; allow minibuffer to be resized
+         (max-mini-window-height denote-rename-max-mini-window-height))
     (when (or no-confirm (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
