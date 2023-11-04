@@ -3781,7 +3781,7 @@ might change them without further notice.
 
 #+findex: denote-sluggify-signature
 + Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
-  slug for signatures.
+  slug for signatures ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
 
 #+findex: denote-sluggify-keywords
 + Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
@@ -3878,17 +3878,14 @@ might change them without further notice.
   from =FILE= front matter per =FILE-TYPE=.
 
 #+findex: denote-signature-prompt
-+ Function ~denote-signature-prompt~ :: Prompt for signature string
-  and apply ~denote-sluggify-signature~ to it. With optional
-  =DEFAULT-SIGNATURE= use it as the default minibuffer value. With
-  optional =PROMPT-TEXT= use it in the minibuffer instead of the
-  default prompt. Previous inputs at this prompt are available for
-  minibuffer completion. Consider ~savehist-mode~ to persist
++ Function ~denote-signature-prompt~ :: Prompt for signature string.
+  With optional =DEFAULT-SIGNATURE= use it as the default minibuffer
+  value. With optional =PROMPT-TEXT= use it in the minibuffer instead
+  of the default prompt. Previous inputs at this prompt are available
+  for minibuffer completion. Consider ~savehist-mode~ to persist
   minibuffer histories between sessions. [ The =DEFAULT-SIGNATURE= and
   =PROMPT-TEXT= arguments, as well as previous input completion, are
-  added as part of {{{development-version}}}. Same for the parsing
-  application of ~denote-sluggify-signature~ to the user input (this
-  was always the intent). ]
+  added as part of {{{development-version}}}. ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in

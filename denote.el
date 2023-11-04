@@ -677,16 +677,10 @@ any leading and trailing signs."
     "=\\{2,\\}" "="
     (replace-regexp-in-string "_\\|\s+" "=" str))))
 
-(defun denote-sluggify-signature (str &optional component)
+(defun denote-sluggify-signature (str)
   "Make STR an appropriate slug for signatures.
-
-COMPONENT is a symbol used to retrieve the letter casing method
-corresponding to the file name field is references.  COMPONENT is
-described in the user option `denote-file-name-letter-casing'.
-
-A nil value of COMPONENT has the same meaning as applying
-`downcase' to STR."
-  (denote-letter-case component (denote--slug-put-equals (denote--slug-no-punct str "-"))))
+Perform letter casing according to `denote-file-name-letter-casing'."
+  (denote-letter-case 'signature (denote--slug-put-equals (denote--slug-no-punct str "-"))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
@@ -1561,7 +1555,7 @@ construct path to DIR."
    (denote-sluggify title 'title)
    (denote--file-extension file-type)
    (when signature
-     (denote-sluggify-signature signature 'signature))))
+     (denote-sluggify-signature signature))))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -1891,7 +1885,7 @@ packages such as `marginalia' and `embark')."
   "Minibuffer history of `denote-signature-prompt'.")
 
 (defun denote-signature-prompt (&optional default-signature prompt-text)
-  "Prompt for signature string and apply `denote-sluggify-signature' to it.
+  "Prompt for signature string.
 With optional DEFAULT-SIGNATURE use it as the default minibuffer
 value.  With optional PROMPT-TEXT use it in the minibuffer
 instead of the default prompt.
@@ -2378,7 +2372,7 @@ relevant changes."
          (title (or title (denote--retrieve-title-or-filename file file-type)))
          (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
          (signature (or signature (denote-retrieve-filename-signature file)))
-         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
+         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (or no-confirm (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
@@ -2489,7 +2483,7 @@ place."
          (title (or title (denote--retrieve-title-or-filename file file-type)))
          (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
          (signature (or signature (denote-retrieve-filename-signature file)))
-         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
+         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
@@ -2583,7 +2577,7 @@ Specifically, do the following:
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature)))
+                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
