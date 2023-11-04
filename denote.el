@@ -2850,6 +2850,9 @@ to the `dired-mode-hook'."
   (when (derived-mode-p 'dired-mode)
     (font-lock-remove-keywords nil denote-faces-file-name-keywords)))
 
+(declare-function wdired-change-to-wdired-mode "wdired")
+(declare-function wdired-finish-edit "wdired")
+
 ;;;###autoload
 (define-minor-mode denote-dired-mode
   "Fontify all Denote-style file names.
