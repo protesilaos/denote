@@ -2540,7 +2540,7 @@ the changes made to the file: perform them outright."
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-with-keywords ()
-  "Rename marked files in Dired to a Denote file name by appending keywords.
+  "Rename marked files in Dired to a Denote file name by writing keywords.
 
 Specifically, do the following:
 
@@ -2570,7 +2570,7 @@ Specifically, do the following:
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-prompt "Rename marked files by writing these keywords"))
+      (let ((keywords (denote-keywords-prompt "Rename marked files with these keywords (overwrite existing)"))
             (used-ids)) ; We only set it below if necessary (ie if some files lack an identifier).
         (setq used-ids (when (seq-some
                               (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
