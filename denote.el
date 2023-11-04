@@ -2334,54 +2334,6 @@ Throw error is FILE is not regular, else return FILE."
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
-(defun denote--rename-file-subr (file identifier title keywords signature &optional ask-date no-confirm)
-  "Subroutine for `denote-rename-file' and `denote-dired-rename-files'.
-
-- FILE is the target of the rename operation.
-
-- IDENTIFIER is a string unique to the file representing the
-  current date and time.  If IDENTIFIER is nil, derive a unique
-  one (with either `denote-retrieve-filename-identifier' or
-  `denote-create-unique-file-identifier');
-
-- TITLE is a string that is sluggified to form the new name's
-  title component;
-
-- KEYWORDS is a list of strings that are ultimately joined into a
-  single string with `denote-keywords-combine';
-
-- SIGNATURE is a string for the file name signature component.
-
-A nil or blank value for TITLE, KEYWORDS, or SIGNATURE omits the
-given component from the file name.
-
-If optional ASK-DATE is non-nil, pass it to the function
-`denote-create-unique-file-identifier' so that it produces an
-identifier based on the user input supplied to
-`denote-date-prompt'.  Otherwise, use the current time.
-
-If optional NO-CONFIRM is non-nil, do not ask for confirmation
-while renaming files, otherwise do it while displaying the
-relevant changes."
-  (let* ((dir (file-name-directory file))
-         (id (or identifier
-                 (denote-retrieve-filename-identifier file :no-error)
-                 (denote-create-unique-file-identifier file ask-date)))
-         (extension (denote-get-file-extension file))
-         (file-type (denote-filetype-heuristics file))
-         (title (or title (denote--retrieve-title-or-filename file file-type)))
-         (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
-         (signature (or signature (denote-retrieve-filename-signature file)))
-         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
-         (max-mini-window-height denote-rename-max-mini-window-height))
-    (when (or no-confirm (denote-rename-file-prompt file new-name))
-      (denote-rename-file-and-buffer file new-name)
-      (denote-update-dired-buffers)
-      (when (denote-file-is-writable-and-supported-p new-name)
-        (if (denote--edit-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords file-type no-confirm)
-          (denote--add-front-matter new-name title keywords id file-type))))))
-
 ;;;###autoload
 (defun denote-rename-file (file title keywords signature &optional ask-date)
   "Rename file and update existing front matter if appropriate.
@@ -2507,11 +2459,10 @@ the changes made to the file: perform them outright."
                                (not (denote-retrieve-filename-identifier m :no-error)))
                              marks)
                         (denote--get-all-used-ids))))
-        ;; FIXME 2023-10-24: There is repetition between this and
-        ;; `denote-rename-file'.  We better avoid it.
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
                  (file-in-prompt (propertize file 'face 'error))
+                 (dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
                          (denote-create-unique-file-identifier file nil used-ids)))
                  (title (denote-title-prompt
@@ -2521,9 +2472,16 @@ the changes made to the file: perform them outright."
                             (format "Rename `%s' with keywords" file-in-prompt)))
                  (signature (denote-signature-prompt
                              (denote-retrieve-filename-signature file)
-                             (format "Rename `%s' with signature (empty to ignore)" file-in-prompt))))
-            (denote--rename-file-subr file id title keywords signature used-ids :no-confirm)
-            (when used-ids (puthash id t used-ids))))
+                             (format "Rename `%s' with signature (empty to ignore)" file-in-prompt)))
+                 (extension (denote-get-file-extension file))
+                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
+            (denote-rename-file-and-buffer file new-name)
+            (when (denote-file-is-writable-and-supported-p new-name)
+              (if (denote--edit-front-matter-p new-name file-type)
+                  (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
+                (denote--add-front-matter new-name title keywords id file-type)))
+            (when used-ids
+              (puthash id t used-ids))))
         (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
 
