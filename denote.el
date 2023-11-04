@@ -401,6 +401,28 @@ current note."
   :package-version '(denote . "1.2.0")
   :type 'boolean)
 
+(defcustom denote-rename-no-confirm nil
+  "When non-nil, `denote-rename-file' does not prompt for confirmation.
+The default behaviour of the `denote-rename-file' command is to
+ask for an affirmative answer as a final step before changing the
+file name and, where relevant, inserting or updating the
+corresponding front matter.
+
+Remember that `denote-rename-file' does not save the underlying
+buffer it modifies.  It leaves it unsaved so that the user can
+review what happened, such as by invoking the command
+`diff-buffer-with-file'.
+
+Specialised commands that build on top of `denote-rename-file'
+may internally bind this user option to a non-nil value in order
+to perform their operation (e.g. `denote-dired-rename-files' goes
+through each marked Dired file, prompting for the information to
+use, but carries out the renaming without asking for
+confirmation (buffers remain unsaved))."
+  :group 'denote
+  :package-version '(denote . "2.1.0")
+  :type 'boolean)
+
 (defcustom denote-excluded-directories-regexp nil
   "Regular expression of directories to exclude from all operations.
 Omit matching directories from file prompts and also exclude them
@@ -2407,7 +2429,9 @@ included in the new file name.
 
 As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
 are collected, ask for confirmation, showing the difference
-between old and new file names.
+between old and new file names.  Do not ask for confirmation if
+the user option `denote-rename-no-confirm' is set to a non-nil
+value.
 
 Read the file type extension (like .txt) from the underlying file
 and preserve it through the renaming process.  Files that have no
@@ -2467,12 +2491,12 @@ place."
          (signature (or signature (denote-retrieve-filename-signature file)))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    (when (denote-rename-file-prompt file new-name)
+    (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
       (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords file-type)
+            (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
           (denote--add-front-matter new-name title keywords id file-type))))))
 
 ;;;###autoload

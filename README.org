@@ -1101,6 +1101,9 @@ old and new file names. For example:
 Rename sample.txt to 20220612T052900--my-sample-title__testing.txt? (y or n)
 #+end_example
 
+Do not ask for confirmation if the ~denote-rename-no-confirm~ option
+is set to a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+
 Read the file type extension (like =.txt=) from the underlying file
 and preserve it through the renaming process. Files that have no
 extension are left without one.
@@ -1132,6 +1135,29 @@ existing supported file types to Denote notes, and (ii) rename
 non-note files (e.g. PDF) that can benefit from Denote's file-naming
 scheme. The latter is a convenience we provide, since we already have
 all the requisite mechanisms in place.
+
+*** The ~denote-rename-no-confirm~ option
+:PROPERTIES:
+:CUSTOM_ID: h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+The default behaviour of the ~denote-rename-file~ command is to ask
+for an affirmative answer as a final step before changing the file
+name and, where relevant, inserting or updating the corresponding
+front matter ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).
+
+Remember that ~denote-rename-file~ does not save the underlying buffer
+it modifies. It leaves it unsaved so that the user can review what
+happened, such as by invoking the command ~diff-buffer-with-file~.
+
+Specialised commands that build on top of ~denote-rename-file~ may
+internally bind this user option to a non-nil value in order to
+perform their operation (e.g. ~denote-dired-rename-files~ goes through
+each marked Dired file, prompting for the information to use, but
+carries out the renaming without asking for confirmation (buffers
+remain unsaved)).
 
 ** Rename a single file based on its front matter
 :PROPERTIES:
