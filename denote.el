@@ -2571,11 +2571,10 @@ Specifically, do the following:
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt "Rename marked files with these keywords (overwrite existing)"))
-            (used-ids)) ; We only set it below if necessary (ie if some files lack an identifier).
-        (setq used-ids (when (seq-some
-                              (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
-                              marks)
-                         (denote--get-all-used-ids)))
+            (used-ids (when (seq-some
+                             (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
+                             marks)
+                        (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
