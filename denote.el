@@ -2443,7 +2443,8 @@ place."
       (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
-          (denote--add-front-matter new-name title keywords id file-type))))))
+          (denote--add-front-matter new-name title keywords id file-type))))
+    new-name))
 
 ;;;###autoload
 (defun denote-dired-rename-files ()
