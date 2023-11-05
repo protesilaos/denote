@@ -3827,7 +3827,8 @@ might change them without further notice.
 
 #+findex: denote-create-unique-file-identifier
 + Function ~denote-create-unique-file-identifier~ :: Create a new unique
-  =FILE= identifier.  The conditions are as follows:
+  =FILE= identifier.  Test that the identifier is unique among
+  =USED-IDS=.  The conditions are as follows:
 
   - If =DATE= is non-nil, invoke ~denote-prompt-for-date-return-id~.
 
@@ -3835,9 +3836,6 @@ might change them without further notice.
     modified date and format it as an identifier.
 
   - As a fallback, derive an identifier from the current time.
-
-  With optional =USED-IDS= as a hash table of identifiers, test that the
-  identifier is unique among them.
 
   With optional =USED-IDS= as nil, test that the identifier is unique
   among all files and buffers in variable ~denote-directory~.

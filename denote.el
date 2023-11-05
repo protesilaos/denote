@@ -1366,8 +1366,8 @@ To create a new one, refer to the function
       (when (not no-error)
         (error "Cannot find `%s' as a file with a Denote identifier" file)))))
 
-(defun denote-create-unique-file-identifier (file &optional date used-ids)
-  "Generate a unique identifier for FILE.
+(defun denote-create-unique-file-identifier (file used-ids &optional date)
+  "Generate a unique identifier for FILE not in USED-IDS hash-table.
 
 The conditions are as follows:
 
@@ -1379,18 +1379,13 @@ The conditions are as follows:
 
 - As a fallback, derive an identifier from the current time.
 
-If USED-IDS hash-table is non-nil, use it, else create and
-populate a new one.
-
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
   (let ((id (cond
              (date (denote-prompt-for-date-return-id))
              ((denote--file-attributes-time file))
              (t (format-time-string denote-id-format)))))
-    (if used-ids
-        (denote--find-first-unused-id id used-ids)
-      (denote--find-first-unused-id id (denote--get-all-used-ids)))))
+    (denote--find-first-unused-id id used-ids)))
 
 (define-obsolete-function-alias
   'denote-retrieve-or-create-file-identifier
@@ -2437,7 +2432,7 @@ place."
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file :no-error)
-                 (denote-create-unique-file-identifier file ask-date)))
+                 (denote-create-unique-file-identifier file (denote--get-all-used-ids) ask-date)))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (title (or title (denote--retrieve-title-or-filename file file-type)))
@@ -2473,7 +2468,7 @@ the changes made to the file: perform them outright."
                  (file-in-prompt (propertize file 'face 'error))
                  (dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
-                         (denote-create-unique-file-identifier file nil used-ids)))
+                         (denote-create-unique-file-identifier file used-ids)))
                  (title (denote-title-prompt
                          (denote--retrieve-title-or-filename file file-type)
                          (format "Rename `%s' with title" file-in-prompt)))
@@ -2539,7 +2534,7 @@ Specifically, do the following:
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
-                         (denote-create-unique-file-identifier file nil used-ids)))
+                         (denote-create-unique-file-identifier file used-ids)))
                  (signature (denote-retrieve-filename-signature file))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
@@ -2581,24 +2576,18 @@ does internally."
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
            (title (denote-retrieve-title-value file file-type))
-           (extension (denote-get-file-extension file))
-           (id (or (denote-retrieve-filename-identifier file :no-error)
-                   (denote-create-unique-file-identifier file)))
-           (dir (file-name-directory file))
-           (new-name (denote-format-file-name
-                      ;; The `denote-retrieve-keywords-value' and
-                      ;; `denote-retrieve-filename-signature' are not
-                      ;; inside the `if-let' because we do not want
-                      ;; to throw an exception if any is nil.
-                      dir id
-                      (or (denote-retrieve-keywords-value file file-type) nil)
-                      (denote-sluggify title 'title) extension
-                      (or (denote-retrieve-filename-signature file) nil))))
-      (when (or auto-confirm
-                (denote-rename-file-prompt file new-name))
-        (denote-rename-file-and-buffer file new-name)
-        (denote-update-dired-buffers))
-    (user-error "No front matter for title and/or keywords")))
+           (id (denote-retrieve-filename-identifier file :no-error)))
+      (let* ((sluggified-title (denote-sluggify title 'title))
+             (keywords (denote-retrieve-keywords-value file file-type))
+             (signature (denote-retrieve-filename-signature file))
+             (extension (denote-get-file-extension file))
+             (dir (file-name-directory file))
+             (new-name (denote-format-file-name dir id keywords sluggified-title extension signature)))
+        (when (or auto-confirm
+                  (denote-rename-file-prompt file new-name))
+          (denote-rename-file-and-buffer file new-name)
+          (denote-update-dired-buffers)))
+    (user-error "No identifier or front matter for title")))
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-using-front-matter ()
