@@ -1120,11 +1120,11 @@ for how this is used."
 (defun denote-extract-keywords-from-front-matter (keywords-string)
   "Extract keywords list from front matter KEYWORDS-STRING.
 Split KEYWORDS-STRING into a list of strings.  If KEYWORDS-STRING
-satisfies `string-blank-p', return an empty string.
+satisfies `string-blank-p', return an empty list.
 
 Consult the `denote-file-types' for how this is used."
   (if (string-blank-p keywords-string)
-      ""
+      '()
     (split-string keywords-string "[:,\s]+" t "[][ \"']+")))
 
 (defvar denote-file-types
