@@ -940,6 +940,13 @@ the given regular expression."
              (file (funcall project-read-file-name-function
                             ;; FIXME 2023-10-15: Why do I get an empty history at the prompt even
                             ;; though it is given as an argument and it is not empty?
+                            ;;
+                            ;; UPDATE 2023-11-07 05:11 +0200: The history breaks because the
+                            ;; function does a `string-prefix-p' for an abbreviated file path.  We
+                            ;; could abbreviate the history items, though I am not happy with this
+                            ;; because it may have implications in other places where we expect a
+                            ;; full path.  We could also make a copy of the history and abbreviate
+                            ;; that, but it seems expensive.
                             "Select note: " files nil 'denote--file-history)))
     (let ((completion-ignore-case read-file-name-completion-ignore-case))
       (add-to-history 'denote--file-history file)
