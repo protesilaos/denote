@@ -919,10 +919,7 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
   "Return the list of Denote files in variable `denote-directory'.
 With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
-  (let* ((project-find-functions #'denote-project-find)
-         (project (project-current nil (denote-directory)))
-         (dirs (list (project-root project)))
-         (files (project-files project dirs)))
+  (let ((files (denote-directory-files)))
     (if (and omit-current (denote-file-has-identifier-p buffer-file-name))
         (delete buffer-file-name files)
       files)))
@@ -934,23 +931,10 @@ file in the returned list."
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (when-let ((files (if files-matching-regexp
-                        (denote-directory-files-matching-regexp files-matching-regexp)
-                      (denote-all-files :omit-current)))
-             (file (funcall project-read-file-name-function
-                            ;; FIXME 2023-10-15: Why do I get an empty history at the prompt even
-                            ;; though it is given as an argument and it is not empty?
-                            ;;
-                            ;; UPDATE 2023-11-07 05:11 +0200: The history breaks because the
-                            ;; function does a `string-prefix-p' for an abbreviated file path.  We
-                            ;; could abbreviate the history items, though I am not happy with this
-                            ;; because it may have implications in other places where we expect a
-                            ;; full path.  We could also make a copy of the history and abbreviate
-                            ;; that, but it seems expensive.
-                            "Select note: " files nil 'denote--file-history)))
-    (let ((completion-ignore-case read-file-name-completion-ignore-case))
-      (add-to-history 'denote--file-history file)
-      file)))
+  (let ((files (if files-matching-regexp
+                   (denote-directory-files-matching-regexp files-matching-regexp)
+                 (denote-all-files :omit-current))))
+    (completing-read "Select note: " files nil nil nil 'denote--file-history)))
 
 ;;;; Keywords
 
