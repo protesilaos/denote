@@ -513,7 +513,7 @@ The value is an alist where each element is a cons cell of the
 form (COMPONENT . METHOD).
 
 - The COMPONENT is an unquoted symbol among `title', `signature',
-  `keywords', which refer to the corresponding component of the
+  `keywords', which refers to the corresponding component of the
   file name.  The special t COMPONENT is a fallback value in case
   the others are not specified.
 

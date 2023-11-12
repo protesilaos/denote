@@ -1496,7 +1496,7 @@ default value:
 What these cons cells of =(COMPONENT . METHOD)= are:
 
 - The =COMPONENT= is an unquoted symbol among =title=, =signature=,
-  =keywords=, which refer to the corresponding component of the file
+  =keywords=, which refers to the corresponding component of the file
   name.  The special ~t~ =COMPONENT= is a fallback value in case the
   others are not specified.
 
