@@ -9,6 +9,629 @@ project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
 
+* Version 2.1.0 on 2023-11-12
+:PROPERTIES:
+:CUSTOM_ID: h:167beb8f-14be-40de-a1f2-d13910924c00
+:END:
+
+The general theme of this release is improvements to the quality of
+life with Denote. While these release notes and the overall
+documentation are comprehensive, make no mistake: Denote can be used
+with =M-x denote=, =M-x denote-link=, =M-x denote-backlinks=, =M-x
+denote-rename-file=. These have been rock solid from the beginning.
+Everything else is for more specialised workflows.
+
+I hope to produce a companion video to this changelog in the coming
+days. Though I am still reeling from the injury to my left hand (I
+wrote all this to not delay the package any longer). Please check back
+in my website's coding blog section to find the follow-up video:
+<https://protesilaos.com/codelog>.
+
+[ Remember to consult the manual whenever you have a question about
+  Denote. It is comprehensive and, in my opinion, a paradigm of how
+  free software should be done for the benefit of users. I document
+  everything in detail and am eager to continue this way. If something
+  is unclear, contact me in person, use the mailing list, or open an
+  issue on the GitHub/GitLab mirror. I do not check other fora or
+  media and will thus not help you there. If you are writing custom
+  code, remember to read the doc strings. I write them for you too. ]
+
+** Deprecated the ~denote-allow-multi-word-keywords~
+:PROPERTIES:
+:CUSTOM_ID: h:a086d1d2-adb3-4151-a7af-813d79b4b3dc
+:END:
+
+This user option enabled the use of keywords that consisted of
+multiple words. Those would be separated by hyphens. Such keywords do
+not work as Org =#+filetags= and also mess up with the neat search
+semantics of Denote's file-naming scheme where a hyphen prefix
+anchors the query to the =TITLE= component of the name.
+
+Users who absolutely need multi-word keywords are encouraged to use
+the new ~denote-file-name-letter-casing~ option. More below.
+
+** Control the letter casing of file name components
+:PROPERTIES:
+:CUSTOM_ID: h:29319b8a-698b-4a1c-bab4-7b106a623de8
+:END:
+
+By default, Denote downcases all components of the file name. The user
+option ~denote-file-name-letter-casing~ provides granular control over
+this behaviour.
+
+The value it accepts is an alist where each element is a cons cell of
+the form =(COMPONENT . METHOD)=. The manual, or the variable's doc
+string, cover the details. The gist is that we can now instruct Denote
+to accept input verbatim, such as because we want to apply a
+=camelCase= convention or variants thereof.
+
+Here is an example, where we downcase the title, but preserve the
+letter casing of the signature and keyword components with this:
+
+#+begin_src emacs-lisp
+(setq denote-file-name-letter-casing
+      '((title . downcase)
+        (signature . verbatim)
+        (keywords . verbatim)
+        (t . downcase)))
+#+end_src
+
+Users of the now-deprecated ~denote-allow-multi-word-keywords~ are
+encouraged to implement a letter casing convention with the help of
+this new user option.
+
+Relevant sections in the manual:
+
+- The file-naming scheme:
+  <https://protesilaos.com/emacs/denote#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d>.
+- Contol the letter casing of file names:
+  <https://protesilaos.com/emacs/denote#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c>
+
+** The ~denote-dired-mode~ should now work while toggling ~wdired~
+:PROPERTIES:
+:CUSTOM_ID: h:18a3b515-9306-4911-ba2d-73e36efbdd32
+:END:
+
+The writable version of Dired would break the colouration applied by
+~denote-dired-mode~. I have arranged for this to not happen anymore,
+although it means that I had to add an advice to relevant wdired
+symbols because no proper hook is on offer.
+
+** The "do or create" commands are more intuitive to use
+:PROPERTIES:
+:CUSTOM_ID: h:5bcdc4b8-ecba-44d7-accc-0b26657aa29b
+:END:
+
+Denote provides several commands with a "do or create" logic. For
+example, the ~denote-open-or-create~ prompts for a file to visit: if
+something matches the user's input, it is visited in a buffer,
+otherwise a new note is created with the given input. Same for
+~denote-link-or-create~, mutatis mutandis.
+
+Before, the "... or create" step did not make it obvious how the
+previous search terms could be reused. Whereas now those are set as
+the default minibuffer value at the title prompt, meaning that typing
+=RET= at the empty prompt will use that value, while =M-n=
+(~next-history-element~ with default settings) will put the text into
+the prompt for further editing.
+
+I will answer this because I get asked about it: we still refrain from
+creating the new note outright because the search terms are not
+necessarily suitable for a new title. Remember that Denote's file name
+is optimised for searching: =-word= is specific to the title, =_word=
+to the keywords, and ==word= to the signature. Combine this with the
+~orderless~ package and you frequently type something like =_jou -he=
+to match a file with the =journal= keyword and the word =hesitation=
+in its title.
+
+*IMPORTANT NOTE:* some minibuffer completion User Interfaces preselect
+the first completion candidate, which is not always the same as the
+default value. Check with your UI of choice how to pass a default
+value and/or provide an empty input. For example, with the ~vertico~
+package one can move up from the first candidate to select the prompt
+itself (the counter switches from =1/N= to =*/N=).
+
+Relevant sections in the manual:
+
+- Open an existing note or create it if missing:
+  <https://protesilaos.com/emacs/denote#h:ad91ca39-cf10-4e16-b224-fdf78f093883>.
+- Link to a note or create it if missing:
+  <https://protesilaos.com/emacs/denote#h:9e41e7df-2aac-4835-94c5-659b6111e6de>.
+
+*** New "... or create with command" features for more flexibility
+:PROPERTIES:
+:CUSTOM_ID: h:6f475151-9d64-4dfb-8c59-694c93d56ce8
+:END:
+
+As part of the wider "do or create" feature set, Denote provides the
+option to run a specific note-creating command instead of just using
+the standard ~denote~ one. For example, it is possible to call the
+~denote-subdirectory~ command to pick a subdirectory of the
+~denote-directory~ for the new note. Commands providing this facility
+are ~denote-open-or-create-with-command~ and ~denote-link-after-creating-with-command~.
+
+Thanks to Vedang Manerikar for fixing a broken ~if~ clause during
+development: <https://lists.sr.ht/~protesilaos/denote/patches/46087>.
+
+** The title and signature prompts use minibuffer completion
+:PROPERTIES:
+:CUSTOM_ID: h:429847c8-ebf4-4b23-a597-5276309ef61a
+:END:
+
+All Denote minibuffer prompts come with their own history. This means
+that =M-p= (~previous-history-element~) and =M-n=
+(~next-history-element~) always return relevant input.
+
+The title and signature prompts now reuse their input history to
+provide completion. This means that the user can quickly access
+previous inputs, either to pass them directly or edit them further
+before inputting them.
+
+[ Use the built-in ~savehist-mode~ to persist histories across sessions. ]
+
+Remember to check with your minibuffer UI on how to input empty
+values at the prompt, should you ever need to do so.
+
+For posterity, I first implemented this in commit =0d855bb=. However,
+it did not work with the default minibuffer because the =SPC= key
+performs completion (popping up the Completions buffer). So users
+could not easily input an arbitrary string for the title/signature. I
+thus reverted that commit in =9f692cb=.
+
+[ The bug was reported by Suhail Singh on the mailing list:
+  <https://lists.sr.ht/~protesilaos/denote/%3C652d82c0.c80a0220.e6282.dc47%40mx.google.com%3E#%3C65392fa6.050a0220.da61c.0ac8@mx.google.com%3E>. ]
+
+Stefan Monnier suggested the use of the ~minibuffer-with-setup-hook~,
+which lets us disable =SPC= completion for the purposes of these
+functions. This is most welcome as the functionality is nice to have.
+Stefan's feedback was provided on the emacs-devel mailing list:
+<https://lists.gnu.org/archive/html/emacs-devel/2023-10/msg00631.html>.
+
+** Create a note with the region's contents
+:PROPERTIES:
+:CUSTOM_ID: h:ae798d1f-6fa2-4d99-91c9-0d5eb18b1bb0
+:END:
+
+The command ~denote-region~ takes the contents of the active region
+and then prompts for a title and keywords.  Once a new note is
+created, it inserts the contents of the region therein.  This is
+useful to quickly elaborate on some snippet of text or capture it for
+future reference.
+
+It also provides the ~denote-region-after-new-note-functions~ abnormal
+hook. Read the manual for more:
+<https://protesilaos.com/emacs/denote#h:2f8090f1-50af-4965-9771-d5a91a0a87bd>.
+
+** Comprehensive refinements to the ~denote-rename-buffer-mode~
+:PROPERTIES:
+:CUSTOM_ID: h:91b3ba9f-8b10-4f1c-a08b-70f5e7140923
+:END:
+
+This is an opt-in feature that automatically renames the buffer of
+newly visited Denote files according to the user's preferences. Not to
+be confused with renaming files: buffers are internal to Emacs. Enable
+it at startup by adding this to your configuration file:
+
+#+begin_src emacs-lisp
+(denote-rename-buffer-mode 1)
+#+end_src
+
+Relevant entries in the manual:
+
+- Automatically rename Denote buffers:
+  <https://protesilaos.com/emacs/denote#h:3ca4db16-8f26-4d7d-b748-bac48ae32d69>.
+- The ~denote-rename-buffer-format~ option:
+  <https://protesilaos.com/emacs/denote#h:35507c18-35b1-41b9-9d80-52f54fcef3cb>.
+
+*** The ~denote-rename-buffer-format~ option
+:PROPERTIES:
+:CUSTOM_ID: h:beeafe57-f110-4c11-87e7-10f682ca2386
+:END:
+
+The user option ~denote-rename-buffer-format~ controls how the
+function ~denote-rename-buffer~ chooses the name of the
+buffer-to-be-renamed. This function is the one used by the
+~denote-rename-buffer-mode~.
+
+Users may want, for example, to include some text that makes Denote
+buffers stand out, such as a =[D]= prefix. Examples:
+
+#+begin_src emacs-lisp
+;; Use the title (default)
+(setq denote-rename-buffer-format "%t")
+
+;; Use the title and keywords with some emoji in between.
+(setq denote-rename-buffer-format "%t 🤨 %k")
+
+;; Use the title with a literal "[D]" before it
+(setq denote-rename-buffer-format "[D] %t")
+#+end_src
+
+Users who need yet more flexibility are best served by writing their
+own function and assigning it to the ~denote-rename-buffer-function~
+(in such a case, please contact me as I am curious to know what the
+underlying need is).
+
+The manual or doc string of ~denote-rename-buffer-format~ cover the
+technicalities of the available format specifiers.
+
+Thanks to Jean-Philippe Gagné Guay for intermediately refining parts
+of the code. This was done in pull request 177 on the GitHub mirror:
+<https://github.com/protesilaos/denote/pull/177>.
+
+Thanks to Vedang Manerikar for ensuring that the string of the buffer
+is trimmed so that it never starts with an empty space (those buffers
+count as "internal" to Emacs and are not shown to the user):
+<https://lists.sr.ht/~protesilaos/denote/patches/46243>.
+
+*** The ~denote-rename-buffer-mode~ also works with unsaved buffers
+:PROPERTIES:
+:CUSTOM_ID: h:e65bb546-af22-45fb-a918-d0e621b0e415
+:END:
+
+Internal refinements to a Denote Lisp macro make this minor mode also
+work with new and unsaved Denote buffers. Whereas before only the
+buffers of existing files would be renamed.
+
+** Denote's renaming facilities are better than ever
+:PROPERTIES:
+:CUSTOM_ID: h:703b9021-f917-4b3f-9406-14992b2a4fe8
+:END:
+
+Denote's value proposition is its efficient file-naming scheme that
+makes it easier to retrieve files even with rudimentary search tools.
+We provide several commands to rename existing files according to this
+scheme. The underlying file type does not matter (e.g. I use Denote to
+name my video files).
+
+Relevant sections in the manual:
+
+- Renaming files:
+  <https://protesilaos.com/emacs/denote#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca>.
+- Front matter:
+  <https://protesilaos.com/emacs/denote#h:13218826-56a5-482a-9b91-5b6de4f14261>.
+
+*** Rename like an expert with ~denote-rename-no-confirm~
+:PROPERTIES:
+:CUSTOM_ID: h:8798dd8c-819d-4fda-9865-77d9734da28c
+:END:
+
+By default, the ~denote-rename-file~ command asks for a final
+confirmation before carrying out its function. The new user option
+~denote-rename-no-confirm~ can be bound to a non-nil value to skip
+that step.
+
+This only applies to ~denote-rename-file~. Other commands that rename
+files in bulk never prompt for such confirmation (it would make them
+cumbersome to use, plus it is assumed that the user who performs a
+batch operation understands the implications).
+
+*** The ~denote-rename-file~ command prompts for a signature
+:PROPERTIES:
+:CUSTOM_ID: h:e4e7e3d8-40e3-4f58-a19f-df34ccbfdbbd
+:END:
+
+This command used to only ask for a title and keywords. Now it allows
+to use a signature as well. An empty input means that the signature is
+ignored. AGAIN, please check with your minibuffer completion UI on how
+to input an empty value, otherwise you will not get what you expect.
+
+*** Rename mutliple files sequentially with ~denote-dired-rename-files~
+:PROPERTIES:
+:CUSTOM_ID: h:dcb623aa-fc4d-4d84-80e4-a540b6dbb144
+:END:
+
+This provides the same interface as ~denote-rename-file~, only it
+works over a list of marked Dired files.
+
+Internally, the prompts for title, keywords, and signature are
+improved to display the underlying file that is affected by the
+current operation. As the user renames files, the prompts reflect
+which one is current.
+
+*** The name of ~denote-dired-rename-marked-files~ has changed
+:PROPERTIES:
+:CUSTOM_ID: h:f9a16fc1-840d-400f-a5ae-a7791fac441f
+:END:
+
+It is now called ~denote-dired-rename-marked-files-with-keywords~ to
+better communicate what it does. In short, this is a quick way to add
+the given keywords to a list of files, converting them to the Denote
+file-naming scheme in case they are not already using it. For the full
+interactive power, use the aforementioned ~denote-dired-rename-files~.
+
+*** The ~denote-rename-file-using-front-matter~ can be used without saving its buffer
+:PROPERTIES:
+:CUSTOM_ID: h:bfc194c2-5980-482a-aa1c-feb4ced992d1
+:END:
+
+This is now possible because of changes to underlying functions (a
+Denote Lisp macro---not to bother you with technicalities).
+
+Same principle for ~denote-rename-file-using-front-matter~.
+
+*** The name of ~denote-change-file-type~ has changed
+:PROPERTIES:
+:CUSTOM_ID: h:3bf4b6c4-8399-4d5d-8df1-6495f5bfc579
+:END:
+
+It is now called ~denote-change-file-type-and-front-matter~ to avoid
+confusion as to whether Denote converts files from one format to
+another (there are specialised tools for that).
+
+*** Renaming a file returns the new file path for programmatic use
+:PROPERTIES:
+:CUSTOM_ID: h:1d7bffd1-e422-420d-b453-9a36dd8508f7
+:END:
+
+Thanks to mentalisttraceur for requesting this feature in issue 183 on
+the GitHub mirror: <https://github.com/protesilaos/denote/issues/183>.
+
+** Link to a file with a signature
+:PROPERTIES:
+:CUSTOM_ID: h:b154ef64-c3b4-4e15-b533-c59d5b2ebf6b
+:END:
+
+The ~denote-link-with-signature~ command prompts for a file that has a
+=SIGNATURE= component and links to it. The link's description includes
+the text of the signature as well as the title.
+
+Thanks to Mark Olson for mentioning this idea. It was done in issue
+167 on the GitHub mirror: <https://github.com/protesilaos/denote/issues/167>.
+
+I implemented it live, while also refactoring relevant parts of the
+code to be more abstract/reusable:
+<https://protesilaos.com/codelog/2023-09-25-emacs-live-mostly-denote/>.
+
+Thanks to Alan Schmitt for spotting and fixing a regression caused by
+the above:
+<https://lists.sr.ht/~protesilaos/denote/%3Cm2cyy5rt68.fsf%40mac-03220211.irisa.fr%3E>.
+
+** Renaming GPG or Age encrypted file works as expected
+:PROPERTIES:
+:CUSTOM_ID: h:9ceaf432-797c-46e5-aaf8-d7180ad66689
+:END:
+
+Emacs can seamlessly visit a =.gpg= or =.age= file. Denote has nothing
+to do with encryption, though it takes care to recognise the
+underlying file type and to perform its work accordingly. However,
+prior versions of Denote contained a bug in how file extensions were
+handled: it would keep the encryption extension but remove the file
+type extension before it (so ".org.gpg" would wrongly become ".gpg").
+
+Thanks to Jens Östlund for reporting a bug with ~denote-keywords-add~
+on an encrypted file, which prompted me to investigate this further
+and fix the issue holistically. This was done in issue 172 on the
+GitHub mirror: <https://github.com/protesilaos/denote/issues/172>.
+
+Interested parties are advised to check the two new public functions,
+~denote-get-file-extension~ and ~denote-get-file-extension-sans-encryption~,
+for the implementation details. In short, we had a problem with all
+operations that needed to retrieve the file extension when that
+included an encryption component.
+
+** The optional ~denote-journal-extras~
+:PROPERTIES:
+:CUSTOM_ID: h:54723661-31f8-4cab-9be5-4cab19e44dc7
+:END:
+
+The manual of Denote has long provided code samples to achieve
+particularised results. Among those were snippets to streamline the
+use of Denote for journaling.
+
+To make things even easier for users, we now have the
+=denote-journal-extras.el=. It consolidates the rich corpus of
+documented snippets into an easy-to-use and formally maintained
+package. Thanks to Vedang Manerikar for providing the impetus for this
+process. This was done on the mailing list:
+<https://lists.sr.ht/~protesilaos/denote/patches/43255#%3C20230803170935.60833-2-ved.manerikar@gmail.com%3E>.
+
+The new file is optional. It can be loaded thus:
+
+#+begin_src emacs-lisp
+(require 'denote-journal-extras)
+#+end_src
+
+The main idea is to quickly create journal entries. Check the manual
+for the details, including the commands to use and the variables to
+configure: <https://protesilaos.com/emacs/denote#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92>.
+
+Thanks to Kostas Andreadis for working on a comment I had included in
+a working state of the code about the inclusion of templates. Kostas
+made it possible to use the Denote template prompt (per the
+~denote-templates~ user option) as part of the creation of a new
+journal entry. This was done in pull request 173 on the GitHub mirror:
+<https://github.com/protesilaos/denote/pull/173>. The change is less
+than 15 lines and thus Kostas does not need to assign copyright to the
+Free Software Foundation.
+
+Also thanks to TJ Stankus for reporting a case where
+~denote-journal-extras-title-format~ did not accept a ~nil~ value (as
+it should). This was done in issue 176 on the GitHub mirror:
+<https://github.com/protesilaos/denote/issues/176>.
+
+** The optional ~denote-silo-extras~
+:PROPERTIES:
+:CUSTOM_ID: h:618495d2-0c5b-48b4-af88-56f3d969697c
+:END:
+
+This is the same idea as with the =denote-journal-extras.el=: we had
+the code in the manual and are now formally distributing it. Thanks
+again to Vedang Manerikar for initiating this process. It was done on
+the mailing list:
+<https://lists.sr.ht/~protesilaos/denote/patches/43255>.
+
+Use this optional feature with:
+
+#+begin_src emacs-lisp
+(require 'denote-silo-extras)
+#+end_src
+
+Consult the manual for the details:
+<https://protesilaos.com/emacs/denote#h:e43baf95-f201-4fec-8620-c0eb5eaa1c85>.
+
+** The infrastructure for unique identifiers is more robust
+:PROPERTIES:
+:CUSTOM_ID: h:1d538d7f-52e6-4653-b057-c62606752934
+:END:
+
+For Denote version =2.0.0= I introduced a general scheme intended to
+avoid scenaria where duplicate identifiers could be created (thus
+breaking a premise of Denote). Jean-Philippe Gagné Guay iterated over
+the code to make it more robust and to fix some of the cases I had not
+accounted for. This was done in pull request 159 on the GitHub mirror:
+<https://github.com/protesilaos/denote/pull/159>. Same idea in pull
+request 187: <https://github.com/protesilaos/denote/pull/187>.
+
+** For developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:9031dc82-ab75-438c-a2c8-a1250ae48671
+:END:
+
+Denote has a clean code base with small and composable functions. This
+encourages hackability. Each definition in the source is documented,
+while the manual provides an overview of every public symbol.
+
+- Added :: ~denote-get-file-extension~,
+  ~denote-get-file-extension-sans-encryption~,
+  ~denote-keywords-combine~,
+  ~denote-retrieve-keywords-value-as-string~,
+  ~denote-title-prompt-current-default~, ~denote-command-prompt~.
+
+- Refactored :: ~denote-all-files~, ~denote-signature-prompt~,
+  ~denote-file-prompt~, ~denote-title-prompt~,
+  ~denote-rewrite-front-matter~.
+
+Please read their documentation strings for the details. Or check the
+manual: <https://protesilaos.com/emacs/denote#h:c916d8c5-540a-409f-b780-6ccbd90e088e>.
+
+** Check out the ~denote-explore~ package by Peter Prevos
+:PROPERTIES:
+:CUSTOM_ID: h:759d0276-17e8-4461-9ee4-b4d07840dd7a
+:END:
+
+Peter posted this on the mailing list and I asked if it was okay to
+mention it in the release notes of Denote. If you have a relevant
+announcement to make, consider sending it to our mailing list.
+
+#+begin_quote
+Hi folks,
+
+I have just updated the denote-explore package:
+https://github.com/pprevos/denote-explore
+
+It does three things:
+
+1. Summary statistics: Count and visualise keywords and note types
+2. Random walks: Generate new ideas using serendipity
+3. Network visualisation: Visualise your Denote network of links
+
+It contains a rudimentary network visualisation function, relying
+on the R language. I will need some D3.js expertise to improve the
+visualisation.
+
+There should be a way to generate the basic network structure just
+using Elisp and feeding a JSON to D3.js.
+
+Regards
+
+P:)
+#+end_quote
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:01dc6bb0-53ac-43e1-b12e-484c99a6c2a7
+:END:
+
+- During this release cycle, I made lots of changes that in one way or
+  another related to the ~denote-file-prompt~. It was relying on a
+  =project.el= mechanism that did not allow us to do everything we
+  needed. I have thus arranged for it to use the standard
+  ~completing-read~ mechanism. There are subtle differences in
+  behaviour, though the core idea is the same. This change fixes a few
+  not-so-obvious bugs. Interested parties are advised to refer to the
+  message in commit =50d1bbdf1e8ffe0f449f2f5da02f9b70322fff7d=.
+
+- All commands that use the ~denote~ function internally (i.e.
+  anything that creates a new note) call the
+  ~denote-after-new-note-hook~ as part of their work. This hook is
+  mostly intended for advanced users who want to do something after a
+  new note is produced.
+
+- The ~menu-bar-mode~ submenu of Denote is now positioned where it
+  should be after the "Tools". Thanks to Noboru Ota for the patch:
+  <https://lists.sr.ht/~protesilaos/denote/patches/44738>.
+
+- The ~menu-bar-mode~ entry of Denote includes the new commands. This
+  is a nice way to discover more of what Denote can do.
+
+- The commands ~denote-backlinks-prev~ and ~denote-backlinks-next~ are
+  only meant to be used inside the Denote backlinks buffer. As such,
+  they now produce an error when called elsewhere (I wish I could hide
+  them from =M-x= altogether).
+
+- The ~denote-extract-keywords-from-front-matter~ always returns a
+  list, thus avoiding an erroneous case. Thanks to Vedang Manerikar
+  for fixing the bug: <https://lists.sr.ht/~protesilaos/denote/patches/46420>.
+
+- The =T= in the Denote identifier component now has its own face:
+  ~denote-faces-time-delimiter~. This is used by the backlinks buffer
+  and the ~denote-dired-mode~. The idea is to introduce a subtle
+  distinction between the date and time constituents of the
+  identifier. Those who want the =T= to be the same colour as the rest
+  of the identifier, can make the ~denote-faces-time-delimiter~
+  inherit the ~denote-faces-date~. For example:
+
+  #+begin_src emacs-lisp
+  (set-face-attribute 'denote-faces-time-delimiter nil :inherit 'denote-faces-date)
+  #+end_src
+
+  Thanks to Jean-Charles Bagneris for sending this patch:
+  <https://lists.sr.ht/~protesilaos/denote/patches/43072>.
+
+- Fixed a ~nil~ file expansion in the function
+  ~denote--extract-title-from-file-history~. Thanks to ezchi for
+  bringing this matter to my attention. It was done in issue 166 on
+  the GitHub mirror:
+  <https://github.com/protesilaos/denote/issues/166>.
+
+- A link can be created from inside an ~org-capture~ buffer. This
+  means that we can call ~denote-link~ (and related) while capturing a
+  new note with ~org-capture~. Thanks to Peter Smith for reporting the
+  bug in issue 186 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/issues/186>.
+
+- We stopped using ~vc-rename-file~ to rename files. The reason is
+  that it requires the buffer to be saved, but we do not want that
+  after modifying the front matter because we want to give the user a
+  chance to confirm what happened. Thanks to Frédéric Willem for
+  reporting the problem in issue 185 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/issues/185>.
+
+- Thanks to Ivan Sokolov for removing a double negative logic in a
+  snippet. This was done in pull request 162 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/162>.
+
+** Git commits
+:PROPERTIES:
+:CUSTOM_ID: h:d8f30943-70dd-45fe-8cf1-4c3918152aeb
+:END:
+
+Just an overview of what we did. Every contribution matters.
+
+#+begin_src
+~/Git/Projects/denote $ git shortlog 2.0.0..2.1.0 --summary --numbered
+   153	Protesilaos Stavrou
+    15	Jean-Philippe Gagné Guay
+     5	Vedang Manerikar
+     1	Alan Schmitt
+     1	Ivan Sokolov
+     1	Jean-Charles Bagneris
+     1	Kostas Andreadis
+     1	Noboru Ota
+     1	Peter Prevos
+#+end_src
+
 * Version 2.0.0 on 2023-07-21
 :PROPERTIES:
 :CUSTOM_ID: h:3f17bf03-4c47-4410-abf8-1db4a0ac7775
@@ -70,7 +693,7 @@ Read the original announcement:
 As part of the development, I fixed a case where
 ~denote-rename-file-using-front-matter~ would fail if it could not
 find a signature
-  
+
 The idea is that we want the command to behave the way it always did
 when the file has no signature and to preserve the signature when it
 is present.
@@ -228,7 +851,7 @@ recognise any subdirectories inside of it.
 Thanks to relict007, Hilde Rhyne, Mirko Hernández, Noboru Ota
 (nobiot), Alan Schmitt, hapst3r, and Hilde Rhyne for their
 participation in the relevant discussions:
-  
+
 - <https://lists.sr.ht/~protesilaos/denote/%3C87fsb72nge.fsf%40protesilaos.com%3E>
 - <https://lists.sr.ht/~protesilaos/denote/%3C80CBB671-D812-4EA8-8C80-85F9F4144051%40disroot.org%3E>
 - <https://lists.sr.ht/~protesilaos/denote/%3C87pma6t59i.fsf%40kotlak.com%3E>
@@ -308,7 +931,7 @@ problem and discussing it with me in issue 135 on the GitHub mirror:
 The change was not trivial.  It was followed up by a patch from Noboru
 Ota (nobiot) which elaborated on the conditionality.  Quoting from
 commit =9ce9a24=:
-  
+
 #+begin_quote
 fix(denote-get-path-by-id): #135
 
@@ -529,11 +1152,11 @@ request of Alan Schmitt:
   create" commands.  Read the doc string of the commands
   ~denote-open-or-create~ or ~denote-link-or-create~ for how this is
   supposed to work.  In short:
-  
+
   - Invoke the "do or create" command.
   - Type something that does not match a file.
   - In the following title prompt, hit =M-p= to bring back the last input.
-  
+
   I realised there was a regression when I read issue 152 on the
   GitHub mirror, which was created by user "ustcpxy":
   <https://github.com/protesilaos/denote/issues/152>.  The issue is
