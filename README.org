@@ -2345,7 +2345,7 @@ Note that renaming a buffer is not the same as renaming a file
 Whereas the latter is for writing changes to disk, making them
 available to all programs.
 
-** The ~denote-rename-buffer-format~
+** The ~denote-rename-buffer-format~ option
 :PROPERTIES:
 :CUSTOM_ID: h:35507c18-35b1-41b9-9d80-52f54fcef3cb
 :END:
