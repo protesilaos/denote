@@ -2544,7 +2544,7 @@ convenience options and commands as part of =denote-journal-extras.el=.
 To use those, add the following the Denote configuration:
 
 #+begin_src emacs-lisp
-(require 'denote-journal-extras.el)
+(require 'denote-journal-extras)
 #+end_src
 
 #+findex: denote-journal-extras-new-entry
