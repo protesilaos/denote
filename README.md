@@ -9,7 +9,7 @@ link between them.
 
 Denote's file-naming scheme is not limited to "notes".  It can be used
 for all types of file, including those that are not editable in Emacs,
-such as videos.  Naming files in a constistent way makes their
+such as videos.  Naming files in a consistent way makes their
 filtering and retrieval considerably easier.  Denote provides relevant
 facilities to rename files, regardless of file type.
 
