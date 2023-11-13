@@ -2811,6 +2811,15 @@ to the `dired-mode-hook'."
   :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
+ (defcustom denote-dired-include-subdirectories nil
+    "Whether to enable `denote-dired-mode' in subdirectories of `denote-dired-directories'.
+
+If nil, enable  `denote-dired-mode' only in directories exactly matching one of `denote-dired-directories', excluding subdirectories.
+
+If non-nil, enable `denote-dired-mode' in `denote-dired-directories' and their subdirectories."
+    :group 'denote-dired
+    :type 'boolean)
+
 ;; FIXME 2022-08-12: Make `denote-dired-mode' work with diredfl.  This
 ;; may prove challenging.
 
@@ -2862,9 +2871,31 @@ written, it is always returned as a directory."
 ;;;###autoload
 (defun denote-dired-mode-in-directories ()
   "Enable `denote-dired-mode' in `denote-dired-directories'.
-Add this function to `dired-mode-hook'."
-  (when (member (file-truename default-directory) (denote-dired--modes-dirs-as-dirs))
-    (denote-dired-mode 1)))
+Add this function to `dired-mode-hook'.
+
+If `denote-dired-include-subdirectories' is non-nil, also enable
+it in all subdirectories."
+  (cl-labels ((partial-paths (dir)
+                ;; e.g '("/home/", "/home/docs/", "/home/docs/stuff/")
+		(let* ((path-elements (split-string dir "/" t)))
+		  (collect-paths
+		   (cons (concat "/" (car path-elements))
+			 (cdr path-elements))
+		   nil)))
+	      (collect-paths (path-elements coll)
+		(if path-elements
+		    (collect-paths
+		     (cdr path-elements)
+		     (cons (concat (car coll) (car path-elements) "/")
+			   coll))
+		  coll)))
+    (let ((cur-path (file-truename default-directory)))
+      (when (seq-intersection
+	     (if denote-dired-include-subdirectories
+		 (partial-paths cur-path)
+	       (list cur-path))
+	     (denote-dired--modes-dirs-as-dirs))
+	(denote-dired-mode 1)))))
 
 ;;;; The linking facility
 
