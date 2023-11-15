@@ -2237,6 +2237,13 @@ the function ~denote-dired-mode-in-directories~:
 (add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
 #+end_src
 
+#+vindex: denote-dired-directories-include-subdirectories
+The user option ~denote-dired-directories-include-subdirectories~
+specifies whether the ~denote-dired-directories~ also cover their
+subdirectories. By default they do not. Set this option to ~t~ to
+include subdirectories as well. [ This feature is part of
+{{{development-version}}}. ]
+
 The faces we define for this purpose are:
 
 #+vindex: denote-faces-date
