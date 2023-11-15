@@ -2875,27 +2875,15 @@ Add this function to `dired-mode-hook'.
 
 If `denote-dired-include-subdirectories' is non-nil, also enable
 it in all subdirectories."
-  (cl-labels ((partial-paths (dir)
-                ;; e.g '("/home/", "/home/docs/", "/home/docs/stuff/")
-		(let* ((path-elements (split-string dir "/" t)))
-		  (collect-paths
-		   (cons (concat "/" (car path-elements))
-			 (cdr path-elements))
-		   nil)))
-	      (collect-paths (path-elements coll)
-		(if path-elements
-		    (collect-paths
-		     (cdr path-elements)
-		     (cons (concat (car coll) (car path-elements) "/")
-			   coll))
-		  coll)))
-    (let ((cur-path (file-truename default-directory)))
-      (when (seq-intersection
-	     (if denote-dired-include-subdirectories
-		 (partial-paths cur-path)
-	       (list cur-path))
-	     (denote-dired--modes-dirs-as-dirs))
-	(denote-dired-mode 1)))))
+  (when-let ((dirs (denote-dired--modes-dirs-as-dirs))
+             ;; Also include subdirs
+             ((or (member (file-truename default-directory) dirs)
+                  (and denote-dired-include-subdirectories
+                       (seq-some
+                        (lambda (dir)
+                          (string-prefix-p dir (file-truename default-directory)))
+                        dirs)))))
+    (denote-dired-mode 1)))
 
 ;;;; The linking facility
 
