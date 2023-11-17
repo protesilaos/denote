@@ -2530,7 +2530,7 @@ Specifically, do the following:
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
+                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (when signature (denote-sluggify-signature signature)))))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
