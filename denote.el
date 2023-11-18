@@ -2074,11 +2074,8 @@ the new front matter, per `denote-rename-file-using-front-matter'."
            ((denote-file-is-note-p file))
            (file-type (denote-filetype-heuristics file)))
       (let* ((cur-keywords (denote-retrieve-keywords-value file file-type))
-             (new-keywords (if (and (stringp cur-keywords)
-                                    (string-blank-p cur-keywords))
-                               keywords
-                             (denote-keywords-sort
-                              (seq-uniq (append keywords cur-keywords))))))
+             (new-keywords (denote-keywords-sort
+                            (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
         (denote-rename-file-using-front-matter file t))
     (user-error "Buffer not visiting a Denote file")))
@@ -2106,7 +2103,6 @@ the new front matter, per `denote-rename-file-using-front-matter'."
            ((denote-file-is-note-p file))
            (file-type (denote-filetype-heuristics file)))
       (when-let ((cur-keywords (denote-retrieve-keywords-value file file-type))
-                 ((or (listp cur-keywords) (not (string-blank-p cur-keywords))))
                  (del-keyword (denote--keywords-delete-prompt cur-keywords)))
         (denote-rewrite-keywords
          file
