@@ -2663,10 +2663,11 @@ of the file.  This needs to be done manually."
          (id (or (denote-retrieve-filename-identifier file :no-error) ""))
          (title (denote-retrieve-title-value file old-file-type))
          (keywords (denote-retrieve-keywords-value file old-file-type))
+         (signature (denote-retrieve-filename-signature file))
          (old-extension (denote-get-file-extension file))
          (new-extension (denote--file-extension new-file-type))
          (new-name (denote-format-file-name
-                    dir id keywords (denote-sluggify title 'title) new-extension))
+                    dir id keywords (denote-sluggify title 'title) new-extension signature))
          (max-mini-window-height 0.33)) ; allow minibuffer to be resized
     (when (and (not (eq old-extension new-extension))
                (denote-rename-file-prompt file new-name))
