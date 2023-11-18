@@ -3124,10 +3124,9 @@ Also see `denote-link-return-backlinks'."
   (when-let ((current-file (or file (buffer-file-name)))
              ((denote-file-has-supported-extension-p current-file))
              (file-type (denote-filetype-heuristics current-file))
-             (regexp (denote--link-in-context-regexp file-type))
-             (links (with-current-buffer (find-file-noselect current-file)
-                      (denote-link--expand-identifiers regexp))))
-    links))
+             (regexp (denote--link-in-context-regexp file-type)))
+    (with-current-buffer (find-file-noselect current-file)
+      (denote-link--expand-identifiers regexp))))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias for `denote-link-return-links'.")
@@ -3150,9 +3149,8 @@ Also see `denote-link-return-backlinks'."
   "Return list of backlinks in current or optional FILE.
 Also see `denote-link-return-links'."
   (when-let ((current-file (or file (buffer-file-name)))
-             (id (denote-retrieve-filename-identifier current-file))
-             (backlinks (delete current-file (denote--retrieve-files-in-xrefs id))))
-    backlinks))
+             (id (denote-retrieve-filename-identifier current-file)))
+    (delete current-file (denote--retrieve-files-in-xrefs id))))
 
 (define-obsolete-function-alias
   'denote-link-find-backlink
