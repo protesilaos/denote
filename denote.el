@@ -1376,10 +1376,11 @@ To only return an existing identifier, refer to the function
   "2.1.0")
 
 (defun denote-retrieve-filename-signature (file)
-  "Extract signature from FILE name, if present, else return nil."
-  (when (denote-file-has-signature-p file)
-    (string-match denote-signature-regexp file)
-    (match-string 1 file)))
+  "Extract signature from FILE name, if present, else return an empty string."
+  (let ((filename (file-name-nondirectory file)))
+    (if (string-match denote-signature-regexp filename)
+        (match-string 1 filename)
+      "")))
 
 (defun denote-retrieve-filename-title (file)
   "Extract title from FILE name, else return `file-name-base'.
@@ -1488,14 +1489,14 @@ See `denote--retrieve-locations-in-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote-format-file-name (path id keywords title-slug extension &optional signature)
+(defun denote-format-file-name (path id keywords title-slug extension signature-slug)
   "Format file name.
-PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and optional SIGNATURE
-are expected to be supplied by `denote' or equivalent command."
+PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and SIGNATURE-SLUG are
+expected to be supplied by `denote' or equivalent command."
   (let ((file-name (concat path id)))
-    (when (and signature (not (string-empty-p signature)))
-      (setq file-name (concat file-name "==" signature)))
-    (when (and title-slug (not (string-empty-p title-slug)))
+    (when (not (string-empty-p signature-slug))
+      (setq file-name (concat file-name "==" signature-slug)))
+    (when (not (string-empty-p title-slug))
       (setq file-name (concat file-name "--" title-slug)))
     (when keywords
       (setq file-name (concat file-name "__" (denote-keywords-combine keywords))))
@@ -1522,17 +1523,16 @@ values of `denote-file-type'."
          (kws (denote--format-front-matter-keywords keywords filetype)))
     (if fm (format fm title date kws id) "")))
 
-(defun denote--path (title keywords dir id file-type &optional signature)
+(defun denote--path (title keywords dir id file-type signature)
   "Return path to new file.
-Use ID, TITLE, KEYWORDS, FILE-TYPE and optional SIGNATURE to
-construct path to DIR."
+Use ID, TITLE, KEYWORDS, FILE-TYPE and SIGNATURE to construct
+path to DIR."
   (denote-format-file-name
    dir id
    (denote-sluggify-keywords keywords)
    (denote-sluggify title 'title)
    (denote--file-extension file-type)
-   (when signature
-     (denote-sluggify-signature signature))))
+   (denote-sluggify-signature signature)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
@@ -1561,12 +1561,11 @@ construct path to DIR."
      (t
       (denote-date-org-timestamp date)))))
 
-(defun denote--prepare-note (title keywords date id directory file-type template &optional signature)
+(defun denote--prepare-note (title keywords date id directory file-type template signature)
   "Prepare a new note file.
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
-TEMPLATE, and optional SIGNATURE should be valid for note
-creation."
+TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote--path title keywords directory id file-type signature))
          (buffer (find-file path))
          (header (denote--format-front-matter
@@ -1870,6 +1869,8 @@ instead of the default prompt.
 Previous inputs at this prompt are available for minibuffer
 completion.  Consider `savehist-mode' to persist minibuffer
 histories between sessions."
+  (when (and default-signature (string-empty-p default-signature))
+    (setq default-signature nil))
   (denote-sluggify-signature
    ;; NOTE 2023-10-27: By default SPC performs completion in the
    ;; minibuffer.  We do not want that, as the user should be able to
@@ -3856,7 +3857,7 @@ Consult the manual for template samples."
     (setq denote-last-path
           (denote--path title keywords
                         (file-name-as-directory (denote-directory))
-                        (format-time-string denote-id-format) 'org))
+                        (format-time-string denote-id-format) 'org ""))
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
@@ -3895,7 +3896,7 @@ option `denote-templates'."
                         title (denote--date date 'org) kws
                         (format-time-string denote-id-format date) 'org)))
     (setq denote-last-path
-          (denote--path title kws directory id 'org))
+          (denote--path title kws directory id 'org ""))
     (denote--keywords-add-to-history kws)
     (concat front-matter template denote-org-capture-specifiers)))
 
