@@ -2296,7 +2296,7 @@ that effect."
 
 (defun denote--rename-dired-file-or-prompt ()
   "Return Dired file at point, else prompt for one.
-Throw error is FILE is not regular, else return FILE."
+Throw error if FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
       (let* ((file (buffer-file-name))
              (format (if file
