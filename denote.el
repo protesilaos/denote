@@ -1650,12 +1650,10 @@ It checks files in variable `denote-directory' and active buffer files."
   "Return the first unused id starting at ID from USED-IDS.
 USED-IDS is a hash-table of all used IDs.  If ID is already used,
 increment it 1 second at a time until an available id is found."
-  (let ((time (date-to-time id)))
-    (while (gethash
-            (format-time-string denote-id-format time)
-            used-ids)
-      (setq time (time-add time 1)))
-    (format-time-string denote-id-format time)))
+  (let ((current-id id))
+    (while (gethash current-id used-ids)
+      (setq current-id (format-time-string denote-id-format (time-add (date-to-time current-id) 1))))
+    current-id))
 
 (make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
 
