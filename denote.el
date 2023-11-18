@@ -1493,14 +1493,13 @@ See `denote--retrieve-locations-in-xrefs'."
   "Format file name.
 PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and optional SIGNATURE
 are expected to be supplied by `denote' or equivalent command."
-  (let ((kws (denote-keywords-combine keywords))
-        (file-name (concat path id)))
+  (let ((file-name (concat path id)))
     (when (and signature (not (string-empty-p signature)))
       (setq file-name (concat file-name "==" signature)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
-    (when (and keywords (not (string-blank-p kws)))
-      (setq file-name (concat file-name "__" kws)))
+    (when keywords
+      (setq file-name (concat file-name "__" (denote-keywords-combine keywords))))
     (concat file-name extension)))
 
 (defun denote--format-front-matter-title (title file-type)
