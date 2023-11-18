@@ -313,12 +313,11 @@ When the value is `text', the file type is that of Text mode.
 
 Any other non-nil value is the same as the default.
 
-NOTE: expert users can change the supported file types by leaving
-the value of this user option to nil and directly editing the
-value of `denote-file-types'.  That variable, which is not a user
-option, controls the behaviour of all file-type-aware
+NOTE: Expert users can change the supported file-types by editing
+the value of `denote-file-types'. That variable, which is not a
+user option, controls the behaviour of all file-type-aware
 functions (creating notes, renaming them, inserting front matter,
-formatting a link, etc.).  Consult its documentation for the
+formatting a link, etc.). Consult its documentation for the
 technicalities."
   :type '(choice
           (const :tag "Unspecified (defaults to Org)" nil)
