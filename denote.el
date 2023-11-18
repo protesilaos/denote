@@ -1080,10 +1080,8 @@ This can be used in `denote-file-types' to format front mattter."
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
 This can be used in `denote-file-types' to format front mattter."
-  (if (string-blank-p s)
-      ""
-    (let ((trims "[ \t\n\r]+"))
-      (string-trim s trims trims))))
+  (let ((trims "[ \t\n\r]+"))
+    (string-trim s trims trims)))
 
 (defun denote--trim-quotes (s)
   "Trim quotes around string S."
@@ -1093,9 +1091,7 @@ This can be used in `denote-file-types' to format front mattter."
 (defun denote-trim-whitespace-then-quotes (s)
   "Trim whitespace then quotes around string S.
 This can be used in `denote-file-types' to format front mattter."
-  (if (string-blank-p s)
-      ""
-    (denote--trim-quotes (denote-trim-whitespace s))))
+  (denote--trim-quotes (denote-trim-whitespace s)))
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
@@ -1119,13 +1115,10 @@ for how this is used."
 
 (defun denote-extract-keywords-from-front-matter (keywords-string)
   "Extract keywords list from front matter KEYWORDS-STRING.
-Split KEYWORDS-STRING into a list of strings.  If KEYWORDS-STRING
-satisfies `string-blank-p', return an empty list.
+Split KEYWORDS-STRING into a list of strings.
 
 Consult the `denote-file-types' for how this is used."
-  (if (string-blank-p keywords-string)
-      '()
-    (split-string keywords-string "[:,\s]+" t "[][ \"']+")))
+  (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
 (defvar denote-file-types
   '((org
