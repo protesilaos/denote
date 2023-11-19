@@ -1283,9 +1283,12 @@ for new note creation.  The default is `org'.")
 
 (defun denote--link-in-context-regexp (file-type)
   "Return link regexp in context based on FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :link-in-context-regexp))
+  (let ((prop (plist-get
+               (alist-get file-type denote-file-types)
+               :link-in-context-regexp)))
+    (if (symbolp prop)
+        (symbol-value prop)
+      prop)))
 
 (define-obsolete-function-alias
   'denote--extensions
@@ -3075,10 +3078,9 @@ function."
 (defun denote-link--expand-identifiers (regexp)
   "Expend identifiers matching REGEXP into file paths."
   (let ((files (denote-directory-files))
-        (rx (if (symbolp regexp) (symbol-value regexp) regexp))
         found-files)
     (dolist (file files)
-      (dolist (i (denote-link--collect-identifiers rx))
+      (dolist (i (denote-link--collect-identifiers regexp))
         (when (string-prefix-p i (file-name-nondirectory file))
           (push file found-files))))
     found-files))
