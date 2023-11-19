@@ -1073,8 +1073,7 @@ This can be used in `denote-file-types' to format front mattter."
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
 This can be used in `denote-file-types' to format front mattter."
-  (let ((trims "[ \t\n\r]+"))
-    (string-trim s trims trims)))
+  (string-trim s))
 
 (defun denote--trim-quotes (s)
   "Trim quotes around string S."
