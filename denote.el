@@ -598,8 +598,7 @@ things accordingly.")
 
 (defun denote--make-denote-directory ()
   "Make the variable `denote-directory' and its parents, if needed."
-  (when (and (stringp denote-directory)
-             (not (file-directory-p denote-directory)))
+  (when (not (file-directory-p denote-directory))
     (make-directory denote-directory :parents)))
 
 (defvar denote-user-enforced-denote-directory nil
@@ -691,9 +690,7 @@ Perform letter casing according to `denote-file-name-letter-casing'."
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
-  (if (listp keywords)
-      (mapcar #'denote-sluggify-and-join keywords)
-    (error "`%s' is not a list" keywords)))
+  (mapcar #'denote-sluggify-and-join keywords))
 
 ;; TODO 2023-05-22: Review name of `denote-desluggify' to signify what
 ;; the doc string warns about.
@@ -739,15 +736,13 @@ For our purposes, a note must not be a directory, must satisfy
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
-  (when file
-    (string-match-p (concat "\\`" denote-id-regexp)
-                    (file-name-nondirectory file))))
+  (string-match-p (concat "\\`" denote-id-regexp)
+                  (file-name-nondirectory file)))
 
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
-  (when file
-    (string-match-p denote-signature-regexp
-                    (file-name-nondirectory file))))
+  (string-match-p denote-signature-regexp
+                  (file-name-nondirectory file)))
 
 (make-obsolete 'denote-file-directory-p nil "2.0.0")
 
@@ -919,7 +914,7 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
 With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
   (let ((files (denote-directory-files)))
-    (if (and omit-current (denote-file-has-identifier-p buffer-file-name))
+    (if (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
         (delete buffer-file-name files)
       files)))
 
@@ -1395,21 +1390,20 @@ Run `denote-desluggify' on title if the extraction is sucessful."
 (defun denote--file-with-temp-buffer-subr (file)
   "Return path to FILE or its buffer together with the appropriate function.
 Subroutine of `denote--file-with-temp-buffer'."
-  (when file
-    (let* ((buffer (get-file-buffer file))
-           (file-exists (file-exists-p file))
-           (buffer-modified (buffer-modified-p buffer)))
-      (cond
-       ((or (and file-exists
-                 buffer
-                 (not buffer-modified)
-                 (not (eq buffer-modified 'autosaved)))
-            (and file-exists (not buffer)))
-        (cons #'insert-file-contents file))
-       (buffer
-        (cons #'insert-buffer buffer))
-       (t
-        (error "Cannot find anything about file `%s'" file))))))
+  (let* ((buffer (get-file-buffer file))
+         (file-exists (file-exists-p file))
+         (buffer-modified (buffer-modified-p buffer)))
+    (cond
+     ((or (and file-exists
+               buffer
+               (not buffer-modified)
+               (not (eq buffer-modified 'autosaved)))
+          (and file-exists (not buffer)))
+      (cons #'insert-file-contents file))
+     (buffer
+      (cons #'insert-buffer buffer))
+     (t
+      (error "Cannot find anything about file `%s'" file)))))
 
 (defmacro denote--file-with-temp-buffer (file &rest body)
   "If FILE exists, insert its contents in a temp buffer and call BODY."
@@ -1554,7 +1548,7 @@ path to DIR."
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
-     ((stringp format)
+     (format
       (format-time-string format date))
      ((when-let ((fn (denote--date-format-function file-type)))
         (funcall fn date)))
@@ -1586,10 +1580,6 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
   "Return a valid filetype given the argument FILETYPE.
 If none is found, the first element of `denote-file-types' is
 returned."
-  (unless (or (symbolp filetype) (stringp filetype))
-    (user-error "`%s' is not a symbol or string" filetype))
-  (when (stringp filetype)
-    (setq filetype (intern filetype)))
   (if (memq filetype (mapcar 'car denote-file-types))
       filetype
     (caar denote-file-types)))
@@ -3024,14 +3014,13 @@ treats the active region specially, is up to it."
       current-prefix-arg)))
   (let* ((beg (point))
          (identifier-only (or id-only (string-empty-p description))))
-    (when file
-      (insert
-       (denote-format-link
-        file
-        (denote-link--file-type-format file-type identifier-only)
-        description))
-      (unless (derived-mode-p 'org-mode)
-        (make-button beg (point) 'type 'denote-link-button)))))
+    (insert
+     (denote-format-link
+      file
+      (denote-link--file-type-format file-type identifier-only)
+      description))
+    (unless (derived-mode-p 'org-mode)
+      (make-button beg (point) 'type 'denote-link-button))))
 
 (define-obsolete-function-alias
   'denote-link-insert-link
@@ -3318,7 +3307,8 @@ When called from Lisp, with optional BEG and END as buffer
 positions, limit the process to the region in-between."
   (interactive)
   (when (and (not (derived-mode-p 'org-mode))
-             (denote-file-has-identifier-p (buffer-file-name)))
+             buffer-file-name
+             (denote-file-has-identifier-p buffer-file-name))
     (save-excursion
       (goto-char (or beg (point-min)))
       (while (re-search-forward denote-id-regexp end t)
@@ -3727,14 +3717,14 @@ With optional PATH-ID return a cons cell consisting of the path
 and the identifier."
   (let* ((search (and (string-match "::\\(.*\\)\\'" link)
                       (match-string 1 link)))
-         (id (if (and (stringp search) (not (string-empty-p search)))
+         (id (if (and search (not (string-empty-p search)))
                  (substring link 0 (match-beginning 0))
                link))
          (path (denote-get-path-by-id id)))
     (cond
      (path-id
       (cons (format "%s" path) (format "%s" id)))
-     ((and (stringp search) (not (string-empty-p search)))
+     ((and search (not (string-empty-p search)))
       (concat path "::" search))
      (path))))
 
@@ -4147,13 +4137,12 @@ and errors and if the word at point is not a Denote identifier."
 
 (cl-defmethod xref-backend-definitions ((_backend (eql 'denote)) identifier)
   "Return xref for the note IDENTIFIER points to."
-  (let ((file (denote-get-path-by-id identifier)))
-    (when file
-      (if (file-equal-p file (buffer-file-name (current-buffer)))
-          (user-error "Identifier points to the current buffer")
-        ;; Without the message, Xref will report that the ID does not
-        ;; exist, which is incorrect in this case.
-        (list (xref-make nil (xref-make-file-location file 0 0)))))))
+  (when-let ((file (denote-get-path-by-id identifier)))
+    (if (file-equal-p file (buffer-file-name (current-buffer)))
+        (user-error "Identifier points to the current buffer")
+      ;; Without the message, Xref will report that the ID does not
+      ;; exist, which is incorrect in this case.
+      (list (xref-make nil (xref-make-file-location file 0 0))))))
 
 (cl-defmethod xref-backend-references ((_backend (eql 'denote)) identifier)
   "Return list of xrefs where IDENTIFIER is referenced.
