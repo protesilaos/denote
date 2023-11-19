@@ -1277,9 +1277,12 @@ for new note creation.  The default is `org'.")
 
 (defun denote--link-format (file-type)
   "Return link format extension based on FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :link))
+  (let ((prop (plist-get
+               (alist-get file-type denote-file-types)
+               :link)))
+    (if (symbolp prop)
+        (symbol-value prop)
+      prop)))
 
 (defun denote--link-in-context-regexp (file-type)
   "Return link regexp in context based on FILE-TYPE."
@@ -2960,11 +2963,10 @@ DESCRIPTION is the text of the link.  If nil, DESCRIPTION is
 retrieved from the FILE, unless the FORMAT is
 `denote-id-only-link-format'."
   (let* ((file-id (denote-retrieve-filename-identifier file))
-         (fm (if (symbolp format) (symbol-value format) format))
          (file-type (denote-filetype-heuristics file))
-         (file-title (unless (string= fm denote-id-only-link-format)
+         (file-title (unless (string= format denote-id-only-link-format)
                        (or description (denote--retrieve-title-or-filename file file-type)))))
-    (format fm file-id file-title)))
+    (format format file-id file-title)))
 
 (make-obsolete 'denote-link--format-link 'denote-format-link "2.1.0")
 
