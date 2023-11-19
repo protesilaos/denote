@@ -593,8 +593,7 @@ things accordingly.")
      ((listp dir-locals)
       (car dir-locals))
      ((stringp dir-locals)
-      dir-locals)
-     (t nil))))
+      dir-locals))))
 
 (defun denote--make-denote-directory ()
   "Make the variable `denote-directory' and its parents, if needed."
