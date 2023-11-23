@@ -2366,10 +2366,11 @@ facility.  Start by loading the relevant library:
 #+end_src
 
 A dynamic block gets its contents by evaluating a given function,
-depending on the type of block.  The type of block and its parameters
-are stated in the opening =#+BEGIN= line of the block.  Typing =C-c C-c=
-with point on that line runs the function, with the given arguments,
-and populates the block's contents accordingly.
+depending on the type of block. The type of block and its parameters
+are stated in the opening =#+BEGIN= line of the block. Typing =C-c C-x
+C-u= (~org-dblock-update~) with point on that line runs the function,
+with the given arguments, and populates the block's contents
+accordingly.
 
 Denote leverages Org dynamic blocks to streamline the inclusion of (i)
 links to notes whose name matches a given search query (like
@@ -2468,8 +2469,8 @@ long entry that incorporates all the notes written in 2023 with the
 keyword =emacs=.
 
 To produce such a block, use the following syntax in an Org file and
-type =C-c C-c= on the =#+BEGIN= line (type =C-c C-c= again to
-recalculate the block):
+type =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line (type
+=C-c C-x C-u= again to recalculate the block):
 
 : #+BEGIN: denote-files :regexp "YOUR-REGEXP-HERE"
 :
