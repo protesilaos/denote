@@ -149,5 +149,43 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
       (insert (denote-link--prepare-links files file nil))
       (join-line)))) ;; remove trailing empty line
 
+;;;; Dynamic block with entire file contents
+
+(defvar denote-org-dblock-file-contents-separator
+  (concat "\n\n" (make-string 50 ?-) "\n\n\n")
+  "Fallback separator used by `denote-org-dblock-add-files'.")
+
+;;;###autoload
+(defun denote-org-dblock-add-files (regexp &optional separator)
+  "Insert files matching REGEXP.
+Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
+use the `denote-org-dblock-file-contents-separator'."
+  (let ((files (denote-directory-files-matching-regexp regexp)))
+    ;; FIXME 2023-11-23: Do not use a separator for the last file.
+    ;; Not a big issue, but is worth checking.
+    (mapc
+     (lambda (file)
+       ;; NOTE 2023-11-23: I tried to just do `insert-file-contents'
+       ;; without the temporary buffer, but it seems that the point is
+       ;; not moved, so the SEPARATOR does not follow the contents.
+       (let ((contents (with-temp-buffer
+                         (insert-file-contents file)
+                         (buffer-string))))
+         (insert (concat contents
+                         (or separator
+                             denote-org-dblock-file-contents-separator)))))
+     files)))
+
+(defun org-dblock-write:denote-files (params)
+  "Function to update `denote-files' Org Dynamic blocks.
+Used by `org-dblock-update' with PARAMS provided by the dynamic block."
+  (let* ((regexp (plist-get params :regexp))
+         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (block-name (plist-get params :block-name))
+         (separator (plist-get params :file-separator)))
+    (when block-name
+      (insert "#+name: " block-name "\n"))
+    (when rx (denote-org-dblock-add-files rx separator))))
+
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
