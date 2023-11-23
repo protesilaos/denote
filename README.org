@@ -2488,9 +2488,19 @@ empty lines and a horizontal rule between them to visually distinguish
 individual files. Though the block accepts an optional parameter of
 =:file-separator=, which takes a string as a value. It is recommended
 to include newline characters (=\n=) in the string for better results.
+The value of =:file-separator= may also be =none=, in which case no
+separator is used.
 
-A =:block-name= parameter adds a =#+name= to the results for further
-processing using Org facilities (this is outside Denote's purview).
+An optional =:block-name= parameter adds a =#+name= to the results for
+further processing using Org facilities (this is outside Denote's
+purview).
+
+The optional =:no-front-matter= parameter instructs Denote to try to
+remove front matter from the files it is inserting in the dynamic
+block. The technique used to perform this operation is by removing all
+lines from the top of the file until the first empty line. This works
+with the default front matter that Denote adds, but is not 100%
+reliable with all sorts of user-level modifications.
 
 * Minibuffer histories
 :PROPERTIES:

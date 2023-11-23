@@ -155,11 +155,35 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (concat "\n\n" (make-string 50 ?-) "\n\n\n")
   "Fallback separator used by `denote-org-dblock-add-files'.")
 
-;;;###autoload
-(defun denote-org-dblock-add-files (regexp &optional separator)
+(defun denote-org-dblock--get-file-contents (file &optional no-front-matter)
+  "Insert the contents of FILE.
+With optional NO-FRONT-MATTER as non-nil, try to remove the front
+matter from the top of the file.  Do it by finding the first
+blank line, starting from the top of the buffer."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (when no-front-matter
+      (let ((min (point-min)))
+        (goto-char min)
+        (re-search-forward "^$" nil :no-error 1)
+      (delete-region (1+ (point)) min)))
+    (buffer-string)))
+
+(defun denote-org-dblock--separator (separator)
+  "Return appropriate value of SEPARATOR for `denote-org-dblock-add-files'."
+  (cond
+   ((eq separator 'none) "")
+   (separator separator)
+   (t denote-org-dblock-file-contents-separator)))
+
+(defun denote-org-dblock-add-files (regexp &optional separator no-front-matter)
   "Insert files matching REGEXP.
 Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
-use the `denote-org-dblock-file-contents-separator'."
+use the `denote-org-dblock-file-contents-separator'.
+
+If optional NO-FRONT-MATTER is non-nil try to remove the front
+matter from the top of the file.  Do it by finding the first
+blank line, starting from the top of the buffer."
   (let ((files (denote-directory-files-matching-regexp regexp)))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
@@ -168,13 +192,19 @@ use the `denote-org-dblock-file-contents-separator'."
        ;; NOTE 2023-11-23: I tried to just do `insert-file-contents'
        ;; without the temporary buffer, but it seems that the point is
        ;; not moved, so the SEPARATOR does not follow the contents.
-       (let ((contents (with-temp-buffer
-                         (insert-file-contents file)
-                         (buffer-string))))
-         (insert (concat contents
-                         (or separator
-                             denote-org-dblock-file-contents-separator)))))
+       (let ((contents (denote-org-dblock--get-file-contents file no-front-matter)))
+         (insert (concat contents (denote-org-dblock--separator separator)))))
      files)))
+
+;;;###autoload
+(defun denote-org-dblock-insert-files (regexp)
+  "Create Org dynamic block to insert Denote files matching REGEXP."
+  (interactive
+    (list
+     (read-regexp "Search for notes matching REGEX: " nil 'denote--file-history)))
+  (org-create-dblock (list :name "denote-files"
+                           :regexp regexp))
+  (org-update-dblock))
 
 (defun org-dblock-write:denote-files (params)
   "Function to update `denote-files' Org Dynamic blocks.
@@ -182,10 +212,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
          (block-name (plist-get params :block-name))
-         (separator (plist-get params :file-separator)))
+         (separator (plist-get params :file-separator))
+         (no-front-matter (plist-get params :no-front-matter)))
     (when block-name
       (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-dblock-add-files rx separator))))
+    (when rx (denote-org-dblock-add-files rx separator no-front-matter))))
 
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
