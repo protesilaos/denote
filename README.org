@@ -2495,12 +2495,12 @@ An optional =:block-name= parameter adds a =#+name= to the results for
 further processing using Org facilities (this is outside Denote's
 purview).
 
-The optional =:no-front-matter= parameter instructs Denote to try to
-remove front matter from the files it is inserting in the dynamic
-block. The technique used to perform this operation is by removing all
-lines from the top of the file until the first empty line. This works
-with the default front matter that Denote adds, but is not 100%
-reliable with all sorts of user-level modifications.
+The optional =:no-front-matter= parameter with a ~t~ value instructs
+Denote to try to remove front matter from the files it is inserting in
+the dynamic block. The technique used to perform this operation is by
+removing all lines from the top of the file until the first empty
+line. This works with the default front matter that Denote adds, but
+is not 100% reliable with all sorts of user-level modifications.
 
 * Minibuffer histories
 :PROPERTIES:
