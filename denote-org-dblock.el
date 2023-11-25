@@ -1,4 +1,4 @@
-;;; denote-org-dblock.el --- Org Dynamic blocks for denote.el -*- lexical-binding: t -*-
+;;; denote-org-dblock.el --- Denote Org Dynamic blocks -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022-2023  Free Software Foundation, Inc.
 
@@ -25,13 +25,15 @@
 
 ;;; Commentary:
 ;;
-;; This file provides a specialized Org-mode extension to Denote: it
-;; introduces Org Dynamic blocks that collect links to Denote notes
-;; based on a provided regexp.  In short, this automates
-;; 'denote-add-links'.
+;; This file defines Org dynamic blocks using the facility described
+;; in the Org manual.  Evaluate this:
 ;;
-;; For more information, read the commented code below or refer to the
-;; Denote manual
+;;    (info "(org) Dynamic Blocks")
+;;
+;; The dynamic blocks defined herein are documented at length in the
+;; Denote manual.  See the following node and its subsections:
+;;
+;;    (info "(denote) Use Org dynamic blocks")
 
 ;;; Code:
 
