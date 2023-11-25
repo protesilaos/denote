@@ -233,6 +233,8 @@ as a typographic list."
                            :add-links nil))
   (org-update-dblock))
 
+(org-dynamic-block-define "denote-files" 'denote-org-dblock-insert-files)
+
 (defun org-dblock-write:denote-files (params)
   "Function to update `denote-files' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
