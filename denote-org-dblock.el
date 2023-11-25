@@ -134,7 +134,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
   (interactive)
-  (org-create-dblock (list :name "denote-backlinks"))
+  (org-create-dblock (list :name "denote-backlinks" :reverse nil))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
