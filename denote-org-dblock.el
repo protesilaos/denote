@@ -41,51 +41,6 @@
 
 ;;;; Dynamic block to search links
 
-;; Org-mode has Dynamic blocks the content of which can be computed
-;; dynamically based on their header. This functionality can be
-;; leveraged to create automated lists of links to specific notes
-;; (similar to 'denote-add-links', but with the added benefit
-;; that the list can be updated easily).
-;;
-;; A dynamic block of the 'denote-links' type looks like this:
-;;
-;;     #+BEGIN: denote-links :regexp "denote"
-;;
-;;     #+END:
-;;
-;; With point at the #+BEGIN: line, pressing 'C-c C-c' will replace the
-;; contents of the block with links to notes matching the search
-;; ':regexp'. The regular expression can be either a regexp string or
-;; a sexp form (the latter is translated via rx).
-;; See also the denote manual on 'denote-add-links'.
-;;
-;; Inserting a block can be done via the Org-mode entry point
-;; 'org-dynamic-block-insert-dblock' and selecting 'denote-links' from
-;; the list, or directly by calling 'denote-org-dblock-insert-links'.
-;;
-;;
-;; Org Dynamic blocks of the denote-links type can have the follwoing
-;; arguments (in any order):
-;;  1. :regexp input    -- the search input (required), either as a
-;;                         regexp string or a sexp (in rx notation)
-;;  2. :missing-only t  -- to only include missing links
-;;  3. :reverse t       -- reverse sort order (or don't, when nil)
-;;  4. :block-name "n"  -- to include a name for later processing
-;;
-;; By default ':missing-only t' is included as a parameter in the
-;; block's header, so that only "missing links" are included (i.e.,
-;; links to notes that the current buffer doesn't already link to).
-;; Remove this parameter or set to 'nil' to include all matching
-;; notes.
-;;
-;; With ':reverse' the value of 'denote-link-add-links-sort' can be
-;; let-bound specifically for this list of links. For more
-;; information, see the documentation of this variable.
-;;
-;; With ':block-name "string"' include a '#+NAME: string' line in the
-;; Dynamic block. This allows use of the Dynamic block output as input
-;; for further computation, e.g. in Org source blocks.
-
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
