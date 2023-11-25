@@ -50,7 +50,7 @@
      (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
-                           :id-only nil)
+                           :id-only nil))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
