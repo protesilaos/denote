@@ -184,6 +184,5 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
     (when rx (denote-org-dblock-add-files rx separator no-front-matter add-links)))
   (join-line)) ; remove trailing empty line
 
-
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
