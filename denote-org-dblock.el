@@ -124,12 +124,6 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;; Dynamic block for backlinks
 
-;; Similarly, we can create a 'denote-backlinks' block that inserts
-;; links to notes that link to the current note.
-
-;; This block type takes the following parameters:
-;;  1. :reverse t       -- reverse sort order (or don't, when nil)
-
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
