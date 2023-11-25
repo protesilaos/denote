@@ -2461,7 +2461,7 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
 This works by instrucing Org to match a regular expression of Denote
-files, the same way we do with Denote links ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]). 
+files, the same way we do with Denote links ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
 
 This is useful to, for example, compile a dynamically concatenated
 list of scattered thoughts on a given topic, like =^2023.*_emacs= for
@@ -2472,35 +2472,55 @@ To produce such a block, use the following syntax in an Org file and
 type =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line (type
 =C-c C-x C-u= again to recalculate the block):
 
-: #+BEGIN: denote-files :regexp "YOUR-REGEXP-HERE"
+: #+BEGIN: denote-files :regexp "^2023.*_journal"
 :
 : #+END:
 
-The =:regexp= parameter is mandatory. Its value is a string,
-representing a regular expression to match Denote file names. Its
-value may also be an ~rx~ expression instead of a string, as noted in
-the previous section about Org dynamic blocks.
+Or to fully control the output, include these parameters, which are
+described further below:
+
+: #+BEGIN: denote-files :regexp "^2023.*_journal" :no-front-matter nil :file-separator t :add-links nil
+:
+: #+END:
+
+- The =:regexp= parameter is mandatory. Its value is a string,
+  representing a regular expression to match Denote file names. Its
+  value may also be an ~rx~ expression instead of a string, as noted
+  in the previous section about Org dynamic blocks.
 
 #+vindex: denote-org-dblock-file-contents-separator
-File contents are inserted verbatim. They are separated by the
-~denote-org-dblock-file-contents-separator~, which introduces some
-empty lines and a horizontal rule between them to visually distinguish
-individual files. Though the block accepts an optional parameter of
-=:file-separator=, which takes a string as a value. It is recommended
-to include newline characters (=\n=) in the string for better results.
-The value of =:file-separator= may also be =none=, in which case no
-separator is used.
+- The =:file-separator= parameter is optional. If it is omitted, then
+  Denote will use the ~denote-org-dblock-file-contents-separator~: it
+  introduces some empty lines and a horizontal rule between them to
+  visually distinguish individual files. If the =:file-separator=
+  value is a string, it is used as the file separator (e.g. use ="\n"=
+  to insert just one empty new line). If the =:file-separator= value
+  is set to =none=, no separator is used.
 
-An optional =:block-name= parameter adds a =#+name= to the results for
-further processing using Org facilities (this is outside Denote's
-purview).
+- The =:no-front-matter= parameter is optional. When set to a ~t~
+  value Denote tries to remove front matter from the files it is
+  inserting in the dynamic block. The technique used to perform this
+  operation is by removing all lines from the top of the file until
+  the first empty line. This works with the default front matter that
+  Denote adds, but is not 100% reliable with all sorts of user-level
+  modifications and edits to the file. When the =:no-front-matter= is
+  set to a natural number, Denote will omit that many lines from the
+  top of the file.
 
-The optional =:no-front-matter= parameter with a ~t~ value instructs
-Denote to try to remove front matter from the files it is inserting in
-the dynamic block. The technique used to perform this operation is by
-removing all lines from the top of the file until the first empty
-line. This works with the default front matter that Denote adds, but
-is not 100% reliable with all sorts of user-level modifications.
+- The =:add-links= parameter is optional. When it is set to a ~t~
+  value, all files are inserted as a typographic list and are indented
+  accordingly. The first line in each list item is a link to the file
+  whose contents are inserted in the following lines. When the value
+  is =id-only=, then links are inserted without a description text but
+  only with the identifier of the given file. This has the same
+  meaning as with the ~denote-link~ command and related facilities
+  ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Remember that Org can fold the items in a
+  typographic list the same way it does with headings. So even long
+  files can be presented in this format without much trouble.
+
+- The =:block-name= parameter is optional. It adds a =#+name= to the
+  results for further processing using Org facilities (this is outside
+  Denote's purview).
 
 * Minibuffer histories
 :PROPERTIES:

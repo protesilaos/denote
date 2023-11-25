@@ -151,18 +151,38 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;; Dynamic block with entire file contents
 
-(defun denote-org-dblock--get-file-contents (file &optional no-front-matter)
+(defun denote-org-dblock--get-file-contents (file &optional no-front-matter add-links)
   "Insert the contents of FILE.
 With optional NO-FRONT-MATTER as non-nil, try to remove the front
-matter from the top of the file.  Do it by finding the first
-blank line, starting from the top of the buffer."
+matter from the top of the file.  If NO-FRONT-MATTER is a number,
+remove that many lines starting from the top.  If it is any other
+non-nil value, delete from the top until the first blank line.
+
+With optional ADD-LINKS as non-nil, first insert a link to the
+file and then insert its contents.  In this case, format the
+contents as a typographic list.  If ADD-LINKS is `id-only', then
+insert links as `denote-link' does when supplied with an ID-ONLY
+argument."
   (with-temp-buffer
-    (insert-file-contents file)
-    (when no-front-matter
-      (let ((min (point-min)))
-        (goto-char min)
-        (re-search-forward "^$" nil :no-error 1)
-      (delete-region (1+ (point)) min)))
+    (when add-links
+      (insert
+       (format "- %s\n\n"
+               (denote-format-link
+                file
+                (if (eq add-links 'id-only)
+                    denote-id-only-link-format
+                  denote-org-link-format)
+                nil))))
+    (let ((beginning-of-contents (point)))
+      (insert-file-contents file)
+      (when no-front-matter
+        (delete-region
+         (if (natnump no-front-matter)
+             (progn (forward-line no-front-matter) (line-beginning-position))
+           (1+ (re-search-forward "^$" nil :no-error 1)))
+         beginning-of-contents))
+      (when add-links
+        (indent-region beginning-of-contents (point-max) 2)))
     (buffer-string)))
 
 (defvar denote-org-dblock-file-contents-separator
@@ -173,17 +193,21 @@ blank line, starting from the top of the buffer."
   "Return appropriate value of SEPARATOR for `denote-org-dblock-add-files'."
   (cond
    ((eq separator 'none) "")
-   (separator separator)
+   ((stringp separator) separator)
    (t denote-org-dblock-file-contents-separator)))
 
-(defun denote-org-dblock-add-files (regexp &optional separator no-front-matter)
+(defun denote-org-dblock-add-files (regexp &optional separator no-front-matter add-links)
   "Insert files matching REGEXP.
 Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
 use the `denote-org-dblock-file-contents-separator'.
 
 If optional NO-FRONT-MATTER is non-nil try to remove the front
 matter from the top of the file.  Do it by finding the first
-blank line, starting from the top of the buffer."
+blank line, starting from the top of the buffer.
+
+If optional ADD-LINKS is non-nil, first insert a link to the file
+and then insert its contents.  In this case, format the contents
+as a typographic list."
   (let ((files (denote-directory-files-matching-regexp regexp)))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
@@ -192,7 +216,7 @@ blank line, starting from the top of the buffer."
        ;; NOTE 2023-11-23: I tried to just do `insert-file-contents'
        ;; without the temporary buffer, but it seems that the point is
        ;; not moved, so the SEPARATOR does not follow the contents.
-       (let ((contents (denote-org-dblock--get-file-contents file no-front-matter)))
+       (let ((contents (denote-org-dblock--get-file-contents file no-front-matter add-links)))
          (insert (concat contents (denote-org-dblock--separator separator)))))
      files)))
 
@@ -203,7 +227,10 @@ blank line, starting from the top of the buffer."
     (list
      (read-regexp "Search for notes matching REGEX: " nil 'denote--file-history)))
   (org-create-dblock (list :name "denote-files"
-                           :regexp regexp))
+                           :regexp regexp
+                           :no-front-matter nil
+                           :file-separator t
+                           :add-links nil))
   (org-update-dblock))
 
 (defun org-dblock-write:denote-files (params)
@@ -213,10 +240,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
          (block-name (plist-get params :block-name))
          (separator (plist-get params :file-separator))
-         (no-front-matter (plist-get params :no-front-matter)))
+         (no-front-matter (plist-get params :no-front-matter))
+         (add-links (plist-get params :add-links)))
     (when block-name
       (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-dblock-add-files rx separator no-front-matter))))
+    (when rx (denote-org-dblock-add-files rx separator no-front-matter add-links))))
 
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
