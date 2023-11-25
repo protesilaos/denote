@@ -151,10 +151,6 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;; Dynamic block with entire file contents
 
-(defvar denote-org-dblock-file-contents-separator
-  (concat "\n\n" (make-string 50 ?-) "\n\n\n")
-  "Fallback separator used by `denote-org-dblock-add-files'.")
-
 (defun denote-org-dblock--get-file-contents (file &optional no-front-matter)
   "Insert the contents of FILE.
 With optional NO-FRONT-MATTER as non-nil, try to remove the front
@@ -168,6 +164,10 @@ blank line, starting from the top of the buffer."
         (re-search-forward "^$" nil :no-error 1)
       (delete-region (1+ (point)) min)))
     (buffer-string)))
+
+(defvar denote-org-dblock-file-contents-separator
+  (concat "\n\n" (make-string 50 ?-) "\n\n\n")
+  "Fallback separator used by `denote-org-dblock-add-files'.")
 
 (defun denote-org-dblock--separator (separator)
   "Return appropriate value of SEPARATOR for `denote-org-dblock-add-files'."
