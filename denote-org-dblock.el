@@ -42,12 +42,14 @@
 
 ;;;; Dynamic block to insert links
 
+(defun denote-org-dblock--file-regexp-prompt ()
+  "Prompt for regexp to match Denote file names."
+  (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history))
+
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
-  (interactive
-    (list
-     (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
+  (interactive (list (denote-org-dblock--file-regexp-prompt)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
                            :id-only nil))
@@ -158,9 +160,7 @@ as a typographic list."
 ;;;###autoload
 (defun denote-org-dblock-insert-files (regexp)
   "Create Org dynamic block to insert Denote files matching REGEXP."
-  (interactive
-    (list
-     (read-regexp "Search for notes matching REGEX: " nil 'denote--file-history)))
+  (interactive (list (denote-org-dblock--file-regexp-prompt)))
   (org-create-dblock (list :name "denote-files"
                            :regexp regexp
                            :no-front-matter nil
