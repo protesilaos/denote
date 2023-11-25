@@ -50,28 +50,23 @@
      (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
+                           :id-only nil
                            :reverse nil))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
 
-;; By using the `org-dblock-write:' format, Org-mode knows how to
-;; compute the dynamic block. Inner workings of this function copied
-;; from `denote-add-links'.
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
          (block-name (plist-get params :block-name))
-         (denote-link-add-links-sort (plist-get params :reverse))
-         (current-file (buffer-file-name)))
+         (denote-link-add-links-sort (plist-get params :reverse)))
     (when block-name
       (insert "#+name: " block-name "\n"))
-    (when-let ((files (delete current-file
-                              (denote-directory-files-matching-regexp rx))))
-      (insert (denote-link--prepare-links files current-file nil))
-      (join-line)))) ;; remove trailing empty line
+    (denote-add-links rx (plist-get params :id-only))
+    (join-line))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert backlinks
 
