@@ -50,8 +50,7 @@
      (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
-                           :id-only nil
-                           :reverse nil))
+                           :id-only nil)
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
@@ -61,8 +60,7 @@
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
-         (block-name (plist-get params :block-name))
-         (denote-link-add-links-sort (plist-get params :reverse)))
+         (block-name (plist-get params :block-name)))
     (when block-name
       (insert "#+name: " block-name "\n"))
     (denote-add-links rx (plist-get params :id-only))
