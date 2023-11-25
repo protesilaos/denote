@@ -796,26 +796,46 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
       (t)))
    :follow-symlinks))
 
-(defun denote-directory-files ()
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only)
   "Return list of absolute file paths in variable `denote-directory'.
 
 Files only need to have an identifier.  The return value may thus
 include file types that are not implied by `denote-file-type'.
-To limit the return value to text files, use the function
-`denote-directory-text-only-files'.
 
 Remember that the variable `denote-directory' accepts a dir-local
-value, as explained in its doc string."
-  (mapcar
-   #'expand-file-name
-   (seq-filter
-    #'denote-file-has-identifier-p
-    (denote--directory-all-files-recursively))))
+value, as explained in its doc string.
+
+With optional FILES-MATCHING-REGEXP, restrict files to those matching regexp.
+
+With optional OMIT-CURRENT, do not include the current Denote
+file in the returned list.
+
+With optional TEXT-ONLY, limit the results to text files using
+`denote-file-is-note-p'."
+  (let ((files (mapcar
+                #'expand-file-name
+                (seq-filter
+                 #'denote-file-has-identifier-p
+                 (denote--directory-all-files-recursively)))))
+    (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
+      (setq files (delete buffer-file-name files)))
+    (when files-matching-regexp
+      (setq files (seq-filter
+                   (lambda (f)
+                     (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
+                   files)))
+    (when text-only
+      (setq files (seq-filter #'denote-file-is-note-p (denote-directory-files))))
+    files))
+
+(make-obsolete 'denote-directory-text-only-files 'denote-directory-files "2.2.0")
+(make-obsolete 'denote-all-files 'denote-directory-files "2.2.0")
+(make-obsolete 'denote-directory-files-matching-regexp 'denote-directory-files "2.2.0")
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
 Filter `denote-directory-files' using `denote-file-is-note-p'."
-  (seq-filter #'denote-file-is-note-p (denote-directory-files)))
+  (denote-directory-files nil nil :text-only))
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
@@ -881,8 +901,7 @@ something like .org even if the actual file extension is
   (let ((files
          (seq-filter
           (lambda (file)
-            (and (denote-file-has-identifier-p file)
-                 (string-prefix-p id (file-name-nondirectory file))))
+            (string-prefix-p id (file-name-nondirectory file)))
           (denote-directory-files))))
     (if (length< files 2)
         (car files)
@@ -903,19 +922,13 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
 
 (defun denote-directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP in `denote-directory-files'."
-  (seq-filter
-   (lambda (f)
-     (string-match-p regexp (denote-get-file-name-relative-to-denote-directory f)))
-   (denote-directory-files)))
+  (denote-directory-files regexp))
 
 (defun denote-all-files (&optional omit-current)
   "Return the list of Denote files in variable `denote-directory'.
 With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
-  (let ((files (denote-directory-files)))
-    (if (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
-        (delete buffer-file-name files)
-      files)))
+  (denote-directory-files nil omit-current nil))
 
 (defvar denote--file-history nil
   "Minibuffer history of `denote-file-prompt'.")
@@ -924,9 +937,7 @@ file in the returned list."
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (let ((files (if files-matching-regexp
-                   (denote-directory-files-matching-regexp files-matching-regexp)
-                 (denote-all-files :omit-current))))
+  (let ((files (denote-directory-files files-matching-regexp :omit-current)))
     (completing-read "Select note: " files nil nil nil 'denote--file-history)))
 
 ;;;; Keywords
@@ -1465,10 +1476,11 @@ that internally)."
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
-Limit the search to text files, per `denote-directory-text-only-files'."
+Limit the search to text files, per `denote-directory-files' with
+non-nil `text-only' parameter."
   (mapcar #'xref-match-item-location
           (xref-matches-in-files identifier
-                                 (denote-directory-text-only-files))))
+                                 (denote-directory-files nil nil :text-only))))
 
 (defun denote--retrieve-group-in-xrefs (identifier)
   "Access location of xrefs for IDENTIFIER and group them per file.
@@ -3426,7 +3438,7 @@ ALIST is not used in favour of using
                     (when-let ((buffer-file-name file))
                       (denote-link--prepare-backlinks
                        (apply-partially #'xref-matches-in-files id
-                                        (delete file (denote-directory-text-only-files)))
+                                        (denote-directory-files nil :omit-current :text-only))
                        nil)))))
     (denote-link--display-buffer buf)))
 
@@ -3457,9 +3469,7 @@ default, it will show up below the current window."
              (project-find-functions #'denote-project-find))
         (xref--show-xrefs
          (apply-partially #'xref-matches-in-files id
-                          ;; remove the current buffer file from the
-                          ;; backlinks
-                          (delete file (denote-directory-text-only-files)))
+                          (denote-directory-files nil :omit-current :text-only))
          nil)))))
 
 (define-obsolete-function-alias
@@ -3519,10 +3529,8 @@ inserts links with just the identifier."
    (list
     (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
     current-prefix-arg))
-  (let* ((current-file (buffer-file-name))
-         (file-type (denote-filetype-heuristics current-file)))
-    (if-let ((files (delete current-file
-                            (denote-directory-files-matching-regexp regexp)))
+  (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
+    (if-let ((files (denote-directory-files regexp :omit-current))
              (beg (point)))
         (progn
           (insert (denote-link--prepare-links files file-type id-only))
@@ -4072,9 +4080,10 @@ current denote PROJECT."
 (cl-defmethod project-files ((_project (head denote)) &optional _dirs)
   "Denote's implementation of `project-files' method from `project'.
 Return all files that have an identifier for the current denote
-PROJECT.  The return value may thus include file types that are
-not implied by `denote-file-type'.  To limit the return value to
-text files, use the function `denote-directory-text-only-files'."
+PROJECT. The return value may thus include file types that are
+not implied by `denote-file-type'. To limit the return value to
+text files, use the function `denote-directory-files' with a
+non-nil `text-only' parameter."
   (denote-directory-files))
 
 (defun denote-project-find (dir)
@@ -4126,13 +4135,13 @@ and errors and if the word at point is not a Denote identifier."
 (cl-defmethod xref-backend-references ((_backend (eql 'denote)) identifier)
   "Return list of xrefs where IDENTIFIER is referenced.
 This include the definition itself."
-  (xref-matches-in-files identifier (denote-directory-text-only-files)))
+  (xref-matches-in-files identifier (denote-directory-files nil nil :text-only)))
 
 (cl-defmethod xref-backend-identifier-completion-table ((_backend
                                                          (eql 'denote)))
   "Return list of Denote identifers as completion table."
 
-  (mapcar #'denote-retrieve-filename-identifier (denote-all-files)))
+  (mapcar #'denote-retrieve-filename-identifier (denote-directory-files)))
 
 (provide 'denote)
 ;;; denote.el ends here

@@ -3735,17 +3735,13 @@ might change them without further notice.
 
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
-  paths in variable ~denote-directory~.  Files only need to have an
-  identifier.  The return value may thus include file types that are
-  not implied by ~denote-file-type~. To limit the return value to text
-  files, use the function ~denote-directory-text-only-files~.
-  Remember that the ~denote-directory~ accepts a directory-local value
-  ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
-
-#+findex: denote-directory-text-only-files
-+ Function ~denote-directory-text-only-files~ :: Return list of text
-  files in variable ~denote-directory~.  Filter
-  ~denote-directory-files~ using ~denote-file-is-note-p~.
+  paths in variable ~denote-directory~. With nil parameters, files only
+  need to have an identifier. The return value may thus include file
+  types that are not implied by ~denote-file-type~. With optional
+  parameters, the results can be restricted to those matching a regexp,
+  they can omit the current buffer and they can be restricted to text
+  only files. Remember that the ~denote-directory~ accepts a
+  directory-local value ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -3754,15 +3750,6 @@ might change them without further notice.
   ~denote-excluded-directories-regexp~.  Note that the
   ~denote-directory~ accepts a directory-local value for what we call
   "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
-
-#+findex: denote-directory-files-matching-regexp
-+ Function ~denote-directory-files-matching-regexp~ :: Return list of
-  files matching =REGEXP= in ~denote-directory-files~.
-
-#+findex: denote-all-files
-+ Function ~denote-all-files~ :: Return the list of Denote files in
-  the variable ~denote-directory~. With optional =OMIT-CURRENT=, do
-  not include the current Denote file in the returned list.
 
 #+findex: denote-file-name-relative-to-denote-directory
 + Function ~denote-file-name-relative-to-denote-directory~ :: Return
