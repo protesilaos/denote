@@ -3537,30 +3537,7 @@ inserts links with just the identifier."
   'denote-add-missing-links
   "2.0.0")
 
-;;;###autoload
-(defun denote-add-missing-links (regexp &optional id-only)
-  "Insert missing links to all notes matching REGEXP.
-Similar to `denote-add-links' but insert only links not yet
-present in the current buffer.
-
-Optional ID-ONLY has the same meaning as in `denote-link': it
-inserts links with just the identifier."
-  (interactive
-   (list
-    (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
-    current-prefix-arg))
-  (let* ((current-file (buffer-file-name))
-         (file-type (denote-filetype-heuristics current-file))
-         (current-id (denote--link-in-context-regexp file-type))
-         (linked-files (denote-link--expand-identifiers current-id)))
-    (if-let ((found-files (delete current-file
-                                  (denote-directory-files-matching-regexp regexp)))
-             (final-files (seq-difference found-files linked-files))
-             (beg (point)))
-        (progn
-          (insert (denote-link--prepare-links final-files file-type id-only))
-          (denote-link-buttonize-buffer beg (point)))
-      (message "No links matching `%s' that aren't yet present in the current buffer" regexp))))
+(make-obsolete 'denote-add-missing-links nil "2.2.0")
 
 ;;;;; Links from Dired marks
 

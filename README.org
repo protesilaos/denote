@@ -1860,20 +1860,6 @@ will get this link: =[[denote:20230925T144303][abc My first signature note]]=.
 For more advanced uses, refer to the doc string of the ~denote-link~
 function.
 
-** Insert links, but only those missing from current buffer
-:PROPERTIES:
-:CUSTOM_ID: h:0c1fdaab-5a6b-4792-9694-fed53cd042e6
-:END:
-
-#+findex: denote-add-missing-links
-As a variation on the ~denote-add-links~ command, one may wish to only
-include 'missing links', i.e. links that are not yet present in the
-current file.
-
-This can be achieved with ~denote-add-missing-links~. The command is
-similar to ~denote-add-links~, but will only include links to notes
-that are not yet linked to ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
-
 ** Insert links from marked files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:9cbb692e-5d8a-44a6-9193-899a07872a07
