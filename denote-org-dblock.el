@@ -40,9 +40,7 @@
 (require 'denote)
 (require 'org)
 
-;;; Org-mode Dynamic blocks
-
-;;;; Dynamic block to search links
+;;;; Dynamic block to insert links
 
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
@@ -81,7 +79,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
         (insert (denote-link--prepare-links files current-file nil))
         (join-line))))) ;; remove trailing empty line
 
-;;;; Dynamic block for backlinks
+;;;; Dynamic block to insert backlinks
 
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
@@ -102,7 +100,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
       (insert (denote-link--prepare-links files file nil))
       (join-line)))) ;; remove trailing empty line
 
-;;;; Dynamic block with entire file contents
+;;;; Dynamic block to insert entire file contents
 
 (defun denote-org-dblock--get-file-contents (file &optional no-front-matter add-links)
   "Insert the contents of FILE.
