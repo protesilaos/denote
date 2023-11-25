@@ -186,7 +186,9 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (add-links (plist-get params :add-links)))
     (when block-name
       (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-dblock-add-files rx separator no-front-matter add-links))))
+    (when rx (denote-org-dblock-add-files rx separator no-front-matter add-links)))
+  (join-line)) ; remove trailing empty line
+
 
 (provide 'denote-org-dblock)
 ;;; denote-org-dblock.el ends here
