@@ -72,7 +72,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
   (interactive)
-  (org-create-dblock (list :name "denote-backlinks" :reverse nil))
+  (org-create-dblock (list :name "denote-backlinks"))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
@@ -83,9 +83,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let ((file (buffer-file-name))
              (id (denote-retrieve-filename-identifier file))
              (files (delete file (denote--retrieve-files-in-xrefs id))))
-    (let ((denote-link-add-links-sort (plist-get params :reverse)))
-      (insert (denote-link--prepare-links files file nil))
-      (join-line)))) ;; remove trailing empty line
+    (insert (denote-link--prepare-links files file nil))
+    (join-line))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert entire file contents
 
