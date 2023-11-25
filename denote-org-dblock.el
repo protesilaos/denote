@@ -94,7 +94,7 @@
      (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
-                           :missing-only 't))
+                           :missing-only t)))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-links" 'denote-org-dblock-insert-links)
