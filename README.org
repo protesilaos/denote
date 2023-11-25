@@ -2344,90 +2344,32 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
+[ Revised as part of {{{development-version}}}. ]
+
 Denote can optionally integrate with Org mode's "dynamic blocks"
-facility.  Start by loading the relevant library:
+facility. This means that it can use special blocks that are evaluated
+with =C-c C-x C-u= (~org-dblock-update~) to generate their contents.
+The following subsections describe the types of Org dynamic blocks
+provided by Denote.
+
+- [[id:03e466ba-04b6-4b0b-871e-58aedc810df3][Org dynamic blocks to insert links or backlinks]]
+- [[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]
+
+Start by loading the relevant extension:
 
 #+begin_src emacs-lisp
 (require 'denote-org-dblock)
 #+end_src
 
-A dynamic block gets its contents by evaluating a given function,
-depending on the type of block. The type of block and its parameters
-are stated in the opening =#+BEGIN= line of the block. Typing =C-c C-x
-C-u= (~org-dblock-update~) with point on that line runs the function,
-with the given arguments, and populates the block's contents
-accordingly.
+A dynamic block gets its contents by evaluating a function that
+corresponds to the type of block. The block type and its parameters
+are stated in the opening =#+BEGIN= line. Typing =C-c C-x C-u=
+(~org-dblock-update~) with point on that line runs (or re-runs) the
+associated function with the given parameters and populates the
+block's contents accordingly.
 
-Denote leverages Org dynamic blocks to streamline the inclusion of (i)
-links to notes whose name matches a given search query (like
-~denote-add-links~) and (ii) backlinks to the current note (similar to
-~denote-find-backlink~).
-
-These two types of blocks are named =denote-links= and =denote-backlinks=
-respectively.  The latter does not accept any parameters, while the
-former does, which we explain below by also demonstrating how dynamic
-blocks are written.
-
-A dynamic block looks like this:
-
-: #+BEGIN: denote-links :regexp "_journal"
-:
-: #+END:
-
-Here we have the =denote-links= type, with the =:regexp= parameter.
-The value of the =:regexp= parameter is the same as that of the
-command ~denote-add-links~ ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).  It can
-only use the notation of the ~rx~ macro, as explained in the Emacs
-Lisp Reference Manual (evaluate: =(info "(elisp) Rx Notation")=).  The
-linked entry provides practical examples of patterns that make good
-use of Denote's file-naming scheme ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
-
-In this example, we instruct Org to produce a list of all notes that
-include the =journal= keyword in their file name (keywords in file
-names are prefixed with the underscore).  So the following:
-
-: #+BEGIN: denote-links :regexp "_journal"
-:
-: #+END:
-
-Becomes something like this once we type =C-c C-c= with point on the
-=#+BEGIN= line (Org makes the links look prettier by default):
-
-: #+BEGIN: denote-links :regexp "_journal"
-: - [[denote:20220616T182958][Feeling butterflies in your stomach]]
-: - [[denote:20220818T221036][Between friend and stranger]]
-: #+END:
-
-The dynamic block takes care to keep the list in order and to add any
-missing links when the block is evaluated anew.
-
-Depending on one's workflow, the dynamic block can be instructed to
-list only those links which are missing from the current buffer
-(similar to ~denote-add-missing-links~).  Adding the =:missing-only=
-parameter with a non-~nil~ value achieves this effect. The =#+BEGIN=
-line looks like this:
-
-: #+BEGIN: denote-links :regexp "_journal" :missing-only t
-
-To reverse the order links appear in, add =:reverse t= to the
-=#+BEGIN= line.
-
-The =denote-links= block can also accept a =:block-name= parameter
-with a string value that names the block.  Once the dynamic block is
-evaluated, a =#+NAME= is prepended to the block's contents.  This can
-be referenced in other source blocks to parse the named block's
-contents as input of another process.  The details are beyond the
-scope of Denote.
-
-As for the =denote-backlinks= dynamic block type, it simply produces a
-list of notes that link to the current file.  It looks like this:
-
-: #+BEGIN: denote-backlinks
-:
-: #+END:
-
-The =denote-backlinks= dynamic block also accepts and option
-=:reverse= parameter.
+Dynamic blocks are particularly useful for metanote entries that
+reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]).
 
 The Org manual describes the technicalities of Dynamic Blocks.
 Evaluate:
@@ -2436,8 +2378,64 @@ Evaluate:
 (info "(org) Dynamic Blocks")
 #+end_src
 
-Dynamic blocks are particularly useful for metanote entries that
-reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]).
+** Org dynamic blocks to insert links or backlinks
+:PROPERTIES:
+:ID:       03e466ba-04b6-4b0b-871e-58aedc810df3
+:END:
+
+[ Refactored as part of {{{development-version}}}. The =denote-links=
+  parameters =:reverse= and =:missing-only= are no longer supported.
+  The =denote-backlinks= also no longer accepts =:reverse=. ]
+
+#+findex: denote-org-dblock-insert-links
+The =denote-links= block can be inserted at point with the command
+~denote-org-dblock-insert-links~ or by manually including the
+following in an Org file:
+
+: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :id-only nil
+:
+: #+END:
+
+The =denote-links= block is also registered as an option for the
+command ~org-dynamic-block-insert-dblock~.
+
+Type =C-c C-x C-u= (~org-dblock-update~) with point on the =#+BEGIN=
+line to update the block.
+
+- The =:regexp= parameter is mandatory. Its value is a string and its
+  behaviour is the same as that of the ~denote-add-links~ command
+  ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]). Concretely, it produces a
+  typographic list of links to files matching the giving regular
+  expression. The value of the =:regexp= parameter may also be of the
+  form read by the ~rx~ macro (Lisp notation instead of a string), as
+  explained in the Emacs Lisp Reference Manual (evaluate this code to
+  read the documentation: =(info "(elisp) Rx Notation")=). Note that
+  you do not need to write an actual regular expression to get
+  meaningful results: even something like =_journal= will work to
+  include all files that have a =journal= keyword.
+
+- The =:id-only= parameter is optional. It accepts a ~t~ value, in
+  which case links are inserted without a description text but only
+  with the identifier of the given file. This has the same meaning as
+  with the ~denote-link~ command and related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
+
+- An optional =:block-name= parameter can be specified with a string
+  value to add a =#+name= to the results. This is useful for further
+  processing using Org facilities (a feature that is outside Denote's
+  purview).
+
+#+findex: denote-org-dblock-insert-backlinks
+The same as above except for the =:regexp= parameter are true for the
+=denote-backlinks= block. The block can be inserted at point with the
+command ~denote-org-dblock-insert-backlinks~ or by manually writing
+this in an Org file:
+
+: #+BEGIN: denote-backlinks :id-only nil
+:
+: #+END:
+
+Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
+=#+BEGIN= line to update the block.
 
 ** Org dynamic block to insert file contents
 :PROPERTIES:
@@ -2448,33 +2446,38 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
-This works by instrucing Org to match a regular expression of Denote
+This works by instructing Org to match a regular expression of Denote
 files, the same way we do with Denote links ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
 
 This is useful to, for example, compile a dynamically concatenated
 list of scattered thoughts on a given topic, like =^2023.*_emacs= for
-long entry that incorporates all the notes written in 2023 with the
+a long entry that incorporates all the notes written in 2023 with the
 keyword =emacs=.
 
-To produce such a block, use the following syntax in an Org file and
-type =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line (type
-=C-c C-x C-u= again to recalculate the block):
+#+findex: denote-org-dblock-insert-files
+To produce such a block, call the command ~denote-org-dblock-insert-files~
+or manually write the following block in an Org file and then type
+ =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line to run it
+(do it again to recalculate the block):
 
-: #+BEGIN: denote-files :regexp "^2023.*_journal"
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE"
 :
 : #+END:
 
-Or to fully control the output, include these parameters, which are
-described further below:
+To fully control the output, include these additional optional
+parameters, which are described further below:
 
-: #+BEGIN: denote-files :regexp "^2023.*_journal" :no-front-matter nil :file-separator t :add-links nil
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :no-front-matter nil :file-separator t :add-links nil
 :
 : #+END:
 
 - The =:regexp= parameter is mandatory. Its value is a string,
   representing a regular expression to match Denote file names. Its
   value may also be an ~rx~ expression instead of a string, as noted
-  in the previous section about Org dynamic blocks.
+  in the previous section ([[id:03e466ba-04b6-4b0b-871e-58aedc810df3][Org dynamic blocks to insert links or backlinks]]).
+  Note that you do not need to write an actual regular expression to
+  get meaningful results: even something like =_journal= will work to
+  include all files that have a =journal= keyword.
 
 #+vindex: denote-org-dblock-file-contents-separator
 - The =:file-separator= parameter is optional. If it is omitted, then
@@ -2486,7 +2489,7 @@ described further below:
   is set to =none=, no separator is used.
 
 - The =:no-front-matter= parameter is optional. When set to a ~t~
-  value Denote tries to remove front matter from the files it is
+  value, Denote tries to remove front matter from the files it is
   inserting in the dynamic block. The technique used to perform this
   operation is by removing all lines from the top of the file until
   the first empty line. This works with the default front matter that
@@ -2506,9 +2509,10 @@ described further below:
   typographic list the same way it does with headings. So even long
   files can be presented in this format without much trouble.
 
-- The =:block-name= parameter is optional. It adds a =#+name= to the
-  results for further processing using Org facilities (this is outside
-  Denote's purview).
+- An optional =:block-name= parameter can be specified with a string
+  value to add a =#+name= to the results. This is useful for further
+  processing using Org facilities (a feature that is outside Denote's
+  purview).
 
 * Minibuffer histories
 :PROPERTIES:
