@@ -2434,12 +2434,14 @@ contents as input of another process.  The details are beyond the
 scope of Denote.
 
 As for the =denote-backlinks= dynamic block type, it simply produces a
-list of notes that link to the current file.  It accepts no parameters
-and looks like this:
+list of notes that link to the current file.  It looks like this:
 
 : #+BEGIN: denote-backlinks
 :
 : #+END:
+
+The =denote-backlinks= dynamic block also accepts and option
+=:reverse= parameter.
 
 The Org manual describes the technicalities of Dynamic Blocks.
 Evaluate:
