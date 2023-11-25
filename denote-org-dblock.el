@@ -80,10 +80,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (when-let ((file (buffer-file-name))
-             (id (denote-retrieve-filename-identifier file))
-             (files (delete file (denote--retrieve-files-in-xrefs id))))
-    (insert (denote-link--prepare-links files file (plist-get params :id-only)))
+  (when-let ((files (denote-link-return-backlinks)))
+    (insert (denote-link--prepare-links files 'org (plist-get params :id-only)))
     (join-line))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert entire file contents
