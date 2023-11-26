@@ -100,27 +100,28 @@ file and then insert its contents.  In this case, format the
 contents as a typographic list.  If ADD-LINKS is `id-only', then
 insert links as `denote-link' does when supplied with an ID-ONLY
 argument."
-  (with-temp-buffer
-    (when add-links
-      (insert
-       (format "- %s\n\n"
-               (denote-format-link
-                file
-                (if (eq add-links 'id-only)
-                    denote-id-only-link-format
-                  denote-org-link-format)
-                nil))))
-    (let ((beginning-of-contents (point)))
-      (insert-file-contents file)
-      (when no-front-matter
-        (delete-region
-         (if (natnump no-front-matter)
-             (progn (forward-line no-front-matter) (line-beginning-position))
-           (1+ (re-search-forward "^$" nil :no-error 1)))
-         beginning-of-contents))
+  (when (denote-file-is-note-p file)
+    (with-temp-buffer
       (when add-links
-        (indent-region beginning-of-contents (point-max) 2)))
-    (buffer-string)))
+        (insert
+         (format "- %s\n\n"
+                 (denote-format-link
+                  file
+                  (if (eq add-links 'id-only)
+                      denote-id-only-link-format
+                    denote-org-link-format)
+                  nil))))
+      (let ((beginning-of-contents (point)))
+        (insert-file-contents file)
+        (when no-front-matter
+          (delete-region
+           (if (natnump no-front-matter)
+               (progn (forward-line no-front-matter) (line-beginning-position))
+             (1+ (re-search-forward "^$" nil :no-error 1)))
+           beginning-of-contents))
+        (when add-links
+          (indent-region beginning-of-contents (point-max) 2)))
+      (buffer-string))))
 
 (defvar denote-org-dblock-file-contents-separator
   (concat "\n\n" (make-string 50 ?-) "\n\n\n")
