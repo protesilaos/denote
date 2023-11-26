@@ -2352,7 +2352,7 @@ with =C-c C-x C-u= (~org-dblock-update~) to generate their contents.
 The following subsections describe the types of Org dynamic blocks
 provided by Denote.
 
-- [[id:03e466ba-04b6-4b0b-871e-58aedc810df3][Org dynamic blocks to insert links or backlinks]]
+- [[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]
 - [[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]
 
 Start by loading the relevant extension:
@@ -2380,7 +2380,7 @@ Evaluate:
 
 ** Org dynamic blocks to insert links or backlinks
 :PROPERTIES:
-:ID:       03e466ba-04b6-4b0b-871e-58aedc810df3
+:CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
 
 [ Refactored as part of {{{development-version}}}. The =denote-links=
@@ -2474,7 +2474,7 @@ parameters, which are described further below:
 - The =:regexp= parameter is mandatory. Its value is a string,
   representing a regular expression to match Denote file names. Its
   value may also be an ~rx~ expression instead of a string, as noted
-  in the previous section ([[id:03e466ba-04b6-4b0b-871e-58aedc810df3][Org dynamic blocks to insert links or backlinks]]).
+  in the previous section ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]).
   Note that you do not need to write an actual regular expression to
   get meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
