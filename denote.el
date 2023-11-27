@@ -1406,8 +1406,9 @@ Subroutine of `denote--file-with-temp-buffer'."
       (cons #'insert-file-contents file))
      (buffer
       (cons #'insert-buffer buffer))
-     (t
-      (error "Cannot find anything about file `%s'" file)))))
+     ;; (t
+     ;;  (error "Cannot find anything about file `%s'" file))
+     )))
 
 (defmacro denote--file-with-temp-buffer (file &rest body)
   "If FILE exists, insert its contents in a temp buffer and call BODY."
