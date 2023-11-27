@@ -629,9 +629,13 @@ Concretely, replace with spaces anything that matches the
 With optional EXTRA-CHARACTERS as a string, include them in the
 regexp to be replaced."
   (replace-regexp-in-string
-   (concat denote-excluded-punctuation-regexp
+   (concat "\\("
+           denote-excluded-punctuation-regexp
+           "\\|"
            denote-excluded-punctuation-extra-regexp
-           extra-characters)
+           "\\|"
+           extra-characters
+           "\\)")
    "" str))
 
 (defun denote--slug-hyphenate (str)
