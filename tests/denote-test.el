@@ -251,8 +251,8 @@ identifier: 20230605T102234
   "Test that `denote-filetype-heuristics' gets the correct file type."
   (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") (caar denote-file-types))
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org") 'org)
-               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.gpg") '.org)
-               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.age") '.org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.gpg") 'org)
+               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.age") 'org)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") 'org)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt") 'text)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt.gpg") 'text)
