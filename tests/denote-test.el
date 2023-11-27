@@ -103,13 +103,8 @@ Otherwise, this is like `denote-test--denote-sluggify'."
 The function also account for the value of the user option
 `denote-allow-multi-word-keywords'."
   (should
-   (let ((denote-allow-multi-word-keywords nil))
-     (equal (denote-sluggify-keywords '("one !@# one" "   two" "__  three  __"))
-            '("oneone" "two" "three"))))
-  (should
-   (let ((denote-allow-multi-word-keywords t))
-     (equal (denote-sluggify-keywords '("one !@# one" "   two" "__  three  __"))
-            '("one-one" "two" "three")))))
+   (equal (denote-sluggify-keywords '("one !@# one" "   two" "__  three  __"))
+          '("oneone" "two" "three"))))
 
 (ert-deftest denote-test--denote-desluggify ()
   "Test that `denote-desluggify' upcases first character and de-hyphenates string."
