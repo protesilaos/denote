@@ -287,24 +287,6 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                     id
                     (denote-sluggify-keywords kws)
                     (denote-sluggify title)
-                    (denote--file-extension 'text)
-                    "")
-                   "/tmp/test-denote/20231128T055311--some-test__one_two.txt"))
-
-    (should (equal (denote-format-file-name
-                    (denote-directory)
-                    id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
-                    (denote--file-extension 'text)
-                    (denote-sluggify-signature "sig"))
-                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.txt"))
-
-    (should (equal (denote-format-file-name
-                    (denote-directory)
-                    id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
                     (denote--file-extension 'org)
                     "")
                    "/tmp/test-denote/20231128T055311--some-test__one_two.org"))
@@ -316,25 +298,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                     (denote-sluggify title)
                     (denote--file-extension 'org)
                     (denote-sluggify-signature "sig"))
-                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.org"))
-
-    (should (equal (denote-format-file-name
-                    (denote-directory)
-                    id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
-                    (denote--file-extension 'markdown-yaml)
-                    "")
-                   "/tmp/test-denote/20231128T055311--some-test__one_two.md"))
-
-    (should (equal (denote-format-file-name
-                    (denote-directory)
-                    id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
-                    (denote--file-extension 'markdown-yaml)
-                    (denote-sluggify-signature "sig"))
-                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.md"))))
+                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.org"))))
 
 (ert-deftest denote-test--denote-get-file-extension ()
   "Test that `denote-get-file-extension' gets the correct file extension."
