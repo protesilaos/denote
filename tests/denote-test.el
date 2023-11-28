@@ -276,26 +276,65 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                            "\n")
                          "\n")))))
 
-;; ;; NOTE 2023-06-30: The following needs to be reviewed.
-;;
-;; (ert-deftest denote-test--denote-format-file-name ()
-;;   "Test that `denote-format-file-name' returns all expected paths."
-;;   (let ((title "Some test")
-;;         (id (format-time-string denote-id-format (current-time-string "2023-06-05")))
-;;         (kws '("one" "two"))
-;;         (type 'text))
-;;     (should
-;;      (equal
-;;      (denote-format-file-name
-;;              (denote--path title
-;;                            kws
-;;                            (denote-directory)
-;;                            id
-;;                            type)
-;;              id
-;;              (denote-sluggify-keywords kws)
-;;              (denote-sluggify title)
-;;              (denote--file-extension type))))
+(ert-deftest denote-test--denote-format-file-name ()
+  "Test that `denote-format-file-name' returns all expected paths."
+  (let* ((title "Some test")
+         (id (format-time-string denote-id-format (denote--valid-date "2023-11-28 05:53:11")))
+         (denote-directory "/tmp/test-denote")
+         (kws '("one" "two")))
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'text)
+                    "")
+                   "/tmp/test-denote/20231128T055311--some-test__one_two.txt"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'text)
+                    (denote-sluggify-signature "sig"))
+                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.txt"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/20231128T055311--some-test__one_two.org"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'org)
+                    (denote-sluggify-signature "sig"))
+                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.org"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'markdown-yaml)
+                    "")
+                   "/tmp/test-denote/20231128T055311--some-test__one_two.md"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'markdown-yaml)
+                    (denote-sluggify-signature "sig"))
+                   "/tmp/test-denote/20231128T055311==sig--some-test__one_two.md"))))
 
 (ert-deftest denote-test--denote-get-file-extension ()
   "Test that `denote-get-file-extension' gets the correct file extension."
