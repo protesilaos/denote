@@ -86,7 +86,7 @@ Denote file name."
   "Test that `denote-sluggify-signature' sluggifies the string for file signatures.
 This is like `denote-test--denote-sluggify', except that it also
 accounts for what we describe in `denote-test--denote--slug-put-equals'."
-  (should (equal (denote-sluggify-signature " ___ !~!!$%^ This iS a tEsT ++ ?? ")
+  (should (equal (denote-sluggify-signature "--- ___ !~!!$%^ This -iS- a tEsT ++ ?? ")
                  "this=is=a=test")))
 
 (ert-deftest denote-test--denote-sluggify-and-join ()
@@ -95,7 +95,7 @@ In this context, to join words is to elimitate any space or
 delimiter between them.
 
 Otherwise, this is like `denote-test--denote-sluggify'."
-  (should (equal (denote-sluggify-and-join " ___ !~!!$%^ This iS a tEsT ++ ?? ")
+  (should (equal (denote-sluggify-and-join "--- ___ !~!!$%^ This iS a - tEsT ++ ?? ")
                  "thisisatest")))
 
 (ert-deftest denote-test--denote-sluggify-keywords ()
@@ -103,7 +103,7 @@ Otherwise, this is like `denote-test--denote-sluggify'."
 The function also account for the value of the user option
 `denote-allow-multi-word-keywords'."
   (should
-   (equal (denote-sluggify-keywords '("one !@# one" "   two" "__  three  __"))
+   (equal (denote-sluggify-keywords '("one !@# --- one" "   two" "__  three  __"))
           '("oneone" "two" "three"))))
 
 (ert-deftest denote-test--denote-desluggify ()
@@ -185,10 +185,10 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 (ert-deftest denote-test--denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly."
   (should (and (equal (denote--format-front-matter "" "" '("") "" 'text)
-                      "title:      
-date:       
-tags:       
-identifier: 
+                      "title:
+date:
+tags:
+identifier:
 ---------------------------
 
 ")

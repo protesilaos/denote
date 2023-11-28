@@ -622,21 +622,18 @@ before falling back to the value of the variable
 
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
-Concretely, replace with spaces anything that matches the
-`denote-excluded-punctuation-regexp' and
+Concretely, replace with an empty string anything that matches
+the `denote-excluded-punctuation-regexp' and
 `denote-excluded-punctuation-extra-regexp'.
 
-With optional EXTRA-CHARACTERS as a string, include them in the
-regexp to be replaced."
-  (replace-regexp-in-string
-   (concat "\\("
-           denote-excluded-punctuation-regexp
-           "\\|"
-           denote-excluded-punctuation-extra-regexp
-           "\\|"
-           extra-characters
-           "\\)")
-   "" str))
+EXTRA-CHARACTERS is an optional string that has the same meaning
+as the aforementioned variables."
+  (dolist (regexp (list denote-excluded-punctuation-regexp
+                        denote-excluded-punctuation-extra-regexp
+                        extra-characters))
+    (when (stringp regexp)
+      (setq str (replace-regexp-in-string regexp "" str))))
+  str)
 
 (defun denote--slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
@@ -681,7 +678,7 @@ any leading and trailing signs."
 (defun denote-sluggify-signature (str)
   "Make STR an appropriate slug for signatures.
 Perform letter casing according to `denote-file-name-letter-casing'."
-  (denote-letter-case 'signature (denote--slug-put-equals (denote--slug-no-punct str "-"))))
+  (denote-letter-case 'signature (denote--slug-put-equals (denote--slug-no-punct str "-+"))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
