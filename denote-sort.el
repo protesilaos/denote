@@ -43,7 +43,7 @@
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
 (defvar denote-sort-comparison-function #'string-collate-lessp
-  "Sorting function used by `denote-sort-files' subroutines.")
+  "String comparison function used by `denote-sort-files' subroutines.")
 
 (defmacro denote-sort--define (component)
   "Define Denote sort function for file name COMPONENT."
