@@ -63,13 +63,15 @@ two signature values." component)
 ;;;###autoload
 (defun denote-sort-files (files &optional component reverse)
   "Returned sorted list of Denote FILES.
+
 With optional COMPONENT as a keyword of `:signature', `:title',
 `:keywords', sort files based on the corresponding file name
-component.  Without COMPONENT, do not sort: keep the original
-date-based sorting which relies on the identifier component of
-each file name.
+component.
 
-With optional REVERSE as a non-nil value, reverse the order."
+Without COMPONENT, do not sort: keep the original date-based
+sorting which relies on the identifier of each file name.
+
+With optional REVERSE as a non-nil value, reverse the sort order."
   (let* ((files-to-sort (copy-sequence files))
          (sorted-files (if component
                            (sort files
