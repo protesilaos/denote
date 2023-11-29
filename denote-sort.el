@@ -87,12 +87,15 @@ With optional REVERSE as a non-nil value, reverse the sort order."
 
 (defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse)
   "Return sorted list of files in variable `denote-directory'.
-FILES-MATCHING-REGEXP is a string that limits files to those
-matching the given regular expression.  SORT-BY-COMPONENT is a
-keyword passed to `denote-sort-files' to sort by the
-corresponding file name component.
 
-REVERSE."
+With FILES-MATCHING-REGEXP as a string limit files to those
+matching the given regular expression.
+
+With SORT-BY-COMPONENT as a Lisp keyword, pass it to
+`denote-sort-files' to sort by the corresponding file name
+component.
+
+With optional REVERSE as a non-nil value, reverse the sort order."
   (denote-sort-files
    (denote-directory-files-matching-regexp files-matching-regexp)
    sort-by-component
