@@ -126,14 +126,19 @@ With optional REVERSE as a non-nil value, reverse the sort order."
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
-When called interactively, prompt for both FILES-MATCHING-REGEXP
-and SORT-BY-COMPONENT.  The former limits the list of Denote
-files to those matching the regular expression, while the latter
-sorts them by their file name component (title, signature, or
-keywords).
+When called interactively, prompt for FILES-MATCHING-REGEXP,
+SORT-BY-COMPONENT, and REVERSE.
 
+1. FILES-MATCHING-REGEXP limits the list of Denote files to
+   those matching the provided regular expression.
 
-REVERSE."
+2. SORT-BY-COMPONENT sorts the files by their file name
+   component (one among `denote-sort-files-keys').
+
+3. REVERSE is a boolean to reverse the order when it is a non-nil value.
+
+When called from Lisp, the arguments are a string, a keyword, and
+a non-nil value, respectively."
   (interactive
    (list
     (denote-sort--files-matching-regexp-prompt)
