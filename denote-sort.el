@@ -123,6 +123,17 @@ With optional REVERSE as a non-nil value, reverse the sort order."
       denote-sort-files-keys nil :require-match
       nil 'denote-sort--component-key-hist default))))
 
+(defun denote-sort--prepare-dired (buffer-name files)
+  "Return Dired buffer with BUFFER-NAME showing FILES.
+FILES are stripped of their directory component and are displayed
+relative to the variable `denote-directory'."
+  ;; TODO 2023-11-29: Can we improve font-lock to cover the directory
+  ;; component which is on display for files inside a subdir of
+  ;; `denote-directory'?
+  (let* ((dir (denote-directory))
+         (default-directory dir))
+    (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
@@ -144,13 +155,9 @@ a non-nil value, respectively."
     (denote-sort--files-matching-regexp-prompt)
     (denote-sort--component-key-prompt)
     (y-or-n-p "Reverse sort? ")))
-  ;; TODO 2023-11-29: Can we not show the full file path?  Maybe by
-  ;; binding `default-directory' to `denote-directory'?  Should we do
-  ;; that?  What are the downsides?
-  (dired
-   (cons
-    (format "Denote files matching `%s' sorted by %s" files-matching-regexp sort-by-component)
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))))
+  (denote-sort--prepare-dired
+   (format "Denote files matching `%s' sorted by %s" files-matching-regexp sort-by-component)
+   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)))
 
 (provide 'denote-sort)
 ;;; denote-sort.el ends here
