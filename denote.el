@@ -1375,6 +1375,14 @@ To only return an existing identifier, refer to the function
   'denote-retrieve-filename-identifier
   "2.1.0")
 
+(defun denote-retrieve-filename-keywords (file)
+  "Extract keywords from FILE name, if present, else return an empty string.
+Return matched keywords as a single string."
+  (let ((filename (file-name-nondirectory file)))
+    (if (string-match denote-keywords-regexp filename)
+        (match-string 1 filename)
+      "")))
+
 (defun denote-retrieve-filename-signature (file)
   "Extract signature from FILE name, if present, else return an empty string."
   (let ((filename (file-name-nondirectory file)))

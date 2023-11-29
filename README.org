@@ -3837,6 +3837,12 @@ might change them without further notice.
   =FILE= name, else return ~file-name-base~.  Run ~denote-desluggify~
   on the title if the extraction is successful.
 
+#+findex: denote-retrieve-filename-keywords
++ Function ~denote-retrieve-filename-keywords~ ::  Extract keywords
+  from =FILE= name, if present, else return an empty string. Return
+  matched keywords as a single string. [ Part of
+  {{{development-version}}} . ]
+
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
   from =FILE= name, if present, else return nil.
