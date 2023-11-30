@@ -806,13 +806,14 @@ include file types that are not implied by `denote-file-type'.
 Remember that the variable `denote-directory' accepts a dir-local
 value, as explained in its doc string.
 
-With optional FILES-MATCHING-REGEXP, restrict files to those matching regexp.
+With optional FILES-MATCHING-REGEXP, restrict files to those
+matching the given regular expression.
 
-With optional OMIT-CURRENT, do not include the current Denote
-file in the returned list.
+With optional OMIT-CURRENT as a non-nil value, do not include the
+current Denote file in the returned list.
 
-With optional TEXT-ONLY, limit the results to text files using
-`denote-file-is-note-p'."
+With optional TEXT-ONLY as a non-nil value, limit the results to
+text files that satisfy `denote-file-is-note-p'."
   (let ((files (mapcar
                 #'expand-file-name
                 (seq-filter
