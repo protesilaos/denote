@@ -122,7 +122,7 @@ name component.
 
 With optional REVERSE as a non-nil value, reverse the sort order."
   (denote-sort-files
-   (denote-directory-files-matching-regexp files-matching-regexp)
+   (denote-directory-files files-matching-regexp)
    sort-by-component
    reverse))
 
