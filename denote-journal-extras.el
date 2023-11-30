@@ -172,7 +172,7 @@ is internally processed by `denote-journal-extras--get-date'."
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
 DATE has the same format as that returned by `denote-journal-extras--get-date'."
-  (denote-directory-files-matching-regexp
+  (denote-directory-files
    (format "%sT[0-9]\\{6\\}.*_%s"
            (format-time-string "%Y%m%d" date)
            denote-journal-extras-keyword)))

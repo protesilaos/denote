@@ -146,7 +146,7 @@ blank line, starting from the top of the buffer.
 If optional ADD-LINKS is non-nil, first insert a link to the file
 and then insert its contents.  In this case, format the contents
 as a typographic list."
-  (let ((files (denote-directory-files-matching-regexp regexp)))
+  (let ((files (denote-directory-files regexp)))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
     (mapc
