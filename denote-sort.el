@@ -92,7 +92,7 @@ corresponding file name component.
 
 REVERSE."
   (denote-sort-files
-   (denote-directory-files-matching-regexp files-matching-regexp)
+   (denote-directory-files files-matching-regexp)
    sort-by-component
    reverse))
 
