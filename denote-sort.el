@@ -48,20 +48,45 @@
 (defvar denote-sort-components '(title keywords signature identifier)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
-(defmacro denote-sort--define (component)
-  "Define Denote sort function for file name COMPONENT."
-  `(defun ,(intern (format "denote-sort-%s-lessp" component)) (file1 file2)
-     ,(format "Return smallest between FILE1 and FILE2 based on their %s.
+(defun denote-sort-title-lessp (file1 file2)
+  "Return smallest between FILE1 and FILE2 based on their title.
 The comparison is done with `denote-sort-comparison-function' between the
-two signature values." component)
-     (when-let ((one (,(intern (format "denote-retrieve-filename-%s" component)) file1))
-                (two (,(intern (format "denote-retrieve-filename-%s" component)) file2))
-                (sort (funcall denote-sort-comparison-function one two)))
-       file1)))
+two title values."
+  (let ((one (denote-retrieve-filename-title file1))
+        (two (denote-retrieve-filename-title file2)))
+    (cond
+     ((string= one (file-name-sans-extension file1))
+      file2)
+     ((or (string= two (file-name-sans-extension file2))
+          (funcall denote-sort-comparison-function one two))
+      file1)
+     (t nil))))
 
-(denote-sort--define title)
-(denote-sort--define keywords)
-(denote-sort--define signature)
+(defun denote-sort-keywords-lessp (file1 file2)
+  "Return smallest between FILE1 and FILE2 based on their keywords.
+The comparison is done with `denote-sort-comparison-function' between the
+two keywords values."
+  (let ((one (denote-retrieve-filename-keywords file1))
+        (two (denote-retrieve-filename-keywords file2)))
+    (cond
+     ((and (string-empty-p one) (not (string-empty-p two))) file2)
+     ((or (and (not (string-empty-p one)) (string-empty-p two))
+          (funcall denote-sort-comparison-function one two))
+      file1)
+     (t nil))))
+
+(defun denote-sort-signature-lessp (file1 file2)
+  "Return smallest between FILE1 and FILE2 based on their signature.
+The comparison is done with `denote-sort-comparison-function' between the
+two signature values."
+  (let ((one (denote-retrieve-filename-signature file1))
+        (two (denote-retrieve-filename-signature file2)))
+    (cond
+     ((and (string-empty-p one) (not (string-empty-p two))) file2)
+     ((or (and (not (string-empty-p one)) (string-empty-p two))
+          (funcall denote-sort-comparison-function one two))
+      file1)
+     (t nil))))
 
 ;;;###autoload
 (defun denote-sort-files (files component &optional reverse)
