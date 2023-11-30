@@ -2442,7 +2442,9 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 :CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
 :END:
 
-[ Part of {{{development-version}}}. ]
+[ Part of {{{development-version}}}. As of 2023-11-30 06:54 +0200 and
+  as part of {{{development-version}}}, this dynamic block also provides
+  facilities for sorting, courtesy of the new =denote-sort.el= library. ]
 
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
@@ -2467,7 +2469,7 @@ or manually write the following block in an Org file and then type
 To fully control the output, include these additional optional
 parameters, which are described further below:
 
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :no-front-matter nil :file-separator t :add-links nil
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator t :add-links nil
 :
 : #+END:
 
@@ -2478,6 +2480,18 @@ parameters, which are described further below:
   Note that you do not need to write an actual regular expression to
   get meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:sort-by-component= parameter is optional. It sorts the files
+  by the given Denote file name component. The value it accepts is an
+  unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
+  When using the command ~denote-org-dblock-insert-files~, this
+  parameter is automatically inserted together with the (=:regexp=
+  parameter) and the user is prompted for a file name component.
+
+- The =:reverse-sort= parameter is optional. It reverses the order in
+  which files appear in. This is meaningful even without the presence
+  of the parameter =:sort-by-component=, though it also combines with
+  it.
 
 #+vindex: denote-org-dblock-file-contents-separator
 - The =:file-separator= parameter is optional. If it is omitted, then
