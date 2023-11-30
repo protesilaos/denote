@@ -45,6 +45,9 @@
 (defvar denote-sort-comparison-function #'string-collate-lessp
   "String comparison function used by `denote-sort-files' subroutines.")
 
+(defvar denote-sort-components '(title keywords signature identifier)
+  "List of sorting keys applicable for `denote-sort-files'.")
+
 (defmacro denote-sort--define (component)
   "Define Denote sort function for file name COMPONENT."
   `(defun ,(intern (format "denote-sort-%s-lessp" component)) (file1 file2)
@@ -91,9 +94,9 @@ With optional REVERSE as a non-nil value, reverse the sort order."
 With FILES-MATCHING-REGEXP as a string limit files to those
 matching the given regular expression.
 
-With SORT-BY-COMPONENT as a Lisp keyword, pass it to
-`denote-sort-files' to sort by the corresponding file name
-component.
+With SORT-BY-COMPONENT as a symbol among `denote-sort-components',
+pass it to `denote-sort-files' to sort by the corresponding file
+name component.
 
 With optional REVERSE as a non-nil value, reverse the sort order."
   (denote-sort-files
@@ -111,16 +114,13 @@ With optional REVERSE as a non-nil value, reverse the sort order."
 (defvar denote-sort--component-key-hist nil
   "Minibuffer history of `denote-sort--component-key-prompt'.")
 
-(defvar denote-sort-files-keys '(:title :keywords :signature :identifier)
-  "List of sorting keys applicable for `denote-sort-files'.")
-
 (defun denote-sort--component-key-prompt ()
-  "Prompt `denote-sort-files' for sorting key among `denote-sort-files-keys'."
+  "Prompt `denote-sort-files' for sorting key among `denote-sort-components'."
   (let ((default (car denote-sort--component-key-hist)))
     (intern
      (completing-read
       (format-prompt "Sort by file name component " default)
-      denote-sort-files-keys nil :require-match
+      denote-sort-components nil :require-match
       nil 'denote-sort--component-key-hist default))))
 
 (defun denote-sort--prepare-dired (buffer-name files)
@@ -144,7 +144,7 @@ SORT-BY-COMPONENT, and REVERSE.
    those matching the provided regular expression.
 
 2. SORT-BY-COMPONENT sorts the files by their file name
-   component (one among `denote-sort-files-keys').
+   component (one among `denote-sort-components').
 
 3. REVERSE is a boolean to reverse the order when it is a non-nil value.
 
