@@ -108,17 +108,17 @@ With optional REVERSE as a non-nil value, reverse the sort order."
   "Prompt for REGEXP to filter Denote files by."
   (read-regexp "Match files with the given REGEXP: " nil 'denote-sort--files-matching-regexp-hist))
 
-(defvar denote-sort--component-key-hist nil
-  "Minibuffer history of `denote-sort--component-key-prompt'.")
+(defvar denote-sort--component-hist nil
+  "Minibuffer history of `denote-sort-component-prompt'.")
 
-(defun denote-sort--component-key-prompt ()
+(defun denote-sort-component-prompt ()
   "Prompt `denote-sort-files' for sorting key among `denote-sort-components'."
-  (let ((default (car denote-sort--component-key-hist)))
+  (let ((default (car denote-sort--component-hist)))
     (intern
      (completing-read
       (format-prompt "Sort by file name component " default)
       denote-sort-components nil :require-match
-      nil 'denote-sort--component-key-hist default))))
+      nil 'denote-sort--component-hist default))))
 
 (defun denote-sort--prepare-dired (buffer-name files)
   "Return Dired buffer with BUFFER-NAME showing FILES.
@@ -150,7 +150,7 @@ a non-nil value, respectively."
   (interactive
    (list
     (denote-sort--files-matching-regexp-prompt)
-    (denote-sort--component-key-prompt)
+    (denote-sort-component-prompt)
     (y-or-n-p "Reverse sort? ")))
   (denote-sort--prepare-dired
    (format "Denote files matching `%s' sorted by %s" files-matching-regexp sort-by-component)
