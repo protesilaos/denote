@@ -38,6 +38,7 @@
 ;;; Code:
 
 (require 'denote)
+(require 'denote-sort)
 (require 'org)
 
 ;;;; Dynamic block to insert links
@@ -134,8 +135,9 @@ argument."
    ((stringp separator) separator)
    (t denote-org-dblock-file-contents-separator)))
 
-(defun denote-org-dblock-add-files (regexp &optional separator no-front-matter add-links)
+(defun denote-org-dblock-add-files (regexp &optional separator no-front-matter add-links sort-by-component reverse)
   "Insert files matching REGEXP.
+
 Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
 use the `denote-org-dblock-file-contents-separator'.
 
@@ -145,8 +147,22 @@ blank line, starting from the top of the buffer.
 
 If optional ADD-LINKS is non-nil, first insert a link to the file
 and then insert its contents.  In this case, format the contents
-as a typographic list."
-  (let ((files (denote-directory-files-matching-regexp regexp)))
+as a typographic list.
+
+If optional SORT-BY-COMPONENT is a symbol among `denote-sort-components',
+sort files matching REGEXP by the corresponding Denote file name
+component.  If the symbol is not among `denote-sort-components',
+fall back to the default identifier-based sorting.
+
+If optional REVERSE is non-nil reverse the sort order."
+  (let ((files
+         (cond
+          ((and sort-by-component reverse)
+           (denote-sort-get-directory-files regexp sort-by-component reverse))
+          (sort-by-component
+           (denote-sort-get-directory-files regexp sort-by-component))
+          (t
+           (denote-directory-files-matching-regexp regexp)))))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
     (mapc
@@ -159,11 +175,18 @@ as a typographic list."
      files)))
 
 ;;;###autoload
-(defun denote-org-dblock-insert-files (regexp)
-  "Create Org dynamic block to insert Denote files matching REGEXP."
-  (interactive (list (denote-org-dblock--file-regexp-prompt)))
+(defun denote-org-dblock-insert-files (regexp sort-by-component)
+  "Create Org dynamic block to insert Denote files matching REGEXP.
+Sort the files according to SORT-BY-COMPONENT, which is a symbol
+among `denote-sort-components'."
+  (interactive
+   (list
+    (denote-org-dblock--file-regexp-prompt)
+    (denote-sort-component-prompt)))
   (org-create-dblock (list :name "denote-files"
                            :regexp regexp
+                           :sort-by-component sort-by-component
+                           :reverse-sort nil
                            :no-front-matter nil
                            :file-separator t
                            :add-links nil))
@@ -176,13 +199,14 @@ as a typographic list."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (sort (plist-get params :sort-by-component))
+         (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
          (separator (plist-get params :file-separator))
-         (no-front-matter (plist-get params :no-front-matter))
+         (no-f-m (plist-get params :no-front-matter))
          (add-links (plist-get params :add-links)))
-    (when block-name
-      (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-dblock-add-files rx separator no-front-matter add-links)))
+    (when block-name (insert "#+name: " block-name "\n"))
+    (when rx (denote-org-dblock-add-files rx separator no-f-m add-links sort reverse)))
   (join-line)) ; remove trailing empty line
 
 (provide 'denote-org-dblock)
