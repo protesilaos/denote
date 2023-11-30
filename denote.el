@@ -829,9 +829,11 @@ With optional TEXT-ONLY, limit the results to text files using
       (setq files (seq-filter #'denote-file-is-note-p (denote-directory-files))))
     files))
 
+;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
+;; obsolete, though we keep it around for the foreseeable future.  It
+;; WILL BE REMOVED ahead of version 3.0.0 of Denote, whenever that
+;; happens.
 (make-obsolete 'denote-directory-text-only-files 'denote-directory-files "2.2.0")
-(make-obsolete 'denote-all-files 'denote-directory-files "2.2.0")
-(make-obsolete 'denote-directory-files-matching-regexp 'denote-directory-files "2.2.0")
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
@@ -921,9 +923,20 @@ something like .org even if the actual file extension is
 The path is relative to DIRECTORY (default: ‘default-directory’)."
   (file-relative-name (denote-get-path-by-id id) directory))
 
+;; NOTE 2023-11-30: We are declaring `denote-directory-files-matching-regexp'
+;; obsolete, though we keep it around for the foreseeable future.  It
+;; WILL BE REMOVED ahead of version 3.0.0 of Denote, whenever that
+;; happens.
+(make-obsolete 'denote-directory-files-matching-regexp 'denote-directory-files "2.2.0")
+
 (defun denote-directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP in `denote-directory-files'."
   (denote-directory-files regexp))
+
+;; NOTE 2023-11-30: We are declaring `denote-all-files' obsolete,
+;; though we keep it around for the foreseeable future.  It WILL BE
+;; REMOVED ahead of version 3.0.0 of Denote, whenever that happens.
+(make-obsolete 'denote-all-files 'denote-directory-files "2.2.0")
 
 (defun denote-all-files (&optional omit-current)
   "Return the list of Denote files in variable `denote-directory'.
