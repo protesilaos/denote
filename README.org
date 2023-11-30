@@ -2528,6 +2528,49 @@ parameters, which are described further below:
   processing using Org facilities (a feature that is outside Denote's
   purview).
 
+* Sort files by component
+:PROPERTIES:
+:CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+The =denote-sort.el= file is an optional extension to the core
+functionality of Denote, which empowers users to sort files by the
+given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+#+findex: denote-sort-dired
+The command ~denote-sort-dired~ produces a Dired file listing with a
+flat, filtered, and sorted set of files from the ~denote-directory~.
+It does so by means of three minibuffer prompts:
+
+1. It first asks for a regular expression with which to match Denote
+   files. Remember that due to Denote's efficient file-naming scheme,
+   you do not need to write some complex regular expression. Even
+   something like =_journal= will match only files with a =journal=
+   keyword.
+2. Once the regular expression is provided, the command asks for a
+   Denote file name component to sort files by. This is a symbol among
+   =title=, =keywords=, =signature=, and =identifier=.
+3. Finally, it asks a "yes or no" on whether to reverse the sort
+   order.
+
+The resulting Dired listing is a regular Dired buffer, unlike that of
+~dired-virtual-mode~ ([[#h:d35d8d41-f51b-4139-af8f-9c8cc508e35b][Use ~dired-virtual-mode~ for arbitrary file listings]]).
+
+The dynamic Org blocks that Denote defines to insert file contents
+also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
+
+DEVELOPMENT NOTE as of 2023-11-30 07:24 +0200: The sort mechanism will
+be incorporated in more functions on a case-by-case basis, subject to
+user feedback. For the time being, I am not documenting the functions
+that are only accessed from Lisp. Do not hesitate to contact me
+(Protesilaos) in person or on one of the development sources (mailing
+list or GitHub/GitLab mirror) if you have a use-case where sorting
+seems useful. I am happy to help but do not want to roll this feature
+everywhere before eliciting relevant feedback: once we add it, we are
+not going back.
+
 * Minibuffer histories
 :PROPERTIES:
 :CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651
@@ -2875,6 +2918,11 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 :PROPERTIES:
 :CUSTOM_ID: h:d35d8d41-f51b-4139-af8f-9c8cc508e35b
 :END:
+
+[ As part of {{{development-version}}}, we provide the
+  ~denote-sort-dired~ command which should cover most of the uses of a
+  virtual Dired listing. The ~denote-sort-dired~ produces a fully
+  fledged Dired buffer ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]). ]
 
 Emacs' Dired is a powerful file manager that builds its functionality
 on top of the Unix =ls= command.  As noted elsewhere in this manual,
