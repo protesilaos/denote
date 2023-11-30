@@ -64,7 +64,7 @@ two signature values." component)
 (denote-sort--define signature)
 
 ;;;###autoload
-(defun denote-sort-files (files &optional component reverse)
+(defun denote-sort-files (files component &optional reverse)
   "Returned sorted list of Denote FILES.
 
 With optional COMPONENT as a keyword of `:signature', `:title',
