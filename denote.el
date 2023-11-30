@@ -314,7 +314,7 @@ When the value is `text', the file type is that of Text mode.
 Any other non-nil value is the same as the default.
 
 NOTE: Expert users can change the supported file-types by editing
-the value of `denote-file-types'. That variable, which is not a
+the value of `denote-file-types'.  That variable, which is not a
 user option, controls the behaviour of all file-type-aware
 functions (creating notes, renaming them, inserting front matter,
 formatting a link, etc.). Consult its documentation for the
@@ -4090,8 +4090,8 @@ current denote PROJECT."
 (cl-defmethod project-files ((_project (head denote)) &optional _dirs)
   "Denote's implementation of `project-files' method from `project'.
 Return all files that have an identifier for the current denote
-PROJECT. The return value may thus include file types that are
-not implied by `denote-file-type'. To limit the return value to
+PROJECT.  The return value may thus include file types that are
+not implied by `denote-file-type'.  To limit the return value to
 text files, use the function `denote-directory-files' with a
 non-nil `text-only' parameter."
   (denote-directory-files))
