@@ -164,7 +164,7 @@ If optional REVERSE is non-nil reverse the sort order."
           (reverse
            (denote-sort-get-directory-files regexp :no-component-specified reverse))
           (t
-           (denote-directory-files-matching-regexp regexp)))))
+           (denote-directory-files regexp)))))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
     (mapc
