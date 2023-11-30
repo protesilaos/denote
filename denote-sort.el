@@ -46,7 +46,7 @@
   "String comparison function used by `denote-sort-files' subroutines.")
 
 (defvar denote-sort-components '(title keywords signature identifier)
-  "List of sorting keys applicable for `denote-sort-files'.")
+  "List of sorting keys applicable for `denote-sort-files' and related.")
 
 (defmacro denote-sort--define (component)
   "Define Denote sort function for file name COMPONENT."
