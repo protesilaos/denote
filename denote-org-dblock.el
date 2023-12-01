@@ -41,11 +41,28 @@
 (require 'denote-sort)
 (require 'org)
 
-;;;; Dynamic block to insert links
+;;;; Common helper functions
+
+(defun denote-org-dblock--files (files-matching-regexp &optional sort-by-component reverse)
+  "Return list of FILES-MATCHING-REGEXP in variable `denote-directory'.
+SORT-BY-COMPONENT and REVERSE have the same meaning as
+`denote-sort-files'.  If both are nil, do not try to perform any
+sorting."
+  (cond
+   ((and sort-by-component reverse)
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+   (sort-by-component
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component))
+   (reverse
+    (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse))
+   (t
+    (denote-directory-files files-matching-regexp))))
 
 (defun denote-org-dblock--file-regexp-prompt ()
   "Prompt for regexp to match Denote file names."
   (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history))
+
+;;;; Dynamic block to insert links
 
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
@@ -155,16 +172,7 @@ component.  If the symbol is not among `denote-sort-components',
 fall back to the default identifier-based sorting.
 
 If optional REVERSE is non-nil reverse the sort order."
-  (let ((files
-         (cond
-          ((and sort-by-component reverse)
-           (denote-sort-get-directory-files regexp sort-by-component reverse))
-          (sort-by-component
-           (denote-sort-get-directory-files regexp sort-by-component))
-          (reverse
-           (denote-sort-get-directory-files regexp :no-component-specified reverse))
-          (t
-           (denote-directory-files regexp)))))
+  (let ((files (denote-org-dblock--files regexp sort-by-component reverse)))
     ;; FIXME 2023-11-23: Do not use a separator for the last file.
     ;; Not a big issue, but is worth checking.
     (mapc
