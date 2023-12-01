@@ -2444,9 +2444,12 @@ The same as above except for the =:regexp= parameter are true for the
 command ~denote-org-dblock-insert-backlinks~ or by manually writing
 this in an Org file:
 
-: #+BEGIN: denote-backlinks :id-only nil
+: #+BEGIN: denote-backlinks :sort-by-component nil :reverse-sort nil :id-only nil
 :
 : #+END:
+
+[ As with the =denote-links= block, the parameters =:sort-by-component=
+  and =:reverse-sort= are part of {{{development-version}}}. ]
 
 Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 =#+BEGIN= line to update the block.

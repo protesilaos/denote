@@ -92,11 +92,26 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;; Dynamic block to insert backlinks
 
+(defun denote-org-dblock--maybe-sort-backlinks (files sort-by-component reverse)
+  "Sort backlink FILES if SORT-BY-COMPONENT and/or REVERSE is non-nil."
+  (cond
+   ((and sort-by-component reverse)
+    (denote-sort-files files sort-by-component reverse))
+   (sort-by-component
+    (denote-sort-files files sort-by-component))
+   (reverse
+    (denote-sort-files files :no-component-specified reverse))
+   (t
+    files)))
+
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
   (interactive)
-  (org-create-dblock (list :name "denote-backlinks" :id-only nil))
+  (org-create-dblock (list :name "denote-backlinks"
+                           :sort-by-component nil
+                           :reverse-sort nil
+                           :id-only nil))
   (org-update-dblock))
 
 (org-dynamic-block-define "denote-backlinks" 'denote-org-dblock-insert-backlinks)
@@ -105,8 +120,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let ((files (denote-link-return-backlinks)))
-    (insert (denote-link--prepare-links files 'org (plist-get params :id-only)))
-    (join-line))) ; remove trailing empty line
+    (let* ((sort (plist-get params :sort-by-component))
+           (reverse (plist-get params :reverse-sort))
+           (files (denote-org-dblock--maybe-sort-backlinks files sort reverse)))
+      (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting)
+      (join-line)))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert entire file contents
 
