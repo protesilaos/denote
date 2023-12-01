@@ -1083,7 +1083,8 @@ When called from Lisp, =TITLE= is a string.
 Add =SIGNATURE= to the file, using an existing one as the default
 value at the minibuffer prompt. When called from Lisp, =SIGNATURE= is
 a string. If the =SIGNATURE= is empty or ~nil~, it is not included in
-the new file name.
+the new file name or removed from an existing one. [ Made it
+intuitive/consistent as part of {{{development-version}}}. ]
 
 As a final step after the =FILE=, =TITLE=, =KEYWORDS=, and =SIGNATURE=
 are collected, ask for confirmation, showing the difference between
@@ -3948,11 +3949,15 @@ might change them without further notice.
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
-  With optional =DEFAULT-SIGNATURE= use it as the default minibuffer
-  value. With optional =PROMPT-TEXT= use it in the minibuffer instead
+  With optional =DEFAULT-SIGNATURE= use it as the initial minibuffer
+  text. With optional =PROMPT-TEXT= use it in the minibuffer instead
   of the default prompt. Previous inputs at this prompt are available
   for minibuffer completion. Consider ~savehist-mode~ to persist
-  minibuffer histories between sessions.
+  minibuffer histories between sessions. [ Revised as part of
+  {{{development-version}}} to use initial text instead of a default
+  value. This way, the current can still input an empty string when
+  they want to. Whereas before the empty string was interpreted as the
+  default value (this is how Emacs does it). ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in

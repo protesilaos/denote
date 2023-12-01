@@ -1894,9 +1894,9 @@ packages such as `marginalia' and `embark')."
 
 (defun denote-signature-prompt (&optional default-signature prompt-text)
   "Prompt for signature string.
-With optional DEFAULT-SIGNATURE use it as the default minibuffer
-value.  With optional PROMPT-TEXT use it in the minibuffer
-instead of the default prompt.
+With optional DEFAULT-SIGNATURE use it as the initial minibuffer
+text.  With optional PROMPT-TEXT use it in the minibuffer instead
+of the default prompt.
 
 Previous inputs at this prompt are available for minibuffer
 completion.  Consider `savehist-mode' to persist minibuffer
@@ -1917,7 +1917,7 @@ histories between sessions."
     (completing-read
      (format-prompt (or prompt-text "Provide signature") nil)
      denote--signature-history
-     nil nil nil 'denote--signature-history default-signature)))
+     nil nil default-signature 'denote--signature-history)))
 
 ;;;;; Convenience commands as `denote' variants
 
@@ -2380,7 +2380,7 @@ TITLE is a string.
 Add SIGNATURE to the file, using an existing one as the default
 value at the minibuffer prompt.  When called from Lisp, SIGNATURE
 is a string.  If the SIGNATURE is empty or nil, it is not
-included in the new file name.
+included in the new file name or removed from an existing one.
 
 As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
 are collected, ask for confirmation, showing the difference
@@ -2434,7 +2434,7 @@ place."
        (format "Rename `%s' with keywords" file-in-prompt))
       (denote-signature-prompt
        (denote-retrieve-filename-signature file)
-       (format "Rename `%s' with signature (empty to ignore)" file-in-prompt))
+       (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file :no-error)
@@ -2482,7 +2482,7 @@ the changes made to the file: perform them outright."
                             (format "Rename `%s' with keywords" file-in-prompt)))
                  (signature (denote-signature-prompt
                              (denote-retrieve-filename-signature file)
-                             (format "Rename `%s' with signature (empty to ignore)" file-in-prompt)))
+                             (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
             (denote-rename-file-and-buffer file new-name)
