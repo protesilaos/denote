@@ -126,6 +126,31 @@ With optional REVERSE as a non-nil value, reverse the sort order."
    sort-by-component
    reverse))
 
+(defun denote-sort-get-links (files-matching-regexp sort-by-component current-file-type id-only &optional reverse)
+  "Return sorted typographic list of links for FILES-MATCHING-REGEXP.
+
+With FILES-MATCHING-REGEXP as a string, match files stored in the
+variable `denote-directory'.
+
+With SORT-BY-COMPONENT as a symbol among `denote-sort-components',
+sort FILES-MATCHING-REGEXP by the given Denote file name
+component.  If SORT-BY-COMPONENT is nil or an unknown non-nil
+value, default to the identifier-based sorting.
+
+With CURRENT-FILE-TYPE as a symbol among those specified in
+`denote-file-type' (or the `car' of each element in
+`denote-file-types'), format the link accordingly.  With a nil or
+unknown non-nil value, default to the Org notation.
+
+With ID-ONLY as a non-nil value, produce links that consist only
+of the identifier, thus deviating from CURRENT-FILE-TYPE.
+
+With optional REVERSE as a non-nil value, reverse the sort order."
+  (denote-link--prepare-links
+   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)
+   current-file-type
+   id-only))
+
 (defvar denote-sort--files-matching-regexp-hist nil
   "Minibuffer history of `denote-sort--files-matching-regexp-prompt'.")
 
