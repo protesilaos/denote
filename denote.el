@@ -3517,10 +3517,13 @@ default, it will show up below the current window."
 (defvar denote-link-add-links-sort nil
   "When t, add REVERSE to `sort-lines' of `denote-link-add-links'.")
 
-(defun denote-link--prepare-links (files current-file-type id-only)
+(defun denote-link--prepare-links (files current-file-type id-only &optional no-sort)
   "Prepare links to FILES from CURRENT-FILE-TYPE.
 When ID-ONLY is non-nil, use a generic link format.  See
-`denote-link--file-type-format'."
+`denote-link--file-type-format'.
+
+With optional NO-SORT do not try to sort the inserted lines.
+Otherwise sort lines while accounting for `denote-link-add-links-sort'."
   (with-temp-buffer
     (mapc
      (lambda (file)
@@ -3532,7 +3535,8 @@ When ID-ONLY is non-nil, use a generic link format.  See
           (denote-link--file-type-format current-file-type id-only)
           (denote--link-get-description file (denote-filetype-heuristics file))))))
           files)
-    (sort-lines denote-link-add-links-sort (point-min) (point-max))
+    (unless no-sort
+      (sort-lines denote-link-add-links-sort (point-min) (point-max)))
     (buffer-string)))
 
 (defvar denote-link--add-links-history nil
@@ -3543,7 +3547,7 @@ When ID-ONLY is non-nil, use a generic link format.  See
   'denote-add-links
   "2.0.0")
 
-(defun denote-link--insert-links (files current-file-type &optional id-only)
+(defun denote-link--insert-links (files current-file-type &optional id-only no-sort)
   "Insert at point a typographic list of links matching FILES.
 
 With CURRENT-FILE-TYPE as a symbol among those specified in
@@ -3552,8 +3556,10 @@ With CURRENT-FILE-TYPE as a symbol among those specified in
 unknown non-nil value, default to the Org notation.
 
 With ID-ONLY as a non-nil value, produce links that consist only
-of the identifier, thus deviating from CURRENT-FILE-TYPE."
-  (insert (denote-link--prepare-links files current-file-type id-only)))
+of the identifier, thus deviating from CURRENT-FILE-TYPE.
+
+Optional NO-SORT is passed to `denote-link--prepare-links'."
+  (insert (denote-link--prepare-links files current-file-type id-only no-sort)))
 
 ;;;###autoload
 (defun denote-add-links (regexp &optional id-only)

@@ -87,7 +87,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (block-name (plist-get params :block-name))
          (files (denote-org-dblock--files rx sort reverse)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (denote-link--insert-links files 'org (plist-get params :id-only))
+    (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting)
     (join-line))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert backlinks
