@@ -1903,22 +1903,21 @@ completion.  Consider `savehist-mode' to persist minibuffer
 histories between sessions."
   (when (and default-signature (string-empty-p default-signature))
     (setq default-signature nil))
-  (denote-sluggify-signature
-   ;; NOTE 2023-10-27: By default SPC performs completion in the
-   ;; minibuffer.  We do not want that, as the user should be able to
-   ;; input an arbitrary string, while still performing completion
-   ;; against their input history.
-   (minibuffer-with-setup-hook
-       (lambda ()
-         (use-local-map
-          (let ((map (make-composed-keymap
-                      nil (current-local-map))))
-            (define-key map (kbd "SPC") nil)
-            map)))
-     (completing-read
-      (format-prompt (or prompt-text "Provide signature") nil)
-      denote--signature-history
-      nil nil nil 'denote--signature-history default-signature))))
+  ;; NOTE 2023-10-27: By default SPC performs completion in the
+  ;; minibuffer.  We do not want that, as the user should be able to
+  ;; input an arbitrary string, while still performing completion
+  ;; against their input history.
+  (minibuffer-with-setup-hook
+      (lambda ()
+        (use-local-map
+         (let ((map (make-composed-keymap
+                     nil (current-local-map))))
+           (define-key map (kbd "SPC") nil)
+           map)))
+    (completing-read
+     (format-prompt (or prompt-text "Provide signature") nil)
+     denote--signature-history
+     nil nil nil 'denote--signature-history default-signature)))
 
 ;;;;; Convenience commands as `denote' variants
 
@@ -2445,7 +2444,7 @@ place."
          (title (or title (denote--retrieve-title-or-filename file file-type)))
          (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
          (signature (or signature (denote-retrieve-filename-signature file)))
-         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature))
+         (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
@@ -2485,7 +2484,7 @@ the changes made to the file: perform them outright."
                              (denote-retrieve-filename-signature file)
                              (format "Rename `%s' with signature (empty to ignore)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension signature)))
+                 (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
