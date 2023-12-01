@@ -3543,6 +3543,18 @@ When ID-ONLY is non-nil, use a generic link format.  See
   'denote-add-links
   "2.0.0")
 
+(defun denote-link--insert-links (files current-file-type &optional id-only)
+  "Insert at point a typographic list of links matching FILES.
+
+With CURRENT-FILE-TYPE as a symbol among those specified in
+`denote-file-type' (or the `car' of each element in
+`denote-file-types'), format the link accordingly.  With a nil or
+unknown non-nil value, default to the Org notation.
+
+With ID-ONLY as a non-nil value, produce links that consist only
+of the identifier, thus deviating from CURRENT-FILE-TYPE."
+  (insert (denote-link--prepare-links files current-file-type id-only)))
+
 ;;;###autoload
 (defun denote-add-links (regexp &optional id-only)
   "Insert links to all notes matching REGEXP.
@@ -3560,7 +3572,7 @@ inserts links with just the identifier."
     (if-let ((files (denote-directory-files regexp :omit-current))
              (beg (point)))
         (progn
-          (insert (denote-link--prepare-links files file-type id-only))
+          (denote-link--insert-links files file-type id-only)
           (denote-link-buttonize-buffer beg (point)))
       (message "No links matching `%s'" regexp))))
 
