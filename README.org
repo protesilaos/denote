@@ -2393,7 +2393,7 @@ The =denote-links= block can be inserted at point with the command
 ~denote-org-dblock-insert-links~ or by manually including the
 following in an Org file:
 
-: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :id-only nil
+: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :id-only nil
 :
 : #+END:
 
@@ -2414,6 +2414,19 @@ line to update the block.
   you do not need to write an actual regular expression to get
   meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:sort-by-component= parameter is optional. It sorts the files
+  by the given Denote file name component. The value it accepts is an
+  unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
+  When using the command ~denote-org-dblock-insert-files~, this
+  parameter is automatically inserted together with the (=:regexp=
+  parameter) and the user is prompted for a file name component. [ The
+  =:sort-by-component= parameter is part of {{{development-version}}}. ]
+
+- The =:reverse-sort= parameter is optional. It reverses the order in
+  which files appear in. This is meaningful even without the presence
+  of the parameter =:sort-by-component=, though it also combines with
+  it. [ The =:reverse-sort= parameter is part of {{{development-version}}}. ]
 
 - The =:id-only= parameter is optional. It accepts a ~t~ value, in
   which case links are inserted without a description text but only

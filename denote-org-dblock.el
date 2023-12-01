@@ -70,6 +70,8 @@ sorting."
   (interactive (list (denote-org-dblock--file-regexp-prompt)))
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
+                           :sort-by-component nil
+                           :reverse-sort nil
                            :id-only nil))
   (org-update-dblock))
 
@@ -80,10 +82,12 @@ sorting."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
-         (block-name (plist-get params :block-name)))
-    (when block-name
-      (insert "#+name: " block-name "\n"))
-    (denote-add-links rx (plist-get params :id-only))
+         (sort (plist-get params :sort-by-component))
+         (reverse (plist-get params :reverse-sort))
+         (block-name (plist-get params :block-name))
+         (files (denote-org-dblock--files rx sort reverse)))
+    (when block-name (insert "#+name: " block-name "\n"))
+    (denote-link--insert-links files 'org (plist-get params :id-only))
     (join-line))) ; remove trailing empty line
 
 ;;;; Dynamic block to insert backlinks
