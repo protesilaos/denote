@@ -1617,12 +1617,16 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
                         (expand-file-name directory))))
 
 (defun denote--valid-file-type (filetype)
-  "Return a valid filetype given the argument FILETYPE.
+  "Return a valid filetype symbol given the argument FILETYPE.
 If none is found, the first element of `denote-file-types' is
 returned."
-  (if (memq filetype (mapcar 'car denote-file-types))
-      filetype
-    (caar denote-file-types)))
+  (let ((type (cond
+               ((stringp filetype) (intern filetype))
+               ((symbolp filetype) filetype)
+               (t (error "The `%s' is neither a string nor a symbol" filetype)))))
+    (if (memq type (denote--file-type-keys))
+        type
+      (caar denote-file-types))))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
