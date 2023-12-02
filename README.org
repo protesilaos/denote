@@ -2237,6 +2237,7 @@ The faces we define for this purpose are:
 #+vindex: denote-faces-delimiter
 #+vindex: denote-faces-extension
 #+vindex: denote-faces-keywords
+#+vindex: denote-faces-signature
 #+vindex: denote-faces-subdirectory
 #+vindex: denote-faces-time
 #+vindex: denote-faces-title
@@ -2244,6 +2245,7 @@ The faces we define for this purpose are:
 + ~denote-faces-delimiter~
 + ~denote-faces-extension~
 + ~denote-faces-keywords~
+- ~denote-faces-signature~
 + ~denote-faces-subdirectory~
 + ~denote-faces-time~
 + ~denote-faces-title~
