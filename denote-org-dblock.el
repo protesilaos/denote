@@ -67,7 +67,10 @@ sorting."
 ;;;###autoload
 (defun denote-org-dblock-insert-links (regexp)
   "Create Org dynamic block to insert Denote links matching REGEXP."
-  (interactive (list (denote-org-dblock--file-regexp-prompt)))
+  (interactive
+   (list
+    (denote-org-dblock--file-regexp-prompt))
+   org-mode)
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
                            :sort-by-component nil
@@ -107,7 +110,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
   "Insert new Org dynamic block to include backlinks."
-  (interactive)
+  (interactive nil org-mode)
   (org-create-dblock (list :name "denote-backlinks"
                            :sort-by-component nil
                            :reverse-sort nil
@@ -214,7 +217,8 @@ among `denote-sort-components'."
   (interactive
    (list
     (denote-org-dblock--file-regexp-prompt)
-    (denote-sort-component-prompt)))
+    (denote-sort-component-prompt))
+   org-mode)
   (org-create-dblock (list :name "denote-files"
                            :regexp regexp
                            :sort-by-component sort-by-component
