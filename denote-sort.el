@@ -79,14 +79,17 @@ two keywords values."
   "Return smallest between FILE1 and FILE2 based on their signature.
 The comparison is done with `denote-sort-comparison-function' between the
 two signature values."
-  (let ((one (denote-retrieve-filename-signature file1))
-        (two (denote-retrieve-filename-signature file2)))
+  (let* ((one (denote-retrieve-filename-signature file1))
+         (two (denote-retrieve-filename-signature file2))
+         (one-empty-p (string-empty-p one))
+         (two-empty-p (string-empty-p two)))
     (cond
-     ((and (string-empty-p one) (not (string-empty-p two))) file2)
-     ((or (and (not (string-empty-p one)) (string-empty-p two))
-          (funcall denote-sort-comparison-function one two))
-      file1)
-     (t nil))))
+     (one-empty-p
+      nil)
+     ((and (not one-empty-p) two-empty-p)
+      one)
+     (t
+      (funcall denote-sort-comparison-function one two)))))
 
 ;;;###autoload
 (defun denote-sort-files (files component &optional reverse)
