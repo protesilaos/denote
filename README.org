@@ -3975,9 +3975,10 @@ might change them without further notice.
   for minibuffer completion. Consider ~savehist-mode~ to persist
   minibuffer histories between sessions. [ Revised as part of
   {{{development-version}}} to use initial text instead of a default
-  value. This way, the current can still input an empty string when
-  they want to. Whereas before the empty string was interpreted as the
-  default value (this is how Emacs does it). ]
+  value. This way, the user can still input an empty string when they
+  want to. Whereas before the empty string was interpreted as the
+  default value (this is how Emacs does it but is not what we wanted
+  in this case). ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
