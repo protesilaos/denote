@@ -3921,7 +3921,7 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
-  from =FILE= name, if present, else return nil.
+  from =FILE= name, if present, else return an empty string.
 
 #+findex: denote-create-unique-file-identifier
 + Function ~denote-create-unique-file-identifier~ :: Create a new unique
