@@ -110,7 +110,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
         (reverse sorted-files)
       sorted-files)))
 
-(defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse)
+(defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse omit-current)
   "Return sorted list of files in variable `denote-directory'.
 
 With FILES-MATCHING-REGEXP as a string limit files to those
@@ -120,9 +120,12 @@ With SORT-BY-COMPONENT as a symbol among `denote-sort-components',
 pass it to `denote-sort-files' to sort by the corresponding file
 name component.
 
-With optional REVERSE as a non-nil value, reverse the sort order."
+With optional REVERSE as a non-nil value, reverse the sort order.
+
+With optional OMIT-CURRENT, do not include the current file in
+the list."
   (denote-sort-files
-   (denote-directory-files files-matching-regexp)
+   (denote-directory-files files-matching-regexp omit-current)
    sort-by-component
    reverse))
 
