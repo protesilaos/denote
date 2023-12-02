@@ -3163,6 +3163,7 @@ Also see `denote-link-return-backlinks'."
 ;;;###autoload
 (defun denote-find-link ()
   "Use minibuffer completion to visit linked file."
+  (declare (interactive-only t))
   (interactive)
   (find-file
    (denote-link--find-file-prompt
@@ -3186,6 +3187,7 @@ Also see `denote-link-return-links'."
   "Use minibuffer completion to visit backlink to current file.
 
 Like `denote-find-link', but select backlink to follow."
+  (declare (interactive-only t))
   (interactive)
   (find-file
    (denote-get-path-by-id
