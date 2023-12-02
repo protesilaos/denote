@@ -2299,10 +2299,10 @@ that effect."
       (when (or no-confirm
                 (y-or-n-p (format
                            "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
-                           (propertize old-title-line 'face 'error)
-                           (propertize new-title-line 'face 'success)
-                           (propertize old-keywords-line 'face 'error)
-                           (propertize new-keywords-line 'face 'success))))
+                           (propertize old-title-line 'face 'denote-faces-prompt-old-name)
+                           (propertize new-title-line 'face 'denote-faces-prompt-new-name)
+                           (propertize old-keywords-line 'face 'denote-faces-prompt-old-name)
+                           (propertize new-keywords-line 'face 'denote-faces-prompt-new-name))))
         (save-excursion
           (save-restriction
             (widen)
@@ -2343,8 +2343,8 @@ Throw error if FILE is not regular, else return FILE."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (y-or-n-p
      (format "Rename %s to %s?"
-             (propertize (file-name-nondirectory old-name) 'face 'error)
-             (propertize (file-name-nondirectory new-name) 'face 'success)))))
+             (propertize (file-name-nondirectory old-name) 'face 'denote-faces-prompt-old-name)
+             (propertize (file-name-nondirectory new-name) 'face 'denote-faces-prompt-new-name)))))
 
 ;; NOTE 2023-10-20: We do not need a user option for this, though it
 ;; can be useful to have it as a variable.
@@ -2432,7 +2432,7 @@ place."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
-          (file-in-prompt (propertize file 'face 'error)))
+          (file-in-prompt (propertize file 'face 'denote-faces-prompt-current-name)))
      (list
       file
       (denote-title-prompt
@@ -2479,7 +2479,7 @@ the changes made to the file: perform them outright."
                         (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
-                 (file-in-prompt (propertize file 'face 'error))
+                 (file-in-prompt (propertize file 'face 'denote-faces-prompt-current-name))
                  (dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
                          (denote-create-unique-file-identifier file used-ids)))
@@ -2807,6 +2807,21 @@ and seconds."
   "Keywords for fontification of file names.")
 
 (make-obsolete-variable 'denote-faces-file-name-keywords-for-backlinks nil "2.2.0")
+
+(defface denote-faces-prompt-old-name '((t :inherit error))
+  "Face for the old name shown in the prompt of `denote-rename-file' etc."
+  :group 'denote-faces
+  :package-version '(denote . "2.2.0"))
+
+(defface denote-faces-prompt-new-name '((t :inherit success))
+  "Face for the new name shown in the prompt of `denote-rename-file' etc."
+  :group 'denote-faces
+  :package-version '(denote . "2.2.0"))
+
+(defface denote-faces-prompt-current-name '((t :inherit denote-faces-prompt-old-name))
+  "Face for the current file shown in the prompt of `denote-rename-file' etc."
+  :group 'denote-faces
+  :package-version '(denote . "2.2.0"))
 
 ;;;; Fontification in Dired
 

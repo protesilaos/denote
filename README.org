@@ -1305,6 +1305,24 @@ field in the file's front matter, depending on the previous file type
 As a final step, the command asks for confirmation, showing the
 difference between old and new file names.
 
+** Faces used by rename commands
+:PROPERTIES:
+:CUSTOM_ID: h:ab3f355a-f763-43ae-a4c9-179d2d9265a5
+:END:
+
+[ These faces are part of {{{development-version}}}. The styles they
+  use are the same they had before. The difference now is that themes
+  can style them as they see fit instead of having to deal with
+  hardcoded values. ]
+
+These are the faces used by the various Denote rename commands to
+style or highlight the old/new/current file shown in the relevant
+minibuffer prompts:
+
+- ~denote-faces-prompt-current-name~
+- ~denote-faces-prompt-new-name~
+- ~denote-faces-prompt-old-name~
+
 * The file-naming scheme
 :PROPERTIES:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
