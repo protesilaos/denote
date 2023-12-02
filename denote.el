@@ -1795,10 +1795,11 @@ command that needs to supply a default title before calling
 back to nil.")
 
 (defun denote-title-prompt (&optional default-title prompt-text)
-  "Read file title for `denote'.
-With optional DEFAULT-TITLE use it as the default value.  With
-optional PROMPT-TEXT use it in the minibuffer instead of the
-generic prompt.
+  "Prompt for title string.
+
+With optional DEFAULT-TITLE use it as the initial minibuffer
+text.  With optional PROMPT-TEXT use it in the minibuffer instead
+of the default prompt.
 
 Previous inputs at this prompt are available for minibuffer
 completion.  Consider `savehist-mode' to persist minibuffer
@@ -1814,11 +1815,10 @@ histories between sessions."
                      nil (current-local-map))))
            (define-key map (kbd "SPC") nil)
            map)))
-    (let ((def (or default-title denote-title-prompt-current-default)))
-      (completing-read
-       (format-prompt (or prompt-text "File title") def)
-       denote--title-history
-       nil nil nil 'denote--title-history def))))
+    (completing-read
+     (format-prompt (or prompt-text "File title") nil)
+     denote--title-history
+     nil nil default-title 'denote--title-history nil)))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
@@ -2437,7 +2437,7 @@ place."
       file
       (denote-title-prompt
        (denote--retrieve-title-or-filename file file-type)
-       (format "Rename `%s' with title" file-in-prompt))
+       (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt))
       (denote-keywords-prompt
        (format "Rename `%s' with keywords" file-in-prompt))
       (denote-signature-prompt
@@ -2485,7 +2485,7 @@ the changes made to the file: perform them outright."
                          (denote-create-unique-file-identifier file used-ids)))
                  (title (denote-title-prompt
                          (denote--retrieve-title-or-filename file file-type)
-                         (format "Rename `%s' with title" file-in-prompt)))
+                         (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt)))
                  (keywords (denote-keywords-prompt
                             (format "Rename `%s' with keywords" file-in-prompt)))
                  (signature (denote-signature-prompt

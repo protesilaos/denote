@@ -3995,12 +3995,17 @@ might change them without further notice.
   ~denote-sort-keywords~ is non-nil.
 
 #+findex: denote-title-prompt
-+ Function ~denote-title-prompt~ :: Read file title for ~denote~. With
-  optional =DEFAULT-TITLE= use it as the default value. With optional
-  =PROMPT-TEXT= use it in the minibuffer instead of the generic
-  prompt. Previous inputs at this prompt are available for minibuffer
-  completion. Consider ~savehist-mode~ to persist minibuffer histories
-  between sessions.
++ Function ~denote-title-prompt~ :: Prompt for title string. With
+  optional =DEFAULT-TITLE= use it as the initial minibuffer text. With
+  optional =PROMPT-TEXT= use it in the minibuffer instead of the
+  default prompt. Previous inputs at this prompt are available for
+  minibuffer completion. Consider ~savehist-mode~ to persist
+  minibuffer histories between sessions. [ Revised as part of
+  {{{development-version}}} to use initial text instead of a default
+  value. This way, the user can still input an empty string when they
+  want to. Whereas before the empty string was interpreted as the
+  default value (this is how Emacs does it but is not what we wanted
+  in this case). ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
