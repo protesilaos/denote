@@ -169,7 +169,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
   (let ((default (car denote-sort--component-hist)))
     (intern
      (completing-read
-      (format-prompt "Sort by file name component " default)
+      (format-prompt "Sort by file name component" default)
       denote-sort-components nil :require-match
       nil 'denote-sort--component-hist default))))
 
