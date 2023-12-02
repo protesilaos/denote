@@ -2692,7 +2692,7 @@ of the file.  This needs to be done manually."
   (let* ((dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file :no-error) ""))
-         (title (denote-retrieve-title-value file old-file-type))
+         (title (denote--retrieve-title-or-filename file old-file-type))
          (keywords (denote-retrieve-keywords-value file old-file-type))
          (signature (denote-retrieve-filename-signature file))
          (old-extension (denote-get-file-extension file))
