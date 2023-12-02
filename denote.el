@@ -3537,7 +3537,10 @@ Otherwise sort lines while accounting for `denote-link-add-links-sort'."
          (denote-format-link
           file
           (denote-link--file-type-format current-file-type id-only)
-          (denote--link-get-description file (denote-filetype-heuristics file))))))
+          (let ((type (denote-filetype-heuristics file)))
+            (if (denote-file-has-signature-p file)
+                (denote--link-get-description-with-signature file type)
+              (denote--link-get-description file type)))))))
           files)
     (unless no-sort
       (sort-lines denote-link-add-links-sort (point-min) (point-max)))
