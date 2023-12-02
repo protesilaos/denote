@@ -3887,6 +3887,14 @@ Consult the manual for template samples."
     (denote--keywords-add-to-history keywords)
     (concat front-matter denote-org-capture-specifiers)))
 
+;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
+;; by passing a single PROMPTS that is the same value as `denote-prompts'?
+
+;; TODO 2023-12-02: The `denote-org-capture-with-prompts' is missing a
+;; signature argument, but nobody has asked for it.  I think
+;; refactoring it per the above TODO is better, anyway.  But maybe do
+;; this after version 2.2.0 is out.
+
 ;;;###autoload
 (defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
   "Like `denote-org-capture' but with optional prompt parameters.
