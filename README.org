@@ -3905,15 +3905,19 @@ might change them without further notice.
   ~denote-create-unique-file-identifier~ function.
 
 #+findex: denote-retrieve-filename-title
-+ Function ~denote-retrieve-filename-title~ :: Extract title from
-  =FILE= name, else return ~file-name-base~.  Run ~denote-desluggify~
-  on the title if the extraction is successful.
++ Function ~denote-retrieve-filename-title~ ::  Extract Denote title
+  component from =FILE= name, else return an empty string. With
+  optional =FILE-NAME-BASE-FALLBACK= return ~file-name-base~ if no
+  Denote title component exists. If the extraction is succcessful
+  (when no ~file-name-base~ is involved) run ~denote-desluggify~ on
+  the title. [ Revised as part of {{{development-version}}} to return
+  an empty string if no title is present and to make the use of
+  ~file-name-base~ optional. ]
 
 #+findex: denote-retrieve-filename-keywords
 + Function ~denote-retrieve-filename-keywords~ ::  Extract keywords
   from =FILE= name, if present, else return an empty string. Return
-  matched keywords as a single string. [ Part of
-  {{{development-version}}} . ]
+  matched keywords as a single string. [ Part of {{{development-version}}} . ]
 
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature

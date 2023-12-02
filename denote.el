@@ -1415,15 +1415,23 @@ Return matched keywords as a single string."
         (match-string 1 filename)
       "")))
 
-(defun denote-retrieve-filename-title (file)
-  "Extract title from FILE name, else return `file-name-base'.
-Run `denote-desluggify' on title if the extraction is sucessful."
-  (if-let (((file-exists-p file))
-           ((denote-file-has-identifier-p file))
-           ((string-match denote-title-regexp file))
-           (title (match-string 1 file)))
-      (denote-desluggify title)
-    (file-name-base file)))
+(defun denote-retrieve-filename-title (file &optional file-name-base-fallback)
+  "Extract Denote title component from FILE name, else return an empty string.
+
+With optional FILE-NAME-BASE-FALLBACK return `file-name-base' if
+no Denote title component exists.
+
+If the extraction is succcessful (when no `file-name-base' is
+involved) run `denote-desluggify' on the title"
+  (unless (file-exists-p file)
+    (error "%s does not exist as a file" file))
+  (cond
+   ((and (denote-file-has-identifier-p file)
+         (string-match denote-title-regexp file))
+    (denote-desluggify (match-string 1 file)))
+   (file-name-base-fallback
+    (file-name-base file))
+   (t "")))
 
 (defun denote--file-with-temp-buffer-subr (file)
   "Return path to FILE or its buffer together with the appropriate function.
@@ -1496,7 +1504,7 @@ that internally)."
            (title (denote-retrieve-title-value file type))
            ((not (string-blank-p title))))
       title
-    (denote-retrieve-filename-title file)))
+    (denote-retrieve-filename-title file :file-name-base-as-fallback)))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
