@@ -3084,6 +3084,10 @@ Also see `denote--link-get-description'."
          (text (denote--link-get-description file file-type))
          (specifiers (if (and text
                               (not (string-empty-p text)))
+                         ;; NOTE 2023-12-02: I want to elicit more
+                         ;; feedback before I make this a variable.
+                         ;; How do users of signatures prefer to
+                         ;; display them in link descriptions?
                          "%s %s"
                        "%s")))
     (format specifiers signature text)))
