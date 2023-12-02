@@ -2266,7 +2266,7 @@ Do the same as `denote-rewrite-front-matter' for keywords,
 but do not ask for confirmation.
 
 This is for use in `denote-keywords-add',`denote-keywords-remove',
-`denote-dired-rename-marked-files', or related."
+`denote-dired-rename-files', or related."
   (with-current-buffer (find-file-noselect file)
     (save-excursion
       (save-restriction
