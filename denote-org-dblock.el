@@ -50,13 +50,13 @@ SORT-BY-COMPONENT and REVERSE have the same meaning as
 sorting."
   (cond
    ((and sort-by-component reverse)
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse :omit-current))
    (sort-by-component
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component))
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component :omit-current))
    (reverse
-    (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse))
+    (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse :omit-current))
    (t
-    (denote-directory-files files-matching-regexp))))
+    (denote-directory-files files-matching-regexp :omit-current))))
 
 (defun denote-org-dblock--file-regexp-prompt ()
   "Prompt for regexp to match Denote file names."
