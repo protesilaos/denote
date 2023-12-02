@@ -2784,7 +2784,8 @@ and seconds."
   "Regexp of file names for fontification.")
 
 (defconst denote-faces-file-name-keywords
-  `((,(concat "[\t\s]+" denote-faces--file-name-regexp)
+  `((,(concat "\\(?11:[\t\s]+\\|.*/\\)?" denote-faces--file-name-regexp)
+     (11 'denote-faces-subdirectory nil t)
      (1 'denote-faces-date)
      (10 'denote-faces-time-delimiter nil t)
      (2 'denote-faces-time)
@@ -2797,20 +2798,7 @@ and seconds."
      (9 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
 
-(defconst denote-faces-file-name-keywords-for-backlinks
-  `((,(concat "^\\(?11:.*/\\)?" denote-faces--file-name-regexp)
-     (11 'denote-faces-subdirectory nil t)
-     (1 'denote-faces-date)
-     (10 'denote-faces-time-delimiter nil t)
-     (2 'denote-faces-time)
-     (3 'denote-faces-delimiter nil t)
-     (4 'denote-faces-signature nil t)
-     (5 'denote-faces-delimiter nil t)
-     (6 'denote-faces-title nil t)
-     (7 'denote-faces-delimiter nil t)
-     (8 'denote-faces-keywords nil t)
-     (9 'denote-faces-extension nil t )))
-  "Keywords for fontification of file names in the backlinks buffer.")
+(make-obsolete-variable 'denote-faces-file-name-keywords-for-backlinks nil "2.2.0")
 
 ;;;; Fontification in Dired
 
@@ -3427,7 +3415,7 @@ matching identifiers."
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
   "Major mode for backlinks buffers."
   (unless denote-backlinks-show-context
-    (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
+    (font-lock-add-keywords nil denote-faces-file-name-keywords t))
   (add-hook 'project-find-functions #'denote-project-find nil t))
 
 (defun denote-link--prepare-backlinks (fetcher _alist)
