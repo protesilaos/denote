@@ -1263,7 +1263,8 @@ so by writing keywords to them. Specifically, it does the following:
 
 - prompts once for =KEYWORDS= and applies the user's input to the
   corresponding field in the file name, rewriting any keywords that
-  may exist;
+  may exist while removing keywords that do exist if =KEYWORDS= is
+  empty;
 
 - adds or rewrites existing front matter to the underlying file, if it
   is recognized as a Denote note (per the ~denote-file-type~ user

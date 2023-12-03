@@ -2580,7 +2580,8 @@ Specifically, do the following:
 
 - prompt once for KEYWORDS and apply the user's input to the
   corresponding field in the file name, rewriting any keywords
-  that may exist;
+  that may exist while removing keywords that do exist if
+  KEYWORDS is empty;
 
 - add or rewrite existing front matter to the underlying file, if
   it is recognized as a Denote note (per `denote-file-type'),
