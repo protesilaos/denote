@@ -2402,7 +2402,8 @@ with minibuffer completion for one.  When called from Lisp, FILE
 is a filesystem path represented as a string.
 
 If FILE has a Denote-compliant identifier, retain it while
-updating the TITLE and KEYWORDS fields of the file name.
+updating the TITLE, KEYWORDS, and SIGNATURE components of the
+file name.
 
 Else create an identifier based on the following conditions:
 
@@ -2420,23 +2421,30 @@ Else create an identifier based on the following conditions:
    the variable `denote-directory', increment it such that it
    becomes unique.
 
-Use TITLE to construct the new name of FILE.  In interactive use,
+Add TITLE to FILE.  In interactive use, prompt for user input and
 retrieve the default TITLE value from a line starting with a
 title field in the file's contents, depending on the given file
 type (e.g. #+title for Org).  Else, use the file name as a
 default value at the minibuffer prompt.  When called from Lisp,
 TITLE is a string.
 
-Add SIGNATURE to the file, using an existing one as the default
-value at the minibuffer prompt.  When called from Lisp, SIGNATURE
-is a string.  If the SIGNATURE is empty or nil, it is not
-included in the new file name or removed from an existing one.
+If TITLE is nil or an empty string, do not add it to a newly
+renamed file or remove it from an existing file.
 
-As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
-are collected, ask for confirmation, showing the difference
-between old and new file names.  Do not ask for confirmation if
-the user option `denote-rename-no-confirm' is set to a non-nil
-value.
+Add SIGNATURE to FILE.  In interactive use, prompt for SIGNATURE,
+using an existing one as the default value at the minibuffer
+prompt.  When called from Lisp, SIGNATURE is a string.
+
+If SIGNATURE is nil or an empty string, do not add it to a newly
+renamed file or remove it from an existing file.
+
+Add KEYWORDS to FILE.  In interactive use, prompt for KEYWORDS.
+More than one keyword can be inserted when separated by the
+`crm-sepator' (normally a comma).  When called from Lisp,
+KEYWORDS is a list of strings.
+
+If KEYWORDS is nil or an empty string, do not add it to a newly
+renamed file or remove it from an existing file.
 
 Read the file type extension (like .txt) from the underlying file
 and preserve it through the renaming process.  Files that have no
@@ -2445,15 +2453,21 @@ extension are left without one.
 Renaming only occurs relative to the current directory.  Files
 are not moved between directories.
 
+As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
+are collected, ask for confirmation, showing the difference
+between old and new file names.  Do not ask for confirmation if
+the user option `denote-rename-no-confirm' is set to a non-nil
+value.
+
 If the FILE has Denote-style front matter for the TITLE and
 KEYWORDS, ask to rewrite their values in order to reflect the new
 input (this step always requires confirmation and the underlying
 buffer is not saved, so consider invoking `diff-buffer-with-file'
-to double-check the effect).  The rewrite of the FILE and
+to double-check the effect).  The rewrite of the TITLE and
 KEYWORDS in the front matter should not affect the rest of the
 front matter.
 
-If the file doesn't have front matter but is among the supported
+If the file does not have front matter but is among the supported
 file types (per `denote-file-type'), add front matter at the top
 of it and leave the buffer unsaved for further inspection.
 
@@ -2468,9 +2482,7 @@ This command is intended to (i) rename existing Denote notes
 while updating their title and keywords in the front matter, (ii)
 convert existing supported file types to Denote notes, and (ii)
 rename non-note files (e.g. PDF) that can benefit from Denote's
-file-naming scheme.  The latter is a convenience we provide,
-since we already have all the requisite mechanisms in
-place."
+file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
