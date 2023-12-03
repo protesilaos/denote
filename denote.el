@@ -2166,7 +2166,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
 In the case of multiple entries, those are separated by the
 `crm-sepator', which typically is a comma.  In such a case, the
 output is sorted with `string-collate-lessp'."
-  (let ((choice (denote--keywords-crm keywords "Keyword to remove: ")))
+  (let ((choice (denote--keywords-crm keywords "Keywords to remove")))
     (if denote-sort-keywords
         (sort choice #'string-collate-lessp)
       choice)))
