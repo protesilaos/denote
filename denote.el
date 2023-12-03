@@ -1013,8 +1013,12 @@ keywords.  Else use a generic prompt.
 
 Process the return value with `denote-keywords-sort' and sort
 with `string-collate-lessp' if the user option
-`denote-sort-keywords' is non-nil."
-  (denote-keywords-sort (denote--keywords-crm (denote-keywords) prompt-text)))
+`denote-sort-keywords' is non-nil.
+
+Return an empty string if the minibuffer input is empty."
+  (if-let ((kw (denote--keywords-crm (denote-keywords) prompt-text)))
+      (denote-keywords-sort kw)
+    ""))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
@@ -2477,7 +2481,7 @@ place."
        (denote--retrieve-title-or-filename file file-type)
        (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt))
       (denote-keywords-prompt
-       (format "Rename `%s' with keywords" file-in-prompt))
+       (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt))
       (denote-signature-prompt
        (denote-retrieve-filename-signature file)
        (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
@@ -2525,7 +2529,7 @@ the changes made to the file: perform them outright."
                          (denote--retrieve-title-or-filename file file-type)
                          (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt)))
                  (keywords (denote-keywords-prompt
-                            (format "Rename `%s' with keywords" file-in-prompt)))
+                            (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)))
                  (signature (denote-signature-prompt
                              (denote-retrieve-filename-signature file)
                              (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))
@@ -2578,7 +2582,7 @@ Specifically, do the following:
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-prompt "Rename marked files with these keywords (overwrite existing)"))
+      (let ((keywords (denote-keywords-prompt "Rename marked files with keywords, overwriting existing (empty to ignore/remove)"))
             (used-ids (when (seq-some
                              (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
                              marks)
