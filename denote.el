@@ -1531,16 +1531,54 @@ See `denote--retrieve-locations-in-xrefs'."
 
 ;;;;; Common helpers for new notes
 
-(defun denote-format-file-name (path id keywords title-slug extension signature-slug)
+(defun denote-format-file-name (dir-path id keywords title-slug extension signature-slug)
   "Format file name.
-PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and SIGNATURE-SLUG are
-expected to be supplied by `denote' or equivalent command."
-  (let ((file-name (concat path id)))
-    (when (not (string-empty-p signature-slug))
+DIR-PATH, ID, KEYWORDS, TITLE-SLUG, EXTENSION and SIGNATURE-SLUG are
+expected to be supplied by `denote' or equivalent command.
+
+DIR-PATH is a string pointing to a directory.  It ends with a
+forward slash (the function `denote-directory' makes sure this is
+the case when returning the value of the variable `denote-directory').
+DIR-PATH cannot be nil or an empty string.
+
+ID is a string holding the identifier of the note.  It cannot be
+nil or an empty string and must match `denote-id-regexp'.
+
+DIR-PATH and ID form the base file name.
+
+KEYWORDS is a list of strings that is reduced to a single string
+by `denote-keywords-combine'.  KEYWORDS can be an empty string or
+a nil value, in which case the relevant file name component is
+not added to the base file name.
+
+TITLE-SLUG and SIGNATURE-SLUG are strings which, in principle,
+are sluggified before passed as arguments here (per
+`denote-sluggify' and `denote-sluggify-signature').  They can be
+an empty string or a nil value, in which case their respective
+file name component is not added to the base file name.
+
+EXTENSION is a string that contains a dot followed by the file
+type extension.  It can be an empty string or a nil value, in
+which case it is not added to the base file name."
+  (cond
+   ((null dir-path)
+    (error "DIR-PATH must not be nil"))
+   ((string-empty-p dir-path)
+    (error "DIR-PATH must not be an empty string"))
+   ((not (string-suffix-p "/" dir-path))
+    (error "DIR-PATH does not end with a / as directories ought to"))
+   ((null id)
+    (error "ID must not be nil"))
+   ((string-empty-p id)
+    (error "ID must not be an empty string"))
+   ((not (string-match-p denote-id-regexp id))
+    (error "ID `%s' does not match `denote-id-regexp'" id)))
+  (let ((file-name (concat dir-path id)))
+    (when (and signature-slug (not (string-empty-p signature-slug)))
       (setq file-name (concat file-name "==" signature-slug)))
-    (when (not (string-empty-p title-slug))
+    (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
-    (when keywords
+    (when (and keywords (or (listp keywords) (not (string-empty-p keywords))))
       (setq file-name (concat file-name "__" (denote-keywords-combine keywords))))
     (concat file-name extension)))
 

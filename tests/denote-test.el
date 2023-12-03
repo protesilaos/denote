@@ -282,6 +282,54 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
          (id (format-time-string denote-id-format (denote--valid-date "2023-11-28 05:53:11")))
          (denote-directory "/tmp/test-denote")
          (kws '("one" "two")))
+    (should-error (denote-format-file-name
+                    nil
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'org)
+                    ""))
+
+    (should-error (denote-format-file-name
+                    ""
+                    id
+                    (denote-sluggify-keywords kws)
+                    (denote-sluggify title)
+                    (denote--file-extension 'org)
+                    ""))
+
+    (should-error (denote-format-file-name
+                   denote-directory ; notice this is the `let' bound value without the suffix
+                   id
+                   (denote-sluggify-keywords kws)
+                   (denote-sluggify title)
+                   (denote--file-extension 'org)
+                   ""))
+
+    (should-error (denote-format-file-name
+                   (denote-directory)
+                   nil
+                   (denote-sluggify-keywords kws)
+                   (denote-sluggify title)
+                   (denote--file-extension 'org)
+                   ""))
+
+    (should-error (denote-format-file-name
+                   (denote-directory)
+                   ""
+                   (denote-sluggify-keywords kws)
+                   (denote-sluggify title)
+                   (denote--file-extension 'org)
+                   ""))
+
+    (should-error (denote-format-file-name
+                   (denote-directory)
+                   "0123456"
+                   (denote-sluggify-keywords kws)
+                   (denote-sluggify title)
+                   (denote--file-extension 'org)
+                   ""))
+
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
@@ -290,6 +338,24 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                     (denote--file-extension 'org)
                     "")
                    "/tmp/test-denote/20231128T055311--some-test__one_two.org"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    ""
+                    ""
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/20231128T055311.org"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
+                    nil
+                    nil
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/20231128T055311.org"))
 
     (should (equal (denote-format-file-name
                     (denote-directory)

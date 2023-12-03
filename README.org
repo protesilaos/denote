@@ -3903,10 +3903,36 @@ might change them without further notice.
   file type is assumed to be the first of ~denote-file-types~.
 
 #+findex: denote-format-file-name
-+ Function ~denote-format-file-name~ :: Format file name. =PATH=, =ID=,
-  =KEYWORDS=, =TITLE-SLUG=, and =SIGNATURE-SLUG= are expected to be
-  supplied by ~denote~ or equivalent: they will all be converted into a
-  single string. =EXTENSION= is the file type extension, as a string.
++ Function ~denote-format-file-name~ :: Format file name. =DIR-PATH=,
+  =ID=, =KEYWORDS=, =TITLE-SLUG=, =EXTENSION= and =SIGNATURE-SLUG= are
+  expected to be supplied by ~denote~ or equivalent command.
+
+  =DIR-PATH= is a string pointing to a directory. It ends with a
+  forward slash (the function ~denote-directory~ makes sure this is
+  the case when returning the value of the variable ~denote-directory~).
+  =DIR-PATH= cannot be nil or an empty string.
+
+  =ID= is a string holding the identifier of the note. It cannot be
+  nil or an empty string and must match ~denote-id-regexp~.
+
+  =DIR-PATH= and =ID= form the base file name.
+
+  =KEYWORDS= is a list of strings that is reduced to a single string
+  by ~denote-keywords-combine~. =KEYWORDS= can be an empty string or a
+  nil value, in which case the relevant file name component is not
+  added to the base file name.
+
+  =TITLE-SLUG= and =SIGNATURE-SLUG= are strings which, in principle,
+  are sluggified before passed as arguments here (per
+  ~denote-sluggify~ and ~denote-sluggify-signature~). They can be an
+  empty string or a nil value, in which case their respective file
+  name component is not added to the base file name.
+
+  =EXTENSION= is a string that contains a dot followed by the file
+  type extension. It can be an empty string or a nil value, in which
+  case it is not added to the base file name. [ The doc string and
+  error testing of ~denote-format-file-name~ are expanded as part of
+  {{{development-version}}}. ]
 
 #+findex: denote-extract-keywords-from-path
 + Function ~denote-extract-keywords-from-path~ :: Extract keywords
