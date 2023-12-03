@@ -1000,7 +1000,7 @@ With optional PROMPT, use it instead of a generic text for file
 keywords."
   (delete-dups
    (completing-read-multiple
-    (format-prompt (or prompt "File keyword") nil)
+    (format-prompt (or prompt "File keywords") nil)
     keywords nil nil nil 'denote--keyword-history)))
 
 (defun denote-keywords-prompt (&optional prompt-text)
