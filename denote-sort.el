@@ -43,6 +43,10 @@
 (defvar denote-sort-components '(title keywords signature identifier)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
+;; NOTE 2023-12-04: We can have compound sorting algorithms such as
+;; title+signature, but I want to keep this simple for the time being.
+;; Let us first hear from users to understand if there is a real need
+;; for such a feature.
 (defmacro denote-sort--define-lessp (component)
   "Define function to sort by COMPONENT."
   (let ((retrieve-fn (intern (format "denote-retrieve-filename-%s" component))))
@@ -61,6 +65,8 @@ two title values."
           ((and (not one-empty-p) two-empty-p) one)
           (t (funcall denote-sort-comparison-function one two)))))))
 
+;; TODO 2023-12-04: Subject to the above NOTE, we can also sort by
+;; directory and by file length.
 (denote-sort--define-lessp title)
 (denote-sort--define-lessp keywords)
 (denote-sort--define-lessp signature)
