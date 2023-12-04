@@ -26,11 +26,6 @@
 ;;
 ;; Sort Denote files based on their file name components, namely, the
 ;; signature, title, or keywords.
-;;
-;; NOTE 2023-11-29: This file is in development.  My plan is to
-;; integrate it with denote-org-dblock.el and maybe with denote.el
-;; based on user feedback, but I first want to have a stable
-;; interface.
 
 ;;; Code:
 
