@@ -193,7 +193,10 @@ a non-nil value, respectively."
    ;;
    ;; (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component)
    (format "Denote sort by `%s'" sort-by-component)
-   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)))
+   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+  ;; Because of the above NOTE, I am printing a message.  Not what I
+  ;; want, but it is better than nothing...
+  (message "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component))
 
 (provide 'denote-sort)
 ;;; denote-sort.el ends here
