@@ -159,11 +159,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
   "Return Dired buffer with BUFFER-NAME showing FILES.
 FILES are stripped of their directory component and are displayed
 relative to the variable `denote-directory'."
-  ;; TODO 2023-11-29: Can we improve font-lock to cover the directory
-  ;; component which is on display for files inside a subdir of
-  ;; `denote-directory'?
-  (let* ((dir (denote-directory))
-         (default-directory dir))
+  (let ((default-directory (denote-directory)))
     (dired (cons buffer-name (mapcar #'file-relative-name files)))))
 
 ;;;###autoload
