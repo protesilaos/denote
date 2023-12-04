@@ -184,7 +184,15 @@ a non-nil value, respectively."
     (denote-sort-component-prompt)
     (y-or-n-p "Reverse sort? ")))
   (denote-sort--prepare-dired
-   (format "Denote files matching `%s' sorted by %s" files-matching-regexp sort-by-component)
+   ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP here produces
+   ;; an error if the regexp contains a wildcard for a directory.  I
+   ;; can reproduce this in emacs -Q and am not sure if it is a bug.
+   ;; Anyway, I will report it upstream, but even if it is fixed we
+   ;; cannot use it for now (whatever fix will be available for Emacs
+   ;; 30+).
+   ;;
+   ;; (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component)
+   (format "Denote sort by `%s'" sort-by-component)
    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)))
 
 (provide 'denote-sort)
