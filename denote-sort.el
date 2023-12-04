@@ -53,7 +53,7 @@ The comparison is done with `denote-sort-comparison-function' between the
 two title values."
          component)
        (let* ((one (,retrieve-fn file1))
-              (two (,retrieve-fn  file2))
+              (two (,retrieve-fn file2))
               (one-empty-p (string-empty-p one))
               (two-empty-p (string-empty-p two)))
          (cond
