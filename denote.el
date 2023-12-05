@@ -2488,7 +2488,7 @@ file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
-          (file-in-prompt (propertize file 'face 'denote-faces-prompt-current-name)))
+          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
      (list
       file
       (denote-title-prompt
@@ -2535,7 +2535,7 @@ the changes made to the file: perform them outright."
                         (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
-                 (file-in-prompt (propertize file 'face 'denote-faces-prompt-current-name))
+                 (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
                  (dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file :no-error)
                          (denote-create-unique-file-identifier file used-ids)))
