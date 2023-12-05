@@ -1971,6 +1971,16 @@ histories between sessions."
      denote--signature-history
      nil nil default-signature 'denote--signature-history)))
 
+(defvar denote--files-matching-regexp-hist nil
+  "Minibuffer history of `denote-files-matching-regexp-prompt'.")
+
+(defun denote-files-matching-regexp-prompt (&optional prompt-text)
+  "Prompt for REGEXP to filter Denote files by.
+With optional PROMPT-TEXT use it instead of a generic prompt."
+  (read-regexp
+   (format-prompt (or prompt-text "Match files with the given REGEXP") nil)
+   nil 'denote--files-matching-regexp-hist))
+
 ;;;;; Convenience commands as `denote' variants
 
 (defalias 'denote-create-note 'denote
@@ -3619,9 +3629,6 @@ Otherwise sort lines while accounting for `denote-link-add-links-sort'."
       (sort-lines denote-link-add-links-sort (point-min) (point-max)))
     (buffer-string)))
 
-(defvar denote-link--add-links-history nil
-  "Minibuffer history for `denote-add-links'.")
-
 (define-obsolete-function-alias
   'denote-link-add-links
   'denote-add-links
@@ -3652,7 +3659,7 @@ Optional ID-ONLY has the same meaning as in `denote-link': it
 inserts links with just the identifier."
   (interactive
    (list
-    (read-regexp "Insert links matching REGEX: " nil 'denote-link--add-links-history)
+    (denote-files-matching-regexp-prompt "Insert links matching REGEXP")
     current-prefix-arg))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
     (if-let ((files (denote-directory-files regexp :omit-current))

@@ -4093,6 +4093,11 @@ might change them without further notice.
 + Function ~denote-command-prompt~ ::  Prompt for command among
   ~denote-commands-for-new-notes~ ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
+#+findex: denote-files-matching-regexp-prompt
++ Function ~denote-files-matching-regexp-prompt~ ::  Prompt for
+  =REGEXP= to filter Denote files by. With optional =PROMPT-TEXT= use
+  it instead of a generic prompt. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-prompt-for-date-return-id
 + Function ~denote-prompt-for-date-return-id~ :: Use
   ~denote-date-prompt~ and return it as ~denote-id-format~.

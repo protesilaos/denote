@@ -137,13 +137,6 @@ With optional REVERSE as a non-nil value, reverse the sort order."
    current-file-type
    id-only))
 
-(defvar denote-sort--files-matching-regexp-hist nil
-  "Minibuffer history of `denote-sort--files-matching-regexp-prompt'.")
-
-(defun denote-sort--files-matching-regexp-prompt ()
-  "Prompt for REGEXP to filter Denote files by."
-  (read-regexp "Match files with the given REGEXP: " nil 'denote-sort--files-matching-regexp-hist))
-
 (defvar denote-sort--component-hist nil
   "Minibuffer history of `denote-sort-component-prompt'.")
 
@@ -177,7 +170,7 @@ When called from Lisp, the arguments are a string, a keyword, and
 a non-nil value, respectively."
   (interactive
    (list
-    (denote-sort--files-matching-regexp-prompt)
+    (denote-files-matching-regexp-prompt)
     (denote-sort-component-prompt)
     (y-or-n-p "Reverse sort? ")))
   (let* ((default-directory (denote-directory))

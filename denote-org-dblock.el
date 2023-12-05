@@ -58,10 +58,6 @@ sorting."
    (t
     (denote-directory-files files-matching-regexp :omit-current))))
 
-(defun denote-org-dblock--file-regexp-prompt ()
-  "Prompt for regexp to match Denote file names."
-  (read-regexp "Search for notes matching REGEX: " nil 'denote-link--add-links-history))
-
 ;;;; Dynamic block to insert links
 
 ;;;###autoload
@@ -69,7 +65,7 @@ sorting."
   "Create Org dynamic block to insert Denote links matching REGEXP."
   (interactive
    (list
-    (denote-org-dblock--file-regexp-prompt))
+    (denote-files-matching-regexp-prompt))
    org-mode)
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
@@ -219,7 +215,7 @@ Sort the files according to SORT-BY-COMPONENT, which is a symbol
 among `denote-sort-components'."
   (interactive
    (list
-    (denote-org-dblock--file-regexp-prompt)
+    (denote-files-matching-regexp-prompt)
     (denote-sort-component-prompt))
    org-mode)
   (org-create-dblock (list :name "denote-files"
