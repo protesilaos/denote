@@ -1043,9 +1043,11 @@ Denote file-naming scheme."
 
 (defun denote--keywords-add-to-history (keywords)
   "Append KEYWORDS to `denote--keyword-history'."
-  (mapc (lambda (kw)
-          (add-to-history 'denote--keyword-history kw))
-        (delete-dups keywords)))
+  (when (listp keywords)
+    (mapc
+     (lambda (kw)
+       (add-to-history 'denote--keyword-history kw))
+     (delete-dups keywords))))
 
 ;;;; File types
 
