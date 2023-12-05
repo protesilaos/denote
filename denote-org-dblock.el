@@ -153,7 +153,10 @@ argument."
                   (if (eq add-links 'id-only)
                       denote-id-only-link-format
                     denote-org-link-format)
-                  nil))))
+                  (let ((type (denote-filetype-heuristics file)))
+                    (if (denote-file-has-signature-p file)
+                        (denote--link-get-description-with-signature file type)
+                      (denote--link-get-description file type)))))))
       (let ((beginning-of-contents (point)))
         (insert-file-contents file)
         (when no-front-matter
