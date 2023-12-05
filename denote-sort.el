@@ -156,16 +156,12 @@ With optional REVERSE as a non-nil value, reverse the sort order."
       denote-sort-components nil :require-match
       nil 'denote-sort--component-hist default))))
 
-(defun denote-sort--prepare-dired (buffer-name files)
-  "Return Dired buffer with BUFFER-NAME showing FILES.
-FILES are stripped of their directory component and are displayed
-relative to the variable `denote-directory'."
-  (let ((default-directory (denote-directory)))
-    (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+(defvar-local denote-sort--dired-buffer nil
+  "Buffer object of current `denote-sort-dired'.")
 
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse)
-  "Produce Dired buffer with sorted files from variable `denote-directory'.
+  "Produce Dired dired-buffer with sorted files from variable `denote-directory'.
 When called interactively, prompt for FILES-MATCHING-REGEXP,
 SORT-BY-COMPONENT, and REVERSE.
 
@@ -184,17 +180,24 @@ a non-nil value, respectively."
     (denote-sort--files-matching-regexp-prompt)
     (denote-sort-component-prompt)
     (y-or-n-p "Reverse sort? ")))
-  (denote-sort--prepare-dired
-   ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP here produces
-   ;; an error if the regexp contains a wildcard for a directory.  I
-   ;; can reproduce this in emacs -Q and am not sure if it is a bug.
-   ;; Anyway, I will report it upstream, but even if it is fixed we
-   ;; cannot use it for now (whatever fix will be available for Emacs
-   ;; 30+).
-   ;;
-   ;; (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component)
-   (format "Denote sort by `%s'" sort-by-component)
-   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+  (let* ((default-directory (denote-directory))
+         ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP here produces
+         ;; an error if the regexp contains a wildcard for a directory.  I
+         ;; can reproduce this in emacs -Q and am not sure if it is a bug.
+         ;; Anyway, I will report it upstream, but even if it is fixed we
+         ;; cannot use it for now (whatever fix will be available for Emacs
+         ;; 30+).
+         ;;
+         ;; (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component)
+         (buffer-name (format "Denote sort by `%s'" sort-by-component))
+         (files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+         (dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+    (setq denote-sort--dired-buffer dired-buffer)
+    (with-current-buffer dired-buffer
+      (setq-local revert-buffer-function
+                  (lambda (&rest _)
+                    (kill-buffer dired-buffer)
+                    (denote-sort-dired files-matching-regexp sort-by-component reverse)))))
   ;; Because of the above NOTE, I am printing a message.  Not what I
   ;; want, but it is better than nothing...
   (message "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component))
