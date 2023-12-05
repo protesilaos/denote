@@ -105,7 +105,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;###autoload
 (defun denote-org-dblock-insert-backlinks ()
-  "Insert new Org dynamic block to include backlinks."
+  "Create Org dynamic block to insert Denote backlinks to current file."
   (interactive nil org-mode)
   (org-create-dblock (list :name "denote-backlinks"
                            :sort-by-component nil
