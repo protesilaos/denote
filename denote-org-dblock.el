@@ -176,7 +176,7 @@ argument."
 (defun denote-org-dblock--separator (separator)
   "Return appropriate value of SEPARATOR for `denote-org-dblock-add-files'."
   (cond
-   ((eq separator 'none) "")
+   ((null separator) "")
    ((stringp separator) separator)
    (t denote-org-dblock-file-contents-separator)))
 
@@ -227,7 +227,7 @@ among `denote-sort-components'."
                            :sort-by-component sort-by-component
                            :reverse-sort nil
                            :no-front-matter nil
-                           :file-separator t
+                           :file-separator nil
                            :add-links nil))
   (org-update-dblock))
 

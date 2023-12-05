@@ -2522,7 +2522,7 @@ or manually write the following block in an Org file and then type
 To fully control the output, include these additional optional
 parameters, which are described further below:
 
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator t :add-links nil
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
 :
 : #+END:
 
@@ -2548,12 +2548,12 @@ parameters, which are described further below:
 
 #+vindex: denote-org-dblock-file-contents-separator
 - The =:file-separator= parameter is optional. If it is omitted, then
-  Denote will use the ~denote-org-dblock-file-contents-separator~: it
-  introduces some empty lines and a horizontal rule between them to
-  visually distinguish individual files. If the =:file-separator=
-  value is a string, it is used as the file separator (e.g. use ="\n"=
-  to insert just one empty new line). If the =:file-separator= value
-  is set to =none=, no separator is used.
+  Denote will use no separator between the files it inserts. If the
+  value is ~t~ the ~denote-org-dblock-file-contents-separator~ is
+  applied at the end of each file: it introduces some empty lines and
+  a horizontal rule between them to visually distinguish individual
+  files. If the =:file-separator= value is a string, it is used as the
+  file separator (e.g. use ="\n"= to insert just one empty new line).
 
 - The =:no-front-matter= parameter is optional. When set to a ~t~
   value, Denote tries to remove front matter from the files it is
