@@ -2719,12 +2719,10 @@ relevant front matter."
     (buffer-file-name)
     (denote-title-prompt)
     (denote-keywords-prompt)))
-  (when (and (denote-file-is-writable-and-supported-p file)
-             (denote-file-has-identifier-p file))
-    (denote--add-front-matter
-     file title keywords
-     (denote-retrieve-filename-identifier file)
-     (denote-filetype-heuristics file))))
+  (when-let ((denote-file-is-writable-and-supported-p file)
+             (id (denote-retrieve-filename-identifier file :no-error))
+             (file-type (denote-filetype-heuristics file)))
+    (denote--add-front-matter file title keywords id file-type)))
 
 (define-obsolete-function-alias
   'denote-change-file-type
