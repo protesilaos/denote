@@ -58,8 +58,8 @@ two title values."
          component)
        (let* ((one (,retrieve-fn file1))
               (two (,retrieve-fn file2))
-              (one-empty-p (string-empty-p one))
-              (two-empty-p (string-empty-p two)))
+              (one-empty-p (or (null one) (string-empty-p one)))
+              (two-empty-p (or (null two) (string-empty-p two))))
          (cond
           (one-empty-p nil)
           ((and (not one-empty-p) two-empty-p) one)
