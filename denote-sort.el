@@ -182,7 +182,7 @@ a non-nil value, respectively."
          ;; 30+).
          ;;
          ;; (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component)
-         (buffer-name (format "Denote sort by `%s'" sort-by-component))
+         (buffer-name (format "Denote sort by `%s' at %s" sort-by-component (format-time-string "%T")))
          (files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
          (dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
     (setq denote-sort--dired-buffer dired-buffer)
