@@ -722,8 +722,7 @@ For our purposes, its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name,
 and use one of the extensions implied by `denote-file-type'."
   (and (string-prefix-p (denote-directory) (expand-file-name filename))
-       (string-match-p (concat "\\`" denote-id-regexp)
-                       (file-name-nondirectory filename))
+       (denote-file-has-identifier-p filename)
        (denote-file-has-supported-extension-p filename)))
 
 (defun denote-file-is-note-p (file)
@@ -736,8 +735,7 @@ For our purposes, a note must not be a directory, must satisfy
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
-  (string-match-p (concat "\\`" denote-id-regexp)
-                  (file-name-nondirectory file)))
+  (denote-retrieve-filename-identifier file :no-error))
 
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -768,7 +766,7 @@ FILE must be an absolute path."
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
   (when (string-match denote-id-regexp string)
-    (match-string 0 string)))
+    (match-string-no-properties 0 string)))
 
 (define-obsolete-function-alias
   'denote--default-dir-has-denote-prefix
@@ -1735,8 +1733,7 @@ It checks files in variable `denote-directory' and active buffer files."
                       (denote-directory-files)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
-      (let ((id (when (string-match (concat "\\`" denote-id-regexp) name)
-                  (match-string-no-properties 0 name))))
+      (let ((id (denote-retrieve-filename-identifier name :no-error)))
         (puthash id t ids)))
     ids))
 
@@ -2537,10 +2534,7 @@ the changes made to the file: perform them outright."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((used-ids (when (seq-some
-                             (lambda (m)
-                               (not (denote-retrieve-filename-identifier m :no-error)))
-                             marks)
+      (let ((used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
                         (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
@@ -2607,9 +2601,7 @@ Specifically, do the following:
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt "Rename marked files with keywords, overwriting existing (empty to ignore/remove)"))
-            (used-ids (when (seq-some
-                             (lambda (m) (not (denote-retrieve-filename-identifier m :no-error)))
-                             marks)
+            (used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
                         (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
@@ -2683,7 +2675,7 @@ cannot know if they have front matter and what that may be."
   (if-let ((marks (seq-filter
                    (lambda (m)
                      (and (denote-file-is-writable-and-supported-p m)
-                          (denote-retrieve-filename-identifier m :no-error)))
+                          (denote-file-has-identifier-p m)))
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
@@ -2728,7 +2720,7 @@ relevant front matter."
     (denote-title-prompt)
     (denote-keywords-prompt)))
   (when (and (denote-file-is-writable-and-supported-p file)
-             (denote-retrieve-filename-identifier file :no-error))
+             (denote-file-has-identifier-p file))
     (denote--add-front-matter
      file title keywords
      (denote-retrieve-filename-identifier file)
