@@ -2763,7 +2763,7 @@ of the file.  This needs to be done manually."
          (new-extension (denote--file-extension new-file-type))
          (new-name (denote-format-file-name
                     dir id keywords (denote-sluggify title 'title) new-extension signature))
-         (max-mini-window-height 0.33)) ; allow minibuffer to be resized
+         (max-mini-window-height denote-rename-max-mini-window-height))
     (when (and (not (eq old-extension new-extension))
                (denote-rename-file-prompt file new-name))
       (denote-rename-file-and-buffer file new-name)
