@@ -1378,9 +1378,9 @@ contain the newline."
 
 To create a new one, refer to the function
 `denote-create-unique-file-identifier'."
-  (let ((file-name (file-name-nondirectory file)))
-    (if (string-match (concat "\\`" denote-id-regexp) file-name)
-        (match-string-no-properties 0 file-name))))
+  (let ((filename (file-name-nondirectory file)))
+    (if (string-match (concat "\\`" denote-id-regexp) filename)
+        (match-string-no-properties 0 filename))))
 
 ;; TODO 2023-12-08: Maybe we can only use
 ;; `denote-retrieve-filename-identifier' and remove this function.
