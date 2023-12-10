@@ -13,6 +13,374 @@ the manual: <https://protesilaos.com/emacs/denote>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 2.2.0 on 2023-12-10
+:PROPERTIES:
+:CUSTOM_ID: h:8efed390-cfa0-420d-b300-0cb76bf2c9f9
+:END:
+
+The present version covers four broad themes:
+
+1. Denote rename commands are more user-friendly and featureful.
+2. An optional sorting facility makes it possible to produce a
+   filtered and sorted Dired buffer with Denote files.
+3. The optional Denote Org dynamic blocks have received a lot of attention.
+4. Bug fixes and internal refinements.
+
+[ Remember that you do not need to be a programmer to contribute to
+  Denote. Report a bug, make a suggestion, or just describe how you
+  want to use this package. Every idea counts and we may implement it
+  if we can. ]
+
+** The rename commands can remove a Denote file name component
+:PROPERTIES:
+:CUSTOM_ID: h:54d803d8-4863-4160-bb2f-3302fb8bff23
+:END:
+
+The commands we provide to rename files using the Denote file-naming
+scheme---~denote-rename-file~, ~denote-dired-rename-files~, and
+~denote-dired-rename-marked-files-with-keywords~---can now remove
+Denote file name components. This is done by providing an empty string
+at the relevant prompt.
+
+For example, to remove the =TITLE= component from a file called
+=20231209T110322==sig--title__keywords.ext= we provide an empty string
+at the title prompt. The end result will look something like this:
+=20231209T110322==sig__keywords.ext=.
+
+All prompts now include a hint that leaving them empty will ignore the
+given field if it does not exist or remove it if it does exist.
+
+Note that you must *check how to input an empty string* with your
+minibuffer user interface of choice. For instance, with the ~vertico~
+package you can do that with the =M-RET= key binding or by selecting
+the prompt line directly (notice the counter showing something like
+=*/5= instead of =1/5=). Please make sure to consult the documentation
+of the package you are using as this behaviour is not controlled by
+Denote. Vertico, and others like it, selects the first candidate if
+you type =RET= without any input, which is not the same as an empty
+string---it is the first candidate.
+
+Also read the Denote manual on the matter of [[https://protesilaos.com/emacs/denote#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]. In short,
+we use this facility to name all our files, regardless of file type,
+in a consistent way that makes them easier to find (I do this with my
+videos, for example, and I do it across my filesystem for all personal
+files).
+
+** The file-to-be-renamed is easier to read in the minibuffer
+:PROPERTIES:
+:CUSTOM_ID: h:69d85d3b-0200-4cc1-baff-9d59aa0ff57b
+:END:
+
+The commands ~denote-rename-file~ and ~denote-dired-rename-files~ 
+show the name of the file they are operating on in the minibuffer
+prompt. This is now produced relative to the current directory,
+meaning that instead of =/some/rather/long/path/to/file-name.txt=
+Denote only displays =file-name.txt=.
+
+Our rename commands never move files to another directory, anyway, so
+we do not need to remind the user of the entire file system path.
+
+To make things easier for users/themes, file names highlighted in
+Denote prompts are fontified with either of following faces,
+depending on the specifics of the case:
+
+- ~denote-faces-prompt-old-name~
+- ~denote-faces-prompt-new-name~
+- ~denote-faces-prompt-current-name~
+
+These faces inherit the attributes of basic faces, so they should look
+decent without further tweaks across all themes.
+
+** Prompts for title, keywords, and signature accept an empty string
+:PROPERTIES:
+:CUSTOM_ID: h:5897bcc1-4637-4268-8518-8404d939b4b9
+:END:
+
+The prompts defined by Denote that apply to file name components all
+accept an empty string. This has the effect of skipping the given
+component. For example, we can create a file without a title and
+keywords, with the following sequence of actions (I assume you are
+using ~vertico~ for the minibuffer user interface):
+
+- Type =M-x denote=.
+- Type =M-RET= at the title prompt to input an empty string.
+- Now type =M-RET= at the keywords prompt for another empty string.
+
+The resulting file name is something like =20231209T110950.org=.
+
+** Dired with sorting and filtering
+:PROPERTIES:
+:CUSTOM_ID: h:05aa437b-2fc8-4e01-ac38-ab77baad83af
+:END:
+
+The new optional =denote-sort.el= library provides facilities to sort
+Denote files by any of their file name components. Users can benefit
+from this facility to produce a filtered and sorted listing of Denote
+files with the command ~denote-sort-dired~.
+
+~denote-sort-dired~ produces a fully fledged Dired buffer. It asks for a
+regular expression that matches file names in the ~denote-directory~.
+It then prompts for a sort key and finally checks with the user
+whether to reverse the order or not.
+
+[ Do not be discouraged by the term "regular expression". Ordinary
+  words work fine. Plus, with Denote's file-naming scheme we have
+  semantics such as =_keyword=, =-title=, ~=signature~, as explained
+  in the manual. This is the whole point of using a thoughtful naming
+  scheme. ]
+
+The resulting Dired listing is flat, meaning that files inside of
+subdirectories are bundled together with those present at the root of
+the ~denote-directory~. In this case, files inside of a subdirectory
+include the directory component as a prefix. So we have something like
+this:
+
+#+begin_example
+test-subdir/20230320T105950--a-new-note__testing.txt
+20231202T095629--rename-works-as-intended__one_test_two.org
+#+end_example
+
+I think this is a killer feature, as the fully fledged Dired buffer
+allows us to perform all supported operations on our Denote
+sorted+filtered files (e.g. change file permissions, move files to
+another directory, or open them in an external application).
+
+I recorded a video to show how this works:
+<https://protesilaos.com/codelog/2023-12-04-emacs-denote-sort-mechanism/>.
+
+[ Remember that we can rename any file using the Denote file-naming
+  scheme, meaning that our files can include stuff like PDFs and
+  videos. Combine this with the concept of "silos", which is covered
+  in the Denote manual, to organise your long-term storage and
+  retrieve it efficiently. ]
+
+** Combine contents of files with an Org dynamic block
+:PROPERTIES:
+:CUSTOM_ID: h:d41009c1-9833-4b28-8240-9666bfd26559
+:END:
+
+The new =denote-files= Org dynamic block produces a continuous stream
+of file contents. It joins together the contents of files inside the
+~denote-directory~ whose name matches the given regular expression.
+Optional parameters control whether to include links to those files,
+omit their front matter, sort by a given file name component, or tweak
+the separator between each file's contents.
+
+I produced a video to demonstrate the functionality:
+<https://protesilaos.com/codelog/2023-11-25-emacs-denote-org-dynamic-blocks/>.
+
+Use the command ~denote-org-dblock-insert-files~ to insert such a
+block directly at point. Read the Denote manual for the
+technicalities: [[https://protesilaos.com/emacs/denote#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]].
+
+[ Videos I do will eventually be out-of-date. The manual is the source
+  of truth. ]
+
+Bear in mind that this feature is not "transclusion". We are simply
+printing a copy of the contents of the files in the current buffer.
+Changes made to this copy are not reflected in the original files.
+
+The =denote-files= Org dynamic block is an excellent way to quickly
+collect your thoughts on a given topic. Although dynamic blocks are a
+feature of Org, the contents of the files do not need to be in Org
+syntax (I write most of my notes in plain text (=.txt=)).
+
+Thanks to Claudiu Tănăselia for proposing this idea and discussing it
+with me. This was done via a private channel and the information is
+shared with permission.
+
+** Sort parameters are used in all Denote Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:7b51fe38-302e-488d-9816-7015a8071ddb
+:END:
+
+All Denote Org dynamic blocks make use of =denote-sort.el= (described
+further above). It powers the =:sort-by-component= and =:reverse-sort=
+parameters.
+
+Thanks to Glenna D. for suggesting this feature and discussing it with
+me. This was done via a private channel and the information is shared
+with permission. It is what inspired me to start work on
+=denote-sort.el=, which I then extended to cover Dired, as noted
+above.
+
+** The =:missing-only= parameter is removed from Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:2bd26aef-70ad-4d83-a4ab-c75a893a733a
+:END:
+
+I am removing it because the underlying functionality of
+~denote-add-missing-links~ was not always reliable.
+
+** Files with signature are linked appropriately in Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:144436eb-e674-4052-ac0a-d582b6aa2f53
+:END:
+
+In general, we provide the command ~denote-link-with-signature~ to let
+the user pick a file that has a signature and link to it. The
+description of such a link contains the signature text as well as the
+file title. The ~denote-link-with-signature~ is distinct from the
+standard ~denote-link~, as it allows the user to express intent about
+the inclusion of the signature.
+
+In Org dynamic blocks for links/backlinks, we make this happen
+automatically since there can be no manual intervention to express
+intent on a link-by-link basis.
+
+** Fontification in Dired can now extend to subdirectories
+:PROPERTIES:
+:CUSTOM_ID: h:46e08576-4c17-4b1e-a268-e0223250e7c1
+:END:
+
+The user option ~denote-dired-directories~ activates the
+~denote-dired-mode~ in the specified list of directories when the user
+sets this in their init file:
+
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook #'denote-dired-mode-in-directories)
+#+end_src
+
+The new user option ~denote-dired-directories-include-subdirectories~
+extends the reach of this feature to all subdirectories thereof.
+
+Thanks to Henrik Hörmann for discussing this with me and contributing
+a patch. This was originally done in pull request 191 on the GitHub
+mirror: <https://github.com/protesilaos/denote/pull/191>. Subsequent
+refinements by me.
+
+** Signatures are sluggified as intended
+:PROPERTIES:
+:CUSTOM_ID: h:73e1efaa-2c22-48ee-be46-072b55177c99
+:END:
+
+The file name signature component is now sluggified properly. This
+means that multiple words are separated by the equals sign, in
+accordance with the Denote file-naming scheme where a word separator
+is the same as the given field separator (this is the low-tech feature
+that makes Denote files so easy to retrieve without fancy extras).
+
+Vedang Manerikar fixed two relevant bugs in the "rename" commands,
+while I rewrote internal functions and tests in the interest of consistency. Vedang's patches: <https://lists.sr.ht/~protesilaos/denote/patches/46790>.
+
+[ The "signature" is a free form component of the file name. Users can
+  add anything they want there, such as to use it as a "category" that
+  is different from "tags/keywords", or to introduce sequences in
+  their notes, or to just have an extra marker for files they need to
+  spot quickly. ]
+
+** For developers
+:PROPERTIES:
+:CUSTOM_ID: h:79f2fd7e-d5a7-4c78-bce7-f8d21e86e32c
+:END:
+
+There is a section in the manual titled "For developers or advanced
+users". There we document functions or variables that are
+public-facing, meaning that we test and document their behaviour and
+encourage others to use them for code they write on top of Denote.
+Refer to this section if you are looking to extend Denote. Though you
+can also just check the source code, which is designed to be readable
+and hackable.
+
+- The ~denote-directory-files~ function gains new functionality that
+  subsumes that of the now-deprecated functions
+  ~denote-directory-files-matching-regexp~, ~denote-all-files~,
+  ~denote-directory-text-only-files~. Thanks to Jean-Philippe Gagné
+  Guay for the contribution, which was done in pull request 195 on the
+  GitHub mirror: <https://github.com/protesilaos/denote/pull/195>.
+
+- The font-lock keywords we define are consolidated into a single
+  variable: ~denote-faces-file-name-keywords~ instead of being split
+  into two variables. This means that we cover all our fontification
+  needs in the backlinks buffer as well as the ~denote-dired-mode~
+  with this one point of entry. It also works for ~denote-sort-dired~,
+  which can include files with their subdirectory component in the
+  same flat listing.
+
+- Use the function ~denote-retrieve-filename-keywords~ to extract
+  keywords from the file name alone, without going into the file
+  contents.
+
+- The ~denote-retrieve-filename-title~ function now returns an empty
+  string if no title is present. Its behaviour is thus consistent with
+  ~denote-retrieve-filename-keywords~ and ~denote-retrieve-filename-signature~.
+  
+- The ~denote-retrieve-filename-title~ will now use the
+  ~file-name-base~ function as a fallback subject to a non-nil
+  optional argument. This case come into effect when the file does not
+  have a title component. The new optional argument allows the caller
+  to handle such cases as they see fit.
+
+- The ~denote-signature-prompt~ and ~denote-title-prompt~ functions
+  accept an optional =DEFAULT-SIGNATURE= or =DEFAULT-TITLE= argument.
+  Internally, this is used as the =INITIAL-INPUT= of ~completing-read~
+  instead of the =DEF= argument. This matters because we want the
+  prompt to return an empty string if there is no input, whereas the
+  presence of =DEF= means that =DEF= is returned when the prompt is
+  empty.
+
+- All our functions that interactively match file names with a regular
+  expression now use the ~denote-files-matching-regexp-prompt~
+  function. When called from Lisp, it takes a =REGEXP= argument as
+  well as an optional =PROMPT-TEXT=.
+
+For the purposes of this release cycle, I am not documenting the
+points of entry provided by =denote-sort.el=. It is a new feature that
+I may eventually incorporate in =denote.el=. If you are interested in
+the functionality (e.g. to have more elaborate sorting algorithms),
+please take a look at the source code and then let us discuss the
+implementation details.
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:ce5c7865-9ec1-49ba-9388-5a251ab56735
+:END:
+
+- Rewrote the manual on the topic of Org dynamic blocks. Same idea for
+  practically the entirety of =denote-org-dblock.el=.
+
+- Marked the interactive specification of a few commands with the
+  major mode they belong to. This means that =M-X= (note the capital
+  X), which calls ~execute-extended-command-for-buffer~ by default,
+  will only show those commands in the relevant context.
+
+- Made internal refinements and simplified the implementation of a few
+  functions. This is important work to keep the code base clean and
+  easy to read/maintain. Thanks to Jean-Philippe Gagné Guay for the
+  contribution. It was done in pull request 193 on the GitHub mirror:
+  <https://github.com/protesilaos/denote/pull/193>.
+
+- Improved the doc string of the ~denote-format-file-name~ function.
+  Also introduced a unit test for it to be sure it does what we expect
+  (I eventually want to have tests for everything we do, but this is a
+  long-term project).
+
+** Git commits
+:PROPERTIES:
+:CUSTOM_ID: h:6830d3f3-130c-4346-b3ca-a3d4b0e9f974
+:END:
+
+Just an overview of what we did. Thanks again to everyone involved.
+
+#+begin_src sh
+~/Git/Projects/denote $ git shortlog 2.1.0..2.2.0 --summary --numbered
+   125	Protesilaos Stavrou
+    17	Jean-Philippe Gagné Guay
+     2	Vedang Manerikar
+     1	Henrik Hörmann
+#+end_src
+
+** Policy for the next development cycle
+:PROPERTIES:
+:CUSTOM_ID: h:cb0cae4f-c9a1-40b3-98ae-781a57270d4e
+:END:
+
+I will give a ~1 week pause on Denote development before making any
+feature changes. This is to ensure that we catch possible bugs and
+push fixes right away. If there are other changes in place, it is not
+possible to make point updates of this sort, as we must first wait for
+the new features to be tested in real-world scenaria.
+
 * Version 2.1.0 on 2023-11-12
 :PROPERTIES:
 :CUSTOM_ID: h:167beb8f-14be-40de-a1f2-d13910924c00

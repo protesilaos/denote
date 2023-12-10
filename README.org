@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 2.1.0
-#+macro: release-date 2023-11-12
-#+macro: development-version 2.2.0-dev
+#+macro: stable-version 2.2.0
+#+macro: release-date 2023-12-10
+#+macro: development-version 2.3.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -1047,11 +1047,6 @@ line or switching between then with commands like ~switch-to-buffer~.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
-[ The ~denote-rename-file~ command is made more intuitive as part of
-  {{{development-version}}}. All its prompts now include a hint that
-  leaving them empty will ignore the given field if it does not exist
-  or remove it if it does exist. ]
-
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate. It is possible to do the same with
@@ -1086,16 +1081,14 @@ Else, use the file name as a default value at the minibuffer prompt.
 When called from Lisp, =TITLE= is a string.
 
 If =TITLE= is nil or an empty string, do not add it to a newly renamed
-file or remove it from an existing file. [ This feature is part of
-{{{development-version}}}. ]
+file or remove it from an existing file.
 
 Add =SIGNATURE= to =FILE=. In interactive use, prompt for =SIGNATURE=,
 using an existing one as the default value at the minibuffer prompt.
 When called from Lisp, =SIGNATURE= is a string.
 
 If =SIGNATURE= is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file. [ Made consistent as
-part of {{{development-version}}}. ]
+renamed file or remove it from an existing file.
 
 Add =KEYWORDS= to =FILE=. In interactive use, prompt for =KEYWORDS=.
 More than one keyword can be inserted when separated by the
@@ -1103,8 +1096,7 @@ More than one keyword can be inserted when separated by the
 a list of strings.
 
 If =KEYWORDS= is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file. [ Part of
-{{{development-version}}}. ]
+renamed file or remove it from an existing file.
 
 Read the file type extension (like =.txt=) from the underlying file
 and preserve it through the renaming process. Files that have no
@@ -1325,11 +1317,6 @@ difference between old and new file names.
 :PROPERTIES:
 :CUSTOM_ID: h:ab3f355a-f763-43ae-a4c9-179d2d9265a5
 :END:
-
-[ These faces are part of {{{development-version}}}. The styles they
-  use are the same they had before. The difference now is that themes
-  can style them as they see fit instead of having to deal with
-  hardcoded values. ]
 
 These are the faces used by the various Denote rename commands to
 style or highlight the old/new/current file shown in the relevant
@@ -2262,8 +2249,7 @@ the function ~denote-dired-mode-in-directories~:
 The user option ~denote-dired-directories-include-subdirectories~
 specifies whether the ~denote-dired-directories~ also cover their
 subdirectories. By default they do not. Set this option to ~t~ to
-include subdirectories as well. [ This feature is part of
-{{{development-version}}}. ]
+include subdirectories as well.
 
 The faces we define for this purpose are:
 
@@ -2381,8 +2367,6 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ Revised as part of {{{development-version}}}. ]
-
 Denote can optionally integrate with Org mode's "dynamic blocks"
 facility. This means that it can use special blocks that are evaluated
 with =C-c C-x C-u= (~org-dblock-update~) to generate their contents.
@@ -2420,10 +2404,6 @@ Evaluate:
 :CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
 
-[ Refactored as part of {{{development-version}}}. The =denote-links=
-  parameters =:reverse= and =:missing-only= are no longer supported.
-  The =denote-backlinks= also no longer accepts =:reverse=. ]
-
 #+findex: denote-org-dblock-insert-links
 The =denote-links= block can be inserted at point with the command
 ~denote-org-dblock-insert-links~ or by manually including the
@@ -2456,13 +2436,12 @@ line to update the block.
   unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
   When using the command ~denote-org-dblock-insert-files~, this
   parameter is automatically inserted together with the (=:regexp=
-  parameter) and the user is prompted for a file name component. [ The
-  =:sort-by-component= parameter is part of {{{development-version}}}. ]
+  parameter) and the user is prompted for a file name component.
 
 - The =:reverse-sort= parameter is optional. It reverses the order in
   which files appear in. This is meaningful even without the presence
   of the parameter =:sort-by-component=, though it also combines with
-  it. [ The =:reverse-sort= parameter is part of {{{development-version}}}. ]
+  it.
 
 - The =:id-only= parameter is optional. It accepts a ~t~ value, in
   which case links are inserted without a description text but only
@@ -2484,9 +2463,6 @@ this in an Org file:
 :
 : #+END:
 
-[ As with the =denote-links= block, the parameters =:sort-by-component=
-  and =:reverse-sort= are part of {{{development-version}}}. ]
-
 Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 =#+BEGIN= line to update the block.
 
@@ -2494,10 +2470,6 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 :PROPERTIES:
 :CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
 :END:
-
-[ Part of {{{development-version}}}. As of 2023-11-30 06:54 +0200 and
-  as part of {{{development-version}}}, this dynamic block also provides
-  facilities for sorting, courtesy of the new =denote-sort.el= library. ]
 
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
@@ -2585,8 +2557,6 @@ parameters, which are described further below:
 :PROPERTIES:
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 The =denote-sort.el= file is an optional extension to the core
 functionality of Denote, which empowers users to sort files by the
@@ -2971,11 +2941,6 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 :PROPERTIES:
 :CUSTOM_ID: h:d35d8d41-f51b-4139-af8f-9c8cc508e35b
 :END:
-
-[ As part of {{{development-version}}}, we provide the
-  ~denote-sort-dired~ command which should cover most of the uses of a
-  virtual Dired listing. The ~denote-sort-dired~ produces a fully
-  fledged Dired buffer ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]). ]
 
 Emacs' Dired is a powerful file manager that builds its functionality
 on top of the Unix =ls= command.  As noted elsewhere in this manual,
@@ -3859,10 +3824,7 @@ might change them without further notice.
   regular expression. With optional =OMIT-CURRENT= as a non-nil value,
   do not include the current Denote file in the returned list. With
   optional =TEXT-ONLY= as a non-nil value, limit the results to text
-  files that satisfy ~denote-file-is-note-p~. [ As part of
-  {{{development-version}}}, the ~denote-directory-files~ subsumes the
-  now-deprecated ~denote-directory-files-matching-regexp~,
-  ~denote-all-files~, ~denote-directory-text-only-files~. ]
+  files that satisfy ~denote-file-is-note-p~.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -3946,9 +3908,7 @@ might change them without further notice.
 
   =EXTENSION= is a string that contains a dot followed by the file
   type extension. It can be an empty string or a nil value, in which
-  case it is not added to the base file name. [ The doc string and
-  error testing of ~denote-format-file-name~ are expanded as part of
-  {{{development-version}}}. ]
+  case it is not added to the base file name.
 
 #+findex: denote-extract-keywords-from-path
 + Function ~denote-extract-keywords-from-path~ :: Extract keywords
@@ -3972,14 +3932,12 @@ might change them without further notice.
   optional =FILE-NAME-BASE-FALLBACK= return ~file-name-base~ if no
   Denote title component exists. If the extraction is succcessful
   (when no ~file-name-base~ is involved) run ~denote-desluggify~ on
-  the title. [ Revised as part of {{{development-version}}} to return
-  an empty string if no title is present and to make the use of
-  ~file-name-base~ optional. ]
+  the title.
 
 #+findex: denote-retrieve-filename-keywords
 + Function ~denote-retrieve-filename-keywords~ ::  Extract keywords
   from =FILE= name, if present, else return an empty string. Return
-  matched keywords as a single string. [ Part of {{{development-version}}} . ]
+  matched keywords as a single string.
 
 #+findex: denote-retrieve-filename-signature
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
@@ -4035,12 +3993,7 @@ might change them without further notice.
   text. With optional =PROMPT-TEXT= use it in the minibuffer instead
   of the default prompt. Previous inputs at this prompt are available
   for minibuffer completion. Consider ~savehist-mode~ to persist
-  minibuffer histories between sessions. [ Revised as part of
-  {{{development-version}}} to use initial text instead of a default
-  value. This way, the user can still input an empty string when they
-  want to. Whereas before the empty string was interpreted as the
-  default value (this is how Emacs does it but is not what we wanted
-  in this case). ]
+  minibuffer histories between sessions.
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
@@ -4062,12 +4015,7 @@ might change them without further notice.
   optional =PROMPT-TEXT= use it in the minibuffer instead of the
   default prompt. Previous inputs at this prompt are available for
   minibuffer completion. Consider ~savehist-mode~ to persist
-  minibuffer histories between sessions. [ Revised as part of
-  {{{development-version}}} to use initial text instead of a default
-  value. This way, the user can still input an empty string when they
-  want to. Whereas before the empty string was interpreted as the
-  default value (this is how Emacs does it but is not what we wanted
-  in this case). ]
+  minibuffer histories between sessions.
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
@@ -4096,7 +4044,7 @@ might change them without further notice.
 #+findex: denote-files-matching-regexp-prompt
 + Function ~denote-files-matching-regexp-prompt~ ::  Prompt for
   =REGEXP= to filter Denote files by. With optional =PROMPT-TEXT= use
-  it instead of a generic prompt. [ Part of {{{development-version}}}. ]
+  it instead of a generic prompt.
 
 #+findex: denote-prompt-for-date-return-id
 + Function ~denote-prompt-for-date-return-id~ :: Use
@@ -4831,8 +4779,7 @@ dired-sort-toggle-or-edit= (=C-u s= by default) and append
 The user option ~dired-listing-switches~ sets your default preference.
 
 For an on-demand sorted and filtered Dired listing of Denote files,
-use the command ~denote-sort-dired~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]). [ Part
-of {{{development-version}}}. ]
+use the command ~denote-sort-dired~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]).
 
 ** How do you handle the last modified case?
 :PROPERTIES:
