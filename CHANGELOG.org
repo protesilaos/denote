@@ -1,13 +1,17 @@
 #+title: Change log of Denote
 #+author: Protesilaos Stavrou
 #+email: info@protesilaos.com
-#+options: ':nil toc:nil num:nil author:nil email:nil
+#+language: en
+#+options: ':t toc:nil author:t email:t num:t
+#+startup: content
 
 This document contains the release notes for each tagged commit on the
 project's main git repository: <https://git.sr.ht/~protesilaos/denote>.
 
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/denote>.
+
+#+toc: headlines 1 insert TOC here, with one headline level
 
 * Version 2.1.0 on 2023-11-12
 :PROPERTIES:
