@@ -3941,6 +3941,9 @@ the standard front matter we define."
 
 (defvar denote-last-path nil "Store last path.")
 
+;; TODO 2023-12-08: Maybe create a distinct variable
+;; `denote-org-capture-prompts' instead of reusing `denote-prompts'.
+
 ;;;###autoload
 (defun denote-org-capture ()
   "Create new note through `org-capture-templates'.
@@ -3949,71 +3952,51 @@ The file is populated with Denote's front matter.  It can then be
 expanded with the usual specifiers or strings that
 `org-capture-templates' supports.
 
-Note that this function ignores the `denote-file-type': it always
-sets the Org file extension for the created note to ensure that
-the capture process works as intended, especially for the desired
-output of the `denote-org-capture-specifiers' (which can include
-arbitrary text).
+This function obeys `denote-prompts', but it ignores `file-type',
+if present: it always sets the Org file extension for the created
+note to ensure that the capture process works as intended,
+especially for the desired output of the
+`denote-org-capture-specifiers' (which can include arbitrary
+text).
 
 Consult the manual for template samples."
-  (let* ((title (denote-title-prompt))
-         (keywords (denote-keywords-prompt))
+  (let (title keywords subdirectory date template signature)
+    (dolist (prompt denote-prompts)
+      (pcase prompt
+        ('title (setq title (denote-title-prompt
+                              (when (use-region-p)
+                                (buffer-substring-no-properties
+                                 (region-beginning)
+                                 (region-end))))))
+        ('keywords (setq keywords (denote-keywords-prompt)))
+        ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
+        ('date (setq date (denote-date-prompt)))
+        ('template (setq template (denote-template-prompt)))
+        ('signature (setq signature (denote-signature-prompt)))))
+  (let* ((title (or title ""))
+         (date (if (or (null date) (string-empty-p date))
+                   (current-time)
+                 (denote--valid-date date)))
+         (id (denote--find-first-unused-id
+              (format-time-string denote-id-format date)
+              (denote--get-all-used-ids)))
+         (directory (if (denote--dir-in-denote-directory-p subdirectory)
+                        (file-name-as-directory subdirectory)
+                      (denote-directory)))
+         (template (or (alist-get template denote-templates) ""))
+         (signature (or signature ""))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
                         (format-time-string denote-id-format nil) 'org)))
     (setq denote-last-path
-          (denote--path title keywords
-                        (file-name-as-directory (denote-directory))
-                        (format-time-string denote-id-format) 'org ""))
+          (denote--path title keywords directory id 'org signature))
     (denote--keywords-add-to-history keywords)
-    (concat front-matter denote-org-capture-specifiers)))
+    (concat front-matter template denote-org-capture-specifiers))))
 
-;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
-;; by passing a single PROMPTS that is the same value as `denote-prompts'?
-
-;; TODO 2023-12-02: The `denote-org-capture-with-prompts' is missing a
-;; signature argument, but nobody has asked for it.  I think
-;; refactoring it per the above TODO is better, anyway.  But maybe do
-;; this after version 2.2.0 is out.
-
-;;;###autoload
-(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
-  "Like `denote-org-capture' but with optional prompt parameters.
-
-When called without arguments, do not prompt for anything.  Just
-return the front matter with title and keyword fields empty and
-the date and identifier fields specified.  Also make the file
-name consist of only the identifier plus the Org file name
-extension.
-
-Otherwise produce a minibuffer prompt for every non-nil value
-that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, and
-TEMPLATE arguments.  The prompts are those used by the standard
-`denote' command and all of its utility commands.
-
-When returning the contents that fill in the Org capture
-template, the sequence is as follows: front matter, TEMPLATE, and
-then the value of the user option `denote-org-capture-specifiers'.
-
-Important note: in the case of SUBDIRECTORY actual subdirectories
-must exist---Denote does not create them.  Same principle for
-TEMPLATE as templates must exist and are specified in the user
-option `denote-templates'."
-  (let* ((title (if title (denote-title-prompt) ""))
-         (kws (if keywords (denote-keywords-prompt) nil))
-         (directory (file-name-as-directory (if subdirectory (denote-subdirectory-prompt) (denote-directory))))
-         (date (if date (denote--valid-date (denote-date-prompt)) (current-time)))
-         (id (denote--find-first-unused-id
-              (format-time-string denote-id-format date)
-              (denote--get-all-used-ids)))
-         (template (if template (denote-template-prompt) ""))
-         (front-matter (denote--format-front-matter
-                        title (denote--date date 'org) kws
-                        (format-time-string denote-id-format date) 'org)))
-    (setq denote-last-path
-          (denote--path title kws directory id 'org ""))
-    (denote--keywords-add-to-history kws)
-    (concat front-matter template denote-org-capture-specifiers)))
+(make-obsolete
+ 'denote-org-capture-with-prompts
+ 'denote-org-capture
+ "2.3.0")
 
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
