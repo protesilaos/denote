@@ -3957,30 +3957,30 @@ might change them without further notice.
   To only return an existing identifier, refer to the function
   ~denote-retrieve-filename-identifier~.
 
-#+findex: denote-retrieve-title-value
-+ Function ~denote-retrieve-title-value~ :: Return title value from
+#+findex: denote-retrieve-front-matter-title-value
++ Function ~denote-retrieve-front-matter-title-value~ :: Return title value from
   =FILE= front matter per =FILE-TYPE=.
 
-#+findex: denote-retrieve-title-line
-+ Function ~denote-retrieve-title-line~ :: Return title line from
+#+findex: denote-retrieve-front-matter-title-line
++ Function ~denote-retrieve-front-matter-title-line~ :: Return title line from
   =FILE= front matter per =FILE-TYPE=.
 
-#+findex: denote-retrieve-keywords-value
-+ Function ~denote-retrieve-keywords-value~ :: Return keywords value
+#+findex: denote-retrieve-front-matter-keywords-value
++ Function ~denote-retrieve-front-matter-keywords-value~ :: Return keywords value
   from =FILE= front matter per =FILE-TYPE=. The return value is a list
   of strings. To get a combined string the way it would appear in a
-  Denote file name, use ~denote-retrieve-keywords-value-as-string~.
+  Denote file name, use ~denote-retrieve-front-matter-keywords-value-as-string~.
 
-#+findex: denote-retrieve-keywords-value-as-string
-+ Function ~denote-retrieve-keywords-value-as-string~ :: Return
+#+findex: denote-retrieve-front-matter-keywords-value-as-string
++ Function ~denote-retrieve-front-matter-keywords-value-as-string~ :: Return
   keywords value from =FILE= front matter per =FILE-TYPE=. The return
   value is a string, with the underscrore as a separator between
   individual keywords. To get a list of strings instead, use
-  ~denote-retrieve-keywords-value~ (the current function uses that
+  ~denote-retrieve-front-matter-keywords-value~ (the current function uses that
   internally).
 
-#+findex: denote-retrieve-keywords-line
-+ Function ~denote-retrieve-keywords-line~ :: Return keywords line
+#+findex: denote-retrieve-front-matter-keywords-line
++ Function ~denote-retrieve-front-matter-keywords-line~ :: Return keywords line
   from =FILE= front matter per =FILE-TYPE=.
 
 #+findex: denote-signature-prompt

@@ -1462,47 +1462,67 @@ Subroutine of `denote--file-with-temp-buffer'."
        (goto-char (point-min))
        ,@body)))
 
-(defun denote-retrieve-title-value (file file-type)
+(defun denote-retrieve-front-matter-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote-retrieve-title-line (file file-type)
+(defun denote-retrieve-front-matter-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
-(defun denote-retrieve-keywords-value (file file-type)
+(defun denote-retrieve-front-matter-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
 The return value is a list of strings.  To get a combined string
 the way it would appear in a Denote file name, use
-`denote-retrieve-keywords-value-as-string'."
+`denote-retrieve-front-matter-keywords-value-as-string'."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote-retrieve-keywords-value-as-string (file file-type)
+(defun denote-retrieve-front-matter-keywords-value-as-string (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
 The return value is a string, with the underscrore as a separator
 between individual keywords.  To get a list of strings instead,
-use `denote-retrieve-keywords-value' (the current function uses
+use `denote-retrieve-front-matter-keywords-value' (the current function uses
 that internally)."
-  (denote-keywords-combine (denote-retrieve-keywords-value file file-type)))
+  (denote-keywords-combine (denote-retrieve-front-matter-keywords-value file file-type)))
 
-(defun denote-retrieve-keywords-line (file file-type)
+(defun denote-retrieve-front-matter-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
+(make-obsolete
+ 'denote-retrieve-title-value
+ 'denote-retrieve-front-matter-title-value
+ "2.3.0")
+
+(make-obsolete
+ 'denote-retrieve-title-line
+ 'denote-retrieve-front-matter-title-line
+ "2.3.0")
+
+(make-obsolete
+ 'denote-retrieve-keywords-value
+ 'denote-retrieve-front-matter-keywords-value
+ "2.3.0")
+
+(make-obsolete
+ 'denote-retrieve-keywords-line
+ 'denote-retrieve-front-matter-keywords-line
+ "2.3.0")
+
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
   (if-let (((denote-file-is-note-p file))
-           (title (denote-retrieve-title-value file type))
+           (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
     (if-let ((title (denote-retrieve-filename-title file)))
@@ -2146,7 +2166,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
   (if-let ((file (buffer-file-name))
            ((denote-file-is-note-p file))
            (file-type (denote-filetype-heuristics file)))
-      (let* ((cur-keywords (denote-retrieve-keywords-value file file-type))
+      (let* ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
              (new-keywords (denote-keywords-sort
                             (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
@@ -2175,7 +2195,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
   (if-let ((file (buffer-file-name))
            ((denote-file-is-note-p file))
            (file-type (denote-filetype-heuristics file)))
-      (when-let ((cur-keywords (denote-retrieve-keywords-value file file-type))
+      (when-let ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
                  (del-keyword (denote--keywords-delete-prompt cur-keywords)))
         (denote-rewrite-keywords
          file
@@ -2332,8 +2352,8 @@ values if appropriate.
 With optional NO-CONFIRM, do not prompt to confirm the rewriting
 of the front matter.  Otherwise produce a `y-or-n-p' prompt to
 that effect."
-  (when-let ((old-title-line (denote-retrieve-title-line file file-type))
-             (old-keywords-line (denote-retrieve-keywords-line file file-type))
+  (when-let ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
+             (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
              (new-title-line (denote--get-title-line-from-front-matter title file-type))
              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
@@ -2503,7 +2523,7 @@ file-naming scheme."
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (title (or title (denote--retrieve-title-or-filename file file-type)))
-         (keywords (or keywords (denote-retrieve-keywords-value file file-type)))
+         (keywords (or keywords (denote-retrieve-front-matter-keywords-value file file-type)))
          (signature (or signature (denote-retrieve-filename-signature file) ""))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
          (max-mini-window-height denote-rename-max-mini-window-height))
@@ -2638,10 +2658,10 @@ does internally."
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
-           (title (denote-retrieve-title-value file file-type))
+           (title (denote-retrieve-front-matter-title-value file file-type))
            (id (denote-retrieve-filename-identifier file)))
       (let* ((sluggified-title (denote-sluggify title 'title))
-             (keywords (denote-retrieve-keywords-value file file-type))
+             (keywords (denote-retrieve-front-matter-keywords-value file file-type))
              (signature (or (denote-retrieve-filename-signature file) ""))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
@@ -2748,7 +2768,7 @@ of the file.  This needs to be done manually."
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file) ""))
          (title (denote--retrieve-title-or-filename file old-file-type))
-         (keywords (denote-retrieve-keywords-value file old-file-type))
+         (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
          (old-extension (denote-get-file-extension file))
          (new-extension (denote--file-extension new-file-type))
@@ -3514,7 +3534,7 @@ ALIST is not used in favour of using
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (when-let  ((title (denote-retrieve-title-value file file-type))
+      (when-let  ((title (denote-retrieve-front-matter-title-value file file-type))
                   (heading (format "Backlinks to %S (%s)" title id))
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
