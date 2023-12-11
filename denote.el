@@ -797,6 +797,18 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
       (t)))
    :follow-symlinks))
 
+(defun denote--directory-get-files ()
+  "Return list with full path of valid files in variable `denote-directory'.
+Consider files that satisfy `denote-file-has-identifier-p' and
+are not backups."
+  (mapcar
+   #'expand-file-name
+   (seq-filter
+    (lambda (file)
+      (and (denote-file-has-identifier-p file)
+           (not (backup-file-name-p file))))
+      (denote--directory-all-files-recursively))))
+
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only)
   "Return list of absolute file paths in variable `denote-directory'.
 
@@ -814,11 +826,7 @@ current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
 text files that satisfy `denote-file-is-note-p'."
-  (let ((files (mapcar
-                #'expand-file-name
-                (seq-filter
-                 #'denote-file-has-identifier-p
-                 (denote--directory-all-files-recursively)))))
+  (let ((files (denote--directory-get-files)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
@@ -3062,7 +3070,6 @@ With non-nil ID-ONLY, use the generic link format without a
 title.
 
 Fall back to `denote-org-link-format'."
-  ;; Includes backup files.  Maybe we can remove them?
   (cond
    (id-only denote-id-only-link-format)
    ((when-let ((link (denote--link-format file-type)))
