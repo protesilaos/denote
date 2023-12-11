@@ -173,28 +173,27 @@ a non-nil value, respectively."
     (denote-files-matching-regexp-prompt)
     (denote-sort-component-prompt)
     (y-or-n-p "Reverse sort? ")))
-  (let* ((default-directory (denote-directory))
-         ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-         ;; buffer-name produces an error if the regexp contains a
-         ;; wildcard for a directory. I can reproduce this in emacs -Q
-         ;; and am not sure if it is a bug. Anyway, I will report it
-         ;; upstream, but even if it is fixed we cannot use it for now
-         ;; (whatever fix will be available for Emacs 30+).
-         (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component))
-         (buffer-name (format "Denote sort by `%s' at %s" sort-by-component (format-time-string "%T")))
-         (files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)))
-    (if (car files)
-        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
-          (setq denote-sort--dired-buffer dired-buffer)
-          (with-current-buffer dired-buffer
-            (setq-local revert-buffer-function
-                        (lambda (&rest _)
-                          (kill-buffer dired-buffer)
-                          (denote-sort-dired files-matching-regexp sort-by-component reverse))))
-          ;; Because of the above NOTE, I am printing a message.  Not what I
-          ;; want, but it is better than nothing...
-          (message denote-sort-dired-buffer-name))
-      (message "No matching files for %s" denote-sort-dired-buffer-name))))
+  (if-let ((default-directory (denote-directory))
+           (files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
+           ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+           ;; buffer-name produces an error if the regexp contains a
+           ;; wildcard for a directory. I can reproduce this in emacs
+           ;; -Q and am not sure if it is a bug. Anyway, I will report
+           ;; it upstream, but even if it is fixed we cannot use it
+           ;; for now (whatever fix will be available for Emacs 30+).
+           (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component))
+           (buffer-name (format "Denote sort by `%s' at %s" sort-by-component (format-time-string "%T"))))
+      (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+        (setq denote-sort--dired-buffer dired-buffer)
+        (with-current-buffer dired-buffer
+          (setq-local revert-buffer-function
+                      (lambda (&rest _)
+                        (kill-buffer dired-buffer)
+                        (denote-sort-dired files-matching-regexp sort-by-component reverse))))
+        ;; Because of the above NOTE, I am printing a message.  Not
+        ;; what I want, but it is better than nothing...
+        (message denote-sort-dired-buffer-name))
+    (message "No matching files for: %s" files-matching-regexp)))
 
 (provide 'denote-sort)
 ;;; denote-sort.el ends here
