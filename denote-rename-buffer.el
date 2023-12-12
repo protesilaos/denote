@@ -148,5 +148,5 @@ visited again in a new buffer (files are visited with the command
     (remove-hook 'denote-after-new-note-hook #'denote-rename-buffer-rename-function-or-fallback)
     (remove-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)))
 
-(provide 'denote-rename-buffer-with-title)
+(provide 'denote-rename-buffer)
 ;;; denote-rename-buffer.el ends here
