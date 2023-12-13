@@ -3798,13 +3798,10 @@ This command is meant to be used from a Dired buffer."
      :selected (bound-and-true-p denote-dired-mode)])
   "Contents of the Denote menu.")
 
-(easy-menu-define denote-global-menu nil
-  "Menu with all Denote commands, each available in the right context."
-  denote--menu-contents)
-
-;; Add Denote menu at the end of global-map after Tools
-(easy-menu-add-item global-map '(menu-bar)
-                    denote-global-menu)
+(define-key-after global-map [menu-bar denote]
+  (easy-menu-binding
+   (easy-menu-create-menu "Denote" denote--menu-contents) "Denote")
+  "Tools")
 
 (defun denote-context-menu (menu _click)
   "Populate MENU with Denote commands at CLICK."
