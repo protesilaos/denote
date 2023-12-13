@@ -6,7 +6,7 @@
 ;; Maintainer: Denote Development <~protesilaos/denote@lists.sr.ht>
 ;; URL: https://git.sr.ht/~protesilaos/denote
 ;; Mailing-List: https://lists.sr.ht/~protesilaos/denote
-;; Version: 2.2.2
+;; Version: 2.2.3
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -1867,10 +1867,11 @@ histories between sessions."
                      nil (current-local-map))))
            (define-key map (kbd "SPC") nil)
            map)))
-    (completing-read
-     (format-prompt (or prompt-text "File title") nil)
-     denote--title-history
-     nil nil default-title 'denote--title-history nil)))
+    (let ((current-def (or denote-title-prompt-current-default nil)))
+      (completing-read
+       (format-prompt (or prompt-text "File title") current-def)
+       denote--title-history
+       nil nil default-title 'denote--title-history current-def))))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
@@ -2097,33 +2098,17 @@ technicalities)."
 
 ;;;;; Other convenience commands
 
-(defun denote--extract-title-from-file-history ()
-  "Extract last file title input from `file-name-history'."
-  (when-let ((file (car denote--file-history))
-             (title (expand-file-name file)))
-    (string-match (denote-directory) title)
-    (substring title (match-end 0))))
-
-(defun denote--append-extracted-string-to-history (history)
-  "Append `denote--extract-title-from-file-history' to HISTORY."
-  (append
-   (list (denote--extract-title-from-file-history))
-   history))
-
-(defun denote--command-with-title-history (command)
-  "Call COMMAND with modified title history.
-
-Set the `denote-title-prompt-current-default' to the value of the
-last user input of a file title search (per `denote-file-prompt').
-
+(defun denote--command-with-default-title (command)
+  "Call COMMAND with last input at the `denote-file-prompt'.
+Set the `denote-title-prompt-current-default' to the last input.
 This is what makes commands such as `denote-open-or-create' or
 `denote-link-or-create' get what the user initially typed as the
 default value for the title of the new note to be created."
-  (let ((denote--title-history
-         (denote--append-extracted-string-to-history denote--title-history)))
+  (let ((last-input (when denote--file-history
+                      (pop denote--file-history))))
     (unwind-protect
         (progn
-          (setq denote-title-prompt-current-default (car denote--title-history))
+          (setq denote-title-prompt-current-default last-input)
           (call-interactively command))
       (setq denote-title-prompt-current-default nil))))
 
@@ -2141,7 +2126,7 @@ note's actual title.  At the `denote-file-prompt' type
   (interactive (list (denote-file-prompt)))
   (if (and target (file-exists-p target))
       (find-file target)
-    (denote--command-with-title-history #'denote)))
+    (denote--command-with-default-title #'denote)))
 
 ;;;###autoload
 (defun denote-open-or-create-with-command ()
@@ -2159,7 +2144,7 @@ note's actual title.  At the `denote-file-prompt' type
   (let ((target (denote-file-prompt)))
     (if (and target (file-exists-p target))
         (find-file target)
-      (denote--command-with-title-history (denote-command-prompt)))))
+      (denote--command-with-default-title (denote-command-prompt)))))
 
 ;;;###autoload
 (defun denote-keywords-add (keywords)
@@ -3373,7 +3358,7 @@ file's title.  This has the same meaning as in `denote-link'."
          type
          (denote--link-get-description target type)
          id-only))
-    (denote--command-with-title-history #'denote-link-after-creating)))
+    (denote--command-with-default-title #'denote-link-after-creating)))
 
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
   "Alias for `denote-link-or-create' command.")
