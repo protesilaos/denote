@@ -6,7 +6,7 @@
 ;; Maintainer: Denote Development <~protesilaos/denote@lists.sr.ht>
 ;; URL: https://git.sr.ht/~protesilaos/denote
 ;; Mailing-List: https://lists.sr.ht/~protesilaos/denote
-;; Version: 2.2.3
+;; Version: 2.2.4
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -1867,11 +1867,10 @@ histories between sessions."
                      nil (current-local-map))))
            (define-key map (kbd "SPC") nil)
            map)))
-    (let ((current-def (or denote-title-prompt-current-default nil)))
-      (completing-read
-       (format-prompt (or prompt-text "File title") current-def)
-       denote--title-history
-       nil nil default-title 'denote--title-history current-def))))
+    (completing-read
+     (format-prompt (or prompt-text "File title") denote-title-prompt-current-default)
+     denote--title-history
+     nil nil default-title 'denote--title-history denote-title-prompt-current-default)))
 
 (defvar denote--file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
