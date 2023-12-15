@@ -2245,15 +2245,22 @@ the file type is assumed to be the first of `denote-file-types'."
    denote-id-format
    (file-attribute-modification-time (file-attributes file))))
 
+(defun denote--revert-dired (buf)
+  "Revert BUF if appropriate.
+Do it if BUF is in Dired mode and is either part of the variable
+`denote-directory' or the `current-buffer'."
+  (let ((current (current-buffer)))
+    (with-current-buffer buf
+      (when (and (eq major-mode 'dired-mode)
+                 (or (denote--dir-in-denote-directory-p default-directory)
+                     (eq current buf)))
+        (revert-buffer)))))
+
 (defun denote-update-dired-buffers ()
-  "Update Dired buffers of variable `denote-directory'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (and (eq major-mode 'dired-mode)
-                  (denote--dir-in-denote-directory-p default-directory))
-         (revert-buffer))))
-   (buffer-list)))
+  "Update Dired buffers of variable `denote-directory'.
+Also revert the current Dired buffer even if it is not inside the
+variable `denote-directory'."
+  (mapc #'denote--revert-dired (buffer-list)))
 
 (defun denote--rename-buffer (old-name new-name)
   "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
