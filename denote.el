@@ -3798,14 +3798,22 @@ This command is meant to be used from a Dired buffer."
      :selected (bound-and-true-p denote-dired-mode)])
   "Contents of the Denote menu.")
 
+(defun denote--menu-bar-enable ()
+  "Enable Denote menu bar."
+  (define-key-after global-map [menu-bar denote]
+    (easy-menu-binding
+     (easy-menu-create-menu "Denote" denote--menu-contents) "Denote")
+    "Tools"))
+
+;; Enable Denote menu bar by default
+(denote--menu-bar-enable)
+
 ;;;###autoload
 (define-minor-mode denote-menu-bar-mode "Show Denote menu bar."
   :global t
+  :init-value t
   (if denote-menu-bar-mode
-      (define-key-after global-map [menu-bar denote]
-        (easy-menu-binding
-         (easy-menu-create-menu "Denote" denote--menu-contents) "Denote")
-        "Tools")
+      (denote--menu-bar-enable)
     (define-key global-map [menu-bar denote] nil)))
 
 (defun denote-context-menu (menu _click)
