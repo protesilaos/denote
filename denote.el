@@ -1846,8 +1846,7 @@ When called from Lisp, all arguments are optional.
   "Currently bound default title for `denote-title-prompt'.
 Set the value of this variable within the lexical scope of a
 command that needs to supply a default title before calling
-`denote-title-prompt' and use `unwind-protect' to set its value
-back to nil.")
+`denote-title-prompt'.")
 
 (defun denote-title-prompt (&optional default-title prompt-text)
   "Prompt for title string.
@@ -2106,13 +2105,9 @@ Set the `denote-title-prompt-current-default' to the last input.
 This is what makes commands such as `denote-open-or-create' or
 `denote-link-or-create' get what the user initially typed as the
 default value for the title of the new note to be created."
-  (let ((last-input (when denote--file-history
-                      (pop denote--file-history))))
-    (unwind-protect
-        (progn
-          (setq denote-title-prompt-current-default last-input)
-          (call-interactively command))
-      (setq denote-title-prompt-current-default nil))))
+  (let ((denote-title-prompt-current-default (when denote--file-history
+                                               (pop denote--file-history))))
+    (call-interactively command)))
 
 ;;;###autoload
 (defun denote-open-or-create (target)
