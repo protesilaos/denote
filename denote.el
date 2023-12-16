@@ -3988,10 +3988,44 @@ Consult the manual for template samples."
     (denote--keywords-add-to-history keywords)
     (concat front-matter template denote-org-capture-specifiers))))
 
-(make-obsolete
- 'denote-org-capture-with-prompts
- 'denote-org-capture
- "2.3.0")
+;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
+;; by passing a single PROMPTS that is the same value as `denote-prompts'?
+
+;; TODO 2023-12-02: The `denote-org-capture-with-prompts' is missing a
+;; signature argument, but nobody has asked for it.  I think
+;; refactoring it per the above TODO is better, anyway.  But maybe do
+;; this after version 2.2.0 is out.
+
+;;;###autoload
+(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
+  "Like `denote-org-capture' but with optional prompt parameters.
+
+When called without arguments, do not prompt for anything.  Just
+return the front matter with title and keyword fields empty and
+the date and identifier fields specified.  Also make the file
+name consist of only the identifier plus the Org file name
+extension.
+
+Otherwise produce a minibuffer prompt for every non-nil value
+that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, and
+TEMPLATE arguments.  The prompts are those used by the standard
+`denote' command and all of its utility commands.
+
+When returning the contents that fill in the Org capture
+template, the sequence is as follows: front matter, TEMPLATE, and
+then the value of the user option `denote-org-capture-specifiers'.
+
+Important note: in the case of SUBDIRECTORY actual subdirectories
+must exist---Denote does not create them.  Same principle for
+TEMPLATE as templates must exist and are specified in the user
+option `denote-templates'."
+  (let ((denote-prompts '()))
+    (when template (push 'template denote-prompts))
+    (when date (push 'date denote-prompts))
+    (when subdirectory (push 'subdirectory denote-prompts))
+    (when keywords (push 'keywords denote-prompts))
+    (when title (push 'title denote-prompts))
+    (denote-org-capture)))
 
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
