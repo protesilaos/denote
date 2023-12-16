@@ -1499,25 +1499,20 @@ that internally)."
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
-(make-obsolete
- 'denote-retrieve-title-value
- 'denote-retrieve-front-matter-title-value
- "2.3.0")
+(defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
+ "Alias for `denote-retrieve-front-matter-title-value'.")
 
-(make-obsolete
- 'denote-retrieve-title-line
- 'denote-retrieve-front-matter-title-line
- "2.3.0")
+(defalias 'denote-retrieve-title-line 'denote-retrieve-front-matter-title-line
+ "Alias for `denote-retrieve-front-matter-title-line'.")
 
-(make-obsolete
- 'denote-retrieve-keywords-value
- 'denote-retrieve-front-matter-keywords-value
- "2.3.0")
+(defalias 'denote-retrieve-keywords-value 'denote-retrieve-front-matter-keywords-value
+ "Alias for `denote-retrieve-front-matter-keywords-value'.")
 
-(make-obsolete
- 'denote-retrieve-keywords-line
- 'denote-retrieve-front-matter-keywords-line
- "2.3.0")
+(defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
+ "Alias for `denote-retrieve-front-matter-keywords-line'.")
+
+(defalias 'denote-retrieve-keywords-value-as-string 'denote-retrieve-front-matter-keywords-value-as-string
+ "Alias for `denote-retrieve-front-matter-keywords-value-as-string'.")
 
 (defun denote--retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
