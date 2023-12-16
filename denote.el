@@ -2496,6 +2496,7 @@ rename non-note files (e.g. PDF) that can benefit from Denote's
 file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
+          (spaced-signature (string-replace "=" " " (denote-retrieve-filename-signature file)))
           (file-type (denote-filetype-heuristics file))
           (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
      (list
@@ -2506,7 +2507,7 @@ file-naming scheme."
       (denote-keywords-prompt
        (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt))
       (denote-signature-prompt
-       (denote-retrieve-filename-signature file)
+       spaced-signature
        (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
