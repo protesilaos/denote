@@ -2496,6 +2496,7 @@ rename non-note files (e.g. PDF) that can benefit from Denote's
 file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
+          (spaced-signature (string-replace "=" " " (denote-retrieve-filename-signature file)))
           (file-type (denote-filetype-heuristics file))
           (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
      (list
@@ -2506,7 +2507,7 @@ file-naming scheme."
       (denote-keywords-prompt
        (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt))
       (denote-signature-prompt
-       (denote-retrieve-filename-signature file)
+       spaced-signature
        (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
@@ -2554,7 +2555,7 @@ the changes made to the file: perform them outright."
                  (keywords (denote-keywords-prompt
                             (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)))
                  (signature (denote-signature-prompt
-                             (denote-retrieve-filename-signature file)
+                             (string-replace "=" " " (denote-retrieve-filename-signature file))
                              (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
@@ -2659,7 +2660,7 @@ does internally."
            (id (denote-retrieve-filename-identifier file :no-error)))
       (let* ((sluggified-title (denote-sluggify title 'title))
              (keywords (denote-retrieve-keywords-value file file-type))
-             (signature (denote-retrieve-filename-signature file))
+             (signature (string-replace "=" " " (denote-retrieve-filename-signature file)))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords sluggified-title extension (when signature (denote-sluggify-signature signature)))))
