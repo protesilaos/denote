@@ -2660,7 +2660,7 @@ does internally."
            (id (denote-retrieve-filename-identifier file :no-error)))
       (let* ((sluggified-title (denote-sluggify title 'title))
              (keywords (denote-retrieve-keywords-value file file-type))
-             (signature (denote-retrieve-filename-signature file))
+             (signature (string-replace "=" " " (denote-retrieve-filename-signature file)))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords sluggified-title extension (when signature (denote-sluggify-signature signature)))))
