@@ -4087,9 +4087,12 @@ might change them without further notice.
 
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
-  variable ~denote-directory~.  Note that the ~denote-directory~
-  accepts a directory-local value for what we internally refer to as
-  "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+  variable ~denote-directory~. Also revert the current Dired buffer
+  even if it is not inside the ~denote-directory~. Note that the
+  ~denote-directory~ accepts a directory-local value for what we
+  internally refer to as "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+  [ Refined as part of {{{development-version}}} to also revert the
+    current Dired buffer. ]
 
 #+vindex: denote-file-types
 + Variable ~denote-file-types~ :: Alist of ~denote-file-type~ and
