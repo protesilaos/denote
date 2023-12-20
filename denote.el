@@ -1031,7 +1031,7 @@ Return an empty string if the minibuffer input is empty."
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
 KEYWORDS is a list of strings, per `denote-keywords-prompt'."
-  (if denote-sort-keywords
+  (if (and (listp keywords) denote-sort-keywords)
       (sort keywords #'string-collate-lessp)
     keywords))
 
