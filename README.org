@@ -4876,16 +4876,16 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Author/maintainer :: Protesilaos Stavrou.
 
 + Contributions to code or the manual :: Abin Simon, Adam Růžička,
-  Alan Schmitt, Benjamin Kästner, Bruno Boal, Charanjit Singh, Clemens
-  Radermacher, Colin McLear, Damien Cassou, Eduardo Grajeda, Elias
-  Storms, Eshel Yaron, Florian, Graham Marlow, Hilde Rhyne, Ivan
-  Sokolov, Jack Baty, Jean-Charles Bagneris, Jean-Philippe Gagné Guay,
-  Joseph Turner, Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kostas
-  Andreadis, Kyle Meyer, Marc Fargas, Matthew Lemon, Noboru Ota
-  (nobiot), Norwid Behrnd, Peter Prevos, Philip Kaludercic, Quiliro
-  Ordóñez, Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz
-  Hołubowicz, Vedang Manerikar, ezchi, leinfink (Henrik),
-  mentalisttraceur, relict007.
+  Alan Schmitt, Ashton Wiersdorf, Benjamin Kästner, Bruno Boal,
+  Charanjit Singh, Clemens Radermacher, Colin McLear, Damien Cassou,
+  Eduardo Grajeda, Elias Storms, Eshel Yaron, Florian, Graham Marlow,
+  Hilde Rhyne, Ivan Sokolov, Jack Baty, Jean-Charles Bagneris,
+  Jean-Philippe Gagné Guay, Joseph Turner, Jürgen Hötzel, Kaushal
+  Modi, Kai von Fintel, Kostas Andreadis, Kyle Meyer, Marc Fargas,
+  Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter Prevos,
+  Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan Thesing,
+  Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar, ezchi,
+  leinfink (Henrik), mentalisttraceur, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alfredo Borrás, Ashton Wiersdorf,
