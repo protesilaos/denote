@@ -196,17 +196,11 @@ component.  If the symbol is not among `denote-sort-components',
 fall back to the default identifier-based sorting.
 
 If optional REVERSE is non-nil reverse the sort order."
-  (let ((files (denote-org-dblock--files regexp sort-by-component reverse)))
-    ;; FIXME 2023-11-23: Do not use a separator for the last file.
-    ;; Not a big issue, but is worth checking.
-    (mapc
-     (lambda (file)
-       ;; NOTE 2023-11-23: I tried to just do `insert-file-contents'
-       ;; without the temporary buffer, but it seems that the point is
-       ;; not moved, so the SEPARATOR does not follow the contents.
-       (let ((contents (denote-org-dblock--get-file-contents file no-front-matter add-links)))
-         (insert (concat contents (denote-org-dblock--separator separator)))))
-     files)))
+  (let* ((files (denote-org-dblock--files regexp sort-by-component reverse))
+         (files-contents (mapcar
+                          (lambda (file) (denote-org-dblock--get-file-contents file no-front-matter add-links))
+                          files)))
+    (insert (string-join files-contents (denote-org-dblock--separator separator)))))
 
 ;;;###autoload
 (defun denote-org-dblock-insert-files (regexp sort-by-component)
