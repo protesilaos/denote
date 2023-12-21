@@ -1003,6 +1003,11 @@ the entry called "Denote".  From there they can use their pointer to
 select a command.  For a sample of how this looks, read the
 development log: <https://protesilaos.com/codelog/2023-03-31-emacs-denote-menu/>.
 
+#+findex: denote-menu-bar-mode
+The command ~denote-menu-bar-mode~ toggles the presentation of the
+menu. It is enabled by default. [ The ~denote-menu-bar-mode~ is part
+of {{{development-version}}}. ]
+
 Emacs also provides support for operations through a context menu.
 This is typically the set of actions that are made available via a
 right mouse click.  Users who enable ~context-menu-mode~ can register
