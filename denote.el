@@ -2568,6 +2568,9 @@ the changes made to the file: perform them outright."
  'denote-dired-rename-marked-files-with-keywords
  "2.1.0")
 
+(defalias 'denote-dired-rename-marked-files 'denote-dired-rename-files
+  "Alias for `denote-dired-rename-files'.")
+
 ;;;###autoload
 (defun denote-dired-rename-marked-files-with-keywords ()
   "Rename marked files in Dired to a Denote file name by writing keywords.

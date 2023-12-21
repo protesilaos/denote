@@ -1240,6 +1240,10 @@ check the command ~denote-dired-rename-marked-files-with-keywords~.
 - [[#h:f365ff7e-2140-4e14-a92f-666ae97382a4][Rename by writing only keywords]]
 - [[#h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8][Rename multiple files based on their front matter]]
 
+[ As part of {{{development-version}}} the
+  ~denote-dired-rename-marked-files~ is an alias for
+  ~denote-dired-rename-files~. ]
+
 ** Rename multiple files at once by asking only for keywords
 :PROPERTIES:
 :CUSTOM_ID: h:f365ff7e-2140-4e14-a92f-666ae97382a4
