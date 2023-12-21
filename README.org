@@ -490,8 +490,10 @@ set to '(template subdirectory title keywords)."
 #+end_src
 
 The tweaks to ~denote-prompts~ determine how the command will behave
-([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).  Use this paradigm to write your own
-variants which you can then assign to keys or invoke with =M-x=.
+([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]). Use this paradigm to write your own
+variants which you can then assign to keys, invoke with =M-x=, or add
+to the list of commands available at the ~denote-command-prompt~
+([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
 
 *** The ~denote-date-prompt-use-org-read-date~ option
 :PROPERTIES:
