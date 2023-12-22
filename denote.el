@@ -997,32 +997,43 @@ Inferred keywords are filtered by the user option
        (append (denote--inferred-keywords) denote-known-keywords)
      denote-known-keywords)))
 
+(defun denote-convert-file-name-keywords-to-crm (string)
+  "Make STRING with keywords readable by `completing-read-multiple'.
+STRING consists of underscore-separated words, as those appear in
+the keywords component of a Denote file name.  STRING is the same
+as the return value of `denote-retrieve-filename-keywords'."
+  (when (and string (not (string-empty-p string)))
+    (let ((list-of-strings (split-string string "_" :omit-nulls "_")))
+      (mapconcat #'identity list-of-strings ","))))
+
 (defvar denote--keyword-history nil
   "Minibuffer history of inputted keywords.")
 
-(defun denote--keywords-crm (keywords &optional prompt)
+(defun denote--keywords-crm (keywords &optional prompt initial)
   "Use `completing-read-multiple' for KEYWORDS.
 With optional PROMPT, use it instead of a generic text for file
-keywords."
+keywords.  With optional INITIAL, add it to the minibuffer as
+initial input."
   (delete-dups
    (completing-read-multiple
     (format-prompt (or prompt "File keywords") nil)
-    keywords nil nil nil 'denote--keyword-history)))
+    keywords nil nil initial 'denote--keyword-history)))
 
-(defun denote-keywords-prompt (&optional prompt-text)
+(defun denote-keywords-prompt (&optional prompt-text initial-keywords)
   "Prompt for one or more keywords.
 Read entries as separate when they are demarcated by the
 `crm-separator', which typically is a comma.
 
 With optional PROMPT-TEXT, use it to prompt the user for
-keywords.  Else use a generic prompt.
+keywords.  Else use a generic prompt.  With optional
+INITIAL-KEYWORDS use them as the initial minibuffer text.
 
 Process the return value with `denote-keywords-sort' and sort
 with `string-collate-lessp' if the user option
 `denote-sort-keywords' is non-nil.
 
 Return an empty string if the minibuffer input is empty."
-  (if-let ((kw (denote--keywords-crm (denote-keywords) prompt-text)))
+  (if-let ((kw (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
       (denote-keywords-sort kw)
     ""))
 
@@ -2503,7 +2514,8 @@ file-naming scheme."
        (denote--retrieve-title-or-filename file file-type)
        (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt))
       (denote-keywords-prompt
-       (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt))
+       (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
+       (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file)))
       (denote-signature-prompt
        (or (denote-retrieve-filename-signature file) "")
        (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
@@ -2548,7 +2560,8 @@ the changes made to the file: perform them outright."
                          (denote--retrieve-title-or-filename file file-type)
                          (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt)))
                  (keywords (denote-keywords-prompt
-                            (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)))
+                            (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
+                            (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file))))
                  (signature (denote-signature-prompt
                              (or (denote-retrieve-filename-signature file) "")
                              (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))

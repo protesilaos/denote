@@ -398,6 +398,14 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.gpg") 'markdown-yaml)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.age") 'markdown-yaml))))
 
+(ert-deftest denote-test--denote-convert-file-name-keywords-to-crm ()
+  "Ensure that `denote-convert-file-name-keywords-to-crm' returns words as comma-separated string."
+  (should
+   (and (equal (denote-convert-file-name-keywords-to-crm "_denote_keywords_testing") "denote,keywords,testing")
+        (equal (denote-convert-file-name-keywords-to-crm "_denote") "denote")
+        (null (denote-convert-file-name-keywords-to-crm ""))
+        (null (denote-convert-file-name-keywords-to-crm nil)))))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)

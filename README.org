@@ -3806,6 +3806,14 @@ might change them without further notice.
   ~denote-known-keywords~.  Else use only the latter set of keywords
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
+#+findex: denote-convert-file-name-keywords-to-crm
++ Function ~denote-convert-file-name-keywords-to-crm~ :: Make =STRING=
+  with keywords readable by ~completing-read-multiple~. =STRING=
+  consists of underscore-separated words, as those appear in the
+  keywords component of a Denote file name. =STRING= is the same as
+  the return value of ~denote-retrieve-filename-keywords~. [ Part of
+  {{{development-version}}}. ]
+
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
   ~denote-sort-keywords~ is non-nil.  =KEYWORDS= is a list of strings,
@@ -4012,9 +4020,11 @@ might change them without further notice.
   keywords. Read entries as separate when they are demarcated by the
   ~crm-separator~, which typically is a comma. With optional
   =PROMPT-TEXT=, use it to prompt the user for keywords. Else use a
-  generic prompt. Process the return value with ~denote-keywords-sort~
-  and sort with ~string-collate-lessp~ if the user option
-  ~denote-sort-keywords~ is non-nil.
+  generic prompt. With optional =INITIAL-KEYWORDS= use them as the
+  initial minibuffer text. Process the return value with
+  ~denote-keywords-sort~ and sort with ~string-collate-lessp~ if the
+  user option ~denote-sort-keywords~ is non-nil. [ The optional
+  =INITIAL-KEYWORDS= argument is part of {{{development-version}}}. ]
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Prompt for title string. With
