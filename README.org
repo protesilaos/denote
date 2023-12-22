@@ -4885,6 +4885,20 @@ code (adjust the git's installation path if necessary):
   (setenv "PATH" (concat (getenv "PATH") ";" "C:\\Program Files\\Git\\usr\\bin"))
 #+end_src
 
+** Why do I get a double =#+title= in Doom Emacs?
+:PROPERTIES:
+:CUSTOM_ID: h:0f737b7d-40e6-46a7-b1db-117c0ffcbfef
+:END:
+
+Doom Emacs provides a set of bespoke templates for Org. One of those
+prefills any new Org file with a =#+title= field. So when Denote
+creates a new Org file and inserts front matter to it, it inevitably
+adds an extra title to the existing one.
+
+This is not a Denote problem. We can only expect a new file to be
+empty by default. Check how to disable the relevant module in your
+Doom Emacs configuration file.
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:f8126820-3b59-49fa-bcc2-73bd60132bb9
