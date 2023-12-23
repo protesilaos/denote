@@ -1081,25 +1081,17 @@ Add =TITLE= to =FILE=. In interactive use, prompt for user input and
 retrieve the default =TITLE= value from a line starting with a title
 field in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 Else, use the file name as a default value at the minibuffer prompt.
-When called from Lisp, =TITLE= is a string.
-
-If =TITLE= is nil or an empty string, do not add it to a newly renamed
-file or remove it from an existing file.
+=TITLE= is a string.
 
 Add =SIGNATURE= to =FILE=. In interactive use, prompt for =SIGNATURE=,
 using an existing one as the default value at the minibuffer prompt.
-When called from Lisp, =SIGNATURE= is a string.
-
-If =SIGNATURE= is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file.
+=SIGNATURE= is a string.
 
 Add =KEYWORDS= to =FILE=. In interactive use, prompt for =KEYWORDS=.
 More than one keyword can be inserted when separated by the
-`crm-sepator' (normally a comma). When called from Lisp, =KEYWORDS= is
-a list of strings.
-
-If =KEYWORDS= is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file.
+`crm-sepator' (normally a comma). =KEYWORDS= is a list of strings.
+When called interactively, an empty input is converted to an empty list
+of keywords.
 
 Read the file type extension (like =.txt=) from the underlying file
 and preserve it through the renaming process. Files that have no
@@ -3911,7 +3903,7 @@ might change them without further notice.
   =DIR-PATH= and =ID= form the base file name.
 
   =KEYWORDS= is a list of strings that is reduced to a single string
-  by ~denote-keywords-combine~. =KEYWORDS= can be an empty string or a
+  by ~denote-keywords-combine~. =KEYWORDS= can be an empty list or a
   nil value, in which case the relevant file name component is not
   added to the base file name.
 

@@ -332,7 +332,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
-                    ""
+                    nil
                     ""
                     (denote--file-extension 'org)
                     "")
