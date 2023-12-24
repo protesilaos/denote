@@ -1019,8 +1019,8 @@ with `string-collate-lessp' if the user option
 `denote-sort-keywords' is non-nil.
 
 Return an empty list if the minibuffer input is empty."
-  (when-let ((kw (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
-    (denote-keywords-sort kw)))
+  (denote-keywords-sort
+   (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
