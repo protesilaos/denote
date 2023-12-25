@@ -59,7 +59,7 @@ leading and trailing hyphen."
 (ert-deftest denote-test--denote-sluggify ()
   "Test that `denote-sluggify' sluggifies the string.
 To sluggify is to (i) downcase, (ii) hyphenate, (iii) de-punctuate, and (iv) remove spaces from the string."
-  (should (equal (denote-sluggify " ___ !~!!$%^ This iS a tEsT ++ ?? ")
+  (should (equal (denote-sluggify 'title " ___ !~!!$%^ This iS a tEsT ++ ?? ")
                  "this-is-a-test")))
 
 (ert-deftest denote-test--denote--slug-put-equals ()
@@ -79,13 +79,13 @@ accounts for what we describe in `denote-test--denote--slug-put-equals'."
   (should (equal (denote-sluggify-signature "--- ___ !~!!$%^ This -iS- a tEsT ++ ?? ")
                  "this=is=a=test")))
 
-(ert-deftest denote-test--denote-sluggify-and-join ()
-  "Test that `denote-sluggify-and-join' sluggifies the string while joining words.
+(ert-deftest denote-test--denote-sluggify-keyword ()
+  "Test that `denote-sluggify-keyword' sluggifies the string while joining words.
 In this context, to join words is to elimitate any space or
 delimiter between them.
 
 Otherwise, this is like `denote-test--denote-sluggify'."
-  (should (equal (denote-sluggify-and-join "--- ___ !~!!$%^ This iS a - tEsT ++ ?? ")
+  (should (equal (denote-sluggify-keyword "--- ___ !~!!$%^ This iS a - tEsT ++ ?? ")
                  "thisisatest")))
 
 (ert-deftest denote-test--denote-sluggify-keywords ()
@@ -98,8 +98,8 @@ The function also account for the value of the user option
 
 (ert-deftest denote-test--denote-desluggify ()
   "Test that `denote-desluggify' upcases first character and de-hyphenates string."
-  (should (equal (denote-desluggify "this-is-a-test") "This is a test"))
-  (should (null (equal (denote-desluggify "this=is=a=test") "This is a test"))))
+  (should (equal (denote-desluggify 'title "this-is-a-test") "This is a test"))
+  (should (null (equal (denote-desluggify 'title "this=is=a=test") "This is a test"))))
 
 (ert-deftest denote-test--denote--file-empty-p ()
   "Test that `denote--file-empty-p' returns non-nil on empty file."
@@ -275,56 +275,56 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
     (should-error (denote-format-file-name
                     nil
                     id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
+                    kws
+                    title
                     (denote--file-extension 'org)
                     ""))
 
     (should-error (denote-format-file-name
                     ""
                     id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
+                    kws
+                    title
                     (denote--file-extension 'org)
                     ""))
 
     (should-error (denote-format-file-name
                    denote-directory ; notice this is the `let' bound value without the suffix
                    id
-                   (denote-sluggify-keywords kws)
-                   (denote-sluggify title)
+                   kws
+                   title
                    (denote--file-extension 'org)
                    ""))
 
     (should-error (denote-format-file-name
                    (denote-directory)
                    nil
-                   (denote-sluggify-keywords kws)
-                   (denote-sluggify title)
+                   kws
+                   title
                    (denote--file-extension 'org)
                    ""))
 
     (should-error (denote-format-file-name
                    (denote-directory)
                    ""
-                   (denote-sluggify-keywords kws)
-                   (denote-sluggify title)
+                   kws
+                   title
                    (denote--file-extension 'org)
                    ""))
 
     (should-error (denote-format-file-name
                    (denote-directory)
                    "0123456"
-                   (denote-sluggify-keywords kws)
-                   (denote-sluggify title)
+                   kws
+                   title
                    (denote--file-extension 'org)
                    ""))
 
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
+                    kws
+                    title
                     (denote--file-extension 'org)
                     "")
                    "/tmp/test-denote/20231128T055311--some-test__one_two.org"))
@@ -341,19 +341,10 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
-                    nil
-                    nil
+                    kws
+                    title
                     (denote--file-extension 'org)
-                    "")
-                   "/tmp/test-denote/20231128T055311.org"))
-
-    (should (equal (denote-format-file-name
-                    (denote-directory)
-                    id
-                    (denote-sluggify-keywords kws)
-                    (denote-sluggify title)
-                    (denote--file-extension 'org)
-                    (denote-sluggify-signature "sig"))
+                    "sig")
                    "/tmp/test-denote/20231128T055311==sig--some-test__one_two.org"))))
 
 (ert-deftest denote-test--denote-get-file-extension ()

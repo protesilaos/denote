@@ -3856,10 +3856,10 @@ might change them without further notice.
 
 #+findex: denote-sluggify
 + Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
-  file names and related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
+  file names and related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title, keywords and signature]]).
 
-#+findex: denote-sluggify-and-join
-+ Function ~denote-sluggify-and-join~ :: Sluggify =STR= while joining
+#+findex: denote-sluggify-keyword
++ Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
   separate words.
 
 #+findex: denote-desluggify
@@ -3889,8 +3889,8 @@ might change them without further notice.
 
 #+findex: denote-format-file-name
 + Function ~denote-format-file-name~ :: Format file name. =DIR-PATH=,
-  =ID=, =KEYWORDS=, =TITLE-SLUG=, =EXTENSION= and =SIGNATURE-SLUG= are
-  expected to be supplied by ~denote~ or equivalent command.
+  =ID=, =KEYWORDS=, =TITLE=, =EXTENSION= and =SIGNATURE= are expected to
+  be supplied by ~denote~ or equivalent command.
 
   =DIR-PATH= is a string pointing to a directory. It ends with a
   forward slash (the function ~denote-directory~ makes sure this is
@@ -3907,11 +3907,9 @@ might change them without further notice.
   nil value, in which case the relevant file name component is not
   added to the base file name.
 
-  =TITLE-SLUG= and =SIGNATURE-SLUG= are strings which, in principle,
-  are sluggified before passed as arguments here (per
-  ~denote-sluggify~ and ~denote-sluggify-signature~). They can be an
-  empty string or a nil value, in which case their respective file
-  name component is not added to the base file name.
+  =TITLE= and =SIGNATURE= are strings. They can be an empty string, in
+  which case their respective file name component is not added to the
+  base file name.
 
   =EXTENSION= is a string that contains a dot followed by the file
   type extension. It can be an empty string or a nil value, in which
