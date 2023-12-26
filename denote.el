@@ -1014,13 +1014,8 @@ With optional PROMPT-TEXT, use it to prompt the user for
 keywords.  Else use a generic prompt.  With optional
 INITIAL-KEYWORDS use them as the initial minibuffer text.
 
-Process the return value with `denote-keywords-sort' and sort
-with `string-collate-lessp' if the user option
-`denote-sort-keywords' is non-nil.
-
 Return an empty list if the minibuffer input is empty."
-  (denote-keywords-sort
-   (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
+  (denote--keywords-crm (denote-keywords) prompt-text initial-keywords))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
@@ -1814,9 +1809,7 @@ When called from Lisp, all arguments are optional.
      (append args nil)))
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
-         (kws (if (called-interactively-p 'interactive)
-                  keywords
-                (denote-keywords-sort keywords)))
+         (kws (denote-keywords-sort keywords))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
                  (denote--valid-date date)))
@@ -2498,6 +2491,7 @@ file-naming scheme."
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) ask-date)))
+         (keywords (denote-keywords-sort keywords))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
@@ -2531,9 +2525,10 @@ the changes made to the file: perform them outright."
                  (title (denote-title-prompt
                          (denote--retrieve-title-or-filename file file-type)
                          (format "Rename `%s' with title (empty to remove)" file-in-prompt)))
-                 (keywords (denote-keywords-prompt
-                            (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
-                            (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))
+                 (keywords (denote-keywords-sort
+                            (denote-keywords-prompt
+                             (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                             (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
                  (signature (denote-signature-prompt
                              (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
                              (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))
@@ -2590,7 +2585,8 @@ Specifically, do the following:
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-prompt "Rename marked files with keywords, overwriting existing (empty to ignore/remove)"))
+      (let ((keywords (denote-keywords-sort
+                       (denote-keywords-prompt "Rename marked files with keywords, overwriting existing (empty to ignore/remove)")))
             (used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
                         (denote--get-all-used-ids))))
         (dolist (file marks)
@@ -2708,7 +2704,7 @@ relevant front matter."
    (list
     (buffer-file-name)
     (denote-title-prompt)
-    (denote-keywords-prompt)))
+    (denote-keywords-sort (denote-keywords-prompt))))
   (when-let ((denote-file-is-writable-and-supported-p file)
              (id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file)))
@@ -3969,6 +3965,7 @@ Consult the manual for template samples."
          (id (denote--find-first-unused-id
               (format-time-string denote-id-format date)
               (denote--get-all-used-ids)))
+         (keywords (denote-keywords-sort keywords))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
                       (denote-directory)))

@@ -4004,15 +4004,13 @@ might change them without further notice.
   filter the candidates per the given regular expression.
 
 #+findex: denote-keywords-prompt
-+ Function ~denote-keywords-prompt~ :: Prompt for one or more
-  keywords. Read entries as separate when they are demarcated by the
++ Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
+  Read entries as separate when they are demarcated by the
   ~crm-separator~, which typically is a comma. With optional
   =PROMPT-TEXT=, use it to prompt the user for keywords. Else use a
   generic prompt. With optional =INITIAL-KEYWORDS= use them as the
-  initial minibuffer text. Process the return value with
-  ~denote-keywords-sort~ and sort with ~string-collate-lessp~ if the
-  user option ~denote-sort-keywords~ is non-nil. [ The optional
-  =INITIAL-KEYWORDS= argument is part of {{{development-version}}}. ]
+  initial minibuffer text. [ The optional =INITIAL-KEYWORDS= argument is
+  part of {{{development-version}}}. ]
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Prompt for title string. With
