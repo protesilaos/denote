@@ -821,7 +821,7 @@ text files that satisfy `denote-file-is-note-p'."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-file-is-note-p (denote-directory-files))))
+      (setq files (seq-filter #'denote-file-is-note-p files)))
     files))
 
 ;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
