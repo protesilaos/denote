@@ -161,7 +161,7 @@ that covered in the documentation of the `denote' function.  It
 is internally processed by `denote-journal-extras--get-date'."
   (interactive (list (when current-prefix-arg (denote-date-prompt))))
   (let ((internal-date (denote-journal-extras--get-date date))
-        (denote-user-enforced-denote-directory (denote-journal-extras-directory)))
+        (denote-directory (denote-journal-extras-directory)))
     (denote
      (denote-journal-extras-daily--title-format internal-date)
      `(,denote-journal-extras-keyword)
