@@ -1341,7 +1341,7 @@ directories.
 Every note produced by Denote follows this pattern by default
 ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
-: DATE--TITLE__KEYWORDS.EXTENSION
+: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
 The =DATE= field represents the date in year-month-day format followed
 by the capital letter =T= (for "time") and the current time in
@@ -1349,9 +1349,19 @@ hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
 note and, as such, is also known as the file's ID or identifier.
 
+File names can include a string of alphanumeric characters in the
+=SIGNATURE= field. Signatures have no clearly defined purpose and are up
+to the user to define. One use-case is to use them to establish
+sequential relations between files (e.g. 1, 1a, 1b, 1b1, 1b2, ...).
+
+Signatures are an optional extension to Denote's file-naming scheme.
+They can be added to newly created files on demand, with the command
+~denote-signature~, or by modifying the value of the user option
+~denote-prompts~.
+
 The =TITLE= field is the title of the note, as provided by the user.
 It automatically gets downcased by default and is also hyphenated
-([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).  An entry about "Economics
+([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).  An entry about "Economics
 in the Euro Area" produces an =economics-in-the-euro-area= string for
 the =TITLE= of the file name.
 
@@ -1360,12 +1370,12 @@ underscore (the separator is inserted automatically).  Each keyword is
 a string provided by the user at the relevant prompt which broadly
 describes the contents of the entry.
 
-Each of the keywords is a single word, with multiple keywords
-providing the multi-dimensionality needed for advanced searches
-through Denote files.  Users who need to compose a keyword out of
-multiple words are encouraged to apply a letter casing convention such
-as camelCase/CamelCase and set the ~denote-file-name-letter-casing~
-user option accordingly ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
+Each of the keywords is a single word, with multiple keywords providing
+the multi-dimensionality needed for advanced searches through Denote
+files.  Users who need to compose a keyword out of multiple words such
+as camelCase/CamelCase and are encouraged to use the
+~denote-file-name-slug-functions~ user option accordingly
+([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
 
 #+vindex: denote-file-type
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
@@ -1391,23 +1401,6 @@ invoking =M-x re-builder=).
 
 [[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
 
-As an optional extension to the above, file names can include a string
-of alphanumeric characters in the =SIGNATURE= field.  Signatures have
-no clearly defined purpose and are up to the user to define.  One
-use-case is to use them to establish sequential relations between
-files (e.g. 1, 1a, 1b, 1b1, 1b2, ...).  A full file name with a
-signature looks like this:
-
-: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
-
-The =SIGNATURE= field is anchored by the equals sign and thus retains
-the aforementioned searching/anchoring feature of =--= and =__=.
-
-Signatures are an optional extension to Denote's file-naming scheme.
-They can be added to newly created files on demand, with the command
-~denote-signature~, or by modifying the value of the user option
-~denote-prompts~.
-
 The ~denote-prompts~ can be configured in such ways to yield the
 following file name permutations:
 
@@ -1427,90 +1420,70 @@ scheme we apply guarantees that a listing is readable in a variety of
 contexts.  The Denote file-naming scheme is, in essence, an effective,
 low-tech invention.
 
-** Sluggified title, keywords, and signature
+** Sluggification of file name components
 :PROPERTIES:
 :CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
 :END:
 
-Denote has to be highly opinionated about which characters can be used
-in file names and the file's front matter in order to enforce its
-file-naming scheme.  The variable ~denote-excluded-punctuation-regexp~
-holds the relevant value.  In simple terms:
+Files names can contain any character that the file system
+permits. Denote imposes a few additional restrictions:
 
-+ What we count as "illegal characters" are converted into hyphens.
++ The tokens "==", =__= and =--= are interpreted by Denote and should
+  appear only once. =_= is the separator for keywords.
+
++ The dot character is not allowed in a note's file name, except to
+  indicate the extension.
+
+By default, Denote enforce other rules to file names through the user
+option ~denote-file-name-slug-functions~.
+
+These rules are applied to file names by default:
+
++ What we count as "illegal characters" are removed.  The variable
+  ~denote-excluded-punctuation-regexp~ holds the relevant value.
 
 + Input for a file title is hyphenated.  The original value is
   preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
-+ Keywords should not have spaces or other delimiters. If they do,
-  they are removed, meaning that =hello-world= becomes =helloworld=.
-  This is because hyphens in keywords do not work everywhere, such as
-  in Org.
++ Spaces or other delimiters are removed from keywords, meaning that
+  =hello-world= becomes =helloworld=.  This is because hyphens in
+  keywords do not work everywhere, such as in Org.
 
 + Signatures are like the above, but use the equals sign instead of
   hyphens.
 
-All file name components are downcases by default, though users can
-configure this behaviour ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
-Consider a =helloWorld= or =HelloWorld= convention for those cases
-where you would want to have a hyphen between consistuent words of a
-keyword.
++ All file name components are downcased.  Consider a =helloWorld= or
+  =HelloWorld= convention for those cases where you would want to have a
+  hyphen between consistuent words of a keyword.
 
-** Contol the letter casing of file names
-:PROPERTIES:
-:CUSTOM_ID: h:6ae1ab8c-5e36-4216-8e93-f37f4447582c
-:END:
-
-#+vindex: denote-file-name-letter-casing
-The user option ~denote-file-name-letter-casing~ controls the letter
-casing of the individual components of file names ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
-The default method is to downcase everything.
+#+vindex: denote-file-name-slug-functions
+The user option ~denote-file-name-slug-functions~ can be used to control
+the sluggification of the components of file names ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming
+scheme]]).  The default method is explained in the previous section.
 
 The value of this user option is an alist where each element is a cons
 cell of the form =(COMPONENT . METHOD)=.  For example, here is the
 default value:
 
 #+begin_example emacs-lisp
-'((title . downcase)
-  (signature . downcase)
-  (keywords . downcase)
-  (t . downcase))
+'((title . denote-sluggify-title)
+  (signature . denote-sluggify-signature)
+  (keyword . denote-sluggify-keyword))
 #+end_example
 
 What these cons cells of =(COMPONENT . METHOD)= are:
 
 - The =COMPONENT= is an unquoted symbol among =title=, =signature=,
-  =keywords=, which refers to the corresponding component of the file
-  name.  The special ~t~ =COMPONENT= is a fallback value in case the
-  others are not specified.
+  =keyword=, which refers to the corresponding component of the file
+  name.
 
-- The =METHOD= is the letter casing scheme, which is an unquoted
-  symbol of either =downcase= or =verbatim=.  A nil value has the same
-  meaning as =downcase=.  Other non-nil =METHOD= types are reserved
-  for possible future use.
-
-  The =downcase= =METHOD= converts user input for the given
-  =COMPONENT= into lower case.  The benefit of this approach (which is
-  the default behaviour) is that file names remain consistent over the
-  long-term.  The user never needs to account for varying letter
-  casing while working with them.
-
-  The =verbatim= =METHOD= means that Denote will not affect the letter
-  casing of user input when generating the given file name =COMPONENT=.
-  Conventions like CamelCase or camelCase are respected.  The user
-  thus assumes responsibility to keep file names in a good state over
-  the long term.
-
-As an example, we can downcase the title, but preserve the letter
-casing of the signature and keyword components with this:
-
-#+begin_src emacs-lisp
-(setq denote-file-name-letter-casing
-      '((title . downcase)
-        (signature . verbatim)
-        (keywords . verbatim)
-        (t . downcase)))
-#+end_src
+- The =METHOD= is the function to be used to format the given component.
+  This function should take a string as its parameter and return the
+  string formatted for the file name.  In the case of the `keyword'
+  component, the function receives a SINGLE string representing a single
+  keyword and return it formatted for the file name.  Joining the
+  keywords together is handled by Denote.  Note that the `keyword'
+  function is also applied to the keywords of the front matter.
 
 ** Features of the file-naming scheme for searching or filtering
 :PROPERTIES:
@@ -3856,7 +3829,7 @@ might change them without further notice.
 
 #+findex: denote-sluggify
 + Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
-  file names and related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title, keywords and signature]]).
+  file names and related ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
 
 #+findex: denote-sluggify-keyword
 + Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
@@ -3869,11 +3842,11 @@ might change them without further notice.
 
 #+findex: denote-sluggify-signature
 + Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
-  slug for signatures ([[#h:6ae1ab8c-5e36-4216-8e93-f37f4447582c][Contol the letter casing of file names]]).
+  slug for signatures ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
 
 #+findex: denote-sluggify-keywords
 + Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
-  a list of strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggified title and keywords]]).
+  a list of strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
 
 #+findex: denote-filetype-heuristics
 + Function ~denote-filetype-heuristics~ :: Return likely file type of
