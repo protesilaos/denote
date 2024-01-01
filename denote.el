@@ -618,6 +618,21 @@ as the aforementioned variables."
       (setq str (replace-regexp-in-string regexp "" str))))
   str)
 
+(defun denote--slug-no-punct-for-signature (str &optional extra-characters)
+  "Remove punctuation (except = signs) from STR.
+
+This works the same way as `denote--slug-no-punct', except that =
+signs are not removed from STR.
+
+EXTRA-CHARACTERS is an optional string. See
+`denote--slug-no-punct' for its documentation."
+  (dolist (regexp (list denote-excluded-punctuation-regexp
+                        denote-excluded-punctuation-extra-regexp
+                        extra-characters))
+    (when (stringp regexp)
+      (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" str))))
+  str)
+
 (defun denote--slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
@@ -661,7 +676,7 @@ any leading and trailing signs."
 (defun denote-sluggify-signature (str)
   "Make STR an appropriate slug for signatures.
 Perform letter casing according to `denote-file-name-letter-casing'."
-  (denote-letter-case 'signature (denote--slug-put-equals (denote--slug-no-punct str "-+"))))
+  (denote-letter-case 'signature (denote--slug-put-equals (denote--slug-no-punct-for-signature str "-+"))))
 
 (defun denote-sluggify-and-join (str)
   "Sluggify STR while joining separate words."
@@ -2485,7 +2500,7 @@ file-naming scheme."
        (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
        (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
       (denote-signature-prompt
-       (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
+       (or (denote-retrieve-filename-signature file) "")
        (format "Rename `%s' with signature (empty to remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
@@ -2530,7 +2545,7 @@ the changes made to the file: perform them outright."
                              (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
                              (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
                  (signature (denote-signature-prompt
-                             (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
+                             (or (denote-retrieve-filename-signature file) "")
                              (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
@@ -2593,7 +2608,7 @@ Specifically, do the following:
           (let* ((dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
-                 (signature (string-replace "=" " " (or (denote-retrieve-filename-signature file) "")))
+                 (signature (or (denote-retrieve-filename-signature file) ""))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
@@ -2637,7 +2652,7 @@ does internally."
            (id (denote-retrieve-filename-identifier file)))
       (let* ((sluggified-title (denote-sluggify title 'title))
              (keywords (denote-retrieve-front-matter-keywords-value file file-type))
-             (signature (string-replace "=" " " (or (denote-retrieve-filename-signature file) "")))
+             (signature (or (denote-retrieve-filename-signature file) ""))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords sluggified-title extension (denote-sluggify-signature signature))))
