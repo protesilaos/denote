@@ -778,6 +778,17 @@ FILE must be an absolute path."
   (and denote-excluded-directories-regexp
        (string-match-p denote-excluded-directories-regexp file)))
 
+(defun denote--directory-files-recursively-predicate (file)
+  "Predicate used by `directory-files-recursively' on FILE.
+
+Return t if FILE is valid, else return nil."
+  (let ((rel (denote-get-file-name-relative-to-denote-directory file)))
+    (cond
+     ((string-match-p "\\`\\." rel) nil)
+     ((string-match-p "/\\." rel) nil)
+     ((denote--exclude-directory-regexp-p rel) nil)
+     ((file-readable-p file)))))
+
 (defun denote--directory-all-files-recursively ()
   "Return list of all files in variable `denote-directory'.
 Avoids traversing dotfiles (unconditionally) and whatever matches
@@ -786,13 +797,7 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
    (denote-directory)
    directory-files-no-dot-files-regexp
    :include-directories
-   (lambda (f)
-     (cond
-      ((string-match-p "\\`\\." f) nil)
-      ((string-match-p "/\\." f) nil)
-      ((denote--exclude-directory-regexp-p f) nil)
-      ((file-readable-p f))
-      (t)))
+   #'denote--directory-files-recursively-predicate
    :follow-symlinks))
 
 (defun denote--directory-get-files ()
