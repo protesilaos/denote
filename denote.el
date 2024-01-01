@@ -990,9 +990,7 @@ Inferred keywords are filtered by the user option
 STRING consists of underscore-separated words, as those appear in
 the keywords component of a Denote file name.  STRING is the same
 as the return value of `denote-retrieve-filename-keywords'."
-  (when (and string (not (string-empty-p string)))
-    (let ((list-of-strings (split-string string "_" :omit-nulls "_")))
-      (mapconcat #'identity list-of-strings ","))))
+  (string-join (split-string string "_" :omit-nulls "_") ","))
 
 (defvar denote--keyword-history nil
   "Minibuffer history of inputted keywords.")
@@ -2492,7 +2490,7 @@ file-naming scheme."
        (format "Rename `%s' with title (empty to remove)" file-in-prompt))
       (denote-keywords-prompt
        (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
-       (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file)))
+       (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
       (denote-signature-prompt
        (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
        (format "Rename `%s' with signature (empty to remove)" file-in-prompt))
@@ -2535,7 +2533,7 @@ the changes made to the file: perform them outright."
                          (format "Rename `%s' with title (empty to remove)" file-in-prompt)))
                  (keywords (denote-keywords-prompt
                             (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
-                            (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file))))
+                            (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))
                  (signature (denote-signature-prompt
                              (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
                              (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))
