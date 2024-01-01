@@ -863,7 +863,6 @@ read the video's path when called from there (e.g. by using Emacs'
 
 [[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]].
 
-#+vindex: denote-user-enforced-denote-directory
 There are cases where the user (i) wants to maintain multiple silos
 and (ii) prefers an interactive way to switch between them without
 going through Dired.  Since this is specific to the user's workflow,
@@ -900,7 +899,7 @@ added to the user's Denote configuration:
          (intern (completing-read
                   "Run command in silo: "
                   my-denote-commands-for-silos nil t))))
-  (let ((denote-user-enforced-denote-directory silo))
+  (let ((denote-directory silo))
     (call-interactively command)))
 #+end_src
 
@@ -908,15 +907,12 @@ With this in place, =M-x my-denote-pick-silo-then-command= will use
 minibuffer completion to select a silo among the predefined options
 and then ask for the command to run in that context.
 
-Note the use of the variable ~user-enforced-denote-directory~. This
-variable is specially meant for custom commands to select silos. When
-it is set, it overrides the global default value of ~denote-directory~
-as well as the value provided by the =.dir-locals.el= file. Use it
-only when writing wrapper functions like
-~my-denote-pick-silo-then-command~.
+Note that =let= binding ~denote-directory~ can be used in custom
+commands and other wrapper functions to override the global default
+value of ~denote-directory~ to select silos.
 
-To see another example of a wrapper function that uses
-~user-enforced-denote-directory~, see:
+To see another example of a wrapper function that =let= binds
+~denote-directory~, see:
 
 [[#h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd][Extending Denote: Split an Org subtree into its own note]].
 
@@ -2869,7 +2865,7 @@ Delete the original subtree."
            (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
       (let ((element (org-element-at-point))
             (tags (org-get-tags))
-            (denote-user-enforced-denote-directory silo))
+            (denote-directory silo))
         (delete-region (org-entry-beginning-position)
                        (save-excursion (org-end-of-subtree t) (point)))
         (denote heading
@@ -3829,8 +3825,8 @@ might change them without further notice.
   ~denote-directory~ as a proper directory, also because it accepts a
   directory-local value for what we internally refer to as "silos"
   ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).  Custom Lisp code can
-  ~let~ bind the value of the variable ~denote-user-enforced-denote-directory~
-  to override what this function returns.
+  ~let~ bind the value of the variable ~denote-directory~ to override
+  what this function returns.
 
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
