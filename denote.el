@@ -601,7 +601,7 @@ to override what this function returns."
 (make-obsolete
  'denote-user-enforced-denote-directory
  'denote-directory
- "3.0.0")
+ "3.0.0 (just `let' bind the `denote-directory')")
 
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
