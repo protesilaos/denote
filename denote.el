@@ -2507,7 +2507,9 @@ file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
-          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
+          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
+          (signature-or-nil (denote-retrieve-filename-signature file))
+          (spaced-signature (if signature-or-nil (string-replace "=" " " signature-or-nil) "")))
      (list
       file
       (denote-title-prompt
@@ -2516,9 +2518,8 @@ file-naming scheme."
       (denote-keywords-prompt
        (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
        (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file)))
-      (denote-signature-prompt
-       (or (denote-retrieve-filename-signature file) "")
-       (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
+      (denote-signature-prompt spaced-signature
+                               (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
@@ -2562,8 +2563,10 @@ the changes made to the file: perform them outright."
                  (keywords (denote-keywords-prompt
                             (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
                             (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file))))
+                 (signature-or-nil (denote-retrieve-filename-signature file))
+                 (spaced-signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
                  (signature (denote-signature-prompt
-                             (or (denote-retrieve-filename-signature file) "")
+                             spaced-signature
                              (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
@@ -2625,7 +2628,8 @@ Specifically, do the following:
           (let* ((dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
-                 (signature (or (denote-retrieve-filename-signature file) ""))
+                 (signature-or-nil (denote-retrieve-filename-signature file))
+                 (signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
@@ -2669,7 +2673,8 @@ does internally."
            (id (denote-retrieve-filename-identifier file)))
       (let* ((sluggified-title (denote-sluggify title 'title))
              (keywords (denote-retrieve-front-matter-keywords-value file file-type))
-             (signature (or (denote-retrieve-filename-signature file) ""))
+             (signature-or-nil (denote-retrieve-filename-signature file))
+             (signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords sluggified-title extension (when signature (denote-sluggify-signature signature)))))
