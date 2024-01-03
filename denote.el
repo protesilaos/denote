@@ -1794,6 +1794,15 @@ increment it 1 second at a time until an available id is found."
 
 ;;;;; The `denote' command and its prompts
 
+(defvar denote--use-region-in-denote-command t
+  "If non-nil, the region can be used by the `denote' command.
+
+The `denote' command uses the region as the default title when
+prompted for a title.  When this variable is nil, the `denote'
+command ignores the region.  This variable is meant to be used in
+commands such as `denote-region' which have their own way of
+handling the region.")
+
 ;;;###autoload
 (defun denote (&optional title keywords file-type subdirectory date template signature)
   "Create a new note with the appropriate metadata and file name.
@@ -1832,7 +1841,8 @@ When called from Lisp, all arguments are optional.
      (dolist (prompt denote-prompts)
        (pcase prompt
          ('title (aset args 0 (denote-title-prompt
-                               (when (use-region-p)
+                               (when (and denote--use-region-in-denote-command
+                                          (use-region-p))
                                  (buffer-substring-no-properties
                                   (region-beginning)
                                   (region-end))))))
@@ -2104,10 +2114,7 @@ is set to \\='(signature title keywords)."
 
 ;;;###autoload
 (defun denote-region ()
-  "Call `denote' and insert therein the text of the active region.
-Prompt for title and keywords.  With no active region, call
-`denote' ordinarily (refer to its documentation for the
-technicalities)."
+  "Call `denote' and insert therein the text of the active region."
   (declare (interactive-only t))
   (interactive)
   (if-let (((region-active-p))
@@ -2115,7 +2122,8 @@ technicalities)."
            ;; the moment `insert' is called.
            (text (buffer-substring-no-properties (region-beginning) (region-end))))
       (progn
-        (denote (denote-title-prompt) (denote-keywords-prompt))
+        (let ((denote--use-region-in-denote-command nil))
+          (call-interactively 'denote))
         (push-mark (point))
         (insert text)
         (run-hook-with-args 'denote-region-after-new-note-functions (mark) (point)))
