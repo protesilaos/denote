@@ -2758,13 +2758,10 @@ Sources for ~tmr~:
 
 #+findex: denote-region
 The command ~denote-region~ takes the contents of the active region
-and then prompts for a title and keywords.  Once a new note is
-created, it inserts the contents of the region therein.  This is
-useful to quickly elaborate on some snippet of text or capture it for
-future reference.
-
-If there is no active region, ~denote-region~ simply calls the
-~denote~ command which will behave the way it does ordinarily.
+and then calls the ~denote~ command.  Once a new note is created, it
+inserts the contents of the region therein.  This is useful to
+quickly elaborate on some snippet of text or capture it for future
+reference.
 
 #+vindex: denote-region-after-new-note-functions
 When the ~denote-region~ command is called with an active region, it
