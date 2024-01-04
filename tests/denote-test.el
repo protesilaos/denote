@@ -332,7 +332,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
-                    ""
+                    nil
                     ""
                     (denote--file-extension 'org)
                     "")
@@ -393,8 +393,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
   (should
    (and (equal (denote-convert-file-name-keywords-to-crm "_denote_keywords_testing") "denote,keywords,testing")
         (equal (denote-convert-file-name-keywords-to-crm "_denote") "denote")
-        (null (denote-convert-file-name-keywords-to-crm ""))
-        (null (denote-convert-file-name-keywords-to-crm nil)))))
+        (equal (denote-convert-file-name-keywords-to-crm "") ""))))
 
 ;;;; denote-journal-extras.el
 

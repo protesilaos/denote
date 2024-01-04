@@ -821,7 +821,7 @@ text files that satisfy `denote-file-is-note-p'."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-file-is-note-p (denote-directory-files))))
+      (setq files (seq-filter #'denote-file-is-note-p files)))
     files))
 
 ;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
@@ -990,9 +990,7 @@ Inferred keywords are filtered by the user option
 STRING consists of underscore-separated words, as those appear in
 the keywords component of a Denote file name.  STRING is the same
 as the return value of `denote-retrieve-filename-keywords'."
-  (when (and string (not (string-empty-p string)))
-    (let ((list-of-strings (split-string string "_" :omit-nulls "_")))
-      (mapconcat #'identity list-of-strings ","))))
+  (string-join (split-string string "_" :omit-nulls "_") ","))
 
 (defvar denote--keyword-history nil
   "Minibuffer history of inputted keywords.")
@@ -1020,15 +1018,14 @@ Process the return value with `denote-keywords-sort' and sort
 with `string-collate-lessp' if the user option
 `denote-sort-keywords' is non-nil.
 
-Return an empty string if the minibuffer input is empty."
-  (if-let ((kw (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
-      (denote-keywords-sort kw)
-    ""))
+Return an empty list if the minibuffer input is empty."
+  (denote-keywords-sort
+   (denote--keywords-crm (denote-keywords) prompt-text initial-keywords)))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
 KEYWORDS is a list of strings, per `denote-keywords-prompt'."
-  (if (and (listp keywords) denote-sort-keywords)
+  (if denote-sort-keywords
       (sort keywords #'string-collate-lessp)
     keywords))
 
@@ -1048,11 +1045,10 @@ Denote file-naming scheme."
 
 (defun denote--keywords-add-to-history (keywords)
   "Append KEYWORDS to `denote--keyword-history'."
-  (when (listp keywords)
-    (mapc
-     (lambda (kw)
-       (add-to-history 'denote--keyword-history kw))
-     (delete-dups keywords))))
+  (mapc
+   (lambda (kw)
+     (add-to-history 'denote--keyword-history kw))
+   (delete-dups keywords)))
 
 ;;;; File types
 
@@ -1564,7 +1560,7 @@ nil or an empty string and must match `denote-id-regexp'.
 DIR-PATH and ID form the base file name.
 
 KEYWORDS is a list of strings that is reduced to a single string
-by `denote-keywords-combine'.  KEYWORDS can be an empty string or
+by `denote-keywords-combine'.  KEYWORDS can be an empty list or
 a nil value, in which case the relevant file name component is
 not added to the base file name.
 
@@ -1595,7 +1591,7 @@ which case it is not added to the base file name."
       (setq file-name (concat file-name "==" signature-slug)))
     (when (and title-slug (not (string-empty-p title-slug)))
       (setq file-name (concat file-name "--" title-slug)))
-    (when (and keywords (or (listp keywords) (not (string-empty-p keywords))))
+    (when keywords
       (setq file-name (concat file-name "__" (denote-keywords-combine keywords))))
     (concat file-name extension)))
 
@@ -2434,26 +2430,17 @@ Add TITLE to FILE.  In interactive use, prompt for user input and
 retrieve the default TITLE value from a line starting with a
 title field in the file's contents, depending on the given file
 type (e.g. #+title for Org).  Else, use the file name as a
-default value at the minibuffer prompt.  When called from Lisp,
-TITLE is a string.
-
-If TITLE is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file.
+default value at the minibuffer prompt.  TITLE is a string.
 
 Add SIGNATURE to FILE.  In interactive use, prompt for SIGNATURE,
 using an existing one as the default value at the minibuffer
-prompt.  When called from Lisp, SIGNATURE is a string.
-
-If SIGNATURE is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file.
+prompt.  SIGNATURE is a string.
 
 Add KEYWORDS to FILE.  In interactive use, prompt for KEYWORDS.
 More than one keyword can be inserted when separated by the
-`crm-sepator' (normally a comma).  When called from Lisp,
-KEYWORDS is a list of strings.
-
-If KEYWORDS is nil or an empty string, do not add it to a newly
-renamed file or remove it from an existing file.
+`crm-sepator' (normally a comma).  KEYWORDS is a list of strings.
+When called interactively, an empty input is converted to an
+empty list of keywords.
 
 Read the file type extension (like .txt) from the underlying file
 and preserve it through the renaming process.  Files that have no
@@ -2495,28 +2482,24 @@ file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
-          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
-          (signature-or-nil (denote-retrieve-filename-signature file))
-          (spaced-signature (if signature-or-nil (string-replace "=" " " signature-or-nil) "")))
+          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
      (list
       file
       (denote-title-prompt
        (denote--retrieve-title-or-filename file file-type)
-       (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt))
+       (format "Rename `%s' with title (empty to remove)" file-in-prompt))
       (denote-keywords-prompt
-       (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
-       (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file)))
-      (denote-signature-prompt spaced-signature
-                               (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt))
+       (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+       (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
+      (denote-signature-prompt
+       (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
+       (format "Rename `%s' with signature (empty to remove)" file-in-prompt))
       current-prefix-arg)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) ask-date)))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
-         (title (or title (denote--retrieve-title-or-filename file file-type)))
-         (keywords (or keywords (denote-retrieve-front-matter-keywords-value file file-type)))
-         (signature (or signature (denote-retrieve-filename-signature file) ""))
          (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature)))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
@@ -2547,15 +2530,13 @@ the changes made to the file: perform them outright."
                          (denote-create-unique-file-identifier file used-ids)))
                  (title (denote-title-prompt
                          (denote--retrieve-title-or-filename file file-type)
-                         (format "Rename `%s' with title (empty to ignore/remove)" file-in-prompt)))
+                         (format "Rename `%s' with title (empty to remove)" file-in-prompt)))
                  (keywords (denote-keywords-prompt
-                            (format "Rename `%s' with keywords (empty to ignore/remove)" file-in-prompt)
-                            (denote-convert-file-name-keywords-to-crm (denote-retrieve-filename-keywords file))))
-                 (signature-or-nil (denote-retrieve-filename-signature file))
-                 (spaced-signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
+                            (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                            (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))
                  (signature (denote-signature-prompt
-                             spaced-signature
-                             (format "Rename `%s' with signature (empty to ignore/remove)" file-in-prompt)))
+                             (string-replace "=" " " (or (denote-retrieve-filename-signature file) ""))
+                             (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords (denote-sluggify title 'title) extension (denote-sluggify-signature signature))))
             (denote-rename-file-and-buffer file new-name)
@@ -2616,8 +2597,7 @@ Specifically, do the following:
           (let* ((dir (file-name-directory file))
                  (id (or (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
-                 (signature-or-nil (denote-retrieve-filename-signature file))
-                 (signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
+                 (signature (string-replace "=" " " (or (denote-retrieve-filename-signature file) "")))
                  (file-type (denote-filetype-heuristics file))
                  (title (denote--retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
@@ -2661,11 +2641,10 @@ does internally."
            (id (denote-retrieve-filename-identifier file)))
       (let* ((sluggified-title (denote-sluggify title 'title))
              (keywords (denote-retrieve-front-matter-keywords-value file file-type))
-             (signature-or-nil (denote-retrieve-filename-signature file))
-             (signature (if signature-or-nil (string-replace "=" " " signature-or-nil) ""))
+             (signature (string-replace "=" " " (or (denote-retrieve-filename-signature file) "")))
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
-             (new-name (denote-format-file-name dir id keywords sluggified-title extension (when signature (denote-sluggify-signature signature)))))
+             (new-name (denote-format-file-name dir id keywords sluggified-title extension (denote-sluggify-signature signature))))
         (when (or auto-confirm
                   (denote-rename-file-prompt file new-name))
           (denote-rename-file-and-buffer file new-name)
