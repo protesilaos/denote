@@ -515,11 +515,11 @@ form (COMPONENT . METHOD).
   refers to the corresponding component of the file name.
 
 - The METHOD is the function to be used to format the given
-  component. This function should take a string as its parameter
-  and return the string formatted for the file name. In the case
+  component.  This function should take a string as its parameter
+  and return the string formatted for the file name.  In the case
   of the `keyword' component, the function receives a SINGLE
   string representing a single keyword and return it formatted
-  for the file name. Joining the keywords together is handled by
+  for the file name.  Joining the keywords together is handled by
   Denote.
 
 Note that the `keyword' function is also applied to the keywords
