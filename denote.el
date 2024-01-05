@@ -541,7 +541,7 @@ use `denote-sluggify-title', `denote-sluggify-keyword' and
   "Specify the method Denote uses to reverse the process of `denote-sluggify'.
 
 Since `denote-sluggify' is destructive, this is just an attempt
-to get back a more human-friendly component. This is useful when
+to get back a more human-friendly component.  This is useful when
 you want to retrieve a title or signature from the file name and
 display it as the default input in commands such as
 `denote-rename-file'.
@@ -631,7 +631,7 @@ as the aforementioned variables."
 This works the same way as `denote--slug-no-punct', except that =
 signs are not removed from STR.
 
-EXTRA-CHARACTERS is an optional string. See
+EXTRA-CHARACTERS is an optional string.  See
 `denote--slug-no-punct' for its documentation."
   (dolist (regexp (list denote-excluded-punctuation-regexp
                         denote-excluded-punctuation-extra-regexp
@@ -1601,7 +1601,7 @@ by `denote-keywords-combine'.  KEYWORDS can be an empty list or
 a nil value, in which case the relevant file name component is
 not added to the base file name.
 
-TITLE and SIGNATURE are strings. They can be an empty string, in
+TITLE and SIGNATURE are strings.  They can be an empty string, in
 which case their respective file name component is not added to
 the base file name.
 
