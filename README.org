@@ -1246,7 +1246,7 @@ so by writing keywords to them. Specifically, it does the following:
   Denote's file-naming scheme;
 
 - sluggifies the =TITLE= and adjusts its letter casing, according to
-  our conventions ([[*Contol the letter casing of file names][Contol the letter casing of file names]]);
+  our conventions;
 
 - prepends an identifier to the =TITLE=, if one is missing;
 
