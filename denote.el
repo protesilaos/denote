@@ -592,23 +592,40 @@ things accordingly.")
         `(metadata (category . ,category))
       (complete-with-action action candidates string pred))))
 
+(defun denote--default-directory-is-silo-p ()
+  "Return path to silo if `default-directory' is a silo."
+  (when-let ((dir-locals (dir-locals-find-file default-directory))
+             ((alist-get 'denote-directory dir-local-variables-alist)))
+    (cond
+     ((listp dir-locals)
+      (car dir-locals))
+     ((stringp dir-locals)
+      dir-locals))))
+
 (defun denote--make-denote-directory ()
   "Make the variable `denote-directory' and its parents, if needed."
   (when (not (file-directory-p denote-directory))
     (make-directory denote-directory :parents)))
 
+(defvar denote-user-enforced-denote-directory nil
+  "Value of the variable `denote-directory'.
+Use this to `let' bind a directory path, thus overriding what the
+function `denote-directory' ordinarily returns.")
+
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory.
-Custom Lisp code can `let' bind the variable `denote-directory'
-to override what this function returns."
-  (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
-    (denote--make-denote-directory)
-    denote-directory))
+Custom Lisp code can `let' bind the value of the variable
+`denote-user-enforced-denote-directory' to override what this
+function returns.
 
-(make-obsolete
- 'denote-user-enforced-denote-directory
- 'denote-directory
- "3.0.0 (just `let' bind the `denote-directory')")
+Otherwise, the order of precedence is to first check for a silo
+before falling back to the value of the variable
+`denote-directory'."
+  (let ((path (or denote-user-enforced-denote-directory
+                  (denote--default-directory-is-silo-p)
+                  (denote--make-denote-directory)
+                  (default-value 'denote-directory))))
+    (file-name-as-directory (expand-file-name path))))
 
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
