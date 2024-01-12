@@ -70,7 +70,7 @@ SILO is a file path from `denote-silo-extras-directories'."
    (list
     (when current-prefix-arg
       (denote-silo-extras--directory-prompt))))
-  (let ((denote-directory silo))
+  (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote)))
 
 ;;;###autoload
@@ -81,7 +81,7 @@ SILO is a file path from `denote-silo-extras-directories'."
    (list
     (when current-prefix-arg
       (denote-silo-extras--directory-prompt))))
-  (let ((denote-directory silo))
+  (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote-open-or-create)))
 
 ;;;###autoload
@@ -93,7 +93,7 @@ COMMAND is one among `denote-silo-extras-commands'."
    (list
     (denote-silo-extras--directory-prompt)
     (denote-command-prompt)))
-  (let ((denote-directory silo))
+  (let ((denote-user-enforced-denote-directory silo))
     (call-interactively command)))
 
 (provide 'denote-silo-extras)
