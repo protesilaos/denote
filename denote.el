@@ -1,6 +1,6 @@
 ;;; denote.el --- Simple notes with an efficient file-naming scheme -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022-2023  Free Software Foundation, Inc.
+;; Copyright (C) 2022-2024  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Denote Development <~protesilaos/denote@lists.sr.ht>
