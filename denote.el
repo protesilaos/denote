@@ -667,18 +667,36 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
+(defun denote--replace-consecutive-token-characters (str)
+  "Replace consecutive characters with a single one in STR.
+Spaces, underscores and equal signs are replaced with a single
+one in str."
+  (replace-regexp-in-string
+   "-\\{2,\\}" "-"
+   (replace-regexp-in-string
+    "_\\{2,\\}" "_"
+    (replace-regexp-in-string
+     "=\\{2,\\}" "=" str))))
+
 (defun denote-sluggify (component str)
   "Make STR an appropriate slug for file name COMPONENT.
 
 Apply the function specified in `denote-file-name-slug-function'
-to COMPONENT which is one of `title', `signature', `keyword'."
-  (let ((slug-function (alist-get component denote-file-name-slug-functions)))
-    (cond ((eq component 'title)
-           (funcall (or slug-function #'denote-sluggify-title) str))
-          ((eq component 'keyword)
-           (funcall (or slug-function #'denote-sluggify-keyword) str))
-          ((eq component 'signature)
-           (funcall (or slug-function #'denote-sluggify-signature) str)))))
+to COMPONENT which is one of `title', `signature', `keyword'.  If
+the resulting string still contains consecutive -,_ or =, they
+are replaced by a single occurence of the character.  If
+COMPONENT is `keyword', remove underscores from STR as they are
+used as the keywords separator in file names."
+  (let* ((slug-function (alist-get component denote-file-name-slug-functions))
+         (str-slug (cond ((eq component 'title)
+                          (funcall (or slug-function #'denote-sluggify-title) str))
+                         ((eq component 'keyword)
+                          (replace-regexp-in-string
+                           "_" ""
+                           (funcall (or slug-function #'denote-sluggify-keyword) str)))
+                         ((eq component 'signature)
+                          (funcall (or slug-function #'denote-sluggify-signature) str)))))
+    (denote--replace-consecutive-token-characters str-slug)))
 
 (make-obsolete
  'denote-letter-case
