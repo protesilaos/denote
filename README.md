@@ -14,14 +14,11 @@ filtering and retrieval considerably easier.  Denote provides relevant
 facilities to rename files, regardless of file type.
 
 + Package name (GNU ELPA): `denote`
-+ Official manual: <https://protesilaos.com/emacs/denote> (the manual is
-  installed with the package---evaluate `(info "(denote) Top")`)
++ Official manual: <https://protesilaos.com/emacs/denote>
 + Change log: <https://protesilaos.com/emacs/denote-changelog>
-+ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
-  - Mirrors:
-    + GitHub: <https://github.com/protesilaos/denote>
-    + GitLab: <https://gitlab.com/protesilaos/denote>
-+ Mailing list: <https://lists.sr.ht/~protesilaos/denote>
++ Git repositories:
+  + GitHub: <https://github.com/protesilaos/denote>
+  + GitLab: <https://gitlab.com/protesilaos/denote>
 + Video demo: <https://protesilaos.com/codelog/2022-06-18-denote-demo/>
 + Backronyms: Denote Everything Neatly; Omit The Excesses.  Don't Ever
   Note Only The Epiphenomenal.
