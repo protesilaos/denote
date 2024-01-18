@@ -3937,9 +3937,10 @@ interface by first selecting the `denote:' hyperlink type."
 (declare-function org-entry-get "org" (pom property &optional inherit literal-nil))
 (declare-function org-id-new "org-id" (&optional prefix))
 
-(defun denote--link-ol-id-get-create ()
-  "Create a CUSTOM_ID for current entry under POSITION and return it.
-If the entry already has a CUSTOM_ID, return it as-is."
+(defun denote-link-ol-get-id ()
+  "Get the CUSTOM_ID of the current entry.
+If the entry already has a CUSTOM_ID, return it as-is, else
+create a new one."
   (let* ((pos (point))
          (id (org-entry-get pos "CUSTOM_ID")))
     (if (and id (stringp id) (string-match-p "\\S-" id))
@@ -3959,8 +3960,8 @@ If the entry already has a CUSTOM_ID, return it as-is."
     (org-link-store-props
      :type "denote"
      :description file-title
-               (format "denote:%s::#%s" file-id (denote--link-ol-id-get-create))
      :link (if (and denote-link-to-org-headings (derived-mode-p 'org-mode))
+               (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
              (concat "denote:" file-id)))
     org-store-link-plist))
 
