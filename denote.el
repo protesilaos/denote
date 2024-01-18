@@ -1810,14 +1810,68 @@ increment it 1 second at a time until an available id is found."
 
 ;;;;; The `denote' command and its prompts
 
-(defvar denote--use-region-in-denote-command t
-  "If non-nil, the region can be used by the `denote' command.
+(defvar denote-ignore-region-in-denote-command nil
+  "If non-nil, the region is ignored by the `denote' command.
 
 The `denote' command uses the region as the default title when
-prompted for a title.  When this variable is nil, the `denote'
-command ignores the region.  This variable is meant to be used in
-commands such as `denote-region' which have their own way of
-handling the region.")
+prompted for a title.  When this variable is non-nil, the
+`denote' command ignores the region.  This variable is useful in
+commands that have their own way of handling the region.")
+
+;; NOTE 2024-01-13: This is a candidate for a user option.
+(defvar denote-save-buffer-after-creation nil
+  "If non-nil, the buffer is saved at the end of the `denote' command.")
+
+(defvar denote-title-prompt-current-default nil
+  "Currently bound default title for `denote-title-prompt'.
+Set the value of this variable within the lexical scope of a
+command that needs to supply a default title before calling
+`denote-title-prompt'.")
+
+(defun denote--command-with-features (command force-use-file-prompt-as-default-title force-ignore-region force-save in-background)
+  "Execute file-creating COMMAND with specified features.
+
+COMMAND is the symbol of a file-creating command to call, such as
+`denote' or `denote-signature'.
+
+With non-nil FORCE-USE-FILE-PROMPT-AS-DEFAULT-TITLE, use the last
+item of `denote-file-history' as the default title of the title
+prompt.  This is useful in a command such as `denote-link' where
+the entry of the file prompt can be reused as the default title.
+
+With non-nil FORCE-IGNORE-REGION, the region is ignore when
+creating the note, i.e. it will not be used as the initial title
+in a title prompt.  Else, the value of
+`denote-ignore-region-in-denote-command' is respected.
+
+With non-nil FORCE-SAVE, the file is saved at the end of the note
+creation.  Else, the value of `denote-save-buffer-after-creation'
+is respected.
+
+With non-nil IN-BACKGROUND, the note creation happens in the
+background, i.e. the note's buffer will not be displayed after
+the note is created.
+
+Note that if all parameters except COMMAND are nil, this is
+equivalent to `(call-interactively command)'.
+
+The path of the newly created file is returned."
+  (let ((denote-save-buffer-after-creation
+         (or force-save denote-save-buffer-after-creation))
+        (denote-ignore-region-in-denote-command
+         (or force-ignore-region denote-ignore-region-in-denote-command))
+        (denote-title-prompt-current-default
+         (if force-use-file-prompt-as-default-title
+             (when denote--file-history (pop denote--file-history))
+           denote-title-prompt-current-default))
+        (path))
+    (if in-background
+        (save-window-excursion
+          (call-interactively command)
+          (setq path (buffer-file-name)))
+      (call-interactively command)
+      (setq path (buffer-file-name)))
+    path))
 
 ;;;###autoload
 (defun denote (&optional title keywords file-type subdirectory date template signature)
@@ -1857,7 +1911,7 @@ When called from Lisp, all arguments are optional.
      (dolist (prompt denote-prompts)
        (pcase prompt
          ('title (aset args 0 (denote-title-prompt
-                               (when (and denote--use-region-in-denote-command
+                               (when (and (not denote-ignore-region-in-denote-command)
                                           (use-region-p))
                                  (buffer-substring-no-properties
                                   (region-beginning)
@@ -1886,17 +1940,12 @@ When called from Lisp, all arguments are optional.
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
     (denote--prepare-note title kws date id directory file-type template signature)
+    (when denote-save-buffer-after-creation (save-buffer))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)))
 
 (defvar denote--title-history nil
   "Minibuffer history of `denote-title-prompt'.")
-
-(defvar denote-title-prompt-current-default nil
-  "Currently bound default title for `denote-title-prompt'.
-Set the value of this variable within the lexical scope of a
-command that needs to supply a default title before calling
-`denote-title-prompt'.")
 
 (defun denote-title-prompt (&optional default-title prompt-text)
   "Prompt for title string.
@@ -2138,7 +2187,7 @@ is set to \\='(signature title keywords)."
            ;; the moment `insert' is called.
            (text (buffer-substring-no-properties (region-beginning) (region-end))))
       (progn
-        (let ((denote--use-region-in-denote-command nil))
+        (let ((denote-ignore-region-in-denote-command t))
           (call-interactively 'denote))
         (push-mark (point))
         (insert text)
