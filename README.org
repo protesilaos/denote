@@ -1736,7 +1736,7 @@ The following sections delve into the details.
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to a file specified
-at the minibuffer prompt ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-link-to-org-headings~ user option]]).
+at the minibuffer prompt ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
 Links are formatted depending on the file type of the current note. In
 Org and plain text buffers, links are formatted thus:
 =[[denote:IDENTIFIER][TITLE]]=. While in Markdown they are expressed
@@ -1777,40 +1777,46 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
-** The ~denote-link-to-org-headings~ user option
+** The ~denote-org-store-link-to-heading~ user option
 :PROPERTIES:
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
 :END:
 
 [ Part of {{{development-version}}}. ]
 
-When the user option ~denote-link-to-org-headings~ is non-nil store
-link to the current Org heading inside a Denote file. This determines
-how the command ~org-store-link~ behaves when inside a Denote file.
-The heading at point is given a =CUSTOM_ID= value (included in its
-=PROPERTIES= drawer), unless it already has one, in which case it is
-taken as-is.
+The user option ~denote-org-store-link-to-heading~ determines whether
+~org-store-link~ links to the current Org heading.
 
-If ~denote-link-to-org-headings~ is set to nil, the command
-~org-store-link~ only store a link to the Denote file (using its
-identifier), but not to the given heading. This is what Denote was
-doing in versions prior to 3.0.0.
+When its value is non-nil, ~org-store-link~ stores a link to the
+current Org heading inside the Denote file. If the heading does not
+have a =CUSTOM_ID=, it creates it and includes it in the heading's
+=PROPERTIES= drawer. If a =CUSTOM_ID= exists, ~org-store-link~ use it
+as-is.
 
-When we inspect the links, the difference is this:
+This make the resulting link a combination of the =denote:= link type,
+pointing to the identifier of the current file, plus the value of the
+heading's =CUSTOM_ID=, such as:
 
-- =[[denote:20231125T060608][Some test]]=
-- =[[denote:20231125T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test]]=
+- =[[denote:20240118T060608][Some test]]=
+- =[[denote:20240118T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test]]=
 
 Both lead to the same Denote file, but the latter jumps to the heading
-with the given identifier.
+with the given =CUSTOM_ID=.
 
 The value of the =CUSTOM_ID= is determined by the Org user option
 ~org-id-method~. The sample shown above uses the default UUID
 infrastructure.
 
-This only works in Org mode, as other file types do not have a linking
-mechanism that handles unique identifiers for headings or other
-patterns to jump to.
+If ~denote-org-store-link-to-heading~ is set to a nil value, the
+command ~org-store-link~ only stores links to the Denote file (using
+its identifier), but not to the given heading. This is what Denote was
+doing in versions prior to =3.0.0=.
+
+[ This feature only works in Org mode files, as other file types do
+  not have a linking mechanism that handles unique identifiers for
+  headings or other patterns to jump to. If ~org-store-link~ is
+  invoked in one such file, it captures only the Denote identifier of
+  the file, even if this user option is set to a non-nil value. ]"
 
 ** Insert links matching a regexp
 :PROPERTIES:
