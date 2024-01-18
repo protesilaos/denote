@@ -362,6 +362,25 @@ and/or when the user invokes the command `denote-date'."
   :package-version '(denote . "0.6.0")
   :type 'boolean)
 
+(defcustom denote-link-to-org-headings t
+  "When non-nil store link to the current Org heading inside a Denote file.
+
+This determines how the command `org-store-link' behaves when
+inside a Denote file.  The heading at point is given a CUSTOM_ID
+value (included in its PROPERTIES drawer), unless it already has
+one, in which case it is taken as-is.
+
+If nil, only store links to the Denote file (using its
+identifier), but not to the given heading.  This is what Denote
+was doing in versions prior to 3.0.0.
+
+This only works in Org mode, as other file types do not have a
+linking mechanism that handles unique identifiers for headings or
+other patterns to jump to."
+  :group 'denote
+  :package-version '(denote . "3.0.0")
+  :type 'boolean)
+
 (defcustom denote-templates nil
   "Alist of content templates for new notes.
 A template is arbitrary text that Denote will add to a newly
@@ -3914,6 +3933,21 @@ interface by first selecting the `denote:' hyperlink type."
 (declare-function org-link-store-props "ol.el" (&rest plist))
 (defvar org-store-link-plist)
 
+(declare-function org-entry-put "org" (pom property value))
+(declare-function org-entry-get "org" (pom property &optional inherit literal-nil))
+(declare-function org-id-new "org-id" (&optional prefix))
+
+(defun denote--link-ol-id-get-create ()
+  "Create a CUSTOM_ID for current entry under POSITION and return it.
+If the entry already has a CUSTOM_ID, return it as-is."
+  (let* ((pos (point))
+         (id (org-entry-get pos "CUSTOM_ID")))
+    (if (and id (stringp id) (string-match-p "\\S-" id))
+        id
+      (setq id (org-id-new "h"))
+      (org-entry-put pos "CUSTOM_ID" id)
+      id)))
+
 ;;;###autoload
 (defun denote-link-ol-store ()
   "Handler for `org-store-link' adding support for denote: links."
@@ -3925,7 +3959,9 @@ interface by first selecting the `denote:' hyperlink type."
     (org-link-store-props
      :type "denote"
      :description file-title
-     :link (concat "denote:" file-id))
+     :link (if denote-link-to-org-headings
+               (format "denote:%s::#%s" file-id (denote--link-ol-id-get-create))
+             (concat "denote:" file-id)))
     org-store-link-plist))
 
 ;;;###autoload
