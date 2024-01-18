@@ -362,21 +362,38 @@ and/or when the user invokes the command `denote-date'."
   :package-version '(denote . "0.6.0")
   :type 'boolean)
 
-(defcustom denote-link-to-org-headings t
-  "When non-nil store link to the current Org heading inside a Denote file.
+(defcustom denote-org-store-link-to-heading t
+  "Determine whether `org-store-link' links to the current Org heading.
 
-This determines how the command `org-store-link' behaves when
-inside a Denote file.  The heading at point is given a CUSTOM_ID
-value (included in its PROPERTIES drawer), unless it already has
-one, in which case it is taken as-is.
+When non-nil store link to the current Org heading inside the
+Denote file.  If the heading does not have a CUSTOM_ID, create it
+and include it in its PROPERTIES drawer.  If a CUSTOM_ID exists,
+take it as-is.
 
-If nil, only store links to the Denote file (using its
-identifier), but not to the given heading.  This is what Denote
-was doing in versions prior to 3.0.0.
+Make the resulting link a combination of the `denote:' link type,
+pointing to the identifier of the current file, plus the value of
+the heading's CUSTOM_ID, such as:
 
-This only works in Org mode, as other file types do not have a
-linking mechanism that handles unique identifiers for headings or
-other patterns to jump to."
+- [[denote:20240118T060608][Some test]]
+- [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test]]
+
+Both lead to the same Denote file, but the latter jumps to the heading
+with the given CUSTOM_ID.
+
+The value of the CUSTOM_ID is determined by the Org user option
+`org-id-method'.  The sample shown above uses the default UUID
+infrastructure.
+
+If this user option is set to nil, only store links to the Denote
+file (using its identifier), but not to the given heading.  This
+is what Denote was doing in versions prior to 3.0.0.
+
+[ This feature only works in Org mode files, as other file types
+  do not have a linking mechanism that handles unique identifiers
+  for headings or other patterns to jump to.  If `org-store-link'
+  is invoked in one such file, it captures only the Denote
+  identifier of the file, even if this user option is set to a
+  non-nil value.  ]"
   :group 'denote
   :package-version '(denote . "3.0.0")
   :type 'boolean)
@@ -3960,7 +3977,7 @@ create a new one."
     (org-link-store-props
      :type "denote"
      :description file-title
-     :link (if (and denote-link-to-org-headings (derived-mode-p 'org-mode))
+     :link (if (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))
                (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
              (concat "denote:" file-id)))
     org-store-link-plist))
