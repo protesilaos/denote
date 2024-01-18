@@ -4024,8 +4024,8 @@ If the entry already has a CUSTOM_ID, return it as-is."
     (org-link-store-props
      :type "denote"
      :description file-title
-     :link (if denote-link-to-org-headings
                (format "denote:%s::#%s" file-id (denote--link-ol-id-get-create))
+     :link (if (and denote-link-to-org-headings (derived-mode-p 'org-mode))
              (concat "denote:" file-id)))
     org-store-link-plist))
 
