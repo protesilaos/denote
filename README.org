@@ -1736,10 +1736,11 @@ The following sections delve into the details.
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to a file specified
-at the minibuffer prompt.  Links are formatted depending on the file
-type of the current note.  In Org and plain text buffers, links are
-formatted thus: =[[denote:IDENTIFIER][TITLE]]=.  While in Markdown
-they are expressed as =[TITLE](denote:IDENTIFIER)=.
+at the minibuffer prompt ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-link-to-org-headings~ user option]]).
+Links are formatted depending on the file type of the current note. In
+Org and plain text buffers, links are formatted thus:
+=[[denote:IDENTIFIER][TITLE]]=. While in Markdown they are expressed
+as =[TITLE](denote:IDENTIFIER)=.
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=.  The user
@@ -1777,6 +1778,9 @@ user/theme in case they want =denote:= links to remain distinct from
 other links.
 
 ** The ~denote-link-to-org-headings~ user option
+:PROPERTIES:
+:CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
+:END:
 
 [ Part of {{{development-version}}}. ]
 
@@ -1787,9 +1791,22 @@ The heading at point is given a =CUSTOM_ID= value (included in its
 =PROPERTIES= drawer), unless it already has one, in which case it is
 taken as-is.
 
-If nil, only store links to the Denote file (using its identifier),
-but not to the given heading. This is what Denote was doing in
-versions prior to 3.0.0.
+If ~denote-link-to-org-headings~ is set to nil, the command
+~org-store-link~ only store a link to the Denote file (using its
+identifier), but not to the given heading. This is what Denote was
+doing in versions prior to 3.0.0.
+
+When we inspect the links, the difference is this:
+
+- =[[denote:20231125T060608][Some test]]=
+- =[[denote:20231125T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test]]=
+
+Both lead to the same Denote file, but the latter jumps to the heading
+with the given identifier.
+
+The value of the =CUSTOM_ID= is determined by the Org user option
+~org-id-method~. The sample shown above uses the default UUID
+infrastructure.
 
 This only works in Org mode, as other file types do not have a linking
 mechanism that handles unique identifiers for headings or other
