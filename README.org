@@ -1816,7 +1816,7 @@ doing in versions prior to =3.0.0=.
   not have a linking mechanism that handles unique identifiers for
   headings or other patterns to jump to. If ~org-store-link~ is
   invoked in one such file, it captures only the Denote identifier of
-  the file, even if this user option is set to a non-nil value. ]"
+  the file, even if this user option is set to a non-nil value. ]
 
 ** Insert links matching a regexp
 :PROPERTIES:
