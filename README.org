@@ -1776,6 +1776,25 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
+** The ~denote-link-to-org-headings~ user option
+
+[ Part of {{{development-version}}}. ]
+
+When the user option ~denote-link-to-org-headings~ is non-nil store
+link to the current Org heading inside a Denote file. This determines
+how the command ~org-store-link~ behaves when inside a Denote file.
+The heading at point is given a =CUSTOM_ID= value (included in its
+=PROPERTIES= drawer), unless it already has one, in which case it is
+taken as-is.
+
+If nil, only store links to the Denote file (using its identifier),
+but not to the given heading. This is what Denote was doing in
+versions prior to 3.0.0.
+
+This only works in Org mode, as other file types do not have a linking
+mechanism that handles unique identifiers for headings or other
+patterns to jump to.
+
 ** Insert links matching a regexp
 :PROPERTIES:
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
