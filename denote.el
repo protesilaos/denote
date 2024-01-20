@@ -1844,6 +1844,24 @@ where the former does not read dates without a time component."
   (let ((datetime (denote--date-add-current-time date)))
     (date-to-time datetime)))
 
+(defun denote-parse-date (date)
+  "Return DATE as an appropriate value for the `denote' command.
+
+- If DATE is a list, assume it is consistent with `current-date'
+  or related and return it as-is.
+
+- If DATE is a non-empty string, try to convert it with
+  `date-to-time'.
+
+- If DATE is none of the above, return `current-time'."
+  (cond
+   ((listp date)
+    date)
+   ((and (stringp date) (not (string-empty-p date)))
+    (denote--valid-date date))
+   (t
+    (current-time))))
+
 (defun denote--buffer-file-names ()
   "Return file names of Denote buffers."
   (delq nil
@@ -2021,9 +2039,7 @@ When called from Lisp, all arguments are optional.
   (let* ((title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (kws (denote-keywords-sort keywords))
-         (date (if (or (null date) (string-empty-p date))
-                   (current-time)
-                 (denote--valid-date date)))
+         (date (denote-parse-date date))
          (id (denote--find-first-unused-id
               (format-time-string denote-id-format date)
               (denote--get-all-used-ids)))
