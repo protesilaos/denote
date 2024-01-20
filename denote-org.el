@@ -97,7 +97,18 @@ See the `:link' property of `denote-file-types'."
 
 The resulting link has the following pattern:
 
-[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][File title::Heading text]]."
+[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][File title::Heading text]].
+
+Because only Org files can have links to individual headings,
+limit the list of possible files to those which include the .org
+file extension (remember that Denote works with many file types,
+per the user option `denote-file-type').
+
+The user option `denote-org-store-link-to-heading' determined
+whether the `org-store-link' function can save a link to the
+current heading.  Such links look the same as those of this
+command, though the functionality defined herein is independent
+of it."
   (declare (interactive-only t))
   (interactive)
   (when-let ((file (denote-file-prompt ".*\\.org"))
