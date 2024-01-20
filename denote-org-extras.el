@@ -121,5 +121,48 @@ To only link to a file, use the `denote-link' command."
              (description (denote-org-extras-format-link-get-description file heading-text)))
     (insert (denote-org-extras-format-link-with-heading file heading-id description))))
 
+;;;; Extract subtree into its own note
+
+(defun denote-org-extras--get-heading-date ()
+  "Try to return a timestamp for the current Org heading.
+This can be used as the value for the DATE argument of the
+`denote' command."
+  (when-let ((pos (point))
+             (timestamp (or (org-entry-get pos "DATE")
+                            (org-entry-get pos "CREATED"))))
+    (date-to-time timestamp)))
+
+;;;###autoload
+(defun denote-org-extras-extract-org-subtree ()
+  "Create new Denote note using the current Org subtree.
+Remove the subtree from its current file and move its contents
+into the new Denote file.
+
+Take the text of the subtree's top level heading and use it as
+the title of the new note.
+
+If the heading has any tags, use them as the keywords of the new
+note.  Else do not include any keywords.
+
+If the subtree has a PROPERTIES drawer, retain it for further
+review.  If the PROPERTIES drawer includes a DATE or CREATED
+property with a timestamp value, use that to derive the date (or
+date and time) of the new note (if there is only a date, the time
+is taken as 00:00).  If both DATE and CREATED properties are
+present, the former is used.
+
+Make the new note an Org file regardless of the value of
+`denote-file-type'."
+  (interactive)
+  (if-let ((text (org-get-entry))
+           (heading (denote-link-ol-get-heading)))
+      (let ((tags (org-get-tags))
+            (date (denote-org-extras--get-heading-date)))
+        (delete-region (org-entry-beginning-position)
+                       (save-excursion (org-end-of-subtree t) (point)))
+        (denote heading tags 'org nil date)
+        (insert text))
+    (user-error "No subtree to extract; aborting")))
+
 (provide 'denote-org-extras)
 ;;; denote-org-extras.el ends here

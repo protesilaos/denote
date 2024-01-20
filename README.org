@@ -527,6 +527,44 @@ Similarly, the ~denote-keywords-remove~ removes one or more keywords
 from the list of existing keywords and then renames the file
 accordingly.
 
+** Create a note from the current Org subtree
+:PROPERTIES:
+:CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd
+:END:
+
+[ Rewritten as part of {{{development-version}}}. ]
+
+With Org files in particular, it is common to have nested headings
+which could be split off into their own standalone notes. One such
+workflow is to collect lots of thoughts into a single file and create
+longer standalone notes out of them upon review. In Org parlance, an
+entry with all its subheadings is a "subtree". Denote can operate on
+the subtree to extract it from the current file and create a new file
+out of it.
+
+#+findex: denote-org-extras-extract-org-subtree
+The command ~denote-org-extras-extract-org-subtree~ (part of the
+optional =denote-org-extras.el= extension) is used for this purpose.
+It create a new Denote note using the current Org subtree. In doing
+so, it removes the subtree from its current file and moves its
+contents into the new Denote file.
+
+The text of the subtree's top level heading becomes the =#+title= of
+the new note.
+
+If the heading has any tags, those are turned into the keywords of the
+new note. Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
+
+If the subtree has a =PROPERTIES= drawer, it is retained so that the
+user can perform a further review. If the =PROPERTIES= drawer includes
+a =DATE= or =CREATED= property with a timestamp value, it is used to
+derive the date (or date and time) of the new note (if there is only a
+date, the time is taken as 00:00). If both =DATE= and =CREATED=
+properties are present, the former is used.
+
+The new note is an Org file regardless of the user option
+~denote-file-type~.
+
 ** Create note using Org capture
 :PROPERTIES:
 :CUSTOM_ID: h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881
@@ -2873,61 +2911,6 @@ the following will prompt for a structure template as soon as
 
 Remember that ~denote-region-after-new-note-functions~ are not called
 if ~denote-region~ is used without an active region.
-
-** Split an Org subtree into its own note
-:PROPERTIES:
-:CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd
-:END:
-
-With Org files in particular, it is common to have nested headings
-which could be split off into their own standalone notes.  In Org
-parlance, an entry with all its subheadings is a "subtree".  With the
-following code, the user places the point inside the heading they want
-to split off and invokes the command ~my-denote-org-extract-subtree~.
-It will create a note using the heading's text and tags for the new
-file.  The contents of the subtree become the contents of the new note
-and are removed from the old one.
-
-#+begin_src emacs-lisp
-(defun my-denote-org-extract-subtree (&optional silo)
-  "Create new Denote note using current Org subtree.
-Make the new note use the Org file type, regardless of the value
-of `denote-file-type'.
-
-With an optional SILO argument as a prefix (\\[universal-argument]),
-ask user to select a SILO from `my-denote-silo-directories'.
-
-Use the subtree title as the note's title.  If available, use the
-tags of the heading are used as note keywords.
-
-Delete the original subtree."
-  (interactive
-   (list (when current-prefix-arg
-           (completing-read "Select a silo: " my-denote-silo-directories nil t))))
-  (if-let ((text (org-get-entry))
-           (heading (org-get-heading :no-tags :no-todo :no-priority :no-comment)))
-      (let ((element (org-element-at-point))
-            (tags (org-get-tags))
-            (denote-user-enforced-denote-directory silo))
-        (delete-region (org-entry-beginning-position)
-                       (save-excursion (org-end-of-subtree t) (point)))
-        (denote heading
-                tags
-                'org
-                nil
-                (or
-                 ;; Check PROPERTIES drawer for :created: or :date:
-                 (org-element-property :CREATED element)
-                 (org-element-property :DATE element)
-                 ;; Check the subtree for CLOSED
-                 (org-element-property :raw-value
-                                       (org-element-property :closed element))))
-        (insert text))
-    (user-error "No subtree to extract; aborting")))
-#+end_src
-
-Have a different workflow?  Feel welcome to discuss it in any of our
-official channels ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad71cd][Contributing]]).
 
 ** Narrow the list of files in Dired
 :PROPERTIES:
