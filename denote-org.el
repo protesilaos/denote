@@ -72,8 +72,7 @@ the current file."
     (save-excursion
       (goto-char (point-min))
       (forward-line line)
-      (cons (org-get-heading :no-tags :no-todo :no-priority :no-comment)
-            (denote-link-ol-get-id)))))
+      (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
 
 (defun denote-org-format-link-with-heading (file heading-id description)
   "Prepare link to FILE with HEADING-ID using DESCRIPTION.
