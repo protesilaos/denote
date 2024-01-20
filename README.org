@@ -703,6 +703,48 @@ treated the same as =:title= or ~t~).
                :jump-to-captured t))
 #+end_src
 
+** Create a note with the region's contents
+:PROPERTIES:
+:CUSTOM_ID: h:2f8090f1-50af-4965-9771-d5a91a0a87bd
+:END:
+
+#+findex: denote-region
+The command ~denote-region~ takes the contents of the active region
+and then calls the ~denote~ command.  Once a new note is created, it
+inserts the contents of the region therein.  This is useful to
+quickly elaborate on some snippet of text or capture it for future
+reference.
+
+#+vindex: denote-region-after-new-note-functions
+When the ~denote-region~ command is called with an active region, it
+finalises its work by calling ~denote-region-after-new-note-functions~.
+This is an abnormal hook, meaning that the functions added to it are
+called with arguments.  The arguments are two, representing the
+beginning and end positions of the newly inserted text.
+
+A common use-case for Org mode users is to call the command
+~org-insert-structure-template~ after a region is inserted.  Emacs
+will thus prompt for a structure template, such as the one
+corresponding to a source block.  In this case the function added to
+~denote-region-after-new-note-functions~ does not actually need
+aforementioned arguments: it can simply declare those as ignored by
+prefixing the argument names with an underscore (an underscore is
+enough, but it is better to include a name for clarity).  For example,
+the following will prompt for a structure template as soon as
+~denote-region~ is done:
+
+#+begin_src emacs-lisp
+(defun my-denote-region-org-structure-template (_beg _end)
+  (when (derived-mode-p 'org-mode)
+    (activate-mark)
+    (call-interactively 'org-insert-structure-template)))
+
+(add-hook 'denote-region-after-new-note-functions #'my-denote-region-org-structure-template)
+#+end_src
+
+Remember that ~denote-region-after-new-note-functions~ are not called
+if ~denote-region~ is used without an active region.
+
 ** Open an existing note or create it if missing
 :PROPERTIES:
 :CUSTOM_ID: h:ad91ca39-cf10-4e16-b224-fdf78f093883
@@ -2869,48 +2911,6 @@ Sources for ~tmr~:
     + GitHub: <https://github.com/protesilaos/tmr>
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
-
-** Create a note with the region's contents
-:PROPERTIES:
-:CUSTOM_ID: h:2f8090f1-50af-4965-9771-d5a91a0a87bd
-:END:
-
-#+findex: denote-region
-The command ~denote-region~ takes the contents of the active region
-and then calls the ~denote~ command.  Once a new note is created, it
-inserts the contents of the region therein.  This is useful to
-quickly elaborate on some snippet of text or capture it for future
-reference.
-
-#+vindex: denote-region-after-new-note-functions
-When the ~denote-region~ command is called with an active region, it
-finalises its work by calling ~denote-region-after-new-note-functions~.
-This is an abnormal hook, meaning that the functions added to it are
-called with arguments.  The arguments are two, representing the
-beginning and end positions of the newly inserted text.
-
-A common use-case for Org mode users is to call the command
-~org-insert-structure-template~ after a region is inserted.  Emacs
-will thus prompt for a structure template, such as the one
-corresponding to a source block.  In this case the function added to
-~denote-region-after-new-note-functions~ does not actually need
-aforementioned arguments: it can simply declare those as ignored by
-prefixing the argument names with an underscore (an underscore is
-enough, but it is better to include a name for clarity).  For example,
-the following will prompt for a structure template as soon as
-~denote-region~ is done:
-
-#+begin_src emacs-lisp
-(defun my-denote-region-org-structure-template (_beg _end)
-  (when (derived-mode-p 'org-mode)
-    (activate-mark)
-    (call-interactively 'org-insert-structure-template)))
-
-(add-hook 'denote-region-after-new-note-functions #'my-denote-region-org-structure-template)
-#+end_src
-
-Remember that ~denote-region-after-new-note-functions~ are not called
-if ~denote-region~ is used without an active region.
 
 ** Narrow the list of files in Dired
 :PROPERTIES:
