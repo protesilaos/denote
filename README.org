@@ -1786,7 +1786,9 @@ other links.
 
 #+vindex: denote-org-store-link-to-heading
 The user option ~denote-org-store-link-to-heading~ determines whether
-~org-store-link~ links to the current Org heading.
+~org-store-link~ links to the current Org heading (such links are
+merely "stored" and need to be inserted afterwards with the command
+~org-insert-link~).
 
 When its value is non-nil, ~org-store-link~ stores a link to the
 current Org heading inside the Denote file. If the heading does not
