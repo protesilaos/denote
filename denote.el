@@ -388,6 +388,9 @@ If this user option is set to nil, only store links to the Denote
 file (using its identifier), but not to the given heading.  This
 is what Denote was doing in versions prior to 3.0.0.
 
+What `org-store-link' does is merely collect a link.  To actually
+insert it, use the command `org-insert-link'.
+
 [ This feature only works in Org mode files, as other file types
   do not have a linking mechanism that handles unique identifiers
   for headings or other patterns to jump to.  If `org-store-link'
