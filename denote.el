@@ -4042,7 +4042,8 @@ create a new one."
 
 ;;;###autoload
 (defun denote-link-ol-store ()
-  "Handler for `org-store-link' adding support for denote: links."
+  "Handler for `org-store-link' adding support for denote: links.
+Also see the user option `denote-org-store-link-to-heading'."
   (when-let ((file (buffer-file-name))
              ((denote-file-is-note-p file))
              (file-type (denote-filetype-heuristics file))
