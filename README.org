@@ -534,13 +534,11 @@ accordingly.
 
 [ Rewritten as part of {{{development-version}}}. ]
 
-With Org files in particular, it is common to have nested headings
-which could be split off into their own standalone notes. One such
-workflow is to collect lots of thoughts into a single file and create
-longer standalone notes out of them upon review. In Org parlance, an
-entry with all its subheadings is a "subtree". Denote can operate on
-the subtree to extract it from the current file and create a new file
-out of it.
+In Org parlance, an entry with all its subheadings is a "subtree".
+Denote can operate on the subtree to extract it from the current file
+and create a new file out of it. One such workflow is to collect
+thoughts in a single file and produce longer standalone notes out of
+them upon review.
 
 #+findex: denote-org-extras-extract-org-subtree
 The command ~denote-org-extras-extract-org-subtree~ (part of the
