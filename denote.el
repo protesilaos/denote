@@ -1083,7 +1083,12 @@ With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
   (denote-directory-files nil omit-current nil))
 
-(defvar denote--file-history nil
+(define-obsolete-variable-alias
+  'denote--file-history
+  'denote-file-history
+  "3.0.0")
+
+(defvar denote-file-history nil
   "Minibuffer history of `denote-file-prompt'.")
 
 (defun denote-file-prompt (&optional files-matching-regexp)
@@ -1091,7 +1096,7 @@ file in the returned list."
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
   (let ((files (denote-directory-files files-matching-regexp :omit-current)))
-    (completing-read "Select note: " files nil nil nil 'denote--file-history)))
+    (completing-read "Select note: " files nil nil nil 'denote-file-history)))
 
 ;;;; Keywords
 
@@ -1133,7 +1138,12 @@ the keywords component of a Denote file name.  STRING is the same
 as the return value of `denote-retrieve-filename-keywords'."
   (string-join (split-string string "_" :omit-nulls "_") ","))
 
-(defvar denote--keyword-history nil
+(define-obsolete-variable-alias
+  'denote--keyword-history
+  'denote-keyword-history
+  "3.0.0")
+
+(defvar denote-keyword-history nil
   "Minibuffer history of inputted keywords.")
 
 (defun denote--keywords-crm (keywords &optional prompt initial)
@@ -1144,7 +1154,7 @@ initial input."
   (delete-dups
    (completing-read-multiple
     (format-prompt (or prompt "File keywords") nil)
-    keywords nil nil initial 'denote--keyword-history)))
+    keywords nil nil initial 'denote-keyword-history)))
 
 (defun denote-keywords-prompt (&optional prompt-text initial-keywords)
   "Prompt for one or more keywords.
@@ -1177,10 +1187,10 @@ Denote file-naming scheme."
   (string-join keywords "_"))
 
 (defun denote--keywords-add-to-history (keywords)
-  "Append KEYWORDS to `denote--keyword-history'."
+  "Append KEYWORDS to `denote-keyword-history'."
   (mapc
    (lambda (kw)
-     (add-to-history 'denote--keyword-history kw))
+     (add-to-history 'denote-keyword-history kw))
    (delete-dups keywords)))
 
 ;;;; File types
@@ -1876,17 +1886,22 @@ increment it 1 second at a time until an available id is found."
 
 (make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
 
-(defvar denote--command-prompt-history nil
+(define-obsolete-variable-alias
+  'denote--command-prompt-history
+  'denote-command-prompt-history
+  "3.0.0")
+
+(defvar denote-command-prompt-history nil
   "Minibuffer history for `denote-command-prompt'.")
 
 (defun denote-command-prompt ()
   "Prompt for command among `denote-commands-for-new-notes'."
-  (let ((default (car denote--command-prompt-history)))
+  (let ((default (car denote-command-prompt-history)))
     (intern
      (completing-read
       (format-prompt "Run note-creating Denote command" default)
       denote-commands-for-new-notes nil :require-match
-      nil 'denote--command-prompt-history default))))
+      nil 'denote-command-prompt-history default))))
 
 ;;;;; The `denote' command and its prompts
 
@@ -1942,7 +1957,7 @@ The path of the newly created file is returned."
          (or force-ignore-region denote-ignore-region-in-denote-command))
         (denote-title-prompt-current-default
          (if force-use-file-prompt-as-default-title
-             (when denote--file-history (pop denote--file-history))
+             (when denote-file-history (pop denote-file-history))
            denote-title-prompt-current-default))
         (path))
     (if in-background
@@ -2024,7 +2039,12 @@ When called from Lisp, all arguments are optional.
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)))
 
-(defvar denote--title-history nil
+(define-obsolete-variable-alias
+  'denote--title-history
+  'denote-title-history
+  "3.0.0")
+
+(defvar denote-title-history nil
   "Minibuffer history of `denote-title-prompt'.")
 
 (defun denote-title-prompt (&optional default-title prompt-text)
@@ -2050,10 +2070,15 @@ histories between sessions."
            map)))
     (completing-read
      (format-prompt (or prompt-text "File title") denote-title-prompt-current-default)
-     denote--title-history
-     nil nil default-title 'denote--title-history denote-title-prompt-current-default)))
+     denote-title-history
+     nil nil default-title 'denote-title-history denote-title-prompt-current-default)))
 
-(defvar denote--file-type-history nil
+(define-obsolete-variable-alias
+  'denote--file-type-history
+  'denote-file-type-history
+  "3.0.0")
+
+(defvar denote-file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
 
 (defun denote-file-type-prompt ()
@@ -2063,9 +2088,14 @@ Note that a non-nil value other than `text', `markdown-yaml', and
 here for clarity."
   (completing-read
    "Select file type: " (denote--file-type-keys) nil t
-   nil 'denote--file-type-history))
+   nil 'denote-file-type-history))
 
-(defvar denote--date-history nil
+(define-obsolete-variable-alias
+  'denote--date-history
+  'denote-date-history
+  "3.0.0")
+
+(defvar denote-date-history nil
   "Minibuffer history of `denote-date-prompt'.")
 
 (declare-function org-read-date "org" (&optional with-time to-time from-string prompt default-time default-input inactive))
@@ -2086,7 +2116,7 @@ Use Org's more advanced date selection utility if the user option
         (format-time-string "%Y-%m-%d %H:%M:%S" time))
     (read-string
      "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-     nil 'denote--date-history)))
+     nil 'denote-date-history)))
 
 (defun denote-prompt-for-date-return-id ()
   "Use `denote-date-prompt' and return it as `denote-id-format'."
@@ -2094,19 +2124,24 @@ Use Org's more advanced date selection utility if the user option
    denote-id-format
    (denote--valid-date (denote-date-prompt))))
 
-(defvar denote--subdir-history nil
+(define-obsolete-variable-alias
+  'denote--subdir-history
+  'denote-subdirectory-history
+  "3.0.0")
+
+(defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
 
 ;; Making it a completion table is useful for packages that read the
 ;; metadata, such as `marginalia' and `embark'.
 (defun denote--subdirs-completion-table (dirs)
   "Match DIRS as a completion table."
-  (let* ((def (car denote--subdir-history))
+  (let* ((def (car denote-subdirectory-history))
          (table (denote--completion-table 'file dirs))
          (prompt (if def
                      (format "Select subdirectory [%s]: " def)
                    "Select subdirectory: ")))
-    (completing-read prompt table nil t nil 'denote--subdir-history def)))
+    (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
 
 (defun denote-subdirectory-prompt ()
   "Prompt for subdirectory of the variable `denote-directory'.
@@ -2117,7 +2152,12 @@ packages such as `marginalia' and `embark')."
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
 
-(defvar denote--template-history nil
+(define-obsolete-variable-alias
+  'denote--template-history
+  'denote-template-history
+  "3.0.0")
+
+(defvar denote-template-history nil
   "Minibuffer history of `denote-template-prompt'.")
 
 (defun denote-template-prompt ()
@@ -2127,10 +2167,15 @@ packages such as `marginalia' and `embark')."
      (intern
       (completing-read
        "Select template KEY: " (mapcar #'car templates)
-       nil t nil 'denote--template-history))
+       nil t nil 'denote-template-history))
      templates)))
 
-(defvar denote--signature-history nil
+(define-obsolete-variable-alias
+  'denote--signature-history
+  'denote-signature-history
+  "3.0.0")
+
+(defvar denote-signature-history nil
   "Minibuffer history of `denote-signature-prompt'.")
 
 (defun denote-signature-prompt (&optional default-signature prompt-text)
@@ -2157,10 +2202,15 @@ histories between sessions."
            map)))
     (completing-read
      (format-prompt (or prompt-text "Provide signature") nil)
-     denote--signature-history
-     nil nil default-signature 'denote--signature-history)))
+     denote-signature-history
+     nil nil default-signature 'denote-signature-history)))
 
-(defvar denote--files-matching-regexp-hist nil
+(define-obsolete-variable-alias
+  'denote--files-matching-regexp-hist
+  'denote-files-matching-regexp-history
+  "3.0.0")
+
+(defvar denote-files-matching-regexp-history nil
   "Minibuffer history of `denote-files-matching-regexp-prompt'.")
 
 (defun denote-files-matching-regexp-prompt (&optional prompt-text)
@@ -2168,7 +2218,7 @@ histories between sessions."
 With optional PROMPT-TEXT use it instead of a generic prompt."
   (read-regexp
    (format-prompt (or prompt-text "Match files with the given REGEXP") nil)
-   nil 'denote--files-matching-regexp-hist))
+   nil 'denote-files-matching-regexp-history))
 
 ;;;;; Convenience commands as `denote' variants
 
@@ -2282,8 +2332,8 @@ Set the `denote-title-prompt-current-default' to the last input.
 This is what makes commands such as `denote-open-or-create' or
 `denote-link-or-create' get what the user initially typed as the
 default value for the title of the new note to be created."
-  (let ((denote-title-prompt-current-default (when denote--file-history
-                                               (pop denote--file-history))))
+  (let ((denote-title-prompt-current-default (when denote-file-history
+                                               (pop denote-file-history))))
     (call-interactively command)))
 
 ;;;###autoload
@@ -3381,7 +3431,12 @@ function."
           (push file found-files))))
     found-files))
 
-(defvar denote-link--find-file-history nil
+(define-obsolete-variable-alias
+  'denote-link--find-file-history
+  'denote-link-find-file-history
+  "3.0.0")
+
+(defvar denote-link-find-file-history nil
   "History for `denote-find-link'.")
 
 (defun denote-link--find-file-prompt (files)
@@ -3391,7 +3446,7 @@ function."
     (completing-read
      "Find linked file: "
      (denote--completion-table 'file file-names)
-     nil t nil 'denote-link--find-file-history)))
+     nil t nil 'denote-link-find-file-history)))
 
 (defun denote-link-return-links (&optional file)
   "Return list of links in current or optional FILE.
