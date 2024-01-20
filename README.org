@@ -1816,11 +1816,43 @@ command ~org-store-link~ only stores links to the Denote file (using
 its identifier), but not to the given heading. This is what Denote was
 doing in versions prior to =3.0.0=.
 
+Note that the optional extension =denote-org.el= defines the command
+~denote-org-link-to-heading~, which always links to a file+heading
+regardless of the aforementioned user option ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
+
 [ This feature only works in Org mode files, as other file types do
   not have a linking mechanism that handles unique identifiers for
   headings or other patterns to jump to. If ~org-store-link~ is
   invoked in one such file, it captures only the Denote identifier of
   the file, even if this user option is set to a non-nil value. ]
+
+** Insert link to an Org file with a further pointer to a heading
+:PROPERTIES:
+:CUSTOM_ID: h:fc1ad245-ec08-41be-8d1e-7153d99daf02
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-org-link-to-heading
+As part of the optional =denote-org.el= extension, the command
+~denote-org-link-to-heading~ prompts for a link to an Org file and
+then asks for a heading therein, using minibuffer completion. Once the
+user provides input at the two prompts, the command inserts a link at
+point which has the following pattern: =[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][File title::Heading text]]=.
+
+Because only Org files can have links to individual headings, the
+command ~denote-org-link-to-heading~ prompts only for Org files (i.e.
+files which include the =.org= extension). Remember that Denote works
+with many file types ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+This feature is similar to the concept of the user option ~denote-org-store-link-to-heading~
+([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]). It is, however,
+interactive and differs in the directionality of the action. With that
+user option, the command ~org-store-link~ will generate a =CUSTOM_ID=
+for the current heading (or capture the value of one as-is), giving
+the user the option to then call ~org-insert-link~ wherever they see
+fit. By contrast, the command ~denote-org-link-to-heading~ prompts for
+a file, then a heading, and inserts the link at point.
 
 ** Insert links matching a regexp
 :PROPERTIES:
