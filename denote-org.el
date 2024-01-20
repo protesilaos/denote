@@ -107,7 +107,9 @@ The user option `denote-org-store-link-to-heading' determined
 whether the `org-store-link' function can save a link to the
 current heading.  Such links look the same as those of this
 command, though the functionality defined herein is independent
-of it."
+of it.
+
+To only link to a file, use the `denote-link' command."
   (declare (interactive-only t))
   (interactive)
   (when-let ((file (denote-file-prompt ".*\\.org"))
