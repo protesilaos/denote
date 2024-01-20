@@ -724,7 +724,7 @@ leading and trailing hyphen."
 
 (defun denote--trim-right-token-characters (str)
   "Remove =, - and _ from the end of STR."
-  (string-trim-right str "=-_"))
+  (string-trim-right str "[=-\\_]+"))
 
 (defun denote--replace-consecutive-token-characters (str)
   "Replace consecutive characters with a single one in STR.
