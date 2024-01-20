@@ -1,4 +1,4 @@
-;;; denote-org.el --- Denote extensions for Org mode -*- lexical-binding: t -*-
+;;; denote-org-extras.el --- Denote extensions for Org mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2024  Free Software Foundation, Inc.
 
@@ -32,7 +32,7 @@
 
 ;;;; Link to file and heading
 
-(defun denote-org--get-outline (file)
+(defun denote-org-extras--get-outline (file)
   "Return `outline-regexp' headings and line numbers of FILE."
   (with-current-buffer (find-file-noselect file)
     (let ((outline-regexp (format "^\\(?:%s\\)" (or (bound-and-true-p outline-regexp) "[*\^L]+")))
@@ -57,16 +57,16 @@
           (nreverse candidates)
         (user-error "No outline")))))
 
-(defun denote-org--outline-prompt (&optional file)
-  "Prompt for outline among headings retrieved by `denote-org--get-outline'.
+(defun denote-org-extras--outline-prompt (&optional file)
+  "Prompt for outline among headings retrieved by `denote-org-extras--get-outline'.
 With optional FILE use the outline of it, otherwise use that of
 the current file."
   (completing-read
    "Go to outline: "
-   (denote--completion-table-no-sort 'imenu (denote-org--get-outline (or file buffer-file-name)))
+   (denote--completion-table-no-sort 'imenu (denote-org-extras--get-outline (or file buffer-file-name)))
    nil :require-match))
 
-(defun denote-org--get-heading-and-id-from-line (line file)
+(defun denote-org-extras--get-heading-and-id-from-line (line file)
   "Return heading text and CUSTOM_ID from the given LINE in FILE."
   (with-current-buffer (find-file-noselect file)
     (save-excursion
@@ -74,7 +74,7 @@ the current file."
       (forward-line line)
       (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
 
-(defun denote-org-format-link-with-heading (file heading-id description)
+(defun denote-org-extras-format-link-with-heading (file heading-id description)
   "Prepare link to FILE with HEADING-ID using DESCRIPTION.
 
 FILE-TYPE and ID-ONLY are used to get the format of the link.
@@ -84,14 +84,14 @@ See the `:link' property of `denote-file-types'."
           heading-id
           description))
 
-(defun denote-org-format-link-get-description (file heading-text)
+(defun denote-org-extras-format-link-get-description (file heading-text)
   "Return link description for FILE with HEADING-TEXT at the end."
   (format "%s::%s"
           (denote--retrieve-title-or-filename file 'org)
           heading-text))
 
 ;;;###autoload
-(defun denote-org-link-to-heading ()
+(defun denote-org-extras-link-to-heading ()
   "Link to file and then specify a heading to extend the link to.
 
 The resulting link has the following pattern:
@@ -103,23 +103,23 @@ limit the list of possible files to those which include the .org
 file extension (remember that Denote works with many file types,
 per the user option `denote-file-type').
 
-The user option `denote-org-store-link-to-heading' determined
-whether the `org-store-link' function can save a link to the
-current heading.  Such links look the same as those of this
-command, though the functionality defined herein is independent
-of it.
+The user option `denote-org-extras-store-link-to-heading'
+determined whether the `org-store-link' function can save a link
+to the current heading.  Such links look the same as those of
+this command, though the functionality defined herein is
+independent of it.
 
 To only link to a file, use the `denote-link' command."
   (declare (interactive-only t))
   (interactive)
   (when-let ((file (denote-file-prompt ".*\\.org"))
-             (heading (denote-org--outline-prompt file))
+             (heading (denote-org-extras--outline-prompt file))
              (line (string-to-number (car (split-string heading "\t"))))
-             (heading-data (denote-org--get-heading-and-id-from-line line file))
+             (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
              (heading-text (car heading-data))
              (heading-id (cdr heading-data))
-             (description (denote-org-format-link-get-description file heading-text)))
-    (insert (denote-org-format-link-with-heading file heading-id description))))
+             (description (denote-org-extras-format-link-get-description file heading-text)))
+    (insert (denote-org-extras-format-link-with-heading file heading-id description))))
 
-(provide 'denote-org)
-;;; denote-org.el ends here
+(provide 'denote-org-extras)
+;;; denote-org-extras.el ends here
