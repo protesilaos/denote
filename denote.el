@@ -3204,16 +3204,16 @@ file is returned as the description.")
 (defun denote-link-description-with-signature-and-title (file region-text)
   "Return description from FILE as \"signature   title\".
 
-If REGION-TEXT is not empty (or nil), the description is the text
-of the active region instead.
+If REGION-TEXT is non-nil, the description is the text of the
+active region instead.
 
 The format is specified in variable
-`denote--link-signature-format'. If a signature is not present,
+`denote--link-signature-format'.  If a signature is not present,
 only the title is returned."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
          (title (denote--retrieve-title-or-filename file file-type)))
-    (cond ((and region-text (not (string-empty-p region-text)))
+    (cond (region-text
            region-text)
           (signature
            (format denote--link-signature-format signature title))
@@ -3257,7 +3257,10 @@ With optional ID-ONLY as a non-nil argument, such as with a
 universal prefix (\\[universal-argument]), insert links with just
 the identifier and no further description.  In this case, the
 link format is always [[denote:IDENTIFIER]].  If the DESCRIPTION
-is empty, the link is also as if ID-ONLY were non-nil.
+is empty, the link is also as if ID-ONLY were non-nil.  The
+default value of `denote-link-description-function' returns an
+empty string when the region is empty.  Thus, the link will have
+no description in this case.
 
 When called from Lisp, FILE is a string representing a full file
 system path.  FILE-TYPE is a symbol as described in
