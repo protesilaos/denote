@@ -62,7 +62,8 @@
 With optional FILE use the outline of it, otherwise use that of
 the current file."
   (completing-read
-   "Go to outline: "
+   (format "Select heading inside `%s': "
+           (propertize (file-name-nondirectory file) 'face 'denote-faces-prompt-current-name))
    (denote--completion-table-no-sort 'imenu (denote-org-extras--get-outline (or file buffer-file-name)))
    nil :require-match))
 
