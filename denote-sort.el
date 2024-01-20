@@ -136,17 +136,22 @@ With optional REVERSE as a non-nil value, reverse the sort order."
    current-file-type
    id-only))
 
-(defvar denote-sort--component-hist nil
+(define-obsolete-variable-alias
+  'denote-sort--component-hist
+  'denote-sort-component-history
+  "3.0.0")
+
+(defvar denote-sort-component-history nil
   "Minibuffer history of `denote-sort-component-prompt'.")
 
 (defun denote-sort-component-prompt ()
   "Prompt `denote-sort-files' for sorting key among `denote-sort-components'."
-  (let ((default (car denote-sort--component-hist)))
+  (let ((default (car denote-sort-component-history)))
     (intern
      (completing-read
       (format-prompt "Sort by file name component" default)
       denote-sort-components nil :require-match
-      nil 'denote-sort--component-hist default))))
+      nil 'denote-sort-component-history default))))
 
 (defvar-local denote-sort--dired-buffer nil
   "Buffer object of current `denote-sort-dired'.")
