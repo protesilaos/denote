@@ -4034,6 +4034,12 @@ create a new one."
       (org-entry-put pos "CUSTOM_ID" id)
       id)))
 
+(declare-function org-get-heading "org" (no-tags no-todo no-priority no-comment))
+
+(defun denote-link-ol-get-heading ()
+  "Get current Org heading text."
+  (org-get-heading :no-tags :no-todo :no-priority :no-comment))
+
 ;;;###autoload
 (defun denote-link-ol-store ()
   "Handler for `org-store-link' adding support for denote: links."
