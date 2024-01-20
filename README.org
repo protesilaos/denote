@@ -1784,6 +1784,7 @@ other links.
 
 [ Part of {{{development-version}}}. ]
 
+#+vindex: denote-org-store-link-to-heading
 The user option ~denote-org-store-link-to-heading~ determines whether
 ~org-store-link~ links to the current Org heading.
 
