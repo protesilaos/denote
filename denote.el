@@ -375,14 +375,18 @@ pointing to the identifier of the current file, plus the value of
 the heading's CUSTOM_ID, such as:
 
 - [[denote:20240118T060608][Some test]]
-- [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test]]
+- [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f][Some test::Heading text]]
 
-Both lead to the same Denote file, but the latter jumps to the heading
-with the given CUSTOM_ID.
+Both lead to the same Denote file, but the latter jumps to the
+heading with the given CUSTOM_ID.  Notice that the link to the
+heading also has a different description, which includes the
+heading text.
 
 The value of the CUSTOM_ID is determined by the Org user option
 `org-id-method'.  The sample shown above uses the default UUID
-infrastructure.
+infrastructure (though I deleted a few characters to not get
+complaints from the byte compiler about long lines in the doc
+string...).
 
 If this user option is set to nil, only store links to the Denote
 file (using its identifier), but not to the given heading.  This
@@ -4049,13 +4053,17 @@ Also see the user option `denote-org-store-link-to-heading'."
              (file-type (denote-filetype-heuristics file))
              (file-id (denote-retrieve-filename-identifier file))
              (file-title (denote--retrieve-title-or-filename file file-type)))
-    (org-link-store-props
-     :type "denote"
-     :description file-title
-     :link (if (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))
-               (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
-             (concat "denote:" file-id)))
-    org-store-link-plist))
+    (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
+      (org-link-store-props
+       :type "denote"
+       :description
+       (if heading-links
+           (format "%s::%s" file-title (denote-link-ol-get-heading))
+         file-title)
+       :link (if heading-links
+                 (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
+               (concat "denote:" file-id)))
+      org-store-link-plist)))
 
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
