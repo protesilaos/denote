@@ -666,6 +666,14 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
+(defun denote--remove-dot-characters (str)
+  "Remove the dot character from STR."
+  (replace-regexp-in-string "\\." "" str))
+
+(defun denote--trim-right-token-characters (str)
+  "Remove =, - and _ from the end of STR."
+  (string-trim-right str "=-_"))
+
 (defun denote--replace-consecutive-token-characters (str)
   "Replace consecutive characters with a single one in STR.
 Spaces, underscores and equal signs are replaced with a single
@@ -695,7 +703,9 @@ used as the keywords separator in file names."
                            (funcall (or slug-function #'denote-sluggify-keyword) str)))
                          ((eq component 'signature)
                           (funcall (or slug-function #'denote-sluggify-signature) str)))))
-    (denote--replace-consecutive-token-characters str-slug)))
+    (denote--trim-right-token-characters
+     (denote--replace-consecutive-token-characters
+      (denote--remove-dot-characters str-slug)))))
 
 (make-obsolete
  'denote-letter-case
