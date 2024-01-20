@@ -591,6 +591,15 @@ things accordingly.")
         `(metadata (category . ,category))
       (complete-with-action action candidates string pred))))
 
+(defun denote--completion-table-no-sort (category candidates)
+  "Pass appropriate metadata CATEGORY to completion CANDIDATES.
+Like `denote--completion-table' but also disable sorting."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        `(metadata (category . ,category)
+                   (display-sort-function . ,#'identity))
+      (complete-with-action action candidates string pred))))
+
 (defun denote--default-directory-is-silo-p ()
   "Return path to silo if `default-directory' is a silo."
   (when-let ((dir-locals (dir-locals-find-file default-directory))
