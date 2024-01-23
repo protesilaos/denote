@@ -2498,6 +2498,16 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
+[ As part of version 3.0.0 (currently {{{development-version}}}), all
+  dynamic blocks are defined in the file =denote-org-extras.el=. The
+  file which was once called =denote-org-dblock.el= contains aliases
+  for the new function names and dipslays a warning about its
+  deprecation. There is no need to ~require~ the ~denote-org-extras~
+  feature because all of Denote's Org dynamic blocks are autoloaded
+  (meaning that they work as soon as they are used). For backward
+  compatibility, all dynamic blocks retain their original names as an
+  alias for the newer one. ]
+
 Denote can optionally integrate with Org mode's "dynamic blocks"
 facility. This means that it can use special blocks that are evaluated
 with =C-c C-x C-u= (~org-dblock-update~) to generate their contents.
@@ -2506,12 +2516,6 @@ provided by Denote.
 
 - [[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]
 - [[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]
-
-Start by loading the relevant extension:
-
-#+begin_src emacs-lisp
-(require 'denote-org-dblock)
-#+end_src
 
 A dynamic block gets its contents by evaluating a function that
 corresponds to the type of block. The block type and its parameters
@@ -2535,9 +2539,19 @@ Evaluate:
 :CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
 
-#+findex: denote-org-dblock-insert-links
+[ As part of version 3.0.0 (currently {{{development-version}}}), all
+  dynamic blocks are defined in the file =denote-org-extras.el=. The
+  file which was once called =denote-org-dblock.el= contains aliases
+  for the new function names and dipslays a warning about its
+  deprecation. There is no need to ~require~ the ~denote-org-extras~
+  feature because all of Denote's Org dynamic blocks are autoloaded
+  (meaning that they work as soon as they are used). For backward
+  compatibility, all dynamic blocks retain their original names as an
+  alias for the newer one. ]
+
+#+findex: denote-org-extras-dblock-insert-links
 The =denote-links= block can be inserted at point with the command
-~denote-org-dblock-insert-links~ or by manually including the
+~denote-org-extras-dblock-insert-links~ or by manually including the
 following in an Org file:
 
 : #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :id-only nil
@@ -2565,7 +2579,7 @@ line to update the block.
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
   unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
-  When using the command ~denote-org-dblock-insert-files~, this
+  When using the command ~denote-org-extras-dblock-insert-files~, this
   parameter is automatically inserted together with the (=:regexp=
   parameter) and the user is prompted for a file name component.
 
@@ -2584,10 +2598,10 @@ line to update the block.
   processing using Org facilities (a feature that is outside Denote's
   purview).
 
-#+findex: denote-org-dblock-insert-backlinks
+#+findex: denote-org-extras-dblock-insert-backlinks
 The same as above except for the =:regexp= parameter are true for the
 =denote-backlinks= block. The block can be inserted at point with the
-command ~denote-org-dblock-insert-backlinks~ or by manually writing
+command ~denote-org-extras-dblock-insert-backlinks~ or by manually writing
 this in an Org file:
 
 : #+BEGIN: denote-backlinks :sort-by-component nil :reverse-sort nil :id-only nil
@@ -2602,6 +2616,16 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 :CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
 :END:
 
+[ As part of version 3.0.0 (currently {{{development-version}}}), all
+  dynamic blocks are defined in the file =denote-org-extras.el=. The
+  file which was once called =denote-org-dblock.el= contains aliases
+  for the new function names and dipslays a warning about its
+  deprecation. There is no need to ~require~ the ~denote-org-extras~
+  feature because all of Denote's Org dynamic blocks are autoloaded
+  (meaning that they work as soon as they are used). For backward
+  compatibility, all dynamic blocks retain their original names as an
+  alias for the newer one. ]
+
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
 This works by instructing Org to match a regular expression of Denote
@@ -2612,8 +2636,8 @@ list of scattered thoughts on a given topic, like =^2023.*_emacs= for
 a long entry that incorporates all the notes written in 2023 with the
 keyword =emacs=.
 
-#+findex: denote-org-dblock-insert-files
-To produce such a block, call the command ~denote-org-dblock-insert-files~
+#+findex: denote-org-extras-dblock-insert-files
+To produce such a block, call the command ~denote-org-extras-dblock-insert-files~
 or manually write the following block in an Org file and then type
  =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line to run it
 (do it again to recalculate the block):
@@ -2640,7 +2664,7 @@ parameters, which are described further below:
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
   unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
-  When using the command ~denote-org-dblock-insert-files~, this
+  When using the command ~denote-org-extras-dblock-insert-files~, this
   parameter is automatically inserted together with the (=:regexp=
   parameter) and the user is prompted for a file name component.
 
@@ -2649,10 +2673,10 @@ parameters, which are described further below:
   of the parameter =:sort-by-component=, though it also combines with
   it.
 
-#+vindex: denote-org-dblock-file-contents-separator
+#+vindex: denote-org-extras-dblock-file-contents-separator
 - The =:file-separator= parameter is optional. If it is omitted, then
   Denote will use no separator between the files it inserts. If the
-  value is ~t~ the ~denote-org-dblock-file-contents-separator~ is
+  value is ~t~ the ~denote-org-extras-dblock-file-contents-separator~ is
   applied at the end of each file: it introduces some empty lines and
   a horizontal rule between them to visually distinguish individual
   files. If the =:file-separator= value is a string, it is used as the
