@@ -88,9 +88,7 @@ See the `:link' property of `denote-file-types'."
 
 (defun denote-org-extras-format-link-get-description (file heading-text)
   "Return link description for FILE with HEADING-TEXT at the end."
-  (format "%s::%s"
-          (denote--retrieve-title-or-filename file 'org)
-          heading-text))
+  (format "%s::%s" (denote--link-get-description file) heading-text))
 
 ;;;###autoload
 (defun denote-org-extras-link-to-heading ()

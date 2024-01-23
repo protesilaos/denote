@@ -4136,7 +4136,7 @@ Also see the user option `denote-org-store-link-to-heading'."
              ((denote-file-is-note-p file))
              (file-type (denote-filetype-heuristics file))
              (file-id (denote-retrieve-filename-identifier file))
-             (file-title (denote--retrieve-title-or-filename file file-type)))
+             (file-title (denote--link-get-description file)))
     (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
       (org-link-store-props
        :type "denote"
