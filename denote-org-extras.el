@@ -86,10 +86,6 @@ See the `:link' property of `denote-file-types'."
           heading-id
           description))
 
-(defun denote-org-extras-format-link-get-description (file heading-text)
-  "Return link description for FILE with HEADING-TEXT at the end."
-  (format "%s::%s" (denote--link-get-description file) heading-text))
-
 ;;;###autoload
 (defun denote-org-extras-link-to-heading ()
   "Link to file and then specify a heading to extend the link to.
@@ -115,12 +111,13 @@ To only link to a file, use the `denote-link' command."
   (unless (derived-mode-p 'org-mode)
     (user-error "Links to headings only work between Org files"))
   (when-let ((file (denote-file-prompt ".*\\.org"))
+             (file-text (denote--link-get-description file))
              (heading (denote-org-extras--outline-prompt file))
              (line (string-to-number (car (split-string heading "\t"))))
              (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
              (heading-text (car heading-data))
              (heading-id (cdr heading-data))
-             (description (denote-org-extras-format-link-get-description file heading-text)))
+             (description (denote-link-format-heading-description file-text heading-text)))
     (insert (denote-org-extras-format-link-with-heading file heading-id description))))
 
 ;;;; Extract subtree into its own note

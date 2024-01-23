@@ -4128,6 +4128,10 @@ create a new one."
   "Get current Org heading text."
   (org-get-heading :no-tags :no-todo :no-priority :no-comment))
 
+(defun denote-link-format-heading-description (file-text heading-text)
+  "Return description for FILE-TEXT with HEADING-TEXT at the end."
+  (format "%s::%s" file-text heading-text))
+
 ;;;###autoload
 (defun denote-link-ol-store ()
   "Handler for `org-store-link' adding support for denote: links.
@@ -4140,10 +4144,11 @@ Also see the user option `denote-org-store-link-to-heading'."
     (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
       (org-link-store-props
        :type "denote"
-       :description
-       (if heading-links
-           (format "%s::%s" file-title (denote-link-ol-get-heading))
-         file-title)
+       :description (if heading-links
+                        (denote-link-format-heading-description
+                         (denote--link-get-description file)
+                         (denote-link-ol-get-heading))
+                      file-title)
        :link (if heading-links
                  (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
                (concat "denote:" file-id)))
