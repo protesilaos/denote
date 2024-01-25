@@ -50,13 +50,11 @@ as the variable `denote-directory'."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type '(repeat directory))
 
-(define-obsolete-variable-alias
-  'denote-silo-extras--directory-history
-  'denote-silo-extras-directory-history
-  "3.0.0")
-
 (defvar denote-silo-extras-directory-history nil
   "Minibuffer history for `denote-silo-extras--directory-prompt'.")
+
+(defalias 'denote-silo-extras--directory-history 'denote-silo-extras-directory-history
+  "Compatibility alias for `denote-silo-extras-directory-history'.")
 
 (defun denote-silo-extras--directory-prompt ()
   "Prompt for directory among `denote-silo-extras-directories'."

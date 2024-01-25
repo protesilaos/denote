@@ -136,13 +136,11 @@ With optional REVERSE as a non-nil value, reverse the sort order."
    current-file-type
    id-only))
 
-(define-obsolete-variable-alias
-  'denote-sort--component-hist
-  'denote-sort-component-history
-  "3.0.0")
-
 (defvar denote-sort-component-history nil
   "Minibuffer history of `denote-sort-component-prompt'.")
+
+(defalias 'denote-sort--component-hist 'denote-sort-component-history
+  "Compatibility alias for `denote-sort-component-history'.")
 
 (defun denote-sort-component-prompt ()
   "Prompt `denote-sort-files' for sorting key among `denote-sort-components'."

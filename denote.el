@@ -1083,13 +1083,11 @@ With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
   (denote-directory-files nil omit-current nil))
 
-(define-obsolete-variable-alias
-  'denote--file-history
-  'denote-file-history
-  "3.0.0")
-
 (defvar denote-file-history nil
   "Minibuffer history of `denote-file-prompt'.")
+
+(defalias 'denote--file-history 'denote-file-history
+  "Compatibility alias for `denote-file-history'.")
 
 (defun denote-file-prompt (&optional files-matching-regexp)
   "Prompt for file with identifier in variable `denote-directory'.
@@ -1904,13 +1902,11 @@ increment it 1 second at a time until an available id is found."
 
 (make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
 
-(define-obsolete-variable-alias
-  'denote--command-prompt-history
-  'denote-command-prompt-history
-  "3.0.0")
-
 (defvar denote-command-prompt-history nil
   "Minibuffer history for `denote-command-prompt'.")
+
+(defalias 'denote--command-prompt-history 'denote-command-prompt-history
+  "Compatibility alias for `denote-command-prompt-history'.")
 
 (defun denote-command-prompt ()
   "Prompt for command among `denote-commands-for-new-notes'."
@@ -2055,13 +2051,11 @@ When called from Lisp, all arguments are optional.
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)))
 
-(define-obsolete-variable-alias
-  'denote--title-history
-  'denote-title-history
-  "3.0.0")
-
 (defvar denote-title-history nil
   "Minibuffer history of `denote-title-prompt'.")
+
+(defalias 'denote--title-history 'denote-title-history
+  "Compatibility alias for `denote-title-history'.")
 
 (defun denote-title-prompt (&optional default-title prompt-text)
   "Prompt for title string.
@@ -2089,13 +2083,11 @@ histories between sessions."
      denote-title-history
      nil nil default-title 'denote-title-history denote-title-prompt-current-default)))
 
-(define-obsolete-variable-alias
-  'denote--file-type-history
-  'denote-file-type-history
-  "3.0.0")
-
 (defvar denote-file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
+
+(defalias 'denote--file-type-history 'denote-file-type-history
+  "Compatibility alias for `denote-file-type-history'.")
 
 (defun denote-file-type-prompt ()
   "Prompt for `denote-file-type'.
@@ -2106,13 +2098,11 @@ here for clarity."
    "Select file type: " (denote--file-type-keys) nil t
    nil 'denote-file-type-history))
 
-(define-obsolete-variable-alias
-  'denote--date-history
-  'denote-date-history
-  "3.0.0")
-
 (defvar denote-date-history nil
   "Minibuffer history of `denote-date-prompt'.")
+
+(defalias 'denote--date-history 'denote-date-history
+  "Compatibility alias for `denote-date-history'.")
 
 (declare-function org-read-date "org" (&optional with-time to-time from-string prompt default-time default-input inactive))
 
@@ -2140,13 +2130,11 @@ Use Org's more advanced date selection utility if the user option
    denote-id-format
    (denote--valid-date (denote-date-prompt))))
 
-(define-obsolete-variable-alias
-  'denote--subdir-history
-  'denote-subdirectory-history
-  "3.0.0")
-
 (defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
+
+(defalias 'denote--subdir-history 'denote-subdirectory-history
+  "Compatibility alias for `denote-subdirectory-history'.")
 
 ;; Making it a completion table is useful for packages that read the
 ;; metadata, such as `marginalia' and `embark'.
@@ -2168,13 +2156,11 @@ packages such as `marginalia' and `embark')."
          (dirs (push root subdirs)))
     (denote--subdirs-completion-table dirs)))
 
-(define-obsolete-variable-alias
-  'denote--template-history
-  'denote-template-history
-  "3.0.0")
-
 (defvar denote-template-history nil
   "Minibuffer history of `denote-template-prompt'.")
+
+(defalias 'denote--template-history 'denote-template-history
+  "Compatibility alias for `denote-template-history'.")
 
 (defun denote-template-prompt ()
   "Prompt for template key in `denote-templates' and return its value."
@@ -2186,13 +2172,11 @@ packages such as `marginalia' and `embark')."
        nil t nil 'denote-template-history))
      templates)))
 
-(define-obsolete-variable-alias
-  'denote--signature-history
-  'denote-signature-history
-  "3.0.0")
-
 (defvar denote-signature-history nil
   "Minibuffer history of `denote-signature-prompt'.")
+
+(defalias 'denote--signature-history 'denote-signature-history
+  "Compatibility alias for `denote-signature-history'.")
 
 (defun denote-signature-prompt (&optional default-signature prompt-text)
   "Prompt for signature string.
@@ -2221,13 +2205,11 @@ histories between sessions."
      denote-signature-history
      nil nil default-signature 'denote-signature-history)))
 
-(define-obsolete-variable-alias
-  'denote--files-matching-regexp-hist
-  'denote-files-matching-regexp-history
-  "3.0.0")
-
 (defvar denote-files-matching-regexp-history nil
   "Minibuffer history of `denote-files-matching-regexp-prompt'.")
+
+(defalias 'denote--files-matching-regexp-hist 'denote-files-matching-regexp-history
+  "Compatibility alias for `denote-files-matching-regexp-history'.")
 
 (defun denote-files-matching-regexp-prompt (&optional prompt-text)
   "Prompt for REGEXP to filter Denote files by.
@@ -3447,13 +3429,11 @@ function."
           (push file found-files))))
     found-files))
 
-(define-obsolete-variable-alias
-  'denote-link--find-file-history
-  'denote-link-find-file-history
-  "3.0.0")
-
 (defvar denote-link-find-file-history nil
   "History for `denote-find-link'.")
+
+(defalias 'denote-link--find-file-history 'denote-link-find-file-history
+  "Compatibility alias for `denote-link-find-file-history'.")
 
 (defun denote-link--find-file-prompt (files)
   "Prompt for linked file among FILES."
