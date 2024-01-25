@@ -836,6 +836,10 @@ entire file name."
   "Return non-nil if FILE is empty."
   (zerop (or (file-attribute-size (file-attributes file)) 0)))
 
+(defun denote-file-has-identifier-p (file)
+  "Return non-nil if FILE has a Denote identifier."
+  (denote-retrieve-filename-identifier file))
+
 (defun denote-file-has-supported-extension-p (file)
   "Return non-nil if FILE has supported extension.
 Also account for the possibility of an added .gpg suffix.
@@ -860,10 +864,6 @@ For our purposes, a note must not be a directory, must satisfy
   (and (not (file-directory-p file))
        (file-regular-p file)
        (denote-filename-is-note-p file)))
-
-(defun denote-file-has-identifier-p (file)
-  "Return non-nil if FILE has a Denote identifier."
-  (denote-retrieve-filename-identifier file))
 
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
