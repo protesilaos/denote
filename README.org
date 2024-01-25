@@ -1001,6 +1001,9 @@ To see another example of a wrapper function that uses
 :CUSTOM_ID: h:e43baf95-f201-4fec-8620-c0eb5eaa1c85
 :END:
 
+[ As part of {{{development-version}}}, we fixed an issue where a
+  =C-u= prefix argument was needed to select a silo. ]
+
 The =denote-silo-extras.el= provides optional convenience functions for
 working with silos ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
 Start by loading the relevant library:
@@ -4966,8 +4969,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
   Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
   Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar,
-  Wesley Harvey, arsaber101, ezchi, leinfink (Henrik),
-  mentalisttraceur, relict007.
+  Wesley Harvey, arsaber101, ezchi, leinfink (Henrik), l-o-l-h
+  (Lincoln), mentalisttraceur, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alfredo Borrás, Ashton Wiersdorf,
