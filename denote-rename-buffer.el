@@ -106,7 +106,8 @@ buffer will be used, if available."
 The symbol of this function is the default value of the user
 option `denote-rename-buffer-function' and is thus used by the
 `denote-rename-buffer-mode'."
-  (when-let (((denote-file-has-identifier-p (buffer-file-name buffer)))
+  (when-let ((file (buffer-file-name buffer))
+             ((denote-file-has-identifier-p file))
              (new-name (denote-rename-buffer--format (or buffer (current-buffer))))
              ((not (string-blank-p new-name))))
     (rename-buffer new-name :unique)))
