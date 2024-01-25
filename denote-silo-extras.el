@@ -67,7 +67,9 @@ as the variable `denote-directory'."
 ;;;###autoload
 (defun denote-silo-extras-create-note (silo)
   "Select SILO and run `denote' in it.
-SILO is a file path from `denote-silo-extras-directories'."
+SILO is a file path from `denote-silo-extras-directories'.
+
+When called from Lisp, SILO is a file system path to a directory."
   (interactive (list (denote-silo-extras--directory-prompt)))
   (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote)))
@@ -75,7 +77,9 @@ SILO is a file path from `denote-silo-extras-directories'."
 ;;;###autoload
 (defun denote-silo-extras-open-or-create (silo)
   "Select SILO and run `denote-open-or-create' in it.
-SILO is a file path from `denote-silo-extras-directories'."
+SILO is a file path from `denote-silo-extras-directories'.
+
+When called from Lisp, SILO is a file system path to a directory."
   (interactive (list (denote-silo-extras--directory-prompt)))
   (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote-open-or-create)))
@@ -84,7 +88,9 @@ SILO is a file path from `denote-silo-extras-directories'."
 (defun denote-silo-extras-select-silo-then-command (silo command)
   "Select SILO and run Denote COMMAND in it.
 SILO is a file path from `denote-silo-extras-directories', while
-COMMAND is one among `denote-silo-extras-commands'."
+COMMAND is one among `denote-silo-extras-commands'.
+
+When called from Lisp, SILO is a file system path to a directory."
   (interactive
    (list
     (denote-silo-extras--directory-prompt)
