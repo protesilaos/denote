@@ -65,24 +65,18 @@ as the variable `denote-directory'."
      nil 'denote-silo-extras-directory-history)))
 
 ;;;###autoload
-(defun denote-silo-extras-create-note (&optional silo)
+(defun denote-silo-extras-create-note (silo)
   "Select SILO and run `denote' in it.
 SILO is a file path from `denote-silo-extras-directories'."
-  (interactive
-   (list
-    (when current-prefix-arg
-      (denote-silo-extras--directory-prompt))))
+  (interactive (list (denote-silo-extras--directory-prompt)))
   (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote)))
 
 ;;;###autoload
-(defun denote-silo-extras-open-or-create (&optional silo)
+(defun denote-silo-extras-open-or-create (silo)
   "Select SILO and run `denote-open-or-create' in it.
 SILO is a file path from `denote-silo-extras-directories'."
-  (interactive
-   (list
-    (when current-prefix-arg
-      (denote-silo-extras--directory-prompt))))
+  (interactive (list (denote-silo-extras--directory-prompt)))
   (let ((denote-user-enforced-denote-directory silo))
     (call-interactively #'denote-open-or-create)))
 
