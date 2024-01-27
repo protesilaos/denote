@@ -1136,13 +1136,11 @@ the keywords component of a Denote file name.  STRING is the same
 as the return value of `denote-retrieve-filename-keywords'."
   (string-join (split-string string "_" :omit-nulls "_") ","))
 
-(define-obsolete-variable-alias
-  'denote--keyword-history
-  'denote-keyword-history
-  "3.0.0")
-
 (defvar denote-keyword-history nil
   "Minibuffer history of inputted keywords.")
+
+(defalias 'denote--keyword-history 'denote-keyword-history
+  "Compatibility alias for `denote-keyword-history'.")
 
 (defun denote--keywords-crm (keywords &optional prompt initial)
   "Use `completing-read-multiple' for KEYWORDS.
