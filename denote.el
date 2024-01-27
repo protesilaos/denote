@@ -1798,7 +1798,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date file-type) keywords
-                  (format-time-string denote-id-format date)
+                  id
                   file-type)))
     (with-current-buffer buffer
       (insert header)
@@ -1845,15 +1845,15 @@ where the former does not read dates without a time component."
 (defun denote-parse-date (date)
   "Return DATE as an appropriate value for the `denote' command.
 
-- If DATE is a list, assume it is consistent with `current-date'
-  or related and return it as-is.
+- If DATE is non-nil and a list, assume it is consistent with
+  `current-date' or related and return it as-is.
 
 - If DATE is a non-empty string, try to convert it with
   `date-to-time'.
 
 - If DATE is none of the above, return `current-time'."
   (cond
-   ((listp date)
+   ((and date (listp date))
     date)
    ((and (stringp date) (not (string-empty-p date)))
     (denote--valid-date date))
