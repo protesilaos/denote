@@ -77,10 +77,7 @@ the current file."
       (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
 
 (defun denote-org-extras-format-link-with-heading (file heading-id description)
-  "Prepare link to FILE with HEADING-ID using DESCRIPTION.
-
-FILE-TYPE and ID-ONLY are used to get the format of the link.
-See the `:link' property of `denote-file-types'."
+  "Prepare link to FILE with HEADING-ID using DESCRIPTION."
   (format "[[denote:%s::#%s][%s]]"
           (denote-retrieve-filename-identifier file)
           heading-id
@@ -92,7 +89,7 @@ See the `:link' property of `denote-file-types'."
 
 The resulting link has the following pattern:
 
-[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][File title::Heading text]].
+[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][Description::Heading text]].
 
 Because only Org files can have links to individual headings,
 limit the list of possible files to those which include the .org

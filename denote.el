@@ -4118,17 +4118,16 @@ create a new one."
 Also see the user option `denote-org-store-link-to-heading'."
   (when-let ((file (buffer-file-name))
              ((denote-file-is-note-p file))
-             (file-type (denote-filetype-heuristics file))
              (file-id (denote-retrieve-filename-identifier file))
-             (file-title (denote--link-get-description file)))
+             (description (denote--link-get-description file)))
     (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
       (org-link-store-props
        :type "denote"
        :description (if heading-links
                         (denote-link-format-heading-description
-                         (denote--link-get-description file)
+                         description
                          (denote-link-ol-get-heading))
-                      file-title)
+                      description)
        :link (if heading-links
                  (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
                (concat "denote:" file-id)))

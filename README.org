@@ -1820,8 +1820,8 @@ The ~denote-link~ command inserts a link at point to a file specified
 at the minibuffer prompt ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
 Links are formatted depending on the file type of the current note. In
 Org and plain text buffers, links are formatted thus:
-=[[denote:IDENTIFIER][TITLE]]=. While in Markdown they are expressed
-as =[TITLE](denote:IDENTIFIER)=.
+=[[denote:IDENTIFIER][DESCRIPTION]]=. While in Markdown they are expressed
+as =[DESCRIPTION](denote:IDENTIFIER)=.
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=.  The user
@@ -1920,7 +1920,7 @@ As part of the optional =denote-org-extras.el= extension, the command
 ~denote-org-extras-link-to-heading~ prompts for a link to an Org file
 and then asks for a heading therein, using minibuffer completion. Once
 the user provides input at the two prompts, the command inserts a link
-at point which has the following pattern: =[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][File title::Heading text]]=.
+at point which has the following pattern: =[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][Description::Heading text]]=.
 
 Because only Org files can have links to individual headings, the
 command ~denote-org-extras-link-to-heading~ prompts only for Org files
