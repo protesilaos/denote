@@ -1136,13 +1136,11 @@ the keywords component of a Denote file name.  STRING is the same
 as the return value of `denote-retrieve-filename-keywords'."
   (string-join (split-string string "_" :omit-nulls "_") ","))
 
-(define-obsolete-variable-alias
-  'denote--keyword-history
-  'denote-keyword-history
-  "3.0.0")
-
 (defvar denote-keyword-history nil
   "Minibuffer history of inputted keywords.")
+
+(defalias 'denote--keyword-history 'denote-keyword-history
+  "Compatibility alias for `denote-keyword-history'.")
 
 (defun denote--keywords-crm (keywords &optional prompt initial)
   "Use `completing-read-multiple' for KEYWORDS.
@@ -1798,7 +1796,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date file-type) keywords
-                  (format-time-string denote-id-format date)
+                  id
                   file-type)))
     (with-current-buffer buffer
       (insert header)
@@ -1845,15 +1843,15 @@ where the former does not read dates without a time component."
 (defun denote-parse-date (date)
   "Return DATE as an appropriate value for the `denote' command.
 
-- If DATE is a list, assume it is consistent with `current-date'
-  or related and return it as-is.
+- If DATE is non-nil and a list, assume it is consistent with
+  `current-date' or related and return it as-is.
 
 - If DATE is a non-empty string, try to convert it with
   `date-to-time'.
 
 - If DATE is none of the above, return `current-time'."
   (cond
-   ((listp date)
+   ((and date (listp date))
     date)
    ((and (stringp date) (not (string-empty-p date)))
     (denote--valid-date date))
@@ -4118,17 +4116,16 @@ create a new one."
 Also see the user option `denote-org-store-link-to-heading'."
   (when-let ((file (buffer-file-name))
              ((denote-file-is-note-p file))
-             (file-type (denote-filetype-heuristics file))
              (file-id (denote-retrieve-filename-identifier file))
-             (file-title (denote--link-get-description file)))
+             (description (denote--link-get-description file)))
     (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
       (org-link-store-props
        :type "denote"
        :description (if heading-links
                         (denote-link-format-heading-description
-                         (denote--link-get-description file)
+                         description
                          (denote-link-ol-get-heading))
-                      file-title)
+                      description)
        :link (if heading-links
                  (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
                (concat "denote:" file-id)))
