@@ -3371,8 +3371,8 @@ treats the active region specially, is up to it."
           (description (when (file-exists-p file)
                          (denote--link-get-description file))))
        (list file file-type description current-prefix-arg)))
-  (unless (denote-filename-is-note-p (buffer-file-name))
-    (user-error "The current file is not a note"))
+  (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (unless (file-exists-p file)
     (user-error "The linked file does not exist"))
   (let* ((beg (point)))
@@ -3402,6 +3402,8 @@ For more advanced uses with Lisp, refer to the `denote-link'
 function."
   (declare (interactive-only t))
   (interactive)
+  (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (let* ((file (denote-file-prompt "="))
          (type (denote-filetype-heuristics (buffer-file-name)))
          (description (denote--link-get-description file)))
@@ -3520,8 +3522,8 @@ We thus have to save the buffer in order to (i) establish valid
 links, and (ii) retrieve whatever front matter from the target
 file."
   (interactive "P")
-  (unless (denote-filename-is-note-p (buffer-file-name))
-    (user-error "The current file is not a note"))
+  (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (let* ((type (denote-filetype-heuristics (buffer-file-name)))
          (path (denote--command-with-features #'denote nil nil :save :in-background))
          (description (denote--link-get-description path)))
@@ -3539,8 +3541,8 @@ Optional ID-ONLY has the same meaning as in the command
    (list
     (denote-command-prompt)
     current-prefix-arg))
-  (unless (denote-filename-is-note-p (buffer-file-name))
-    (user-error "The current file is not a note"))
+  (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (let* ((type (denote-filetype-heuristics (buffer-file-name)))
          (path (denote--command-with-features command nil nil :save :in-background))
          (description (denote--link-get-description path)))
@@ -3569,8 +3571,8 @@ file's title.  This has the same meaning as in `denote-link'."
      (unless (file-exists-p target)
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
-  (unless (denote-filename-is-note-p (buffer-file-name))
-    (user-error "The current file is not a note"))
+  (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (denote-link target
                (denote-filetype-heuristics (buffer-file-name))
                (denote--link-get-description target)
