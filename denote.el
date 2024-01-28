@@ -1083,18 +1083,25 @@ With optional OMIT-CURRENT, do not include the current Denote
 file in the returned list."
   (denote-directory-files nil omit-current nil))
 
-(defvar denote-file-history nil
-  "Minibuffer history of `denote-file-prompt'.")
+(defvar denote-relative-file-history nil
+  "History for `denote-relative-file-prompt'.")
 
-(defalias 'denote--file-history 'denote-file-history
-  "Compatibility alias for `denote-file-history'.")
-
-(defun denote-file-prompt (&optional files-matching-regexp)
+(defun denote-relative-file-prompt (&optional files-matching-regexp)
   "Prompt for file with identifier in variable `denote-directory'.
+
+The file is relative to variable `denote-directory'.
+
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (let ((files (denote-directory-files files-matching-regexp :omit-current)))
-    (completing-read "Select note: " files nil nil nil 'denote-file-history)))
+  (let* ((files (denote-directory-files files-matching-regexp :omit-current))
+         (file-names (mapcar #'denote-get-file-name-relative-to-denote-directory
+                             files)))
+    (completing-read "Select note: " file-names nil nil nil 'denote-relative-file-history)))
+
+(make-obsolete
+ 'denote-file-prompt
+ 'denote-relative-file-prompt
+ "3.0.0")
 
 ;;;; Keywords
 
@@ -2329,11 +2336,14 @@ If file does not exist, invoke `denote' to create a file.
 
 If TARGET file does not exist, add the user input that was used
 to search for it to the minibuffer history of the
-`denote-file-prompt'.  The user can then retrieve and possibly
+`denote-relative-file-prompt'.  The user can then retrieve and possibly
 further edit their last input, using it as the newly created
-note's actual title.  At the `denote-file-prompt' type
+note's actual title.  At the `denote-relative-file-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element]."
-  (interactive (list (denote-file-prompt)))
+  (interactive
+   (let* ((relative-file (denote-relative-file-prompt))
+          (file (concat (denote-directory) relative-file)))
+     (list file)))
   (if (and target (file-exists-p target))
       (find-file target)
     (denote--command-with-features #'denote :use-file-prompt-as-def-title nil nil nil)))
@@ -2345,13 +2355,14 @@ If file does not exist, invoke `denote' to create a file.
 
 If TARGET file does not exist, add the user input that was used
 to search for it to the minibuffer history of the
-`denote-file-prompt'.  The user can then retrieve and possibly
+`denote-relative-file-prompt'.  The user can then retrieve and possibly
 further edit their last input, using it as the newly created
-note's actual title.  At the `denote-file-prompt' type
+note's actual title.  At the `denote-relative-file-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element]."
   (declare (interactive-only t))
   (interactive)
-  (let ((target (denote-file-prompt)))
+  (let* ((relative-target (denote-relative-file-prompt))
+         (target (concat (denote-directory) relative-target)))
     (if (and target (file-exists-p target))
         (find-file target)
       (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
@@ -3355,7 +3366,8 @@ system path.  FILE-TYPE is a symbol as described in
 `denote-file-type'.  DESCRIPTION is a string.  Whether the caller
 treats the active region specially, is up to it."
   (interactive
-   (let* ((file (denote-file-prompt))
+   (let* ((relative-file (denote-relative-file-prompt))
+          (file (concat (denote-directory) relative-file))
           (file-type (when (buffer-file-name)
                        (denote-filetype-heuristics (buffer-file-name))))
           (description (when (file-exists-p file)
@@ -3394,7 +3406,8 @@ function."
   (interactive)
   (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
-  (let* ((file (denote-file-prompt "="))
+  (let* ((relative-file (denote-relative-file-prompt "="))
+         (file (concat (denote-directory) relative-file))
          (type (denote-filetype-heuristics (buffer-file-name)))
          (description (denote--link-get-description file)))
     (denote-link file type description)))
@@ -3550,16 +3563,17 @@ The established link will then be targeting that new file.
 
 If TARGET file does not exist, add the user input that was used
 to search for it to the minibuffer history of the
-`denote-file-prompt'.  The user can then retrieve and possibly
+`denote-relative-file-prompt'.  The user can then retrieve and possibly
 further edit their last input, using it as the newly created
-note's actual title.  At the `denote-file-prompt' type
+note's actual title.  At the `denote-relative-file-prompt' type
 \\<minibuffer-local-map>\\[previous-history-element].
 
 With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
-   (let* ((target (denote-file-prompt)))
+   (let* ((relative-target (denote-relative-file-prompt))
+          (target (concat (denote-directory) relative-target)))
      (unless (file-exists-p target)
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
@@ -4071,7 +4085,8 @@ file."
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
-  (if-let ((file (denote-file-prompt)))
+  (if-let ((relative-file (denote-relative-file-prompt))
+           (file (concat (denote-directory) relative-file)))
       (concat "denote:" (denote-retrieve-filename-identifier file))
     (user-error "No files in `denote-directory'")))
 
