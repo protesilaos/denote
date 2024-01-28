@@ -3458,9 +3458,11 @@ Also see `denote-link-return-backlinks'."
   (declare (interactive-only t))
   (interactive)
   (find-file
-   (denote-link--find-file-prompt
-    (or (denote-link-return-links)
-        (user-error "No links found")))))
+   (concat
+    (denote-directory)
+    (denote-link--find-file-prompt
+     (or (denote-link-return-links)
+         (user-error "No links found"))))))
 
 (defun denote-link-return-backlinks (&optional file)
   "Return list of backlinks in current or optional FILE.
