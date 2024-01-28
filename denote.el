@@ -2322,16 +2322,6 @@ is set to \\='(signature title keywords)."
 
 ;;;;; Other convenience commands
 
-(defun denote--command-with-default-title (command)
-  "Call COMMAND with last input at the `denote-file-prompt'.
-Set the `denote-title-prompt-current-default' to the last input.
-This is what makes commands such as `denote-open-or-create' or
-`denote-link-or-create' get what the user initially typed as the
-default value for the title of the new note to be created."
-  (let ((denote-title-prompt-current-default (when denote-file-history
-                                               (pop denote-file-history))))
-    (call-interactively command)))
-
 ;;;###autoload
 (defun denote-open-or-create (target)
   "Visit TARGET file in variable `denote-directory'.
@@ -2346,7 +2336,7 @@ note's actual title.  At the `denote-file-prompt' type
   (interactive (list (denote-file-prompt)))
   (if (and target (file-exists-p target))
       (find-file target)
-    (denote--command-with-default-title #'denote)))
+    (denote--command-with-features #'denote :use-file-prompt-as-def-title nil nil nil)))
 
 ;;;###autoload
 (defun denote-open-or-create-with-command ()
@@ -2364,7 +2354,7 @@ note's actual title.  At the `denote-file-prompt' type
   (let ((target (denote-file-prompt)))
     (if (and target (file-exists-p target))
         (find-file target)
-      (denote--command-with-default-title (denote-command-prompt)))))
+      (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
 
 ;;;###autoload
 (defun denote-keywords-add (keywords)
