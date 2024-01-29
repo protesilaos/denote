@@ -2611,6 +2611,20 @@ this in an Org file:
 :
 : #+END:
 
+[ The ~denote-org-extras-dblock-insert-missing-links~ is part of
+  {{{development-version}}}. ]
+
+#+findex: denote-org-extras-dblock-insert-missing-links
+Finally, the =denote-missing-links= block is available with the
+command ~denote-org-extras-dblock-insert-missing-links~. It is like
+the aforementioned =denote-links= block, except it only lists links to
+files that are not present in the current buffer. The parameters are
+otherwise the same:
+
+: #+BEGIN: denote-missing-links :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :id-only nil
+:
+: #+END:
+
 Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 =#+BEGIN= line to update the block.
 
@@ -4967,10 +4981,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Bagneris, Jean-Philippe Gagné Guay, Joseph Turner, Jürgen Hötzel,
   Kaushal Modi, Kai von Fintel, Kostas Andreadis, Kyle Meyer, Marc
   Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
-  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stefan Monnier, Stefan
-  Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar,
-  Wesley Harvey, arsaber101, ezchi, leinfink (Henrik), l-o-l-h
-  (Lincoln), mentalisttraceur, relict007.
+  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
+  Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
+  Manerikar, Wesley Harvey, arsaber101, ezchi, leinfink (Henrik),
+  l-o-l-h (Lincoln), mentalisttraceur, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alfredo Borrás, Ashton Wiersdorf,
