@@ -190,7 +190,7 @@ sorting."
    ((and sort-by-component reverse)
     (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse :omit-current))
    (sort-by-component
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse :omit-current))
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component nil :omit-current))
    (reverse
     (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse :omit-current))
    (t
