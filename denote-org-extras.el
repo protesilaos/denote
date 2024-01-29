@@ -104,7 +104,7 @@ independent of it.
 
 To only link to a file, use the `denote-link' command."
   (declare (interactive-only t))
-  (interactive)
+  (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Links to headings only work between Org files"))
   (when-let ((file (denote-file-prompt ".*\\.org"))
@@ -149,7 +149,7 @@ present, the former is used.
 
 Make the new note an Org file regardless of the value of
 `denote-file-type'."
-  (interactive)
+  (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Headings can only be extracted from Org files"))
   (if-let ((text (org-get-entry))
