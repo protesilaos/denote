@@ -161,10 +161,19 @@ Make the new note an Org file regardless of the value of
   (if-let ((text (org-get-entry))
            (heading (denote-link-ol-get-heading)))
       (let ((tags (org-get-tags))
-            (date (denote-org-extras--get-heading-date)))
+            (date (denote-org-extras--get-heading-date))
+            subdirectory
+            signature)
+        (dolist (prompt denote-prompts)
+          (pcase prompt
+            ('keywords (when (not tags)
+                         (setq tags (denote-keywords-prompt))))
+            ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
+            ('date (when (not date) (setq date (denote-date-prompt))))
+            ('signature (setq signature (denote-signature-prompt)))))
         (delete-region (org-entry-beginning-position)
                        (save-excursion (org-end-of-subtree t) (point)))
-        (denote heading tags 'org nil date)
+        (denote heading tags 'org subdirectory date nil signature)
         (insert text))
     (user-error "No subtree to extract; aborting")))
 
