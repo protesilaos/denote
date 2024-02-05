@@ -3198,6 +3198,16 @@ Each of those types can be narrowed to with a prefix key.  The package
 =consult-dir= is an extension to =consult= which provides useful extras
 for working with directories, including bookmarks.
 
+** Use the ~denote-explore~ package to explore your notes
+Peter Prevos has developed the ~denote-explore~ package which provides four groups of Emacs commands to explore your Denote files:
+
+- Summary statistics: Count notes, attachments and keywords.
+- Random walks: Generate new ideas using serendipity.
+- Janitor: Manage your denote collection.
+- Visualisations: Visualise your Denote network.
+
+package's documentation covers the details: <https://lucidmanager.org/productivity/denote-explore/>.
+
 ** Use the ~citar-denote~ package for bibliography notes
 :PROPERTIES:
 :CUSTOM_ID: h:226d66e4-b7de-4617-87e2-a7f2d6f007dd
@@ -3213,7 +3223,7 @@ retrieve them with the various Denote methods.
 With ~citar-denote~, the user leverages standard minibuffer completion
 mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
 to manage bibliographic notes and access those notes with ease.  The
-package's documentation covers the details: <https://github.com/pprevos/citar-denote/>.
+package's documentation covers the details: <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>.
 
 ** Use the ~consult-notes~ package
 :PROPERTIES:
@@ -4544,6 +4554,7 @@ Denote, feel welcome to tell us about it ([[#h:1ebe4865-c001-4747-a6f2-0fe45aad7
 
 + Peter Prevos: /Emacs Writing Studio/, 2023-10-19. A configuration for authors, using Denote for taking notes, literature reviews and manage collections of images:
   - <https://lucidmanager.org/productivity/taking-notes-with-emacs-denote/>
+  - <https://lucidmanager.org/productivity/denote-explore/>
   - <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>
   - <https://lucidmanager.org/productivity/using-emacs-image-dired/>
 
