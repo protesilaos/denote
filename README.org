@@ -3199,14 +3199,20 @@ Each of those types can be narrowed to with a prefix key.  The package
 for working with directories, including bookmarks.
 
 ** Use the ~denote-explore~ package to explore your notes
-Peter Prevos has developed the ~denote-explore~ package which provides four groups of Emacs commands to explore your Denote files:
+:PROPERTIES:
+:CUSTOM_ID: h:110ae3a4-5fc6-45da-b9bb-0e294bd12981
+:END:
 
-- Summary statistics: Count notes, attachments and keywords.
-- Random walks: Generate new ideas using serendipity.
-- Janitor: Manage your denote collection.
-- Visualisations: Visualise your Denote network.
+Peter Prevos has developed the ~denote-explore~ package which provides
+four groups of Emacs commands to explore your Denote files:
 
-package's documentation covers the details: <https://lucidmanager.org/productivity/denote-explore/>.
+- Summary statistics :: Count notes, attachments and keywords.
+- Random walks :: Generate new ideas using serendipity.
+- Janitor :: Manage your denote collection.
+- Visualisations :: Visualise your Denote network.
+
+The package's documentation covers the details:
+<https://lucidmanager.org/productivity/denote-explore/>.
 
 ** Use the ~citar-denote~ package for bibliography notes
 :PROPERTIES:
