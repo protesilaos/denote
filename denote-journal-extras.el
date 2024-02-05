@@ -208,5 +208,49 @@ It is internally processed by `denote-journal-extras--get-date'."
      (t
       (denote-journal-extras-new-entry date)))))
 
+;;;###autoload
+(defun denote-journal-extras-link-or-create-entry (&optional date id-only)
+  "Use `denote-link' on journal entry, creating it if necessary.
+A journal entry is one that has `denote-journal-extras-keyword' as
+part of its file name.
+
+If there are multiple journal entries for the current date,
+prompt for one using minibuffer completion.  If there is only
+one, link to it outright.  If there is no journal entry, create one
+by calling `denote-journal-extra-new-entry' and link to it.
+
+With optional DATE as a prefix argument, prompt for a date.  If
+`denote-date-prompt-use-org-read-date' is non-nil, use the Org
+date selection module.
+
+When called from Lisp, DATE is a string and has the same format
+as that covered in the documentation of the `denote' function.
+It is internally processed by `denote-journal-extras--get-date'.
+
+With optional ID-ONLY as a prefix argument create a link that
+consists of just the identifier.  Else try to also include the
+file's title.  This has the same meaning as in `denote-link'."
+  (interactive
+   (pcase current-prefix-arg
+     ('(16) (list (denote-date-prompt) :id-only))
+     ('(4) (list (denote-date-prompt)))))
+  (let* ((internal-date (denote-journal-extras--get-date date))
+         (files (denote-journal-extras--entry-today internal-date))
+         (path))
+    (cond
+     ((length> files 1)
+      (setq path (completing-read "Select journal entry: " files nil :require-match)))
+     (files
+      (setq path (car files)))
+     (t
+      (save-window-excursion
+        (denote-journal-extras-new-entry date)
+        (save-buffer)
+        (setq path (buffer-file-name)))))
+    (denote-link path
+                 (denote-filetype-heuristics (buffer-file-name))
+                 (denote--link-get-description path)
+                 id-only)))
+
 (provide 'denote-journal-extras)
 ;;; denote-journal-extras.el ends here
