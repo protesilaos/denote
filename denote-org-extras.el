@@ -122,14 +122,7 @@ To only link to a file, use the `denote-link' command."
 (defun denote-org-extras--get-heading-date ()
   "Try to return a timestamp for the current Org heading.
 This can be used as the value for the DATE argument of the
-`denote' command.
-
-If the heading includes a DATE or CREATED or CLOSED property with
-a timestamp value, use that to derive the date (or date and time)
-of the new note (if there is only a date, the time is taken as
-00:00). If more than one of these properties is present, the
-order of preference is DATE, followed by CREATED, followed by
-CLOSED."
+`denote' command."
   (when-let ((pos (point))
              (timestamp (or (org-entry-get pos "DATE")
                             (org-entry-get pos "CREATED")
@@ -140,20 +133,25 @@ CLOSED."
 (defun denote-org-extras-extract-org-subtree ()
   "Create new Denote note using the current Org subtree.
 Remove the subtree from its current file and move its contents
-into the new Denote file.
+into the new Denote file (a subtree is a heading with all of its
+contents, including subheadings).
 
 Take the text of the subtree's top level heading and use it as
 the title of the new note.
 
 If the heading has any tags, use them as the keywords of the new
-note.  Else do not include any keywords.
-
-If the heading has a date associated with it, use it as the date
-of the new note. See `denote-org-extras--get-heading-date' for
-details on how we look for a date.
+note.  If the Org file has any #+filetags use them as well.  Else
+do not include any keywords.
 
 If the heading has a PROPERTIES drawer, retain it for further
 review.
+
+If the heading's PROPERTIES drawer includes a DATE or CREATED or
+CLOSED property with a timestamp value, use that to derive the
+date (or date and time) of the new note (if there is only a date,
+the time is taken as 00:00).  If more than one of these
+properties is present, the order of preference is DATE, followed
+by CREATED, followed by CLOSED.
 
 Make the new note an Org file regardless of the value of
 `denote-file-type'."

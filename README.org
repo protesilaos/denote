@@ -534,31 +534,35 @@ accordingly.
 
 [ Rewritten as part of {{{development-version}}}. ]
 
-In Org parlance, an entry with all its subheadings is a "subtree".
-Denote can operate on the subtree to extract it from the current file
-and create a new file out of it. One such workflow is to collect
-thoughts in a single file and produce longer standalone notes out of
-them upon review.
+In Org parlance, an entry with all its subheadings and other contents
+is a "subtree". Denote can operate on the subtree to extract it from
+the current file and create a new file out of it. One such workflow is
+to collect thoughts in a single document and produce longer standalone
+notes out of them upon review.
 
 #+findex: denote-org-extras-extract-org-subtree
 The command ~denote-org-extras-extract-org-subtree~ (part of the
 optional =denote-org-extras.el= extension) is used for this purpose.
-It create a new Denote note using the current Org subtree. In doing
+It creates a new Denote note using the current Org subtree. In doing
 so, it removes the subtree from its current file and moves its
-contents into the new Denote file.
+contents into a new file.
 
-The text of the subtree's top level heading becomes the =#+title= of
-the new note.
+The text of the subtree's heading becomes the =#+title= of the new
+note. Everything else is inserted as-is.
 
-If the heading has any tags, those are turned into the keywords of the
-new note. Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
+If the heading has any tags, they are used as the keywords of the new
+note. If the Org file has any =#+filetags= they are taken as well.
+Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
 
-If the subtree has a =PROPERTIES= drawer, it is retained so that the
-user can perform a further review. If the =PROPERTIES= drawer includes
-a =DATE= or =CREATED= property with a timestamp value, it is used to
-derive the date (or date and time) of the new note (if there is only a
-date, the time is taken as 00:00). If both =DATE= and =CREATED=
-properties are present, the former is used.
+If the heading has a =PROPERTIES= drawer, it is retained for further
+review.
+
+If the heading's =PROPERTIES= drawer includes a =DATE= or =CREATED= or
+=CLOSED= property with a timestamp value, it is used to derive the date
+(or date and time) of the new note (if there is only a date, the time
+is taken as 00:00). If more than one of these properties is present,
+the order of preference is =DATE=, followed by =CREATED=, followed by
+=CLOSED=.
 
 The new note is an Org file regardless of the user option
 ~denote-file-type~.
