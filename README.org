@@ -1541,7 +1541,7 @@ These rules are applied to file names by default:
 
 + All file name components are downcased.  Consider a =helloWorld= or
   =HelloWorld= convention for those cases where you would want to have a
-  hyphen between consistuent words of a keyword.
+  hyphen between constituent words of a keyword.
 
 #+vindex: denote-file-name-slug-functions
 The user option ~denote-file-name-slug-functions~ can be used to control
