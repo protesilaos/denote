@@ -1093,8 +1093,11 @@ file in the returned list."
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (let ((files (denote-directory-files files-matching-regexp :omit-current)))
-    (completing-read "Select note: " files nil nil nil 'denote-file-history)))
+  (let* ((files (denote-directory-files files-matching-regexp :omit-current))
+         (file-names (mapcar (lambda (f)
+                               (propertize f 'display (denote-get-file-name-relative-to-denote-directory f)))
+                            files)))
+    (completing-read "Select note: " file-names nil nil nil 'denote-file-history)))
 
 ;;;; Keywords
 
