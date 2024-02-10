@@ -123,28 +123,14 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (eq val 'local) (eq val 'default-directory))))
+;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
 
-A safe local value of either `default-directory' or `local' can
-be added as a value in a .dir-local.el file.  Do this if you
-intend to use multiple directory silos for your notes while still
-relying on a global value (which is the value of this variable).
-The Denote manual has a sample (search for '.dir-locals.el').
-Those silos do not communicate with each other: they remain
-separate.
-
-The local value influences where commands such as `denote' will
-place the newly created note.  If the command is called from a
-directory or file where the local value exists, then that value
-take precedence, otherwise the global value is used.
-
 If you intend to reference this variable in Lisp, consider using
-the function `denote-directory' instead: it returns the path as a
-directory and also checks if a safe local value should be used."
+the function `denote-directory' instead."
   :group 'denote
-  :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
+  :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
   :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
@@ -658,25 +644,22 @@ Like `denote--completion-table' but also disable sorting."
   (when (not (file-directory-p denote-directory))
     (make-directory denote-directory :parents)))
 
-(defvar denote-user-enforced-denote-directory nil
-  "Value of the variable `denote-directory'.
-Use this to `let' bind a directory path, thus overriding what the
-function `denote-directory' ordinarily returns.")
-
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory.
-Custom Lisp code can `let' bind the value of the variable
-`denote-user-enforced-denote-directory' to override what this
-function returns.
+Custom Lisp code can `let' bind the variable `denote-directory'
+to override what this function returns."
+  ;; TODO 2024-02-09: Remove this condition eventually.
+  (if-let (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
+           (silo-dir (denote--default-directory-is-silo-p)))
+      silo-dir
+    (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
+      (denote--make-denote-directory)
+      denote-directory)))
 
-Otherwise, the order of precedence is to first check for a silo
-before falling back to the value of the variable
-`denote-directory'."
-  (let ((path (or denote-user-enforced-denote-directory
-                  (denote--default-directory-is-silo-p)
-                  (denote--make-denote-directory)
-                  (default-value 'denote-directory))))
-    (file-name-as-directory (expand-file-name path))))
+(make-obsolete
+ 'denote-user-enforced-denote-directory
+ 'denote-directory
+ "3.0.0")
 
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
