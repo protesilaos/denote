@@ -2887,6 +2887,20 @@ for one among them using minibuffer completion.  If there is only one,
 it visits it outright.  If there is no journal entry, it creates one
 by calling ~denote-journal-extra-new-entry~ (as described above).
 
+[ The ~denote-journal-extras-link-or-create-entry~ is part of
+  {{{development-version}}}. ]
+
+#+findex: denote-journal-extras-link-or-create-entry
+The command ~denote-journal-extras-link-or-create-entry~ links to the
+journal entry for today or creates it in the background, if missing,
+and then links to it from the current file. If there are multiple
+journal entries for the same day, it prompts to select one among them
+and then links to it. When called with an optional prefix argument
+(such as =C-u= with default key bindings), the command prompts for a
+date and then performs the aforementioned. With a double prefix
+argument (=C-u C-u=), it also produces a link whose description
+includes just the file's identifier.
+
 *** Journaling with a timer
 :PROPERTIES:
 :CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
