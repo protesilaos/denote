@@ -31,16 +31,6 @@
 (require 'ert)
 (require 'denote)
 
-;; TODO 2023-05-22: Incorporate an actual silo in this test directory
-;; and modify the test accordingly.
-(ert-deftest denote-test-denote--default-directory-is-silo-p ()
-  "Test that `denote--default-directory-is-silo-p' returns a path."
-  (let ((path (denote--default-directory-is-silo-p)))
-    (should (or (null path)
-                (and (stringp path)
-                     (file-exists-p path)
-                     (file-directory-p path))))))
-
 (ert-deftest denote-test--denote--make-denote-directory ()
   "Test that `denote--make-denote-directory' creates the directory."
   (should (null (denote--make-denote-directory))))
