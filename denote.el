@@ -3647,6 +3647,16 @@ positions, limit the process to the region in-between."
                    (end (match-end 0)))
           (make-button beg end 'type 'denote-link-button))))))
 
+(defun denote-link-markdown-follow (link)
+  "Function to open Denote file present in LINK.
+To be assigned to `markdown-follow-link-functions'."
+  (string-match denote-id-regexp link)
+  (funcall denote-link-button-action
+           (denote-get-path-by-id (match-string 0 link))))
+
+(eval-after-load 'markdown-mode
+  '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
+
 ;;;;; Backlinks' buffer
 
 (define-button-type 'denote-link-backlink-button

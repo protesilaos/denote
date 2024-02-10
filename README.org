@@ -1863,6 +1863,16 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
+[ The following is part of {{{development-version}}}. ]
+
+#+findex: denote-link-markdown-follow
+In files whose major mode is ~markdown-mode~, the default key binding
+=C-c C-o= (which calls the command ~markdown-follow-thing-at-point~)
+correctly resolves =denote:= links. This method works in addition to
+the =RET= key, which is made available by the aforementioned
+buttonization. Interested users can refer to the function
+~denote-link-markdown-follow~ for the implementation details.
+
 ** The ~denote-org-store-link-to-heading~ user option
 :PROPERTIES:
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
