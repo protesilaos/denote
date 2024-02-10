@@ -123,6 +123,11 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
+(define-obsolete-variable-alias
+ 'denote-user-enforced-denote-directory
+ 'denote-directory
+ "3.0.0")
+
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
@@ -655,11 +660,6 @@ to override what this function returns."
     (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
       (denote--make-denote-directory)
       denote-directory)))
-
-(make-obsolete
- 'denote-user-enforced-denote-directory
- 'denote-directory
- "3.0.0")
 
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
