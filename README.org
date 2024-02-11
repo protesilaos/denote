@@ -3941,12 +3941,18 @@ might change them without further notice.
   strings into a single string. Keywords are separated by the
   underscore character, per the Denote file-naming scheme.
 
+#+findex: denote-valid-date-p
++ Function ~denote-valid-date-p~ :: Return =DATE= if it can parsed by
+  ~date-to-time~, else signal an error. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-parse-date
 + Function ~denote-parse-date~ :: Return =DATE= as an appropriate
   value for the ~denote~ command. If =DATE= is a list, assume it is
   consistent with ~current-date~ or related and return it as-is. If
-  =DATE= is a non-empty string, try to convert it with ~date-to-time~.
-  If =DATE= is none of the above, return ~current-time~.
+  =DATE= is a non-empty string, try to convert it with ~date-to-time~,
+  per ~denote-valid-date-p~. If =DATE= is none of the above, return
+  ~current-time~. [ The ~denote-valid-date-p~ is the new name of
+  ~denote--valid-date~ as part of {{{development-version}}}. ]
 
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable

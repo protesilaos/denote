@@ -287,7 +287,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 (ert-deftest denote-test--denote-format-file-name ()
   "Test that `denote-format-file-name' returns all expected paths."
   (let* ((title "Some test")
-         (id (format-time-string denote-id-format (denote--valid-date "2023-11-28 05:53:11")))
+         (id (format-time-string denote-id-format (denote-valid-date-p "2023-11-28 05:53:11")))
          (denote-directory "/tmp/test-denote")
          (kws '("one" "two")))
     (should-error (denote-format-file-name

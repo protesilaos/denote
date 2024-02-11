@@ -1849,8 +1849,13 @@ where the former does not read dates without a time component."
       (format "%s %s" date (format-time-string "%H:%M:%S" (current-time)))
     date))
 
-(defun denote--valid-date (date)
-  "Return DATE if parsed by `date-to-time', else signal error."
+(define-obsolete-function-alias
+  'denote--valid-date
+  'denote-valid-date-p
+  "3.0.0")
+
+(defun denote-valid-date-p (date)
+  "Return DATE if it can parsed by `date-to-time', else signal an error."
   (let ((datetime (denote--date-add-current-time date)))
     (date-to-time datetime)))
 
@@ -4240,7 +4245,7 @@ Consult the manual for template samples."
   (let* ((title (or title ""))
          (date (if (or (null date) (string-empty-p date))
                    (current-time)
-                 (denote--valid-date date)))
+                 (denote-valid-date-p date)))
          (id (denote--find-first-unused-id
               (format-time-string denote-id-format date)
               (denote--get-all-used-ids)))

@@ -138,10 +138,10 @@ Also see `denote-journal-extras-new-entry'."
 (defun denote-journal-extras--get-date (date)
   "Return a valid DATE for `format-time-string'.
 If DATE is a list, return it as-is.  If it is a string, parse it
-with `denote--valid-date'.  Else return the `current-time'."
+with `denote-valid-date-p'.  Else return the `current-time'."
   (cond
    ((listp date) date)
-   ((stringp date) (denote--valid-date date))
+   ((stringp date) (denote-valid-date-p date))
    (t (current-time))))
 
 ;;;###autoload
