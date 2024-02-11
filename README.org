@@ -4086,6 +4086,12 @@ might change them without further notice.
 + Function ~denote-retrieve-filename-signature~ :: Extract signature
   from =FILE= name, if present, else return nil.
 
+#+findex: denote-get-identifier
++ Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
+  identifier using ~denote-id-format~. =DATE= is parsed by
+  ~denote-valid-date-p~. If =DATE= is nil, use the current time.
+  [ Part of {{{development-version}}}. ]
+
 #+findex: denote-create-unique-file-identifier
 + Function ~denote-create-unique-file-identifier~ :: Create a new unique
   =FILE= identifier.  Test that the identifier is unique among

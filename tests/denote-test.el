@@ -404,6 +404,12 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
         (equal (denote-convert-file-name-keywords-to-crm "_denote") "denote")
         (equal (denote-convert-file-name-keywords-to-crm "") ""))))
 
+(ert-deftest denote-test--denote-get-identifier ()
+  "Test that `denote-get-identifier' returns an identifier."
+  (should (and (equal (denote-get-identifier) (format-time-string denote-id-format (current-time)))
+               (equal (denote-get-identifier "2024-02-01 10:34") "20240201T103400")))
+  (should-error (denote-get-identifier "Invalid date")))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)

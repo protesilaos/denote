@@ -1548,6 +1548,14 @@ To create a new one, refer to the function
   (or (denote-retrieve-filename-identifier file)
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
+(defun denote-get-identifier (&optional date)
+  "Convert DATE into a Denote identifier using `denote-id-format'.
+DATE is parsed by `denote-valid-date-p'.  If DATE is nil, use the
+current time."
+  (format-time-string
+   denote-id-format
+   (when date (denote-valid-date-p date))))
+
 (defun denote-create-unique-file-identifier (file used-ids &optional date)
   "Generate a unique identifier for FILE not in USED-IDS hash-table.
 
