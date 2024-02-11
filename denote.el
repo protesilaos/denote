@@ -1876,21 +1876,9 @@ If DATE is nil, return nil."
 
 (defun denote-parse-date (date)
   "Return DATE as an appropriate value for the `denote' command.
-
-- If DATE is non-nil and a list, assume it is consistent with
-  `current-date' or related and return it as-is.
-
-- If DATE is a non-empty string, try to convert it with
-  `date-to-time'.
-
-- If DATE is none of the above, return `current-time'."
-  (cond
-   ((and date (listp date))
-    date)
-   ((and (stringp date) (not (string-empty-p date)))
-    (denote--valid-date date))
-   (t
-    (current-time))))
+Pass DATE through `denote-valid-date-p' and use its return value.
+If either that or DATE is nil, return `current-time'."
+  (or (denote-valid-date-p date)) (current-time))
 
 (defun denote--buffer-file-names ()
   "Return file names of Denote buffers."
