@@ -1863,9 +1863,11 @@ where the former does not read dates without a time component."
   "3.0.0")
 
 (defun denote-valid-date-p (date)
-  "Return DATE if it can parsed by `date-to-time', else signal an error."
-  (let ((datetime (denote--date-add-current-time date)))
-    (date-to-time datetime)))
+  "Return valid DATE if it can parsed by `date-to-time', else signal an error."
+  (if (and (or (numberp date) (listp date))
+           (decode-time date))
+      date
+    (date-to-time (denote--date-add-current-time date))))
 
 (defun denote-parse-date (date)
   "Return DATE as an appropriate value for the `denote' command.

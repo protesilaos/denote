@@ -407,7 +407,9 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 (ert-deftest denote-test--denote-get-identifier ()
   "Test that `denote-get-identifier' returns an identifier."
   (should (and (equal (denote-get-identifier) (format-time-string denote-id-format (current-time)))
-               (equal (denote-get-identifier "2024-02-01 10:34") "20240201T103400")))
+               (equal (denote-get-identifier "2024-02-01 10:34") "20240201T103400")
+               (equal (denote-get-identifier 1705644188) "20240119T080308")
+               (equal (denote-get-identifier '(26026 4251)) "20240119T080307")))
   (should-error (denote-get-identifier "Invalid date")))
 
 ;;;; denote-journal-extras.el
