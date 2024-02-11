@@ -551,18 +551,30 @@ The text of the subtree's heading becomes the =#+title= of the new
 note. Everything else is inserted as-is.
 
 If the heading has any tags, they are used as the keywords of the new
-note. If the Org file has any =#+filetags= they are taken as well.
-Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
+note. If the Org file has any =#+filetags= they are taken as well
+(Org's =#+filetags= are inherited by the headings). If none of these
+are true and the user option ~denote-prompts~ includes an entry for
+keywords, then ~denote-org-extras-extract-org-subtree~ prompts for
+keywords. Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
 
 If the heading has a =PROPERTIES= drawer, it is retained for further
 review.
 
-If the heading's =PROPERTIES= drawer includes a =DATE= or =CREATED= or
-=CLOSED= property with a timestamp value, it is used to derive the date
-(or date and time) of the new note (if there is only a date, the time
-is taken as 00:00). If more than one of these properties is present,
-the order of preference is =DATE=, followed by =CREATED=, followed by
-=CLOSED=.
+If the heading's =PROPERTIES= drawer includes a =DATE= or =CREATED=
+property, or there exists a =CLOSED= statement with a timestamp value,
+use that to derive the date (or date and time) of the new note (if
+there is only a date, the time is taken as 00:00). If more than one of
+these is present, the order of preference is =DATE=, then =CREATED=,
+then =CLOSED=. If none of these is present, the current time is used.
+If the ~denote-prompts~ includes an entry for a date, then the command
+prompts for a date at this stage (also see ~denote-date-prompt-use-org-read-date~).
+
+For the rest, it consults the value of the user option
+~denote-prompts~ in the following scenaria:
+
+- To optionally prompt for a subdirectory, otherwise it produces the
+  new note in the ~denote-directory~.
+- To optionally prompt for a file signature, otherwise to not use any.
 
 The new note is an Org file regardless of the user option
 ~denote-file-type~.
