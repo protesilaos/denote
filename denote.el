@@ -1574,7 +1574,7 @@ To only return an existing identifier, refer to the function
   (let ((id (cond
              (date (denote-prompt-for-date-return-id))
              ((denote--file-attributes-time file))
-             (t (format-time-string denote-id-format)))))
+             (t (denote-get-identifier)))))
     (denote--find-first-unused-id id used-ids)))
 
 (define-obsolete-function-alias
@@ -1917,7 +1917,7 @@ USED-IDS is a hash-table of all used IDs.  If ID is already used,
 increment it 1 second at a time until an available id is found."
   (let ((current-id id))
     (while (gethash current-id used-ids)
-      (setq current-id (format-time-string denote-id-format (time-add (date-to-time current-id) 1))))
+      (setq current-id (denote-get-identifier (time-add (date-to-time current-id) 1))))
     current-id))
 
 (make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
@@ -2057,7 +2057,7 @@ When called from Lisp, all arguments are optional.
          (kws (denote-keywords-sort keywords))
          (date (denote-parse-date date))
          (id (denote--find-first-unused-id
-              (format-time-string denote-id-format date)
+              (denote-get-identifier date)
               (denote--get-all-used-ids)))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
@@ -2146,9 +2146,7 @@ Use Org's more advanced date selection utility if the user option
 
 (defun denote-prompt-for-date-return-id ()
   "Use `denote-date-prompt' and return it as `denote-id-format'."
-  (format-time-string
-   denote-id-format
-   (denote--valid-date (denote-date-prompt))))
+  (denote-get-identifier (denote-date-prompt)))
 
 (defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
@@ -2474,9 +2472,7 @@ the file type is assumed to be the first of `denote-file-types'."
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
-  (format-time-string
-   denote-id-format
-   (file-attribute-modification-time (file-attributes file))))
+  (denote-get-identifier (file-attribute-modification-time (file-attributes file))))
 
 (defun denote--revert-dired (buf)
   "Revert BUF if appropriate.
@@ -4250,7 +4246,7 @@ Consult the manual for template samples."
                    (current-time)
                  (denote-valid-date-p date)))
          (id (denote--find-first-unused-id
-              (format-time-string denote-id-format date)
+              (denote-get-identifier date)
               (denote--get-all-used-ids)))
          (keywords (denote-keywords-sort keywords))
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
@@ -4260,7 +4256,7 @@ Consult the manual for template samples."
          (signature (or signature ""))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
-                        (format-time-string denote-id-format nil) 'org)))
+                        (denote-get-identifier) 'org)))
     (setq denote-last-path
           (denote--path title keywords directory id 'org signature))
     (denote--keywords-add-to-history keywords)
