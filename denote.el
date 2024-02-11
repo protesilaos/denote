@@ -1266,6 +1266,11 @@ This can be used in `denote-file-types' to format front mattter."
 This can be used in `denote-file-types' to format front mattter."
   (denote--trim-quotes (denote-trim-whitespace s)))
 
+(defun denote-format-string-for-org-front-matter (s)
+  "Return string S as-is for Org or plain text front matter.
+If S is not a string, return an empty string."
+  (if (stringp s) s ""))
+
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
 KEYWORDS is a list of strings.  Consult the `denote-file-types'
@@ -1299,7 +1304,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-org-timestamp
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
-     :title-value-function identity
+     :title-value-function denote-format-string-for-org-front-matter
      :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^#\\+filetags\\s-*:"
      :keywords-value-function denote-format-keywords-for-org-front-matter
@@ -1335,7 +1340,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-iso-8601
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function identity
+     :title-value-function denote-format-string-for-org-front-matter
      :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
