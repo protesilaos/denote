@@ -1757,9 +1757,9 @@ which case it is not added to the base file name."
    ((not (string-match-p denote-id-regexp id))
     (error "ID `%s' does not match `denote-id-regexp'" id)))
   (let ((file-name (concat dir-path id)))
-    (when (not (string-empty-p signature))
+    (when (and signature (not (string-empty-p signature)))
       (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))
-    (when (not (string-empty-p title))
+    (when (and title (not (string-empty-p title)))
       (setq file-name (concat file-name "--" (denote-sluggify 'title title))))
     (when keywords
       (setq file-name (concat file-name "__" (denote-keywords-combine (denote-sluggify-keywords keywords)))))

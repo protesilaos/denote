@@ -359,6 +359,15 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
     (should (equal (denote-format-file-name
                     (denote-directory)
                     id
+                    nil
+                    nil
+                    (denote--file-extension 'org)
+                    nil)
+                   "/tmp/test-denote/20231128T055311.org"))
+
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    id
                     kws
                     title
                     (denote--file-extension 'org)
