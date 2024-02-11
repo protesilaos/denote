@@ -1544,18 +1544,26 @@ current time."
 
 The conditions are as follows:
 
-- If optional DATE is non-nil, invoke
-  `denote-prompt-for-date-return-id'.
+- If optional DATE conforms with `denote-valid-date-p', use it
+  as-is to get an identifier from it with `denote-get-identifier'.
 
-- If DATE is nil, use the file attributes to determine the last
-  modified date and format it as an identifier.
+- If optional DATE is nil, use the file attributes to determine
+  the last modified date and format it as an identifier.
 
 - As a fallback, derive an identifier from the current time.
 
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
+  ;; TODO 2024-02-11: Maybe we can use `denote-parse-date' here to
+  ;; simplify this?
   (let ((id (cond
-             (date (denote-prompt-for-date-return-id))
+             ((denote-valid-date-p date) (denote-get-identifier date))
+             ;; FIXME 2024-02-11: Under which condition do we want
+             ;; this to happen?  I am using this is not needed, but
+             ;; keeping it here while we are still developing the new
+             ;; version 3.0.0.
+             ;;
+             ;; (date (denote-prompt-for-date-return-id))
              ((denote--file-attributes-time file))
              (t (denote-get-identifier)))))
     (denote--find-first-unused-id id used-ids)))
@@ -2618,7 +2626,7 @@ Throw error if FILE is not regular, else return FILE."
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
 ;;;###autoload
-(defun denote-rename-file (file title keywords signature &optional ask-date)
+(defun denote-rename-file (file &optional title keywords signature date)
   "Rename file and update existing front matter if appropriate.
 
 If in Dired, consider FILE to be the one at point, else prompt
@@ -2631,9 +2639,10 @@ file name.
 
 Else create an identifier based on the following conditions:
 
-1. If optional ASK-DATE is non-nil (such as with a prefix
-   argument), prompt for a date and use it to derive the
-   identifier.
+2024-02-11 10:48 +0200 WORK-IN-PROGRESS.
+
+1. If optional DATE is non-nil (such as with a prefix argument),
+   prompt for a date and use it to derive the identifier.
 
 2. If optional ASK-DATE is nil (this is the case without a prefix
    argument), use the file attributes to determine the last
@@ -2701,22 +2710,29 @@ file-naming scheme."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
-          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
-     (list
-      file
-      (denote-title-prompt
-       (denote--retrieve-title-or-filename file file-type)
-       (format "Rename `%s' with title (empty to remove)" file-in-prompt))
-      (denote-keywords-prompt
-       (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
-       (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
-      (denote-signature-prompt
-       (or (denote-retrieve-filename-signature file) "")
-       (format "Rename `%s' with signature (empty to remove)" file-in-prompt))
-      current-prefix-arg)))
+          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
+          (args (make-vector 4 nil)))
+     (dolist (prompt denote-prompts)
+       (pcase prompt
+         ('title
+          (aset args 0 (denote-title-prompt
+                        (denote--retrieve-title-or-filename file file-type)
+                        (format "Rename `%s' with title (empty to remove)" file-in-prompt))))
+         ('keywords
+          (aset args 1 (denote-keywords-prompt
+                        (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                        (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
+         ('signature
+          (aset args 2 (denote-signature-prompt
+                        (or (denote-retrieve-filename-signature file) "")
+                        (format "Rename `%s' with signature (empty to remove)" file-in-prompt))))
+         ('date
+          (unless (denote-file-has-identifier-p file)
+            (aset args 3 (denote-date-prompt))))))
+     (append (vector file) args nil)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
-                 (denote-create-unique-file-identifier file (denote--get-all-used-ids) ask-date)))
+                 (denote-create-unique-file-identifier file (denote--get-all-used-ids) (denote-parse-date date))))
          (keywords (denote-keywords-sort keywords))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
