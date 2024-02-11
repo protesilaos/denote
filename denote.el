@@ -1495,6 +1495,17 @@ for new note creation.  The default is `org'.")
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
 
+(defun denote--format-front-matter (title date keywords id filetype)
+  "Front matter for new notes.
+
+TITLE, DATE, and ID are all strings or functions that return a
+string.  KEYWORDS is a list of strings.  FILETYPE is one of the
+values of `denote-file-type'."
+  (let* ((fm (denote--front-matter filetype))
+         (title (denote--format-front-matter-title title filetype))
+         (kws (denote--format-front-matter-keywords keywords filetype)))
+    (if fm (format fm title date kws id) "")))
+
 (defun denote--get-title-line-from-front-matter (title file-type)
   "Retrieve title line from front matter based on FILE-TYPE.
 Format TITLE in the title line.  The returned line does not
@@ -1755,17 +1766,6 @@ which case it is not added to the base file name."
 Apply `denote-sluggify' to KEYWORDS."
   (let ((kws (denote-sluggify-keywords keywords)))
     (funcall (denote--keywords-value-function file-type) kws)))
-
-(defun denote--format-front-matter (title date keywords id filetype)
-  "Front matter for new notes.
-
-TITLE, DATE, and ID are all strings or functions that return a
-string.  KEYWORDS is a list of strings.  FILETYPE is one of the
-values of `denote-file-type'."
-  (let* ((fm (denote--front-matter filetype))
-         (title (denote--format-front-matter-title title filetype))
-         (kws (denote--format-front-matter-keywords keywords filetype)))
-    (if fm (format fm title date kws id) "")))
 
 (defun denote--path (title keywords dir id file-type signature)
   "Return path to new file.
