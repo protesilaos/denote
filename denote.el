@@ -1863,7 +1863,12 @@ where the former does not read dates without a time component."
   "3.0.0")
 
 (defun denote-valid-date-p (date)
-  "Return valid DATE if it can parsed by `date-to-time', else signal an error."
+  "Return DATE as a valid date.
+A valid DATE is a value that can be parsed by either
+`decode-time' or `date-to-time'.  Those functions signal an error
+if DATE is a value they do not recognise.
+
+If DATE is nil, return nil."
   (if (and (or (numberp date) (listp date))
            (decode-time date))
       date
