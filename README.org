@@ -4339,12 +4339,6 @@ might change them without further notice.
   an identifier-only link in its context.  The format of such links is
   ~denote-id-only-link-format~.
 
-#+findex: denote-surround-with-quotes
-+ Function ~denote-surround-with-quotes~ :: Surround string =S= with
-  quotes. If =S= is not a string, return a literal emptry string. This
-  can be used in ~denote-file-types~ to format front mattter. [
-  Revised as part of {{{development-version}}}. ]
-
 #+findex: denote-date-org-timestamp
 + Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
   inactive timestamp notation.
@@ -4366,6 +4360,14 @@ might change them without further notice.
 + Function ~denote-trim-whitespace-then-quotes~ :: Trim whitespace
   then quotes around string =S=.  This can be used in
   ~denote-file-types~ to format front mattter.
+
+#+findex: denote-format-string-for-md-front-matter
++ Function ~denote-format-string-for-md-front-matter~ :: Surround
+  string =S= with quotes. If =S= is not a string, return a literal
+  emptry string. This can be used in ~denote-file-types~ to format
+  front mattter. [ Revised as part of {{{development-version}}} and
+  renamed from ~denote-surround-with-quotes~ to
+  ~denote-format-string-for-md-front-matter~. ]
 
 #+findex: denote-format-keywords-for-md-front-matter
 + Function ~denote-format-keywords-for-md-front-matter~ :: Format

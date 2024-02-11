@@ -1237,7 +1237,12 @@ It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
-(defun denote-surround-with-quotes (s)
+(define-obsolete-function-alias
+  'denote-surround-with-quotes
+  'denote-format-string-for-md-front-matter
+  "3.0.0")
+
+(defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
 If S is not a string, return a literal emptry string.
 
@@ -1306,7 +1311,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-rfc3339
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function denote-surround-with-quotes
+     :title-value-function denote-format-string-for-md-front-matter
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-md-front-matter
@@ -1318,7 +1323,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-rfc3339
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
-     :title-value-function denote-surround-with-quotes
+     :title-value-function denote-format-string-for-md-front-matter
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*="
      :keywords-value-function denote-format-keywords-for-md-front-matter
