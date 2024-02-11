@@ -6,7 +6,7 @@
 #+startup: content
 #+macro: stable-version 2.2.0
 #+macro: release-date 2023-12-10
-#+macro: development-version 2.3.0-dev
+#+macro: development-version 3.0.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
