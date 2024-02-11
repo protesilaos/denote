@@ -1239,8 +1239,12 @@ Change the front matter format'.")
 
 (defun denote-surround-with-quotes (s)
   "Surround string S with quotes.
+If S is not a string, return a literal emptry string.
+
 This can be used in `denote-file-types' to format front mattter."
-  (format "%S" s))
+  (if (stringp s)
+      (format "%S" s)
+    "\"\""))
 
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.

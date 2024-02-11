@@ -182,6 +182,14 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (member ".org.age" extensions)
                 (member ".txt.age" extensions)))))
 
+(ert-deftest denote-test--denote-surround-with-quotes ()
+  "Test that `denote-surround-with-quotes' returns a string in quotes."
+  (should (and (equal (denote-surround-with-quotes "test") "\"test\"")
+               (equal (denote-surround-with-quotes "") "\"\"")
+               (equal (denote-surround-with-quotes nil) "\"\"")
+               (equal (denote-surround-with-quotes 'wrong) "\"\"")
+               (equal (denote-surround-with-quotes '(wrong)) "\"\""))))
+
 (ert-deftest denote-test--denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly."
   (should (and (equal (denote--format-front-matter "" "" '("") "" 'text)
