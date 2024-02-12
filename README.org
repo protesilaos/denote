@@ -1000,17 +1000,12 @@ With this in place, =M-x my-denote-pick-silo-then-command= will use
 minibuffer completion to select a silo among the predefined options
 and then ask for the command to run in that context.
 
-Note the use of the variable ~user-enforced-denote-directory~. This
-variable is specially meant for custom commands to select silos. When
-it is set, it overrides the global default value of ~denote-directory~
-as well as the value provided by the =.dir-locals.el= file. Use it
-only when writing wrapper functions like
+Note the use of the variable ~denote-user-enforced-denote-directory~.
+This variable is specially meant for custom commands to select
+silos. When it is set, it overrides the global default value of
+~denote-directory~ as well as the value provided by the
+=.dir-locals.el= file. Use it only when writing wrapper functions like
 ~my-denote-pick-silo-then-command~.
-
-To see another example of a wrapper function that uses
-~user-enforced-denote-directory~, see:
-
-[[#h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd][Extending Denote: Split an Org subtree into its own note]].
 
 *** The =denote-silo-extras.el=
 :PROPERTIES:
