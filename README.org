@@ -5058,7 +5058,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
   Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
   Manerikar, Wesley Harvey, arsaber101, ezchi, leinfink (Henrik),
-  l-o-l-h (Lincoln), mentalisttraceur, relict007.
+  l-o-l-h (Lincoln), maxbrieiev, mentalisttraceur, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alfredo Borrás, Ashton Wiersdorf,
