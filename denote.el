@@ -2749,6 +2749,9 @@ one-by-one, use `denote-dired-rename-files'."
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) date)))
          (keywords (denote-keywords-sort keywords))
+         ;; TODO 2024-02-13: Should we derive the extension from the
+         ;; `denote-file-type-prompt' if we are conforming with the
+         ;; `denote-prompts'?
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name dir id keywords title extension signature))
