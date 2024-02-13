@@ -2249,6 +2249,10 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 (defalias 'denote-create-note 'denote
   "Alias for `denote' command.")
 
+(defun denote--add-prompts (additional-prompts)
+  "Add all the elements in the ADDITIONAL-PROMPTS list to `denote-prompts'."
+  (seq-union denote-prompts additional-prompts))
+
 ;;;###autoload
 (defun denote-type ()
   "Create note while prompting for a file type.
@@ -2257,7 +2261,7 @@ This is the equivalent to calling `denote' when `denote-prompts'
 is set to \\='(file-type title keywords)."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(file-type title keywords)))
+  (let ((denote-prompts (denote--add-prompts '(file-type))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-type 'denote-type
@@ -2276,7 +2280,7 @@ This is the equivalent to calling `denote' when `denote-prompts'
 is set to \\='(date title keywords)."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(date title keywords)))
+  (let ((denote-prompts (denote--add-prompts '(date))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-date 'denote-date
@@ -2293,7 +2297,7 @@ This is equivalent to calling `denote' when `denote-prompts' is
 set to \\='(subdirectory title keywords)."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(subdirectory title keywords)))
+  (let ((denote-prompts (denote--add-prompts '(subdirectory))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-in-subdirectory 'denote-subdirectory
@@ -2311,7 +2315,7 @@ This is equivalent to calling `denote' when `denote-prompts' is
 set to \\='(template title keywords)."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(template title keywords)))
+  (let ((denote-prompts (denote--add-prompts '(template))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-with-template 'denote-template
@@ -2325,7 +2329,7 @@ This is the equivalent to calling `denote' when `denote-prompts'
 is set to \\='(signature title keywords)."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(signature title keywords)))
+  (let ((denote-prompts (denote--add-prompts '(signature))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-signature 'denote-signature
