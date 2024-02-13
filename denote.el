@@ -1544,8 +1544,9 @@ current time."
 
 The conditions are as follows:
 
-- If optional DATE conforms with `denote-valid-date-p', use it
-  as-is to get an identifier from it with `denote-get-identifier'.
+- If optional DATE is non-nil pass it to `denote-get-identifier'.
+  DATE will have to conform with `denote-valid-date-p'.  If it
+  does not, return an error.
 
 - If optional DATE is nil, use the file attributes to determine
   the last modified date and format it as an identifier.
@@ -1554,18 +1555,10 @@ The conditions are as follows:
 
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
-  ;; TODO 2024-02-11: Maybe we can use `denote-parse-date' here to
-  ;; simplify this?
   (let ((id (cond
-             ((denote-valid-date-p date) (denote-get-identifier date))
-             ;; FIXME 2024-02-11: Under which condition do we want
-             ;; this to happen?  I am using this is not needed, but
-             ;; keeping it here while we are still developing the new
-             ;; version 3.0.0.
-             ;;
-             ;; (date (denote-prompt-for-date-return-id))
-             ((denote--file-attributes-time file))
-             (t (denote-get-identifier)))))
+              (date (denote-get-identifier date))
+              ((denote--file-attributes-time file))
+              (t (denote-get-identifier)))))
     (denote--find-first-unused-id id used-ids)))
 
 (define-obsolete-function-alias
