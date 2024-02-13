@@ -2648,7 +2648,7 @@ never move it to another directory.
 
 If in Dired, consider FILE to be the one at point, else prompt
 with minibuffer completion for one.  When called from Lisp, FILE
-is a files ystem path represented as a string.
+is a file system path represented as a string.
 
 If FILE has a Denote-compliant identifier, retain it while
 updating components of the file name referenced by the user
