@@ -1144,32 +1144,47 @@ line or switching between then with commands like ~switch-to-buffer~.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
+[ Revised as part of {{{development-version}}} to honour the value of
+  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). ]
+
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate. It is possible to do the same with
 multiple files ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files interactively]]).
 
-If in Dired, consider =FILE= to be the one at point, else prompt with
-minibuffer completion for one. When called from Lisp, =FILE= is a
-filesystem path represented as a string.
+It always renames the file where it is located in the file system:
+it never moves it to another directory.
 
-If =FILE= has a Denote-compliant identifier, retain it while updating
-the =TITLE=, =KEYWORDS=, and =SIGNATURE= components of the file name.
+If in Dired, it considers =FILE= to be the one at point, else it
+prompts with minibuffer completion for one. When called from Lisp,
+=FILE= is a file system path represented as a string.
 
-Else create an identifier based on the following conditions:
+If =FILE= has a Denote-compliant identifier, it retains it while
+updating components of the file name referenced by the user option
+~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). By default, these are
+the =TITLE= and =KEYWORDS=. The =SIGNATURE= is another one. When
+called from Lisp, =TITLE= and =SIGNATURE= are strings, while
+=KEYWORDS= is a list of strings.
 
-1. If optional =ASK-DATE= is non-nil (such as with a prefix argument),
-   prompt for a date and use it to derive the identifier.
+If there is no identifier, ~denote-rename-file~ creates an identifier
+based on the following conditions:
 
-2. If optional =ASK-DATE= is nil (this is the case without a prefix
-   argument), use the file attributes to determine the last modified
-   date and format it as an identifier.
+1. If the ~denote-prompts~ includes an entry for date prompts, then it
+   prompts for =DATE= and takes its input to produce a new identifier. For
+   use in Lisp, =DATE= must conform with ~denote-valid-date-p~.
 
-3. As a fallback, derive an identifier from the current time.
+2. If =DATE= is nil (e.g. when ~denote-prompts~ does not include a
+   date entry), it uses the file attributes to determine the last
+   modified date of =FILE= and formats it as an identifier.
 
-4. If the resulting identifier is not unique among the files in the
-   variable ~denote-directory~, increment it such that it becomes
-   unique.
+3. As a fallback, it derives an identifier from the current date and
+   time.
+
+4. At any rate, if the resulting identifier is not unique among the
+   files in the variable ~denote-directory~, it increments it such
+   that it becomes unique.
+
+----- 2024-02-13 10:33 +0200 WORK-IN-PROGRESS.
 
 Add =TITLE= to =FILE=. In interactive use, prompt for user input and
 retrieve the default =TITLE= value from a line starting with a title
