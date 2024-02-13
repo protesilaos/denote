@@ -2650,70 +2650,86 @@ Throw error if FILE is not regular, else return FILE."
 (defun denote-rename-file (file &optional title keywords signature date)
   "Rename file and update existing front matter if appropriate.
 
+Always rename the file where it is located in the file system:
+never move it to another directory.
+
 If in Dired, consider FILE to be the one at point, else prompt
 with minibuffer completion for one.  When called from Lisp, FILE
-is a filesystem path represented as a string.
+is a files ystem path represented as a string.
 
 If FILE has a Denote-compliant identifier, retain it while
-updating the TITLE, KEYWORDS, and SIGNATURE components of the
-file name.
+updating components of the file name referenced by the user
+option `denote-prompts'.  By default, these are the TITLE and
+KEYWORDS.  The SIGNATURE is another one.  When called from Lisp,
+TITLE and SIGNATURE are strings, while KEYWORDS is a list of
+strings.
 
-Else create an identifier based on the following conditions:
+If there is no identifier, create an identifier based on the
+following conditions:
 
-2024-02-11 10:48 +0200 WORK-IN-PROGRESS.
+1. If the `denote-prompts' includes an entry for date prompts,
+   then prompt for DATE and take its input to produce a new
+   identifier.  For use in Lisp, DATE must conform with
+   `denote-valid-date-p'.
 
-1. If optional DATE is non-nil (such as with a prefix argument),
-   prompt for a date and use it to derive the identifier.
+2. If DATE is nil (e.g. when `denote-prompts' does not include a
+   date entry), use the file attributes to determine the last
+   modified date of FILE and format it as an identifier.
 
-2. If optional ASK-DATE is nil (this is the case without a prefix
-   argument), use the file attributes to determine the last
-   modified date and format it as an identifier.
+3. As a fallback, derive an identifier from the current date and
+   time.
 
-3. As a fallback, derive an identifier from the current time.
+4. At any rate, if the resulting identifier is not unique among
+   the files in the variable `denote-directory', increment it
+   such that it becomes unique.
 
-4. If the resulting identifier is not unique among the files in
-   the variable `denote-directory', increment it such that it
-   becomes unique.
+In interactive use, and assuming `denote-prompts' includes a
+title entry, make the TITLE prompt have prefilled text in the
+minibuffer that consists of the current title of FILE.  The
+current tile is either retrieved from the front matter (such as
+the #+title in Org) or from the file name.
 
-Add TITLE to FILE.  In interactive use, prompt for user input and
-retrieve the default TITLE value from a line starting with a
-title field in the file's contents, depending on the given file
-type (e.g. #+title for Org).  Else, use the file name as a
-default value at the minibuffer prompt.  TITLE is a string.
+Do the same for the SIGNATURE prompt, subject to `denote-prompts',
+by prefilling the minibuffer with the current signature of FILE.
 
-Add SIGNATURE to FILE.  In interactive use, prompt for SIGNATURE,
-using an existing one as the default value at the minibuffer
-prompt.  SIGNATURE is a string.
+Same principle for the KEYWORDS prompt: convert the keywords in
+the file name into a comma-separated string and prefill the
+minibuffer with it (the KEYWORDS prompt accepts more than one
+keywords, each separated by a comma, else the `crm-sepator').
 
-Add KEYWORDS to FILE.  In interactive use, prompt for KEYWORDS.
-More than one keyword can be inserted when separated by the
-`crm-sepator' (normally a comma).  KEYWORDS is a list of strings.
-When called interactively, an empty input is converted to an
-empty list of keywords.
+For all prompts, interpret an empty input as an instruction to
+remove that file name component.  For example, if a TITLE prompt
+is available and FILE is 20240211T093531--some-title__keyword1.org
+then rename FILE to 20240211T093531__keyword1.org.
 
-Read the file type extension (like .txt) from the underlying file
-and preserve it through the renaming process.  Files that have no
+[ NOTE: Please check with your minibuffer user interface how to
+  provide an empty input.  The Emacs default setup accepts the
+  empty minibuffer contents as they are, though popular packages
+  like `vertico' use the first available completion candidate
+  instead.  For `vertico', the user must either move one up to
+  select the prompt and then type RET there with empty contents,
+  or use the command `vertico-exit-input' with empty contents.
+  That Vertico command is bound to M-RET as of this writing on
+  2024-02-13 08:08 +0200. ]
+
+When renaming FILE, read its file type extension (like .org) and
+preserve it through the renaming process.  Files that have no
 extension are left without one.
 
-Renaming only occurs relative to the current directory.  Files
-are not moved between directories.
-
-As a final step after the FILE, TITLE, KEYWORDS, and SIGNATURE
-are collected, ask for confirmation, showing the difference
+As a final step, ask for confirmation, showing the difference
 between old and new file names.  Do not ask for confirmation if
 the user option `denote-rename-no-confirm' is set to a non-nil
 value.
 
-If the FILE has Denote-style front matter for the TITLE and
-KEYWORDS, ask to rewrite their values in order to reflect the new
-input (this step always requires confirmation and the underlying
-buffer is not saved, so consider invoking `diff-buffer-with-file'
-to double-check the effect).  The rewrite of the TITLE and
-KEYWORDS in the front matter should not affect the rest of the
-front matter.
+If FILE has front matter for TITLE and KEYWORDS, ask to rewrite
+their values in order to reflect the new input (this step always
+requires confirmation and the underlying buffer is not saved, so
+consider invoking `diff-buffer-with-file' to double-check the
+effect).  The rewrite of the TITLE and KEYWORDS in the front
+matter should not affect the rest of the front matter.
 
 If the file does not have front matter but is among the supported
-file types (per `denote-file-type'), add front matter at the top
+file types (per `denote-file-type'), add front matter to the top
 of it and leave the buffer unsaved for further inspection.
 
 For the front matter of each file type, refer to the variables:
@@ -2723,11 +2739,13 @@ For the front matter of each file type, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'
 
-This command is intended to (i) rename existing Denote notes
-while updating their title and keywords in the front matter, (ii)
-convert existing supported file types to Denote notes, and (ii)
-rename non-note files (e.g. PDF) that can benefit from Denote's
-file-naming scheme."
+This command is intended to (i) rename Denote files, (ii) convert
+existing supported file types to Denote notes, and (ii) rename
+non-note files (e.g. PDF) that can benefit from Denote's
+file-naming scheme.
+
+For a version of this command that works with multiple files
+one-by-one, use `denote-dired-rename-files'."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
