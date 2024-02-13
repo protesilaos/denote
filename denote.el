@@ -2747,7 +2747,7 @@ one-by-one, use `denote-dired-rename-files'."
      (append (vector file) args nil)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
-                 (denote-create-unique-file-identifier file (denote--get-all-used-ids) (denote-parse-date date))))
+                 (denote-create-unique-file-identifier file (denote--get-all-used-ids) date)))
          (keywords (denote-keywords-sort keywords))
          (extension (denote-get-file-extension file))
          (file-type (denote-filetype-heuristics file))
