@@ -135,15 +135,6 @@ Also see `denote-journal-extras-new-entry'."
     (when denote-templates
       (denote-template-prompt))))
 
-(defun denote-journal-extras--get-date (date)
-  "Return a valid DATE for `format-time-string'.
-If DATE is a list, return it as-is.  If it is a string, parse it
-with `denote-valid-date-p'.  Else return the `current-time'."
-  (cond
-   ((listp date) date)
-   ((stringp date) (denote-valid-date-p date))
-   (t (current-time))))
-
 ;;;###autoload
 (defun denote-journal-extras-new-entry (&optional date)
   "Create a new journal entry in variable `denote-journal-extras-directory'.
@@ -157,9 +148,9 @@ date selection module.
 
 When called from Lisp DATE is a string and has the same format as
 that covered in the documentation of the `denote' function.  It
-is internally processed by `denote-journal-extras--get-date'."
+is internally processed by `denote-parse-date'."
   (interactive (list (when current-prefix-arg (denote-date-prompt))))
-  (let ((internal-date (denote-journal-extras--get-date date))
+  (let ((internal-date (denote-parse-date date))
         (denote-directory (denote-journal-extras-directory)))
     (denote
      (denote-journal-extras-daily--title-format internal-date)
@@ -170,7 +161,7 @@ is internally processed by `denote-journal-extras--get-date'."
 
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
-DATE has the same format as that returned by `denote-journal-extras--get-date'."
+DATE has the same format as that returned by `denote-parse-date'."
   (denote-directory-files
    (format "%sT[0-9]\\{6\\}.*_%s"
            (format-time-string "%Y%m%d" date)
@@ -193,12 +184,12 @@ date selection module.
 
 When called from Lisp, DATE is a string and has the same format
 as that covered in the documentation of the `denote' function.
-It is internally processed by `denote-journal-extras--get-date'."
+It is internally processed by `denote-parse-date'."
   (interactive
    (list
     (when current-prefix-arg
       (denote-date-prompt))))
-  (let* ((internal-date (denote-journal-extras--get-date date))
+  (let* ((internal-date (denote-parse-date date))
          (files (denote-journal-extras--entry-today internal-date)))
     (cond
      ((length> files 1)
@@ -225,7 +216,7 @@ date selection module.
 
 When called from Lisp, DATE is a string and has the same format
 as that covered in the documentation of the `denote' function.
-It is internally processed by `denote-journal-extras--get-date'.
+It is internally processed by `denote-parse-date'.
 
 With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
@@ -234,7 +225,7 @@ file's title.  This has the same meaning as in `denote-link'."
    (pcase current-prefix-arg
      ('(16) (list (denote-date-prompt) :id-only))
      ('(4) (list (denote-date-prompt)))))
-  (let* ((internal-date (denote-journal-extras--get-date date))
+  (let* ((internal-date (denote-parse-date date))
          (files (denote-journal-extras--entry-today internal-date))
          (path))
     (cond
