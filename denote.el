@@ -2535,14 +2535,17 @@ contains a title line, a keywords line or both."
        (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
        (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
 
-(defun denote-rewrite-keywords (file keywords file-type)
+(defun denote-rewrite-keywords (file keywords file-type &optional save-buffer)
   "Rewrite KEYWORDS in FILE outright according to FILE-TYPE.
 
 Do the same as `denote-rewrite-front-matter' for keywords,
 but do not ask for confirmation.
 
-This is for use in `denote-keywords-add',`denote-keywords-remove',
-`denote-dired-rename-files', or related."
+With optional SAVE-BUFFER, save the buffer corresponding to FILE.
+
+This function is for use in the commands `denote-keywords-add',
+`denote-keywords-remove', `denote-dired-rename-files', or
+related."
   (with-current-buffer (find-file-noselect file)
     (save-excursion
       (save-restriction
@@ -2551,7 +2554,8 @@ This is for use in `denote-keywords-add',`denote-keywords-remove',
         (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
           (goto-char (line-beginning-position))
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
-          (delete-region (point) (line-end-position)))))))
+          (delete-region (point) (line-end-position))
+          (when save-buffer (save-buffer)))))))
 
 (define-obsolete-function-alias
   'denote--rewrite-keywords
@@ -2867,7 +2871,10 @@ Specifically, do the following:
   it is recognized as a Denote note (per `denote-file-type'),
   such that it includes the new keywords.
 
-[ Note that the affected buffers are not saved.  Users can thus
+Run the `denote-after-rename-file-hook' after renaming is done.
+
+[ Note that the affected buffers are not saved, unless the user
+  option `denote-rename-no-confirm' is non-nil.  Users can thus
   check them to confirm that the new front matter does not cause
   any problems (e.g. with the `diff-buffer-with-file' command).
   Multiple buffers can be saved in one go with the command
@@ -2891,8 +2898,8 @@ Specifically, do the following:
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
-                  (denote-rewrite-keywords new-name keywords file-type)
-                (denote--add-front-matter new-name title keywords id file-type)))
+                  (denote-rewrite-keywords new-name keywords file-type denote-rename-no-confirm)
+                (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm)))
             (when used-ids
               (puthash id t used-ids))))
         (denote-update-dired-buffers))
