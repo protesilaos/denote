@@ -495,6 +495,18 @@ the default value of the user option `denote-commands-for-new-notes')."
   :package-version '(denote . "2.1.0")
   :type 'hook)
 
+(defcustom denote-after-rename-file-hook nil
+  "Normal hook called after a succesful Denote rename operation.
+This covers `denote-rename-file', `denote-dired-rename-files',
+`denote-dired-rename-marked-files-with-keywords',
+`denote-rename-file-using-front-matter',
+`denote-dired-rename-marked-files-using-front-matter',
+`denote-keywords-add', `denote-keywords-remove', and any other
+command building on top of them."
+  :group 'denote
+  :package-version '(denote . "3.0.0")
+  :type 'hook)
+
 (defcustom denote-region-after-new-note-functions nil
   "Abnormal hook called after `denote-region'.
 Functions in this hook are called with two arguments,
@@ -2383,7 +2395,8 @@ the new front matter, per `denote-rename-file-using-front-matter'."
              (new-keywords (denote-keywords-sort
                             (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
-        (denote-rename-file-using-front-matter file t))
+        (denote-rename-file-using-front-matter file :auto-confirm)
+        (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
 (defun denote--keywords-delete-prompt (keywords)
@@ -2414,7 +2427,8 @@ the new front matter, per `denote-rename-file-using-front-matter'."
          file
          (seq-difference cur-keywords del-keyword)
          file-type)
-        (denote-rename-file-using-front-matter file t))
+        (denote-rename-file-using-front-matter file :auto-confirm)
+        (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
 ;;;; Note modification
@@ -2739,6 +2753,8 @@ For the front matter of each file type, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'
 
+Run the `denote-after-rename-file-hook' after renaming FILE.
+
 This command is intended to (i) rename Denote files, (ii) convert
 existing supported file types to Denote notes, and (ii) rename
 non-note files (e.g. PDF) that can benefit from Denote's
@@ -2786,7 +2802,8 @@ one-by-one, use `denote-dired-rename-files'."
       (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
-          (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm))))
+          (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm)))
+      (run-hooks 'denote-after-rename-file-hook))
     new-name))
 
 ;;;###autoload
@@ -2833,6 +2850,7 @@ setting `denote-rename-no-confirm' to a non-nil value)."
               (if (denote--edit-front-matter-p new-name file-type)
                   (denote-rewrite-front-matter new-name title keywords file-type :no-confirm)
                 (denote--add-front-matter new-name title keywords id file-type :save-buffer)))
+            (run-hooks 'denote-after-rename-file-hook)
             (when used-ids
               (puthash id t used-ids))))
         (denote-update-dired-buffers))
@@ -2900,6 +2918,7 @@ Run the `denote-after-rename-file-hook' after renaming is done.
               (if (denote--edit-front-matter-p new-name file-type)
                   (denote-rewrite-keywords new-name keywords file-type denote-rename-no-confirm)
                 (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm)))
+            (run-hooks 'denote-after-rename-file-hook)
             (when used-ids
               (puthash id t used-ids))))
         (denote-update-dired-buffers))
@@ -2940,7 +2959,8 @@ does internally."
         (when (or auto-confirm
                   (denote-rename-file-prompt file new-name))
           (denote-rename-file-and-buffer file new-name)
-          (denote-update-dired-buffers)))
+          (denote-update-dired-buffers)
+          (run-hooks 'denote-after-rename-file-hook)))
     (user-error "No identifier or front matter for title")))
 
 ;;;###autoload

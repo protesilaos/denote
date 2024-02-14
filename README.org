@@ -1115,6 +1115,10 @@ part of the user's longer-term storage.  While Denote does not manage
 such files (e.g. doesn't create links to them), it already has all the
 mechanisms to facilitate the task of renaming them.
 
+#+vindex: denote-after-rename-file-hook
+All renaming commands run the ~denote-after-rename-file-hook~ after a
+succesful operation. [ Part of {{{development-version}}}. ]
+
 Apart from renaming files, Denote can also rename only the buffer.
 The idea is that the underlying file name is correct but it can be
 easier to use shorter buffer names when displaying them on the mode

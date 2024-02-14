@@ -144,8 +144,10 @@ visited again in a new buffer (files are visited with the command
   (if denote-rename-buffer-mode
       (progn
         (add-hook 'denote-after-new-note-hook #'denote-rename-buffer-rename-function-or-fallback)
+        (add-hook 'denote-after-rename-file-hook #'denote-rename-buffer-rename-function-or-fallback)
         (add-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback))
     (remove-hook 'denote-after-new-note-hook #'denote-rename-buffer-rename-function-or-fallback)
+    (remove-hook 'denote-after-rename-file-hook #'denote-rename-buffer-rename-function-or-fallback)
     (remove-hook 'find-file-hook #'denote-rename-buffer-rename-function-or-fallback)))
 
 (provide 'denote-rename-buffer)
