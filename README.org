@@ -3741,6 +3741,7 @@ Everything is in place to set up the package.
 (setq denote-prompts '(title keywords))
 (setq denote-excluded-directories-regexp nil)
 (setq denote-excluded-keywords-regexp nil)
+(setq denote-rename-no-confirm nil) ; Set to t if you are familiar with `denote-rename-file'
 
 ;; Pick dates, where relevant, with Org's advanced interface:
 (setq denote-date-prompt-use-org-read-date t)
