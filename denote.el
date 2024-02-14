@@ -4047,10 +4047,9 @@ This command is meant to be used from a Dired buffer."
 
 (declare-function org-link-open-as-file "ol" (path arg))
 
-(defun denote-link--ol-resolve-link-to-target (link &optional path-id)
-  "Resolve LINK into the appropriate target.
-With optional PATH-ID return a cons cell consisting of the path
-and the identifier."
+(defun denote-link--ol-resolve-link-to-target (link &optional full-data)
+  "Resolve LINK to target file, with or without additioanl search terms.
+With optional FULL-DATA return a list in the form of (path id search)."
   (let* ((search (and (string-match "::\\(.*\\)\\'" link)
                       (match-string 1 link)))
          (id (if (and search (not (string-empty-p search)))
@@ -4058,8 +4057,8 @@ and the identifier."
                link))
          (path (denote-get-path-by-id id)))
     (cond
-     (path-id
-      (cons (format "%s" path) (format "%s" id)))
+     (full-data
+      (list path id search))
      ((and search (not (string-empty-p search)))
       (concat path "::" search))
      (path))))
@@ -4141,17 +4140,24 @@ Also see the user option `denote-org-store-link-to-heading'."
   "Export a `denote:' link from Org files.
 The LINK, DESCRIPTION, and FORMAT are handled by the export
 backend."
-  (let* ((path-id (denote-link--ol-resolve-link-to-target link :path-id))
-         (path (file-relative-name (car path-id)))
-         (p (file-name-sans-extension path))
-         (id (cdr path-id))
-         (desc (or description (concat "denote:" id))))
+  (let* ((path-id (denote-link--ol-resolve-link-to-target link :full-data))
+         (path (file-relative-name (nth 0 path-id)))
+         (id (nth 1 path-id))
+         (search (nth 2 path-id))
+         (anchor (file-name-sans-extension path))
+         (desc (cond
+                (description)
+                (search (format "denote:%s::%s" id search))
+                (t (concat "denote:" id)))))
     (cond
-     ((eq format 'html) (format "<a href=\"%s.html\">%s</a>" p desc))
+     ((eq format 'html)
+      (if search
+          (format "<a href=\"%s.html%s\">%s</a>" anchor search desc)
+        (format "<a href=\"%s.html\">%s</a>" anchor desc)))
      ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
      ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
      ((eq format 'ascii) (format "[%s] <denote:%s>" desc path)) ; NOTE 2022-06-16: May be tweaked further
-     ((eq format 'md) (format "[%s](%s.md)" desc p))
+     ((eq format 'md) (format "[%s](%s.md)" desc anchor))
      (t path))))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
