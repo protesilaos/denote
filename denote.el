@@ -2802,35 +2802,45 @@ one-by-one, use `denote-dired-rename-files'."
   "Rename Dired marked files same way as `denote-rename-file'.
 Rename each file in sequence, making all the relevant prompts.
 Unlike `denote-rename-file', do not prompt for confirmation of
-the changes made to the file: perform them outright."
+the changes made to the file: perform them outright (same as
+setting `denote-rename-no-confirm' to a non-nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
-                        (denote--get-all-used-ids))))
+                        (denote--get-all-used-ids)))
+            (date-p (memq 'date denote-prompts))
+            (title-p (memq 'title denote-prompts))
+            (keywords-p (memq 'keywords denote-prompts))
+            (signature-p (memq 'signature denote-prompts)))
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
                  (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
                  (dir (file-name-directory file))
-                 (id (or (denote-retrieve-filename-identifier file)
+                 (id (or (when date-p
+                           (denote-prompt-for-date-return-id))
+                         (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
-                 (title (denote-title-prompt
-                         (denote--retrieve-title-or-filename file file-type)
-                         (format "Rename `%s' with title (empty to remove)" file-in-prompt)))
-                 (keywords (denote-keywords-sort
-                            (denote-keywords-prompt
-                             (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
-                             (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
-                 (signature (denote-signature-prompt
-                             (or (denote-retrieve-filename-signature file) "")
-                             (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))
+                 (title (when title-p
+                          (denote-title-prompt
+                           (denote--retrieve-title-or-filename file file-type)
+                           (format "Rename `%s' with title (empty to remove)" file-in-prompt))))
+                 (keywords (when keywords-p
+                             (denote-keywords-sort
+                              (denote-keywords-prompt
+                               (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                               (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))))
+                 (signature (when signature-p
+                              (denote-signature-prompt
+                               (or (denote-retrieve-filename-signature file) "")
+                               (format "Rename `%s' with signature (empty to remove)" file-in-prompt))))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords title extension signature)))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
-                  (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
-                (denote--add-front-matter new-name title keywords id file-type)))
+                  (denote-rewrite-front-matter new-name title keywords file-type :no-confirm)
+                (denote--add-front-matter new-name title keywords id file-type :save-buffer)))
             (when used-ids
               (puthash id t used-ids))))
         (denote-update-dired-buffers))
