@@ -2727,7 +2727,7 @@ value.
 
 If FILE has front matter for TITLE and KEYWORDS, ask to rewrite
 their values in order to reflect the new input, unless
-`denote-rename-no-confirm' is non-nil. When the
+`denote-rename-no-confirm' is non-nil.  When the
 `denote-rename-no-confirm' is nil (the default), do not save the
 underlying buffer, thus giving the user the option to
 double-check the result, such as by invokling the command
