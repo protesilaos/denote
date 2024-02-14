@@ -4157,7 +4157,7 @@ backend."
      ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
      ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
      ((eq format 'ascii) (format "[%s] <denote:%s>" desc path)) ; NOTE 2022-06-16: May be tweaked further
-     ((eq format 'md) (format "[%s](%s.md)" desc anchor))
+     ((eq format 'md) (format "[%s](%s)" desc path))
      (t path))))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
