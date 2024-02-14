@@ -1115,6 +1115,10 @@ part of the user's longer-term storage.  While Denote does not manage
 such files (e.g. doesn't create links to them), it already has all the
 mechanisms to facilitate the task of renaming them.
 
+#+vindex: denote-after-rename-file-hook
+All renaming commands run the ~denote-after-rename-file-hook~ after a
+succesful operation. [ Part of {{{development-version}}}. ]
+
 Apart from renaming files, Denote can also rename only the buffer.
 The idea is that the underlying file name is correct but it can be
 easier to use shorter buffer names when displaying them on the mode
@@ -1356,6 +1360,9 @@ check the command ~denote-dired-rename-marked-files-with-keywords~.
 :CUSTOM_ID: h:f365ff7e-2140-4e14-a92f-666ae97382a4
 :END:
 
+[ Revised as part of {{{development-version}}} to honour the value of
+  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). ]
+
 #+findex: denote-dired-rename-marked-files-with-keywords
 The ~denote-dired-rename-marked-files-with-keywords~ command renames
 marked files in Dired to conform with our file-naming scheme. It does
@@ -1380,11 +1387,12 @@ so by writing keywords to them. Specifically, it does the following:
   is recognized as a Denote note (per the ~denote-file-type~ user
   option), such that it includes the new keywords.
 
-[ Note that the affected buffers are not saved. Users can thus check
-  them to confirm that the new front matter does not cause any
-  problems (e.g. with the ~diff-buffer-with-file~ command). Multiple
-  buffers can be saved in one go with ~save-some-buffers~ (read its
-  doc string). ]
+[ Note that the affected buffers are not saved, unless the user option
+  ~denote-rename-no-confirm~ is non-nil. Users can thus check them to
+  confirm that the new front matter does not cause any problems (e.g.
+  with the ~diff-buffer-with-file~ command). Multiple buffers can be
+  saved in one go with the command ~save-some-buffers~ (read its doc
+  string). ]
 
 ** Rename multiple files based on their front matter
 :PROPERTIES:
@@ -4254,11 +4262,13 @@ might change them without further notice.
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
-  outright according to =FILE-TYPE=.  Do the same as
+  outright according to =FILE-TYPE=. Do the same as
   ~denote-rewrite-front-matter~ for keywords, but do not ask for
-  confirmation.  This is for use in ~denote-keywords-add~,
-  ~denote-keywords-remove~, ~denote-dired-rename-marked-files-with-keywords~,
-  or related.
+  confirmation. With optional =SAVE-BUFFER=, save the buffer
+  corresponding to =FILE=. This function is for use in the commands
+  ~denote-keywords-add~, ~denote-keywords-remove~,
+  ~denote-dired-rename-files~, or related. [ The =SAVE-BUFFER= saves
+  the buffer as part of {{{development-version}}}. ]
 
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
