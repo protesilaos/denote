@@ -2672,11 +2672,12 @@ following conditions:
 In interactive use, and assuming `denote-prompts' includes a
 title entry, make the TITLE prompt have prefilled text in the
 minibuffer that consists of the current title of FILE.  The
-current tile is either retrieved from the front matter (such as
+current title is either retrieved from the front matter (such as
 the #+title in Org) or from the file name.
 
 Do the same for the SIGNATURE prompt, subject to `denote-prompts',
-by prefilling the minibuffer with the current signature of FILE.
+by prefilling the minibuffer with the current signature of FILE,
+if any.
 
 Same principle for the KEYWORDS prompt: convert the keywords in
 the file name into a comma-separated string and prefill the
