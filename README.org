@@ -1187,82 +1187,96 @@ based on the following conditions:
    files in the variable ~denote-directory~, it increments it such
    that it becomes unique.
 
------ 2024-02-13 10:33 +0200 WORK-IN-PROGRESS.
+In interactive use, and assuming ~denote-prompts~ includes a title
+entry, the ~denote-rename-file~ makes the =TITLE= prompt have
+prefilled text in the minibuffer that consists of the current title of
+=FILE=. The current title is either retrieved from the front matter
+(such as the =#+title= in Org) or from the file name.
 
-Add =TITLE= to =FILE=. In interactive use, prompt for user input and
-retrieve the default =TITLE= value from a line starting with a title
-field in the file's contents, depending on the given file type ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
-Else, use the file name as a default value at the minibuffer prompt.
-=TITLE= is a string.
+The command does the same for the =SIGNATURE= prompt, subject to
+~denote-prompts~, by prefilling the minibuffer with the current
+signature of =FILE=, if any.
 
-Add =SIGNATURE= to =FILE=. In interactive use, prompt for =SIGNATURE=,
-using an existing one as the default value at the minibuffer prompt.
-=SIGNATURE= is a string.
+Same principle for the =KEYWORDS= prompt: it converts the keywords in
+the file name into a comma-separated string and prefills the minibuffer
+with it (the =KEYWORDS= prompt accepts more than one keywords, each
+separated by a comma, else the ~crm-sepator~).
 
-Add =KEYWORDS= to =FILE=. In interactive use, prompt for =KEYWORDS=.
-More than one keyword can be inserted when separated by the
-`crm-sepator' (normally a comma). =KEYWORDS= is a list of strings.
-When called interactively, an empty input is converted to an empty list
-of keywords.
+For all prompts, the ~denote-rename-file~ interprets an empty input as
+an instruction to remove that file name component. For example, if a
+=TITLE= prompt is available and =FILE= is =20240211T093531--some-title__keyword1.org=
+then it renames =FILE= to =20240211T093531__keyword1.org=.
 
-Read the file type extension (like =.txt=) from the underlying file
-and preserve it through the renaming process. Files that have no
-extension are left without one.
+[ NOTE: Please check with your minibuffer user interface how to
+  provide an empty input. The Emacs default setup accepts the empty
+  minibuffer contents as they are, though popular packages like
+  ~vertico~ use the first available completion candidate instead. For
+  ~vertico~, the user must either move one up to select the prompt and
+  then type =RET= there with empty contents, or use the command
+  ~vertico-exit-input~ with empty contents. That Vertico command is
+  bound to =M-RET= as of this writing on 2024-02-13 08:08 +0200. ]
 
-Renaming only occurs relative to the current directory. Files are not
-moved between directories.
+When renaming =FILE=, the command reads its file type extension (like
+=.org=) and preserves it through the renaming process. Files that have
+no extension are left without one.
 
-As a final step after the =FILE=, =TITLE=, =KEYWORDS=, and =SIGNATURE=
-are collected, ask for confirmation, showing the difference between
-old and new file names.
+As a final step, it asks for confirmation, showing the difference
+between old and new file names. It does not ask for confirmation if
+the user option ~denote-rename-no-confirm~ is set to a non-nil value
+([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
 
-Do not ask for confirmation if the ~denote-rename-no-confirm~ option
-is set to a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
-
-If the =FILE= has Denote-style front matter for the =TITLE= and
-=KEYWORDS=, ask to rewrite their values in order to reflect the new
-input (this step always requires confirmation and the underlying
-buffer is not saved, so consider invoking ~diff-buffer-with-file~ to
-double-check the effect). The rewrite of the =TITLE= and =KEYWORDS= in
+If =FILE= has front matter for =TITLE= and =KEYWORDS=,
+~denote-rename-file~ asks to rewrite their values in order to reflect
+the new input, unless ~denote-rename-no-confirm~ is non-nil. When the
+~denote-rename-no-confirm~ is nil (the default), the underlying buffer
+is not saved, giving the user the change to invoking ~diff-buffer-with-file~ to
+double-check the effect. The rewrite of the =TITLE= and =KEYWORDS= in
 the front matter should not affect the rest of the front matter.
 
 If the file does not have front matter but is among the supported file
-types (per ~denote-file-type~), add front matter at the top of it and
-leave the buffer unsaved for further inspection.
+types (per ~denote-file-type~), the ~denote-rename-file~ adds front
+matter to the top of it and leaves the buffer unsaved for further
+inspection. It actually saves the buffer if ~denote-rename-no-confirm~
+is non-nil ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
-For the front matter of each file type, refer to the variables:
-
-- ~denote-org-front-matter~
-- ~denote-text-front-matter~
-- ~denote-toml-front-matter~
-- ~denote-yaml-front-matter~
-
-This command is intended to (i) rename existing Denote notes while
-updating their title and keywords in the front matter, (ii) convert
+This command is intended to (i) rename Denote files, (ii) convert
 existing supported file types to Denote notes, and (ii) rename
-non-note files (e.g. PDF) that can benefit from Denote's file-naming
+non-note files (e.g. =PDF=) that can benefit from Denote's file-naming
 scheme.
+
+For a version of this command that works with multiple files
+one-by-one, use ~denote-dired-rename-files~ ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files interactively]]).
 
 *** The ~denote-rename-no-confirm~ option
 :PROPERTIES:
 :CUSTOM_ID: h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7
 :END:
 
+[ Revised as part of {{{development-version}}} to save the underlying
+  buffer. The assumption is that the user who opts in to this feature is
+  familiar with the Denote renaming operation and knows it is reliable. ]
+
+#+vindex: denote-rename-no-confirm
+The user option ~denote-rename-no-confirm~ makes ~denote-rename-file~
+not prompt for confirmation and save buffers outright ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).
+
 The default behaviour of the ~denote-rename-file~ command is to ask
 for an affirmative answer as a final step before changing the file
 name and, where relevant, inserting or updating the corresponding
-front matter ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).
+front matter. It also does not save the affected file's buffer to let
+the user inspect and confirm the changes (such as by invoking the
+command ~diff-buffer-with-file~).
 
-Remember that ~denote-rename-file~ does not save the underlying buffer
-it modifies. It leaves it unsaved so that the user can review what
-happened, such as by invoking the command ~diff-buffer-with-file~.
+With this user option bound to a non-nil value, buffers are saved as
+well. The assumption is that the user who opts in to this feature is
+familiar with the ~denote-rename-file~ operation and knows it is
+reliable.
 
 Specialised commands that build on top of ~denote-rename-file~ may
 internally bind this user option to a non-nil value in order to
 perform their operation (e.g. ~denote-dired-rename-files~ goes through
 each marked Dired file, prompting for the information to use, but
-carries out the renaming without asking for confirmation (buffers
-remain unsaved)).
+carries out the renaming without asking for confirmation ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde][Rename multiple files interactively]])).
 
 ** Rename a single file based on its front matter
 :PROPERTIES:
