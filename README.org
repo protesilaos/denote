@@ -1205,7 +1205,12 @@ separated by a comma, else the ~crm-sepator~).
 For all prompts, the ~denote-rename-file~ interprets an empty input as
 an instruction to remove that file name component. For example, if a
 =TITLE= prompt is available and =FILE= is =20240211T093531--some-title__keyword1.org=
-then it renames =FILE= to =20240211T093531__keyword1.org=.
+then it renames =FILE= to =20240211T093531__keyword1.org=. For
+interactive use, this also means that if a prompt is missing from the
+~denote-prompts~ the corresponding file name component will be removed
+during the renaming process (e.g. a ~denote-prompts~ without an entry
+for keywords is the same as passing an empty/nil =KEYWORDS= argument,
+thus removing the keywords of the file).
 
 [ NOTE: Please check with your minibuffer user interface how to
   provide an empty input. The Emacs default setup accepts the empty
