@@ -1321,8 +1321,17 @@ the like.
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
 
+[ Revised as part of {{{development-version}}} to honour the value of
+  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). ]
+
+[ As part of {{{development-version}}} the
+~denote-dired-rename-marked-files~ is an alias for
+~denote-dired-rename-files~. ]
+
 #+findex: denote-dired-rename-files
-The command ~denote-dired-rename-files~ renames the files that are
+#+findex: denote-dired-rename-marked-files
+The command ~denote-dired-rename-files~ (alias
+~denote-dired-rename-marked-files~) renames the files that are
 marked in a Dired buffer. Its behaviour is similar to the
 ~denote-rename-file~ in that it prompts for a title, keywords, and
 signature ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]). It does so over each marked file,
@@ -1336,10 +1345,6 @@ check the command ~denote-dired-rename-marked-files-with-keywords~.
 
 - [[#h:f365ff7e-2140-4e14-a92f-666ae97382a4][Rename by writing only keywords]]
 - [[#h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8][Rename multiple files based on their front matter]]
-
-[ As part of {{{development-version}}} the
-  ~denote-dired-rename-marked-files~ is an alias for
-  ~denote-dired-rename-files~. ]
 
 ** Rename multiple files at once by asking only for keywords
 :PROPERTIES:
