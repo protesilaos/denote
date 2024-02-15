@@ -527,6 +527,11 @@ Similarly, the ~denote-keywords-remove~ removes one or more keywords
 from the list of existing keywords and then renames the file
 accordingly.
 
+[ The following is part of {{{development-version}}}. ]
+
+Both commands will automatically save the buffer if the user option
+~denote-rename-no-confirm~ is set to a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+
 ** Create a note from the current Org subtree
 :PROPERTIES:
 :CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd

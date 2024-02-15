@@ -2384,7 +2384,10 @@ note's actual title.  At the `denote-file-prompt' type
 When called from Lisp, KEYWORDS is a list of strings.
 
 Rename the file without further prompt so that its name reflects
-the new front matter, per `denote-rename-file-using-front-matter'."
+the new front matter, per `denote-rename-file-using-front-matter'.
+
+If the user option `denote-rename-no-confirm' is non-nil, save
+the buffer.  Otherwise, leave it unsaved for further review."
   (interactive (list (denote-keywords-prompt)))
   ;; A combination of if-let and let, as we need to take into account
   ;; the scenario in which there are no keywords yet.
@@ -2396,6 +2399,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
                             (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
         (denote-rename-file-using-front-matter file :auto-confirm)
+        (when denote-rename-no-confirm (save-buffer))
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
@@ -2415,7 +2419,10 @@ output is sorted with `string-collate-lessp'."
 Keywords are retrieved from the file's front matter.
 
 Rename the file without further prompt so that its name reflects
-the new front matter, per `denote-rename-file-using-front-matter'."
+the new front matter, per `denote-rename-file-using-front-matter'.
+
+If the user option `denote-rename-no-confirm' is non-nil, save
+the buffer.  Otherwise, leave it unsaved for further review."
   (declare (interactive-only t))
   (interactive)
   (if-let ((file (buffer-file-name))
@@ -2428,6 +2435,7 @@ the new front matter, per `denote-rename-file-using-front-matter'."
          (seq-difference cur-keywords del-keyword)
          file-type)
         (denote-rename-file-using-front-matter file :auto-confirm)
+        (when denote-rename-no-confirm (save-buffer))9
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
