@@ -3533,7 +3533,8 @@ Also see `denote-link-return-backlinks'."
              ((denote-file-has-supported-extension-p current-file))
              (file-type (denote-filetype-heuristics current-file))
              (regexp (denote--link-in-context-regexp file-type)))
-    (with-current-buffer (find-file-noselect current-file)
+    (with-temp-buffer
+      (insert-file-contents current-file)
       (denote-link--expand-identifiers regexp))))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
