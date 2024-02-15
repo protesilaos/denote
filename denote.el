@@ -2386,67 +2386,6 @@ note's actual title.  At the `denote-file-prompt' type
         (find-file target)
       (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
 
-;;;###autoload
-(defun denote-keywords-add (keywords)
-  "Prompt for KEYWORDS to add to the current note's front matter.
-When called from Lisp, KEYWORDS is a list of strings.
-
-Rename the file without further prompt so that its name reflects
-the new front matter, per `denote-rename-file-using-front-matter'.
-
-If the user option `denote-rename-no-confirm' is non-nil, save
-the buffer.  Otherwise, leave it unsaved for further review."
-  (interactive (list (denote-keywords-prompt)))
-  ;; A combination of if-let and let, as we need to take into account
-  ;; the scenario in which there are no keywords yet.
-  (if-let ((file (buffer-file-name))
-           ((denote-file-is-note-p file))
-           (file-type (denote-filetype-heuristics file)))
-      (let* ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-             (new-keywords (denote-keywords-sort
-                            (seq-uniq (append keywords cur-keywords)))))
-        (denote-rewrite-keywords file new-keywords file-type)
-        (denote-rename-file-using-front-matter file :auto-confirm)
-        (when denote-rename-no-confirm (save-buffer))
-        (run-hooks 'denote-after-rename-file-hook))
-    (user-error "Buffer not visiting a Denote file")))
-
-(defun denote--keywords-delete-prompt (keywords)
-  "Prompt for one or more KEYWORDS.
-In the case of multiple entries, those are separated by the
-`crm-sepator', which typically is a comma.  In such a case, the
-output is sorted with `string-collate-lessp'."
-  (let ((choice (denote--keywords-crm keywords "Keywords to remove")))
-    (if denote-sort-keywords
-        (sort choice #'string-collate-lessp)
-      choice)))
-
-;;;###autoload
-(defun denote-keywords-remove ()
-  "Prompt for keywords in current note and remove them.
-Keywords are retrieved from the file's front matter.
-
-Rename the file without further prompt so that its name reflects
-the new front matter, per `denote-rename-file-using-front-matter'.
-
-If the user option `denote-rename-no-confirm' is non-nil, save
-the buffer.  Otherwise, leave it unsaved for further review."
-  (declare (interactive-only t))
-  (interactive)
-  (if-let ((file (buffer-file-name))
-           ((denote-file-is-note-p file))
-           (file-type (denote-filetype-heuristics file)))
-      (when-let ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-                 (del-keyword (denote--keywords-delete-prompt cur-keywords)))
-        (denote-rewrite-keywords
-         file
-         (seq-difference cur-keywords del-keyword)
-         file-type)
-        (denote-rename-file-using-front-matter file :auto-confirm)
-        (when denote-rename-no-confirm (save-buffer))9
-        (run-hooks 'denote-after-rename-file-hook))
-    (user-error "Buffer not visiting a Denote file")))
-
 ;;;; Note modification
 
 ;;;;; Common helpers for note modifications
@@ -3000,6 +2939,69 @@ cannot know if they have front matter and what that may be."
           (denote-rename-file-using-front-matter file :auto-confirm))
         (denote-update-dired-buffers))
     (user-error "No marked Denote files; aborting")))
+
+;;;;;; Interactively modify keywords and rename accordingly
+
+;;;###autoload
+(defun denote-keywords-add (keywords)
+  "Prompt for KEYWORDS to add to the current note's front matter.
+When called from Lisp, KEYWORDS is a list of strings.
+
+Rename the file without further prompt so that its name reflects
+the new front matter, per `denote-rename-file-using-front-matter'.
+
+If the user option `denote-rename-no-confirm' is non-nil, save
+the buffer.  Otherwise, leave it unsaved for further review."
+  (interactive (list (denote-keywords-prompt)))
+  ;; A combination of if-let and let, as we need to take into account
+  ;; the scenario in which there are no keywords yet.
+  (if-let ((file (buffer-file-name))
+           ((denote-file-is-note-p file))
+           (file-type (denote-filetype-heuristics file)))
+      (let* ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
+             (new-keywords (denote-keywords-sort
+                            (seq-uniq (append keywords cur-keywords)))))
+        (denote-rewrite-keywords file new-keywords file-type)
+        (denote-rename-file-using-front-matter file :auto-confirm)
+        (when denote-rename-no-confirm (save-buffer))
+        (run-hooks 'denote-after-rename-file-hook))
+    (user-error "Buffer not visiting a Denote file")))
+
+(defun denote--keywords-delete-prompt (keywords)
+  "Prompt for one or more KEYWORDS.
+In the case of multiple entries, those are separated by the
+`crm-sepator', which typically is a comma.  In such a case, the
+output is sorted with `string-collate-lessp'."
+  (let ((choice (denote--keywords-crm keywords "Keywords to remove")))
+    (if denote-sort-keywords
+        (sort choice #'string-collate-lessp)
+      choice)))
+
+;;;###autoload
+(defun denote-keywords-remove ()
+  "Prompt for keywords in current note and remove them.
+Keywords are retrieved from the file's front matter.
+
+Rename the file without further prompt so that its name reflects
+the new front matter, per `denote-rename-file-using-front-matter'.
+
+If the user option `denote-rename-no-confirm' is non-nil, save
+the buffer.  Otherwise, leave it unsaved for further review."
+  (declare (interactive-only t))
+  (interactive)
+  (if-let ((file (buffer-file-name))
+           ((denote-file-is-note-p file))
+           (file-type (denote-filetype-heuristics file)))
+      (when-let ((cur-keywords (denote-retrieve-front-matter-keywords-value file file-type))
+                 (del-keyword (denote--keywords-delete-prompt cur-keywords)))
+        (denote-rewrite-keywords
+         file
+         (seq-difference cur-keywords del-keyword)
+         file-type)
+        (denote-rename-file-using-front-matter file :auto-confirm)
+        (when denote-rename-no-confirm (save-buffer))9
+        (run-hooks 'denote-after-rename-file-hook))
+    (user-error "Buffer not visiting a Denote file")))
 
 ;;;;; Creation of front matter
 
