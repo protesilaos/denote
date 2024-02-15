@@ -505,12 +505,12 @@ the default value of the user option `denote-commands-for-new-notes')."
 
 (defcustom denote-after-rename-file-hook nil
   "Normal hook called after a succesful Denote rename operation.
-This covers `denote-rename-file', `denote-dired-rename-files',
+This affects the behaviour of the commands `denote-rename-file',
+`denote-dired-rename-files', `denote-rename-file-using-front-matter',
 `denote-dired-rename-marked-files-with-keywords',
-`denote-rename-file-using-front-matter',
 `denote-dired-rename-marked-files-using-front-matter',
 `denote-keywords-add', `denote-keywords-remove', and any other
-command building on top of them."
+command that builds on top of them."
   :group 'denote
   :package-version '(denote . "3.0.0")
   :type 'hook)
