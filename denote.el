@@ -2461,12 +2461,6 @@ Also revert the current Dired buffer even if it is not inside the
 variable `denote-directory'."
   (mapc #'denote--revert-dired (buffer-list)))
 
-(defun denote--rename-buffer (old-name new-name)
-  "Rename OLD-NAME buffer to NEW-NAME, when appropriate."
-  (when-let ((buffer (find-buffer-visiting old-name)))
-    (with-current-buffer buffer
-      (set-visited-file-name new-name nil t))))
-
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
@@ -2482,7 +2476,9 @@ variable `denote-directory'."
      ;;  (vc-rename-file old-name new-name))
      (t
       (rename-file old-name new-name nil)))
-    (denote--rename-buffer old-name new-name)))
+    (when-let ((buffer (find-buffer-visiting old-name)))
+      (with-current-buffer buffer
+        (set-visited-file-name new-name nil t)))))
 
 (defun denote--add-front-matter (file title keywords id file-type &optional save-buffer)
   "Prepend front matter to FILE if `denote-file-is-note-p'.
