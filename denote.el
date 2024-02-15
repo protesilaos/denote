@@ -434,21 +434,29 @@ current note."
   :type 'boolean)
 
 (defcustom denote-rename-no-confirm nil
-  "Make `denote-rename-file' not prompt for confirmation and save buffers outright.
+  "Make renaming commands not prompt for confirmation and save buffers outright.
 
-The default behaviour of the `denote-rename-file' command is to
-ask for an affirmative answer as a final step before changing the
-file name and, where relevant, inserting or updating the
-corresponding front matter.  It also does not save the affected
-file's buffer to let the user inspect and confirm the
-changes (such as by invoking the command `diff-buffer-with-file').
+This affects the behaviour of the commands `denote-rename-file',
+`denote-dired-rename-files', `denote-rename-file-using-front-matter',
+`denote-dired-rename-marked-files-with-keywords',
+`denote-dired-rename-marked-files-using-front-matter',
+`denote-keywords-add', `denote-keywords-remove', and any other
+command that builds on top of them.
+
+The default behaviour of the `denote-rename-file' command (and
+others like it) is to ask for an affirmative answer as a final
+step before changing the file name and, where relevant, inserting
+or updating the corresponding front matter.  It also does not
+save the affected file's buffer to let the user inspect and
+confirm the changes (such as by invoking the command
+`diff-buffer-with-file').
 
 With this user option bound to a non-nil value, buffers are saved
 as well.  The assumption is that the user who opts in to this
-feature is familiar with the `denote-rename-file' operation and
-knows it is reliable.
+feature is familiar with the `denote-rename-file' operation (or
+related) and knows it is reliable.
 
-Specialised commands that build on top of `denote-rename-file'
+Specialised commands that build on top of `denote-rename-file' (or related)
 may internally bind this user option to a non-nil value in order
 to perform their operation (e.g. `denote-dired-rename-files' goes
 through each marked Dired file, prompting for the information to
