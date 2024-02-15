@@ -2978,6 +2978,9 @@ the buffer.  Otherwise, leave it unsaved for further review."
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
+(defalias 'denote-rename-add-keywords 'denote-keywords-add
+  "Alias for `denote-keywords-add'.")
+
 (defun denote--keywords-delete-prompt (keywords)
   "Prompt for one or more KEYWORDS.
 In the case of multiple entries, those are separated by the
@@ -3013,6 +3016,9 @@ the buffer.  Otherwise, leave it unsaved for further review."
         (when denote-rename-no-confirm (save-buffer))9
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
+
+(defalias 'denote-rename-remove-keywords 'denote-keywords-remove
+  "Alias for `denote-keywords-remove'.")
 
 ;;;;; Creation of front matter
 
