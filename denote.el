@@ -140,7 +140,7 @@ the function `denote-directory' instead."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
-(defcustom denote-save-buffer-after-creation4 nil
+(defcustom denote-save-buffer-after-creation nil
   "Control whether commands that creeate new notes save their buffer outright.
 
 The default behaviour of commands such as `denote' (or related)
