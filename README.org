@@ -1489,8 +1489,10 @@ accordingly.
 
 [ The following are part of {{{development-version}}}. ]
 
-Both commands will automatically save the buffer if the user option
-~denote-rename-no-confirm~ is set to a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+Both commands accept an optional prefix argument to automatically save
+the buffer. Similarly, they both interpret a non-nil value for the
+user option ~denote-rename-no-confirm~ the same as the prefix argument
+([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
 
 #+findex: denote-rename-add-keywords
 #+findex: denote-rename-remove-keywords
