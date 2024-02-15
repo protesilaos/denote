@@ -2260,7 +2260,7 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 
 (defun denote--add-prompts (additional-prompts)
   "Add all the elements in the ADDITIONAL-PROMPTS list to `denote-prompts'."
-  (seq-union denote-prompts additional-prompts))
+  (seq-union additional-prompts denote-prompts))
 
 ;;;###autoload
 (defun denote-type ()
