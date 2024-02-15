@@ -361,8 +361,12 @@ this can be achieved globally by changing the ~denote-prompts~ user
 option, there are cases where an ad-hoc method is the appropriate one
 ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).
 
-To this end, Denote provides the following convenience interactive
-commands for note creation:
+To this end, Denote provides the following interactive convenience
+commands for note creation. They all work by appending a new prompt to
+the existing ~denote-prompts~. For these examples, we assume the
+default value of ~denote-prompts~, which is ='(title keywords)=. [
+Appending to the existing ~denote-prompts~ is a behaviour defined in
+{{{development-version}}}. ]
 
 + Create note by specifying file type :: The ~denote-type~ command
   creates a note while prompting for a file type.
