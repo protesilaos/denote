@@ -1287,6 +1287,12 @@ use, but carries out the renaming without asking for confirmation
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
 :END:
 
+[ Revised as part of {{{development-version}}} to (i) accept an
+  optional double prefix argument to automatically save the buffer and
+  (ii) to not ask for confirmation while renaming and to automatically
+  save the buffer if the user option ~denote-rename-no-confirm~ is
+  non-nil ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]). ]
+
 #+findex: denote-rename-file-using-front-matter
 In the previous section, we covered the more general mechanism of the
 command ~denote-rename-file~ ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).  There is also a
@@ -1329,8 +1335,19 @@ The renaming is subject to a "yes or no" prompt that shows the old and
 new names, just so the user is certain about the change.
 
 If called interactively with a prefix argument (=C-u= by default) or
-from Lisp with a non-nil =AUTO-CONFIRM= argument, this "yes or no"
-prompt is skipped.
+from Lisp with a non-nil =NO-CONFIRM= argument, this "yes or no"
+prompt is skipped and the renaming is done outright.
+
+[ The following are part of {{{development-version}}}. ]
+
+If called interactively with a double prefix argument (=C-u C-u= by
+default) or from Lisp with a non-nil =SAVE-BUFFER= argument, the
+buffer is saved after the front matter is updated and the file is
+renamed.
+
+If the user option ~denote-rename-no-confirm~ is non-nil, it is
+interpreted the same way as a combination of =NO-CONFIRM= and
+=SAVE-BUFFER= ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
 
 The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the

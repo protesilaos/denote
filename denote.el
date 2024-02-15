@@ -2887,14 +2887,14 @@ Run the `denote-after-rename-file-hook' after renaming is done.
     (user-error "No marked files; aborting")))
 
 ;;;###autoload
-(defun denote-rename-file-using-front-matter (file &optional auto-confirm)
+(defun denote-rename-file-using-front-matter (file &optional no-confirm save-buffer)
   "Rename FILE using its front matter as input.
 When called interactively, FILE is the return value of the
 function `buffer-file-name' which is subsequently inspected for
 the requisite front matter.  It is thus implied that the FILE has
 a file type that is supported by Denote, per `denote-file-type'.
 
-Unless AUTO-CONFIRM is non-nil (such as with a prefix argument),
+Unless NO-CONFIRM is non-nil (such as with a prefix argument),
 ask for confirmation, showing the difference between the old and
 the new file names.
 
@@ -2903,11 +2903,29 @@ edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like.
 
-If AUTO-CONFIRM is non-nil, then proceed with the renaming
-operation without prompting for confirmation.  This is what the
-command `denote-dired-rename-marked-files-using-front-matter'
-does internally."
-  (interactive (list (buffer-file-name) current-prefix-arg))
+If NO-CONFIRM is non-nil (such as with a prefix argument) do not
+prompt for confirmation while renaming the file.  Do it outright.
+
+If optional SAVE-BUFFER is non-nil (such as with a double prefix
+argument), save the corresponding buffer.
+
+If the user option `denote-rename-no-confirm' is non-nil,
+interpret it the same way as a combination of NO-CONFIRM and
+SAVE-BUFFER.
+
+The identifier of the file, if any, is never modified even if it
+is edited in the front matter: Denote considers the file name to
+be the source of truth in this case, to avoid potential breakage
+with typos and the like."
+  (interactive
+   (let (no-confirm save-buffer)
+     (cond
+      ((and current-prefix-arg (> (prefix-numeric-value current-prefix-arg) 4))
+       (setq no-confirm t
+             save-buffer t))
+      (current-prefix-arg
+       (setq no-confirm t)))
+     (list buffer-file-name no-confirm save-buffer)))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
@@ -2918,10 +2936,13 @@ does internally."
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords title extension signature)))
-        (when (or auto-confirm
+        (when (or denote-rename-no-confirm
+                  no-confirm
                   (denote-rename-file-prompt file new-name))
           (denote-rename-file-and-buffer file new-name)
           (denote-update-dired-buffers)
+          (when (or denote-rename-no-confirm save-buffer)
+            (save-buffer))
           (run-hooks 'denote-after-rename-file-hook)))
     (user-error "No identifier or front matter for title")))
 
