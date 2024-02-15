@@ -140,6 +140,21 @@ the function `denote-directory' instead."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
+(defcustom denote-save-buffer-after-creation4 nil
+  "Control whether commands that creeate new notes save their buffer outright.
+
+The default behaviour of commands such as `denote' (or related)
+is to not save the buffer they create.  This gives the user the
+chance to review the text before writing it to a file.  The user
+may choose to delete the unsaved buffer, thus not creating a new
+note.
+
+If this user option is set to a non-nil value, such buffers are
+saved automatically."
+  :group 'denote
+  :package-version '(denote . "3.0.0")
+  :type 'boolean)
+
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
   "List of strings with predefined keywords for `denote'.
@@ -1952,10 +1967,6 @@ The `denote' command uses the region as the default title when
 prompted for a title.  When this variable is non-nil, the
 `denote' command ignores the region.  This variable is useful in
 commands that have their own way of handling the region.")
-
-;; NOTE 2024-01-13: This is a candidate for a user option.
-(defvar denote-save-buffer-after-creation nil
-  "If non-nil, the buffer is saved at the end of the `denote' command.")
 
 (defvar denote-title-prompt-current-default nil
   "Currently bound default title for `denote-title-prompt'.

@@ -493,6 +493,25 @@ variants which you can then assign to keys, invoke with =M-x=, or add
 to the list of commands available at the ~denote-command-prompt~
 ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
 
+*** The ~denote-save-buffer-after-creation~ option
+:PROPERTIES:
+:CUSTOM_ID: h:bf80f4cd-6f56-4f7c-a991-8573161e4511
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-save-buffer-after-creation
+The user option ~denote-save-buffer-after-creation~ controls whether
+commands that creeate new notes save their buffer outright.
+
+The default behaviour of commands such as ~denote~ (or related) is to
+not save the buffer they create ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). This gives the user
+the chance to review the text before writing it to a file. The user
+may choose to delete the unsaved buffer, thus not creating a new note.
+
+If ~denote-save-buffer-after-creation~ is set to a non-nil value, such
+buffers are saved automatically.
+
 *** The ~denote-date-prompt-use-org-read-date~ option
 :PROPERTIES:
 :CUSTOM_ID: h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63
@@ -3755,6 +3774,7 @@ Everything is in place to set up the package.
 
 ;; Remember to check the doc strings of those variables.
 (setq denote-directory (expand-file-name "~/Documents/notes/"))
+(setq denote-save-buffer-after-creation nil)
 (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
