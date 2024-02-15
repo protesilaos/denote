@@ -2964,7 +2964,7 @@ cannot know if they have front matter and what that may be."
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
-          (denote-rename-file-using-front-matter file :auto-confirm))
+          (denote-rename-file-using-front-matter file :no-confirm denote-rename-no-confirm))
         (denote-update-dired-buffers))
     (user-error "No marked Denote files; aborting")))
 
@@ -2990,8 +2990,7 @@ the buffer.  Otherwise, leave it unsaved for further review."
              (new-keywords (denote-keywords-sort
                             (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
-        (denote-rename-file-using-front-matter file :auto-confirm)
-        (when denote-rename-no-confirm (save-buffer))
+        (denote-rename-file-using-front-matter file :no-confirm denote-rename-no-confirm)
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
@@ -3029,8 +3028,7 @@ the buffer.  Otherwise, leave it unsaved for further review."
          file
          (seq-difference cur-keywords del-keyword)
          file-type)
-        (denote-rename-file-using-front-matter file :auto-confirm)
-        (when denote-rename-no-confirm (save-buffer))9
+        (denote-rename-file-using-front-matter file :no-confirm denote-rename-no-confirm)
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
