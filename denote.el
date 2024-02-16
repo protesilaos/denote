@@ -4442,6 +4442,41 @@ option `denote-templates'."
     (when title (push 'title denote-prompts))
     (denote-org-capture)))
 
+;;;###autoload
+(defun denote-org-capture-with-defaults (&optional title keywords subdirectory date template)
+  "Like `denote-org-capture' but with optional default parameters.
+
+For each nil value passed, produce a minibuffer that corresponds to
+the TITLE, KEYWORDS, SUBDIRECORY, DATE and TEMPLATE arguments.
+
+Each argument is used passed to the stanard `denote' command and all
+of its utility commands.
+
+When returning the contents that fill in the Org capture
+template, the sequence is as follows: front matter, TEMPLATE, and
+then the value of the user option `denote-org-capture-specifiers'.
+
+Important note: in the case of SUBDIRECTORY actual subdirectories
+must exist---Denote does not create them.  Same principle for
+TEMPLATE as templates must exist and are specified in the user
+option `denote-templates'."
+  (let* ((title (if title title (denote-title-prompt)))
+         (kws (if keywords keywords (denote-keywords-prompt)))
+         (directory (file-name-as-directory (if subdirectory (concat (denote-directory) subdirectory) (denote-subdirectory-prompt))))
+         (date (if date (denote--valid-date date) (current-time)))
+         (id (denote--find-first-unused-id
+              (format-time-string denote-id-format date)
+              (denote--get-all-used-ids)))
+         (template (if template template (denote-template-prompt)))
+         (front-matter (denote--format-front-matter
+                        title (denote--date date 'org) kws
+                        (format-time-string denote-id-format date) 'org)))
+    (setq denote-last-path
+          (denote--path title kws directory id 'org ""))
+    (denote--keywords-add-to-history kws)
+    (message template)
+    (concat front-matter template denote-org-capture-specifiers)))
+
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
   (when-let ((file denote-last-path)
