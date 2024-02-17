@@ -1899,7 +1899,7 @@ If DATE is nil, return nil."
   "Return DATE as an appropriate value for the `denote' command.
 Pass DATE through `denote-valid-date-p' and use its return value.
 If either that or DATE is nil, return `current-time'."
-  (or (denote-valid-date-p date)) (current-time))
+  (or (denote-valid-date-p date) (current-time)))
 
 (defun denote--buffer-file-names ()
   "Return file names of Denote buffers."
