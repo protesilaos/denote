@@ -2880,40 +2880,7 @@ seems useful. I am happy to help but do not want to roll this feature
 everywhere before eliciting relevant feedback: once we add it, we are
 not going back.
 
-* Minibuffer histories
-:PROPERTIES:
-:CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651
-:END:
-
-Denote has a dedicated minibuffer history for each one of its prompts.
-This practically means that using =M-p= (~previous-history-element~) and
-=M-n= (~next-history-element~) will only cycle through the relevant
-record of inputs, such as your latest titles in the =TITLE= prompt, and
-keywords in the =KEYWORDS= prompt.
-
-The built-in =savehist= library saves minibuffer histories.  Sample
-configuration:
-
-#+begin_src emacs-lisp
-(require 'savehist)
-(setq savehist-file (locate-user-emacs-file "savehist"))
-(setq history-length 500)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history t)
-(add-hook 'after-init-hook #'savehist-mode)
-#+end_src
-
-* Extending Denote
-:PROPERTIES:
-:CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
-:END:
-
-Denote is a tool with a narrow scope: create notes and link between
-them, based on the aforementioned file-naming scheme.  For other common
-operations the user is advised to rely on standard Emacs facilities or
-specialised third-party packages.  This section covers the details.
-
-** Keep a journal or diary
+* Keep a journal or diary
 :PROPERTIES:
 :CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
 :END:
@@ -3011,7 +2978,7 @@ date and then performs the aforementioned. With a double prefix
 argument (=C-u C-u=), it also produces a link whose description
 includes just the file's identifier.
 
-*** Journaling with a timer
+** Journaling with a timer
 :PROPERTIES:
 :CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
 :END:
@@ -3078,6 +3045,39 @@ Sources for ~tmr~:
     + GitHub: <https://github.com/protesilaos/tmr>
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
+
+* Minibuffer histories
+:PROPERTIES:
+:CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651
+:END:
+
+Denote has a dedicated minibuffer history for each one of its prompts.
+This practically means that using =M-p= (~previous-history-element~) and
+=M-n= (~next-history-element~) will only cycle through the relevant
+record of inputs, such as your latest titles in the =TITLE= prompt, and
+keywords in the =KEYWORDS= prompt.
+
+The built-in =savehist= library saves minibuffer histories.  Sample
+configuration:
+
+#+begin_src emacs-lisp
+(require 'savehist)
+(setq savehist-file (locate-user-emacs-file "savehist"))
+(setq history-length 500)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history t)
+(add-hook 'after-init-hook #'savehist-mode)
+#+end_src
+
+* Extending Denote
+:PROPERTIES:
+:CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
+:END:
+
+Denote is a tool with a narrow scope: create notes and link between
+them, based on the aforementioned file-naming scheme.  For other common
+operations the user is advised to rely on standard Emacs facilities or
+specialised third-party packages.  This section covers the details.
 
 ** Narrow the list of files in Dired
 :PROPERTIES:
