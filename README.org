@@ -3704,6 +3704,47 @@ path of the ~denote-directory~ to prevent Denote from recognising it
 as an attachment:
 <https://emacs.stackexchange.com/questions/45751/org-export-to-different-directory>.
 
+**** Convert =denote:= links to =file:= links
+:PROPERTIES:
+:CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
+:END:
+
+Sometimes the user needs to translate all =denote:= link types to
+their =file:= equivalent. This may be because some other tool does not
+recognise =denote:= links (or other custom links types---which are a
+standard feature of Org, by the way). The user thus needs to (i)
+either make a copy of their Denote note or edit the existing one, and
+(ii) convert all links to the generic =file:= link type that
+external/other programs understand.
+
+The following block provides a solution for the current Org file. Note
+that both the ~my-denote-org-link-regexp~ variable and th
+~my-denote-org-link-convert~ function are needed. The latter is called
+with =M-x= or can be bound to a key.
+
+#+begin_src emacs-lisp
+(defvar my-denote-org-link-regexp
+  (concat "\\[\\[\\(?1:.*?:\\)\\(?2:.*?\\)\\]"
+          "\\[\\(?3:.*?\\)" "\\]\\]")
+  "Regular expression to match Org links.
+Group 1 is the link type, 2 is the target, 3 is the description.")
+
+(defun my-denote-org-link-convert ()
+  "Convert all 'denote:' links to their 'file:' equivalent in the current Org buffer."
+  (interactive)
+  (if (derived-mode-p 'org-mode)
+      (progn
+        (goto-char (point-min))
+          (while (re-search-forward my-denote-org-link-regexp nil :no-error)
+            (let* ((id (match-string-no-properties 2))
+                   (desc (match-string-no-properties 3))
+                   (file (save-match-data (denote-get-path-by-id id)))
+                   (new-text (format "[[file:%s][%s]]" file desc)))
+              (replace-match new-text :fixed-case :literal)))
+        (message "Converted as `denote:' links to `file:' links"))
+    (user-error "The current file is not using Org mode")))
+#+end_src
+
 **** Org Mode Publishing
 :PROPERTIES:
 :CUSTOM_ID: h:2f3451ed-2fc4-4f36-bcf2-112939963e20
