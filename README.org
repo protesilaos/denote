@@ -1136,7 +1136,7 @@ line or switching between then with commands like ~switch-to-buffer~.
 :END:
 
 [ Revised as part of {{{development-version}}} to honour the value of
-  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).  
+  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
   This version also broadens the scope of the user option
   ~denote-rename-no-confirm~, such that it automatically saves the
   affcted buffers, post-rename. ]
