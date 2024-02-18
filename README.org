@@ -4680,6 +4680,68 @@ so far?]
 
 #+end_example
 
+** Wishlist of what we can do to extend Denote
+:PROPERTIES:
+:CUSTOM_ID: h:044a6a0f-e382-4013-8279-8bf4e64e73c0
+:END:
+
+These are various ideas to extend Denote. Whether they should be in
+the core package or a separate extension is something we can discuss.
+I, Protesilaos, am happy to help anyone who wants to do any of this.
+
+- denote-consult.el :: This can be a separate package that enhances or
+  replaces the various prompts we have for files (and maybe more) by
+  using the ~consult~ package. Consult provides the preview mechanism
+  and can probably be used for more things, such as to define a source
+  for Denote-only buffers in the ~consult-buffer~ command. If we need
+  to tweak things in =denote.el=, I am happy to do it. For example, we
+  could have a ~denote-file-prompt-function~ variable, which would
+  default to ~denote-file-prompt~ (what we currently have) and would
+  also such a hypothetical package to easily plug into what we have.
+
+- denote-embark.el :: Provide integration with the ~embark~ package.
+  This can be for doing something with the identifier/link at point.
+  For example, it could provide an action to produce backlinks for the
+  identifier/file we are linking to, not just the current one.
+
+- denote-transient.el :: The ~transient~ package is built into Emacs
+  29 (Denote supports Emacs 28 though). We can use it to define an
+  alternative to what we have for the menu bar. Perhaps this interface
+  can used to toggle various options, such as to call ~denote~ with a
+  different set of prompts.
+
+- A ~denote-directories~ user option :: This can be either an
+  extension of the ~denote-directory~ (accept a list of file paths
+  value) or a new variable. The idea is to let the user define
+  separate Denote directories which do know about the presence of each
+  other (unlike silos). This way, a user can have an entry in
+  =~/Documents/notes/= link to something =~/Git/projects/= and
+  everything work as if the ~denote-directory~ is set to the =~/=
+  (with the status quo as of 2024-02-18 08:27 +0200).
+
+- Signatures before identifiers :: This is probably going to increase
+  the complixity of =denote.el= and may not be worth pursuing. But
+  just to explore the idea: we could have an option to rearrange file
+  names such that the signature appears before the identifier. If we
+  can do this in a smart way, we can probably extend the principle for
+  all file name components. Again though, this may be too complex and
+  not worth doing.
+
+- Encode the day in the identifier :: The idea is to use some coded
+  reference for Monday, Tuesday, etc. instead of having the generic
+  =T= in the identifier. For example, Monday is =A= so the identifier
+  for it is something like =20240219A101522= instead of what we now
+  have as =20240219T101522=. The old method should still be supported.
+  Apart from changing a few regular expressions, this does not seem
+  too complex to me. We would need a user option to opt in to such a
+  feature. Then tweak the relevant parts. The tricky issue is to
+  define a mapping of day names to letters/symbols that works for
+  everyone. Do all countries have a seven-day week, for example? We
+  need something universally applicable here.
+
+Anything else? You are welcome to discuss these and/or add to the
+list.
+
 * Publications about Denote
 :PROPERTIES:
 :CUSTOM_ID: h:ca0c38f9-fa3e-4901-947e-1b589335781d
