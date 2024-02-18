@@ -4604,38 +4604,36 @@ us get a better sense of the specifics.
 :CUSTOM_ID: h:1ebe4865-c001-4747-a6f2-0fe45aad71cd
 :END:
 
-Denote is a GNU ELPA package.  As such, any significant change to the
-code requires copyright assignment to the Free Software Foundation (more
-below).
+Denote is a GNU ELPA package. As such, any significant change to the
+code requires copyright assignment to the Free Software Foundation
+(more below).
 
 You do not need to be a programmer to contribute to this package.
 Sharing an idea or describing a workflow is equally helpful, as it
 teaches us something we may not know and might be able to cover either
-by extending Denote or expanding this manual ([[#h:044a6a0f-e382-4013-8279-8bf4e64e73c0][Things to do]]).  If you
-prefer to write a blog post, make sure you share it with us: we can add
-a section herein referencing all such articles.  Everyone gets
-acknowledged ([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]).  There is no such thing as an
-"insignificant contribution"---they all matter.
+by extending Denote or expanding this manual. If you prefer to write a
+blog post, make sure you share it with us: we can add a section herein
+referencing all such articles. Everyone gets acknowledged
+([[#h:f8126820-3b59-49fa-bcc2-73bd60132bb9][Acknowledgements]]). There is no such thing as an "insignificant
+contribution"---they all matter.
 
-+ Package name (GNU ELPA): =denote=
++ Package name (GNU ELPA): ~denote~
 + Official manual: <https://protesilaos.com/emacs/denote>
 + Change log: <https://protesilaos.com/emacs/denote-changelog>
-+ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/denote>
-  - Mirrors:
-    + GitHub: <https://github.com/protesilaos/denote>
-    + GitLab: <https://gitlab.com/protesilaos/denote>
-+ Mailing list: <https://lists.sr.ht/~protesilaos/denote>
++ Git repositories:
+  + GitHub: <https://github.com/protesilaos/denote>
+  + GitLab: <https://gitlab.com/protesilaos/denote>
 
 If our public media are not suitable, you are welcome to contact me
 (Protesilaos) in private: <https://protesilaos.com/contact>.
 
-Copyright assignment is a prerequisite to sharing code.  It is a simple
-process.  Check the request form below (please adapt it accordingly).
+Copyright assignment is a prerequisite to sharing code. It is a simple
+process. Check the request form below (please adapt it accordingly).
 You must write an email to the address mentioned in the form and then
-wait for the FSF to send you a legal agreement.  Sign the document and
-file it back to them.  This could all happen via email and take about a
-week.  You are encouraged to go through this process.  You only need to
-do it once.  It will allow you to make contributions to Emacs in
+wait for the FSF to send you a legal agreement. Sign the document and
+file it back to them. This could all happen via email and take about a
+week. You are encouraged to go through this process. You only need to
+do it once. It will allow you to make contributions to Emacs in
 general.
 
 #+begin_example text
