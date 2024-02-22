@@ -3432,6 +3432,8 @@ See the `:link' property of `denote-file-types'."
 (defvar denote-link-signature-format "%s  %s"
   "Format of link description for `denote-link-with-signature'.")
 
+;; TODO 2024-02-22: Consider documenting this, such as:
+;; <https://github.com/protesilaos/denote/issues/255#issuecomment-1949634482>.
 (defvar denote-link-description-function #'denote-link-description-with-signature-and-title
   "Function to use to create the description of links.
 
