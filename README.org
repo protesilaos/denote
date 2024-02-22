@@ -3723,12 +3723,14 @@ that both the ~my-denote-org-link-regexp~ variable and th
 with =M-x= or can be bound to a key.
 
 #+begin_src emacs-lisp
+;; Evaluate this and the one below.
 (defvar my-denote-org-link-regexp
   (concat "\\[\\[\\(?1:.*?:\\)\\(?2:.*?\\)\\]"
           "\\[\\(?3:.*?\\)" "\\]\\]")
   "Regular expression to match Org links.
 Group 1 is the link type, 2 is the target, 3 is the description.")
 
+;; Then use M-x to call `my-denote-org-link-convert'.
 (defun my-denote-org-link-convert ()
   "Convert all 'denote:' links to their 'file:' equivalent in the current Org buffer."
   (interactive)
