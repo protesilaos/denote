@@ -3446,15 +3446,17 @@ file is returned as the description.")
    file
    (denote--get-active-region-content)))
 
-(defun denote-link-description-with-signature-and-title (file region-text)
-  "Return description from FILE as \"signature   title\".
+(defun denote-link-description-with-signature-and-title (file &optional region-text)
+  "Return link description for FILE.
 
-If REGION-TEXT is non-nil, the description is the text of the
-active region instead.
+With optional REGION-TEXT as a string, make that the description.
+Otherwise, produce a description as follows:
 
-The format is specified in variable
-`denote-link-signature-format'.  If a signature is not present,
-only the title is returned."
+- If FILE as a signature, then use the `denote-link-signature-format'.
+  By default, this looks like \"signature   title\".
+
+- If FILE does not have a signature, then use its title as the
+  description."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
          (title (denote--retrieve-title-or-filename file file-type)))
