@@ -3435,7 +3435,7 @@ See the `:link' property of `denote-file-types'."
 (defvar denote-link-description-function #'denote-link-description-with-signature-and-title
   "Function to use to create the description of links.
 
-The function specified should takes a FILE argument and should
+The function specified should take a FILE argument and should
 return the description as a string.  By default, the title of the
 file is returned as the description.")
 
