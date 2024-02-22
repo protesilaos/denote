@@ -3424,7 +3424,12 @@ See the `:link' property of `denote-file-types'."
 ;; subject to feedback.  I think the signature should be better
 ;; disambiguated in this context, although the double space is a good
 ;; start.
-(defvar denote--link-signature-format "%s  %s"
+(define-obsolete-variable-alias
+  'denote--link-signature-format
+  'denote-link-signature-format
+  "3.0.0")
+
+(defvar denote-link-signature-format "%s  %s"
   "Format of link description for `denote-link-with-signature'.")
 
 (defvar denote-link-description-function #'denote-link-description-with-signature-and-title
@@ -3448,7 +3453,7 @@ If REGION-TEXT is non-nil, the description is the text of the
 active region instead.
 
 The format is specified in variable
-`denote--link-signature-format'.  If a signature is not present,
+`denote-link-signature-format'.  If a signature is not present,
 only the title is returned."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
@@ -3456,7 +3461,7 @@ only the title is returned."
     (cond (region-text
            region-text)
           (signature
-           (format denote--link-signature-format signature title))
+           (format denote-link-signature-format signature title))
           (t
            (format "%s" title)))))
 
