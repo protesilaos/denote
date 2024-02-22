@@ -4553,6 +4553,31 @@ might change them without further notice.
 + Function ~denote-link-return-backlinks~ :: Return list of backlinks
   in current or optional =FILE=.  Also see ~denote-link-return-links~.
 
+[ All of the following are part of {{{development-version}}}. ]
+
+#+vindex: denote-link-signature-format
++ Variable ~denote-link-signature-format~ :: Format of link
+  description for ~denote-link-with-signature~.
+
+#+findex: denote-link-description-with-signature-and-title
++ Function ~denote-link-description-with-signature-and-title~ :: Return
+  link description for =FILE=. With optional =REGION-TEXT= as a
+  string, make that the description. Otherwise, produce a description
+  as follows:
+
+- If =FILE= as a signature, then use the
+  ~denote-link-signature-format~. By default, this looks like
+  "signature title".
+
+- If =FILE= does not have a signature, then use its title as the
+  description.
+
+#+findex: denote-link-description-function
++ Function ~denote-link-description-function~ :: Function to use to
+  create the description of links. The function specified should take
+  a =FILE= argument and should return the description as a string. By
+  default, the title of the file is returned as the description.
+
 * Troubleshoot Denote in a pristine environment
 :PROPERTIES:
 :CUSTOM_ID: h:9c4467d5-6480-4681-80fb-cd9717bf8b3b
