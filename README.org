@@ -4563,12 +4563,12 @@ might change them without further notice.
 
 #+findex: denote-link-description-with-signature-and-title
 + Function ~denote-link-description-with-signature-and-title~ :: Return
-  link description for =FILE=. With optional =REGION-TEXT= as a
-  string, make that the description. Otherwise, produce a description
-  as follows:
+  link description for =FILE=.  Produce a description as follows:
+
+- If the region is active, use it as the description.
 
 - If =FILE= as a signature, then use the
-  ~denote-link-signature-format~. By default, this looks like
+  ~denote-link-signature-format~.  By default, this looks like
   "signature title".
 
 - If =FILE= does not have a signature, then use its title as the
