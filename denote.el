@@ -3445,14 +3445,12 @@ file is returned as the description.")
   "Return link description for FILE."
   (funcall
    (or denote-link-description-function #'denote-link-description-with-signature-and-title)
-   file
-   (denote--get-active-region-content)))
+   file))
 
-(defun denote-link-description-with-signature-and-title (file &optional region-text)
+(defun denote-link-description-with-signature-and-title (file)
   "Return link description for FILE.
 
-With optional REGION-TEXT as a string, make that the description.
-Otherwise, produce a description as follows:
+- If the region is active, use it as the description.
 
 - If FILE as a signature, then use the `denote-link-signature-format'.
   By default, this looks like \"signature   title\".
@@ -3461,7 +3459,8 @@ Otherwise, produce a description as follows:
   description."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
-         (title (denote--retrieve-title-or-filename file file-type)))
+         (title (denote--retrieve-title-or-filename file file-type))
+         (region-text (denote--get-active-region-content)))
     (cond (region-text
            region-text)
           (signature
