@@ -3839,7 +3839,12 @@ Expand `denote-link-backlinks-display-buffer-action'."
    buf
    `(,@denote-link-backlinks-display-buffer-action)))
 
-(defun denote-backlinks-next (n)
+(define-obsolete-function-alias
+  'denote-backlinks-next
+  'denote-backlinks-mode-next
+  "3.0.0")
+
+(defun denote-backlinks-mode-next (n)
   "Use appropriate command for forward motion in backlinks buffer.
 With N as a numeric argument, move to the Nth button from point.
 A nil value of N is understood as 1.
@@ -3856,7 +3861,12 @@ matching identifiers."
       (xref-next-line)
     (forward-button n)))
 
-(defun denote-backlinks-prev (n)
+(define-obsolete-function-alias
+  'denote-backlinks-prev
+  'denote-backlinks-mode-previous
+  "3.0.0")
+
+(defun denote-backlinks-mode-previous (n)
   "Use appropriate command for backward motion in backlinks buffer.
 With N as a numeric argument, move to the Nth button from point.
 A nil value of N is understood as 1.
@@ -3875,8 +3885,8 @@ matching identifiers."
 
 (defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
-    (define-key m "n" #'denote-backlinks-next)
-    (define-key m "p" #'denote-backlinks-prev)
+    (define-key m "n" #'denote-backlinks-mode-next)
+    (define-key m "p" #'denote-backlinks-mode-previous)
     (define-key m "g" #'revert-buffer)
     m)
   "Keymap for `denote-backlinks-mode'.")
