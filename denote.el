@@ -4455,6 +4455,10 @@ option `denote-templates'."
 
 ;;;; Denote extension "modules"
 
+;; TODO 2024-02-25: I think these do not belong in denote.el.  We
+;; should have another file, like "denote-modules.el" for users who
+;; want to opt into these features.
+
 (defvar denote-modules-available
   '(project (project-find-functions . denote-project-find)
             xref    (xref-backend-functions . denote--xref-backend)
