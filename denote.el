@@ -2471,13 +2471,12 @@ variable `denote-directory'."
     (cond
      ((derived-mode-p 'dired-mode)
       (dired-rename-file old-name new-name nil))
-     ;; FIXME 2023-11-03: The `vc-rename-file' requires the file to be
+     ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
      ;; saved, but our convention is to not save the buffer after
      ;; changing front matter unless we absolutely have to (allows
      ;; users to do `diff-buffer-with-file', for example).
-
-     ;; ((vc-backend old-name)
-     ;;  (vc-rename-file old-name new-name))
+     ((and denote-save-buffer-after-creation (not (buffer-modified-p)) (vc-backend old-name))
+      (vc-rename-file old-name new-name))
      (t
       (rename-file old-name new-name nil)))
     (when-let ((buffer (find-buffer-visiting old-name)))
