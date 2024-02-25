@@ -4361,9 +4361,6 @@ the standard front matter we define."
 
 (defvar denote-last-path nil "Store last path.")
 
-;; TODO 2023-12-08: Maybe create a distinct variable
-;; `denote-org-capture-prompts' instead of reusing `denote-prompts'.
-
 ;;;###autoload
 (defun denote-org-capture ()
   "Create new note through `org-capture-templates'.
