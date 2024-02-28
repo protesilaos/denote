@@ -192,6 +192,71 @@ Make the new note an Org file regardless of the value of
         (insert text))
     (user-error "No subtree to extract; aborting")))
 
+;;;; Convert links from `:denote' to `:file' and vice versa
+
+;; TODO 2024-02-28: Do we need to convert betwee other link types?  I
+;; think not, since the `denote:' type is modelled after the `file:'
+;; one.
+(defun denote-org-extras--get-link-type-regexp (type)
+  "Return regexp for Org link TYPE.
+TYPE is a symbol of either `file' or `denote'.
+
+The regexp consists of four groups.  Group 1 is the link type, 2
+is the target, 3 is the target's search terms, and 4 is the
+description."
+  (let ((group-1))
+    (pcase type
+      ('denote (setq group-1 "denote"))
+      ('file (setq group-1 "file"))
+      (_ (error "`%s' is an unknown link type" type)))
+    (format "\\[\\[\\(?1:%s:\\)\\(?:\\(?2:.*?\\)\\(?3:::.*\\)?\\]\\|\\]\\)\\(?4:\\[\\(?:.*?\\)\\]\\)?\\]" group-1)))
+
+;;;###autoload
+(defun denote-org-extras-convert-links-to-file-type ()
+  "Convert denote: links to file: links in the current Org buffer.
+Ignore all other link types.  Also ignore links that do not
+resolve to a file in the variable `denote-directory'."
+  (interactive nil org-mode)
+  (if (derived-mode-p 'org-mode)
+      (progn
+        (goto-char (point-min))
+        (while (re-search-forward (denote-org-extras--get-link-type-regexp 'denote) nil :no-error)
+          (let* ((id (match-string-no-properties 2))
+                 (search (or (match-string-no-properties 3) ""))
+                 (desc (or (match-string-no-properties 4) ""))
+                 (file (save-match-data (denote-get-path-by-id id))))
+            (when id
+              (let ((new-text (if desc
+                                  (format "[[file:%s%s]%s]" file search desc)
+                                (format "[[file:%s%s]]" file search))))
+                (replace-match new-text :fixed-case :literal)))))
+        ;; TODO 2024-02-28: notify how many changed.
+        (message "Converted `denote:' links to `file:' links"))
+    (user-error "The current file is not using Org mode")))
+
+;;;###autoload
+(defun denote-org-extras-convert-links-to-denote-type ()
+  "Convert file: links to denote: links in the current Org buffer.
+Ignore all other link types.  Also ignore file: links that do not
+point to a file with a Denote file name."
+  (interactive nil org-mode)
+  (if (derived-mode-p 'org-mode)
+      (progn
+        (goto-char (point-min))
+        (while (re-search-forward (denote-org-extras--get-link-type-regexp 'file) nil :no-error)
+          (let* ((file (match-string-no-properties 2))
+                 (search (or (match-string-no-properties 3) ""))
+                 (desc (or (match-string-no-properties 4) ""))
+                 (id (save-match-data (denote-retrieve-filename-identifier file))))
+            (when id
+              (let ((new-text (if desc
+                                  (format "[[denote:%s%s]%s]" id search desc)
+                                (format "[[denote:%s%s]]" id search))))
+              (replace-match new-text :fixed-case :literal)))))
+        ;; TODO 2024-02-28: notify how many changed.
+        (message "Converted as `file:' links to `denote:' links"))
+    (user-error "The current file is not using Org mode")))
+
 ;;;; Org dynamic blocks
 
 ;; NOTE 2024-01-22 12:26:13 +0200: The following is copied from the

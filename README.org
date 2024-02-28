@@ -2425,6 +2425,37 @@ same meaning as in the regular ~denote-link~ command.
 Denote provides similar functionality for opening an existing note or
 creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing note or create it if missing]]).
 
+** Convert =denote:= links to =file:= links
+:PROPERTIES:
+:CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+Sometimes the user needs to translate all =denote:= link types to
+their =file:= equivalent. This may be because some other tool does not
+recognise =denote:= links (or other custom links types---which are a
+standard feature of Org, by the way). The user thus needs to (i)
+either make a copy of their Denote note or edit the existing one, and
+(ii) convert all links to the generic =file:= link type that
+external/other programs understand.
+
+The optional extension =denote-org-extras.el= contains two commands
+that are relevant for this use-case:
+
+#+findex: denote-org-extras-convert-links-to-file-type
++ Convert =denote:= links to =file:= links :: The command ~denote-org-extras-convert-links-to-file-type~
+  goes through the buffer to find all =denote:= links. It gets the
+  identifier of the link and resolves it to the actual file system
+  path. It then replaces the match so that the link is written with
+  the =file:= type and then the file system path. The optional search
+  terms and/or link description are preserved ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
+
+#+findex: denote-org-extras-convert-links-to-denote-type
++ Convert =file:= links to =denote:= links :: The command ~denote-org-extras-convert-links-to-denote-type~
+  behaves like the one above. The difference is that it finds the file
+  system path and converts it into its identifier.
+
 ** Miscellaneous information about links
 :PROPERTIES:
 :CUSTOM_ID: h:dd8f2231-8d77-49b9-acc4-af525c68b271
@@ -3628,6 +3659,11 @@ Org Mode has a built-in configurable export engine.  You can prevent
 duplicate identifiers when exporting manually for each exported file
 or by advising the Org export function.
 
+Denote also provides commands to convert =denote:= links to their
+=file:= equivalent, in case this is a required pre-processing step for
+export purposes ([[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links]]). [ This is
+part of {{{development-version}}}. ]
+
 **** Manually configure Org export
 :PROPERTIES:
 :CUSTOM_ID: h:bf791e28-73e5-4ed8-88bc-e4e9b3ebaedb
@@ -3703,49 +3739,6 @@ when exporting using LaTeX.  The export folder cannot be inside the
 path of the ~denote-directory~ to prevent Denote from recognising it
 as an attachment:
 <https://emacs.stackexchange.com/questions/45751/org-export-to-different-directory>.
-
-**** Convert =denote:= links to =file:= links
-:PROPERTIES:
-:CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
-:END:
-
-Sometimes the user needs to translate all =denote:= link types to
-their =file:= equivalent. This may be because some other tool does not
-recognise =denote:= links (or other custom links types---which are a
-standard feature of Org, by the way). The user thus needs to (i)
-either make a copy of their Denote note or edit the existing one, and
-(ii) convert all links to the generic =file:= link type that
-external/other programs understand.
-
-The following block provides a solution for the current Org file. Note
-that both the ~my-denote-org-link-regexp~ variable and th
-~my-denote-org-link-convert~ function are needed. The latter is called
-with =M-x= or can be bound to a key.
-
-#+begin_src emacs-lisp
-;; Evaluate this and the one below.
-(defvar my-denote-org-link-regexp
-  (concat "\\[\\[\\(?1:.*?:\\)\\(?2:.*?\\)\\]"
-          "\\[\\(?3:.*?\\)" "\\]\\]")
-  "Regular expression to match Org links.
-Group 1 is the link type, 2 is the target, 3 is the description.")
-
-;; Then use M-x to call `my-denote-org-link-convert'.
-(defun my-denote-org-link-convert ()
-  "Convert all 'denote:' links to their 'file:' equivalent in the current Org buffer."
-  (interactive)
-  (if (derived-mode-p 'org-mode)
-      (progn
-        (goto-char (point-min))
-          (while (re-search-forward my-denote-org-link-regexp nil :no-error)
-            (let* ((id (match-string-no-properties 2))
-                   (desc (match-string-no-properties 3))
-                   (file (save-match-data (denote-get-path-by-id id)))
-                   (new-text (format "[[file:%s][%s]]" file desc)))
-              (replace-match new-text :fixed-case :literal)))
-        (message "Converted as `denote:' links to `file:' links"))
-    (user-error "The current file is not using Org mode")))
-#+end_src
 
 **** Org Mode Publishing
 :PROPERTIES:
