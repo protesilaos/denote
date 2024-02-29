@@ -1113,8 +1113,8 @@ file in the returned list."
 (defalias 'denote--file-history 'denote-file-history
   "Compatibility alias for `denote-file-history'.")
 
-;; NOTE 2024-02-29 08:09:42 +0200: Based on
-;; `project--read-file-cpd-relative' from the built-in project.el
+;; NOTE 2024-02-29: Based on `project--read-file-cpd-relative' from
+;; the built-in project.el
 (defun denote-file-prompt (&optional files-matching-regexp)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
