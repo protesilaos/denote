@@ -3078,12 +3078,22 @@ Note that this command is useful only for existing Denote notes.
 If the user needs to convert a generic text file to a Denote
 note, they can use one of the command which first rename the file
 to make it comply with our file-naming scheme and then add the
-relevant front matter."
+relevant front matter.
+
+[ NOTE: Please check with your minibuffer user interface how to
+  provide an empty input.  The Emacs default setup accepts the
+  empty minibuffer contents as they are, though popular packages
+  like `vertico' use the first available completion candidate
+  instead.  For `vertico', the user must either move one up to
+  select the prompt and then type RET there with empty contents,
+  or use the command `vertico-exit-input' with empty contents.
+  That Vertico command is bound to M-RET as of this writing on
+  2024-02-29 09:24 +0200. ]"
   (interactive
    (list
     (buffer-file-name)
-    (denote-title-prompt)
-    (denote-keywords-sort (denote-keywords-prompt))))
+    (denote-title-prompt nil "Add TITLE (empty to ignore)")
+    (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)"))))
   (when-let ((denote-file-is-writable-and-supported-p file)
              (id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file)))
