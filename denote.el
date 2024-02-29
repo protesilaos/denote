@@ -2137,7 +2137,7 @@ With optional INITIAL-TITLE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
 of the default prompt."
   (read-string
-   (format-prompt (or prompt-text "File title") denote-title-prompt-current-default)
+   (format-prompt (or prompt-text "New file TITLE") denote-title-prompt-current-default)
    initial-title 'denote-title-history denote-title-prompt-current-default))
 
 (defvar denote-file-type-history nil
