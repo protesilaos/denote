@@ -1205,7 +1205,7 @@ keywords.  With optional INITIAL, add it to the minibuffer as
 initial input."
   (delete-dups
    (completing-read-multiple
-    (format-prompt (or prompt "File keywords") nil)
+    (format-prompt (or prompt "New file KEYWORDS") nil)
     keywords nil nil initial 'denote-keyword-history)))
 
 (defun denote-keywords-prompt (&optional prompt-text initial-keywords)
