@@ -2098,31 +2098,15 @@ When called from Lisp, all arguments are optional.
 (defalias 'denote--title-history 'denote-title-history
   "Compatibility alias for `denote-title-history'.")
 
-(defun denote-title-prompt (&optional default-title prompt-text)
+(defun denote-title-prompt (&optional initial-title prompt-text)
   "Prompt for title string.
 
-With optional DEFAULT-TITLE use it as the initial minibuffer
+With optional INITIAL-TITLE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
-of the default prompt.
-
-Previous inputs at this prompt are available for minibuffer
-completion.  Consider `savehist-mode' to persist minibuffer
-histories between sessions."
-  ;; NOTE 2023-10-27: By default SPC performs completion in the
-  ;; minibuffer.  We do not want that, as the user should be able to
-  ;; input an arbitrary string, while still performing completion
-  ;; against their input history.
-  (minibuffer-with-setup-hook
-      (lambda ()
-        (use-local-map
-         (let ((map (make-composed-keymap
-                     nil (current-local-map))))
-           (define-key map (kbd "SPC") nil)
-           map)))
-    (completing-read
-     (format-prompt (or prompt-text "File title") denote-title-prompt-current-default)
-     denote-title-history
-     nil nil default-title 'denote-title-history denote-title-prompt-current-default)))
+of the default prompt."
+  (read-string
+   (format-prompt (or prompt-text "File title") denote-title-prompt-current-default)
+   initial-title 'denote-title-history denote-title-prompt-current-default))
 
 (defvar denote-file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
@@ -2217,32 +2201,16 @@ packages such as `marginalia' and `embark')."
 (defalias 'denote--signature-history 'denote-signature-history
   "Compatibility alias for `denote-signature-history'.")
 
-(defun denote-signature-prompt (&optional default-signature prompt-text)
+(defun denote-signature-prompt (&optional initial-signature prompt-text)
   "Prompt for signature string.
-With optional DEFAULT-SIGNATURE use it as the initial minibuffer
+With optional INITIAL-SIGNATURE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
-of the default prompt.
-
-Previous inputs at this prompt are available for minibuffer
-completion.  Consider `savehist-mode' to persist minibuffer
-histories between sessions."
-  (when (and default-signature (string-empty-p default-signature))
-    (setq default-signature nil))
-  ;; NOTE 2023-10-27: By default SPC performs completion in the
-  ;; minibuffer.  We do not want that, as the user should be able to
-  ;; input an arbitrary string, while still performing completion
-  ;; against their input history.
-  (minibuffer-with-setup-hook
-      (lambda ()
-        (use-local-map
-         (let ((map (make-composed-keymap
-                     nil (current-local-map))))
-           (define-key map (kbd "SPC") nil)
-           map)))
-    (completing-read
-     (format-prompt (or prompt-text "Provide signature") nil)
-     denote-signature-history
-     nil nil default-signature 'denote-signature-history)))
+of the default prompt."
+  (when (and initial-signature (string-empty-p initial-signature))
+    (setq initial-signature nil))
+  (read-string
+   (format-prompt (or prompt-text "Provide signature") nil)
+   initial-signature 'denote-signature-history))
 
 (defvar denote-files-matching-regexp-history nil
   "Minibuffer history of `denote-files-matching-regexp-prompt'.")

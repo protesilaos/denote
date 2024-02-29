@@ -4266,11 +4266,13 @@ might change them without further notice.
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
-  With optional =DEFAULT-SIGNATURE= use it as the initial minibuffer
+  With optional =INITIAL-SIGNATURE= use it as the initial minibuffer
   text. With optional =PROMPT-TEXT= use it in the minibuffer instead
-  of the default prompt. Previous inputs at this prompt are available
-  for minibuffer completion. Consider ~savehist-mode~ to persist
-  minibuffer histories between sessions.
+  of the default prompt. [ Revised as part of {{{development-version}}}
+  to no longer provide completion against its previous input history.
+  The reason is that those inputs are not always reliable (I have seen
+  cases where the minibuffer UI adds text properties, for example,
+  which would then embedded into the string we were showing). ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
@@ -4288,11 +4290,13 @@ might change them without further notice.
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Prompt for title string. With
-  optional =DEFAULT-TITLE= use it as the initial minibuffer text. With
+  optional =INITIAL-TITLE= use it as the initial minibuffer text. With
   optional =PROMPT-TEXT= use it in the minibuffer instead of the
-  default prompt. Previous inputs at this prompt are available for
-  minibuffer completion. Consider ~savehist-mode~ to persist
-  minibuffer histories between sessions.
+  default prompt. [ Revised as part of {{{development-version}}} to no
+  longer provide completion against its previous input history. The
+  reason is that  those inputs are not always reliable (I have seen
+  cases where the minibuffer UI adds text properties, for example,
+  which would then embedded into the string we were showing). ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
