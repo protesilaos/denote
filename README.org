@@ -4277,7 +4277,10 @@ might change them without further notice.
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
   variable ~denote-directory~.  With optional =FILES-MATCHING-REGEXP=,
-  filter the candidates per the given regular expression.
+  filter the candidates per the given regular expression. [ As part of
+  {{{development-version}}}, completion candidates have a relative
+  file path, but the return value and what is stored in the minibuffer
+  history is still the full file system path. ]
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
@@ -5260,9 +5263,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Fintel, Kaushal Modi, M. Hadi Timachi, Mark Olson, Mirko Hernandez,
   Niall Dooley, Paul van Gelder, Peter Prevos, Peter Smith, Suhail
   Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
-  Taoufik, TJ Stankus, Viktor Haag, Wade Mealing, Yi Liu, Ypot,
-  atanasj, babusri, doolio, drcxd, fingerknight, hpgisler, pRot0ta1p,
-  rbenit68, relict007, sienic, sundar bp.
+  Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Wade Mealing, Yi
+  Liu, Ypot, atanasj, babusri, doolio, drcxd, fingerknight, hpgisler,
+  pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

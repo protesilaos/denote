@@ -1113,12 +1113,44 @@ file in the returned list."
 (defalias 'denote--file-history 'denote-file-history
   "Compatibility alias for `denote-file-history'.")
 
+;; NOTE 2024-02-29 08:09:42 +0200: Based on
+;; `project--read-file-cpd-relative' from the built-in project.el
 (defun denote-file-prompt (&optional files-matching-regexp)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression."
-  (let ((files (denote-directory-files files-matching-regexp :omit-current)))
-    (completing-read "Select note: " files nil nil nil 'denote-file-history)))
+  (let* ((all-files (denote-directory-files files-matching-regexp :omit-current))
+         (common-parent-directory
+          (let ((common-prefix (try-completion "" all-files)))
+            (if (> (length common-prefix) 0)
+                (file-name-directory common-prefix))))
+         (cpd-length (length common-parent-directory))
+         (prompt (if (zerop cpd-length)
+                     "Select note: "
+                   (format "Select note in %s: " common-parent-directory)))
+         (included-cpd (when (member common-parent-directory all-files)
+                         (setq all-files
+                               (delete common-parent-directory all-files))
+                         t))
+         (substrings (mapcar (lambda (s) (substring s cpd-length)) all-files))
+         (_ (when included-cpd
+              (setq substrings (cons "./" substrings))))
+         (new-collection (denote--completion-table 'file substrings))
+         (abs-cpd (expand-file-name common-parent-directory))
+         (abs-cpd-length (length abs-cpd))
+         (relname (cl-letf* ((non-essential t) ;Avoid new Tramp connections.
+                             ((symbol-value 'denote-file-history)
+                              (mapcan
+                               (lambda (s)
+                                 (setq s (expand-file-name s))
+                                 (and (string-prefix-p abs-cpd s)
+                                      (not (eq abs-cpd-length (length s)))
+                                      (list (substring s abs-cpd-length))))
+                               (symbol-value 'denote-file-history))))
+                    (completing-read prompt new-collection nil nil nil 'denote-file-history)))
+         (absname (expand-file-name relname common-parent-directory)))
+    (add-to-history 'denote-file-history absname)
+    absname))
 
 ;;;; Keywords
 
