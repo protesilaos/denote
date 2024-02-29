@@ -2241,7 +2241,7 @@ of the default prompt."
   (when (and initial-signature (string-empty-p initial-signature))
     (setq initial-signature nil))
   (read-string
-   (format-prompt (or prompt-text "Provide signature") nil)
+   (format-prompt (or prompt-text "New file SIGNATURE") nil)
    initial-signature 'denote-signature-history))
 
 (defvar denote-files-matching-regexp-history nil
