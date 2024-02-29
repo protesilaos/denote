@@ -1136,19 +1136,11 @@ the given regular expression."
            (_ (when included-cpd
                 (setq substrings (cons "./" substrings))))
            (new-collection (denote--completion-table 'file substrings))
-           (abs-cpd (expand-file-name common-parent-directory))
-           (abs-cpd-length (length abs-cpd))
-           (relname (cl-letf* ((non-essential t) ;Avoid new Tramp connections.
-                               ((symbol-value 'denote-file-history)
-                                (mapcan
-                                 (lambda (s)
-                                   (setq s (expand-file-name s))
-                                   (and (string-prefix-p abs-cpd s)
-                                        (not (eq abs-cpd-length (length s)))
-                                        (list (substring s abs-cpd-length))))
-                                 (symbol-value 'denote-file-history))))
-                      (completing-read prompt new-collection nil nil nil 'denote-file-history)))
+           (relname (completing-read prompt new-collection nil nil nil 'denote-file-history))
            (absname (expand-file-name relname common-parent-directory)))
+      ;; NOTE 2024-02-29: This delete and add feels awkward.  I wish
+      ;; we could tell `completing-read' to just leave this up to us.
+      (setq denote-file-history (delete relname denote-file-history))
       (add-to-history 'denote-file-history absname)
       absname)))
 
@@ -2044,7 +2036,8 @@ The path of the newly created file is returned."
          (or force-ignore-region denote-ignore-region-in-denote-command))
         (denote-title-prompt-current-default
          (if force-use-file-prompt-as-default-title
-             (when denote-file-history (pop denote-file-history))
+             (when denote-file-history
+               (file-name-nondirectory (pop denote-file-history)))
            denote-title-prompt-current-default))
         (path))
     (if in-background
