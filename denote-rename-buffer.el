@@ -93,11 +93,17 @@ buffer will be used, if available."
              (type (denote-filetype-heuristics file)))
     (string-trim
      (format-spec denote-rename-buffer-format
-                  (list (cons ?t (or (denote-retrieve-front-matter-title-value file type) ""))
+                  (list (cons ?t (cond
+                                  ((denote-retrieve-front-matter-title-value file type))
+                                  ((denote-retrieve-filename-title file))
+                                  (t  "")))
                         (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                         (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                         (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                        (cons ?k (or (denote-retrieve-front-matter-keywords-value-as-string file type) ""))
+                        (cons ?k (cond
+                                  ((denote-retrieve-front-matter-keywords-value-as-string file type))
+                                  ((denote-retrieve-filename-keywords file))
+                                  (t  "")))
                         (cons ?% "%"))
                   'delete))))
 
