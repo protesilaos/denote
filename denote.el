@@ -3724,7 +3724,7 @@ consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
    (let* ((target (denote-file-prompt)))
-     (unless (file-exists-p target)
+     (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
   (unless (and (buffer-file-name) (denote-file-has-supported-extension-p (buffer-file-name)))
