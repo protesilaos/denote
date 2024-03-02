@@ -252,7 +252,7 @@ point to a file with a Denote file name."
               (let ((new-text (if desc
                                   (format "[[denote:%s%s]%s]" id search desc)
                                 (format "[[denote:%s%s]]" id search))))
-              (replace-match new-text :fixed-case :literal)))))
+                (replace-match new-text :fixed-case :literal)))))
         ;; TODO 2024-02-28: notify how many changed.
         (message "Converted as `file:' links to `denote:' links"))
     (user-error "The current file is not using Org mode")))
@@ -416,13 +416,9 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 
 ;;;;; Dynamic block to insert entire file contents
 
-(defun denote-org-extras-dblock--get-file-contents (file &optional no-front-matter add-links)
+(defun denote-org-extras-dblock--get-file-contents (file &optional filter add-links)
   "Insert the contents of FILE.
-With optional NO-FRONT-MATTER as non-nil, try to remove the front
-matter from the top of the file.  If NO-FRONT-MATTER is a number,
-remove that many lines starting from the top.  If it is any other
-non-nil value, delete from the top until the first blank line.
-
+With optional FILTER as non-nil, TODO
 With optional ADD-LINKS as non-nil, first insert a link to the
 file and then insert its contents.  In this case, format the
 contents as a typographic list.  If ADD-LINKS is `id-only', then
@@ -440,12 +436,23 @@ argument."
                   (eq add-links 'id-only)))))
       (let ((beginning-of-contents (point)))
         (insert-file-contents file)
-        (when no-front-matter
-          (delete-region
-           (if (natnump no-front-matter)
-               (progn (forward-line no-front-matter) (line-beginning-position))
-             (1+ (re-search-forward "^$" nil :no-error 1)))
-           beginning-of-contents))
+        (when filter
+          (pcase filter
+            ((pred natnump)
+             (delete-region
+              (progn (forward-line filter) (line-beginning-position))
+              beginning-of-contents))
+            ('no-front-matter
+             (delete-region
+              (1+ (re-search-forward "^$" nil :no-error 1))
+              beginning-of-contents)
+             )
+            ((pred functionp)
+             (funcall filter beginning-of-contents)
+             )
+            (_ (user-error "Unsupported denote dblock Filter: %s" filter))
+            )
+          )
         (when add-links
           (indent-region beginning-of-contents (point-max) 2)))
       (buffer-string))))
@@ -461,13 +468,13 @@ argument."
    ((stringp separator) separator)
    (t denote-org-extras-dblock-file-contents-separator)))
 
-(defun denote-org-extras-dblock-add-files (regexp &optional separator no-front-matter add-links sort-by-component reverse)
+(defun denote-org-extras-dblock-add-files (regexp &optional separator filter add-links sort-by-component reverse)
   "Insert files matching REGEXP.
 
 Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
 use the `denote-org-extras-dblock-file-contents-separator'.
 
-If optional NO-FRONT-MATTER is non-nil try to remove the front
+If optional FILTER is non-nil try to remove the front
 matter from the top of the file.  Do it by finding the first
 blank line, starting from the top of the buffer.
 
@@ -483,7 +490,7 @@ fall back to the default identifier-based sorting.
 If optional REVERSE is non-nil reverse the sort order."
   (let* ((files (denote-org-extras-dblock--files regexp sort-by-component reverse))
          (files-contents (mapcar
-                          (lambda (file) (denote-org-extras-dblock--get-file-contents file no-front-matter add-links))
+                          (lambda (file) (denote-org-extras-dblock--get-file-contents file filter add-links))
                           files)))
     (insert (string-join files-contents (denote-org-extras-dblock--separator separator)))))
 
@@ -501,7 +508,7 @@ among `denote-sort-components'."
                            :regexp regexp
                            :sort-by-component sort-by-component
                            :reverse-sort nil
-                           :no-front-matter nil
+                           :filter nil
                            :file-separator nil
                            :add-links nil))
   (org-update-dblock))
@@ -517,10 +524,10 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
          (separator (plist-get params :file-separator))
-         (no-f-m (plist-get params :no-front-matter))
+         (filter (plist-get params :filter))
          (add-links (plist-get params :add-links)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-extras-dblock-add-files rx separator no-f-m add-links sort reverse)))
+    (when rx (denote-org-extras-dblock-add-files rx separator filter add-links sort reverse)))
   (join-line)) ; remove trailing empty line
 
 
