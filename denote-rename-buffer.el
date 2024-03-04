@@ -100,10 +100,9 @@ buffer will be used, if available."
                         (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                         (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                         (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                        (cons ?k (cond
-                                  ((denote-retrieve-front-matter-keywords-value-as-string file type))
-                                  ((denote-retrieve-filename-keywords file))
-                                  (t  "")))
+                        (cons ?k (if-let ((kws (denote-retrieve-front-matter-keywords-value file type)))
+                                     (denote-keywords-combine kws)
+                                   (or (denote-retrieve-filename-keywords file) "")))
                         (cons ?% "%"))
                   'delete))))
 
