@@ -214,7 +214,7 @@ will behave interactively ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard n
 
 The value is a list of symbols, which includes any of the following:
 
-- =title=: Prompt for the title of the new note.
+- =title=: Prompt for the title of the new note ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
 
 - =keywords=: Prompts with completion for the keywords of the new note.
   Available candidates are those specified in the user option
@@ -284,6 +284,42 @@ interactive actions that do not change the default behaviour of the
 ~denote-type~, ~denote-subdirectory~, ~denote-date~,
 ~denote-signature~.  They are described in the subsequent section
 ([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
+
+*** The ~denote-history-completion-in-prompts~ option
+:PROPERTIES:
+:CUSTOM_ID: h:403422a7-7578-494b-8f33-813874c12da3
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-history-completion-in-prompts
+The user option ~denote-history-completion-in-prompts~ toggles history
+completion in all ~denote-prompts-with-history-as-completion~.
+
+When this user option is set to a non-nil value, Denote will use
+minibuffer history entries as completion candidates in all of the
+~denote-prompts-with-history-as-completion~. Those will show previous
+inputs from their respective history as possible values to select,
+either to (i) re-insert them verbatim or (ii) with the intent to edit
+them further (depending on the minibuffer user interface, one can
+select a candidate with =TAB= without exiting the minibuffer, as
+opposed to what =RET= normally does by selecting and exiting).
+
+When this user option is set to a nil value, all of the
+~denote-prompts-with-history-as-completion~ will not use minibuffer
+completion: they will just prompt for a string of characters. Their
+history is still available through all the standard ways of retrieving
+minibuffer history, such as with the command ~previous-history-element~.
+
+History completion still allows arbitrary values to be provided as
+input: they do not have to match the available minibuffer completion
+candidates.
+
+Note that some prompts, like ~denote-keywords-prompt~, always use
+minibuffer completion, due to the specifics of their data.
+
+[ Consider enabling the built-in ~savehist-mode~ to persist minibuffer
+  histories between sessions.]
 
 *** The ~denote-templates~ option
 :PROPERTIES:
@@ -4268,11 +4304,11 @@ might change them without further notice.
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
   With optional =INITIAL-SIGNATURE= use it as the initial minibuffer
   text. With optional =PROMPT-TEXT= use it in the minibuffer instead
-  of the default prompt. [ Revised as part of {{{development-version}}}
-  to no longer provide completion against its previous input history.
-  The reason is that those inputs are not always reliable (I have seen
-  cases where the minibuffer UI adds text properties, for example,
-  which would then embedded into the string we were showing). ]
+  of the default prompt. Previous inputs at this prompt are available
+  for minibuffer completion if the user option ~denote-history-completion-in-prompts~
+  is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
+  [ Revised as part of {{{development-version}}} to optionally not
+  provide completion against its previous input history. ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
@@ -4295,11 +4331,11 @@ might change them without further notice.
 + Function ~denote-title-prompt~ :: Prompt for title string. With
   optional =INITIAL-TITLE= use it as the initial minibuffer text. With
   optional =PROMPT-TEXT= use it in the minibuffer instead of the
-  default prompt. [ Revised as part of {{{development-version}}} to no
-  longer provide completion against its previous input history. The
-  reason is that  those inputs are not always reliable (I have seen
-  cases where the minibuffer UI adds text properties, for example,
-  which would then embedded into the string we were showing). ]
+  default prompt. Previous inputs at this prompt are available
+  for minibuffer completion if the user option ~denote-history-completion-in-prompts~
+  is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
+  [ Revised as part of {{{development-version}}} to optionally not
+  provide completion against its previous input history. ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
@@ -4324,6 +4360,16 @@ might change them without further notice.
 #+findex: denote-command-prompt
 + Function ~denote-command-prompt~ ::  Prompt for command among
   ~denote-commands-for-new-notes~ ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+
+#+vindex: denote-prompts-with-history-as-completion
++ Variable ~denote-prompts-with-history-as-completion~ :: Prompts that
+  conditionally perform completion against their history. These are
+  minibuffer prompts that ordinarily accept a free form string input,
+  as opposed to matching against a predefined set. These prompts can
+  optionally perform completion against their own minibuffer history
+  when the user option ~denote-history-completion-in-prompts~ is set
+  to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
+  [ This is part of {{{development-version}}}. ]
 
 #+findex: denote-files-matching-regexp-prompt
 + Function ~denote-files-matching-regexp-prompt~ ::  Prompt for

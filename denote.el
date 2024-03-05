@@ -272,7 +272,9 @@ Finally, this user option only affects the interactive use of the
 ad-hoc interactive actions that do not change the default
 behaviour of the `denote' command, users can invoke these
 convenience commands: `denote-type', `denote-subdirectory',
-`denote-date', `denote-template', `denote-signature'."
+`denote-date', `denote-template', `denote-signature'.
+
+Also see `denote-history-completion-in-prompts'."
   :group 'denote
   :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) The denote-prompts option")
@@ -555,6 +557,50 @@ structure template as soon as `denote-region' is done:
   :package-version '(denote . "2.1.0")
   :link '(info-link "(denote) Create a note with the region's contents")
   :type 'hook)
+
+(defvar denote-prompts-with-history-as-completion
+  '(denote-title-prompt denote-signature-prompt)
+  "Prompts that conditionally perform completion against their history.
+
+These are minibuffer prompts that ordinarily accept a free form string
+input, as opposed to matching against a predefined set.
+
+These prompts can optionally perform completion against their own
+minibuffer history when the user option `denote-history-completion-in-prompts'
+is set to a non-nil value.")
+
+(defcustom denote-history-completion-in-prompts t
+  "Toggle history completion in all `denote-prompts-with-history-as-completion'.
+
+When this user option is set to a non-nil value, use minibuffer history
+entries as completion candidates in `denote-prompts-with-history-as-completion'.
+Those will show previous inputs from their respective history as
+possible values to select, either to (i) re-insert them verbatim or (ii)
+with the intent to edit further (depending on the minibuffer user
+interface, one can select a candidate with TAB without exiting the
+minibuffer, as opposed to what RET normally does by selecting and
+exiting).
+
+When this user option is set to a nil value, all of the
+`denote-prompts-with-history-as-completion' do not use minibuffer
+completion: they just prompt for a string of characters.  Their
+history is still available through all the standard ways of retrieving
+minibuffer history, such as with the command `previous-history-element'.
+
+History completion still allows arbitrary values to be provided as
+input: they do not have to match the available minibuffer completion
+candidates.
+
+Note that some prompts, like `denote-keywords-prompt', always use
+minibuffer completion, due to the specifics of their data.
+
+[ Consider enabling the built-in `savehist-mode' to persist minibuffer
+  histories between sessions.]
+
+Also see `denote-prompts'."
+  :type 'boolean
+  :package-version '(denote . "2.3.0")
+  :group 'denote)
 
 (defcustom denote-commands-for-new-notes
   '(denote
@@ -1988,6 +2034,14 @@ increment it 1 second at a time until an available id is found."
 
 ;;;;; The `denote' command and its prompts
 
+(defun denote--prompt-with-completion-p (fn)
+  "Return non-nil if FN prompt should perform completion.
+FN is one among `denote-prompts-with-history-as-completion' and performs
+completion when the user option `denote-history-completion-in-prompts'
+is non-nil."
+  (and denote-history-completion-in-prompts
+       (memq fn denote-prompts-with-history-as-completion)))
+
 (defvar denote-ignore-region-in-denote-command nil
   "If non-nil, the region is ignored by the `denote' command.
 
@@ -2123,15 +2177,40 @@ When called from Lisp, all arguments are optional.
 (defalias 'denote--title-history 'denote-title-history
   "Compatibility alias for `denote-title-history'.")
 
+(defmacro denote--with-conditional-completion (fn prompt history &optional initial-value default-value)
+  "Produce body of FN that may perform completion.
+Use PROMPT, HISTORY, INITIAL-VALUE, and DEFAULT-VALUE as arguments for
+the given minibuffer prompt."
+  `(if (denote--prompt-with-completion-p ,fn)
+       ;; NOTE 2023-10-27: By default SPC performs completion in the
+       ;; minibuffer.  We do not want that, as the user should be able to
+       ;; input an arbitrary string, while still performing completion
+       ;; against their input history.
+       (minibuffer-with-setup-hook
+           (lambda ()
+             (use-local-map
+              (let ((map (make-composed-keymap nil (current-local-map))))
+                (define-key map (kbd "SPC") nil)
+                map)))
+         (completing-read ,prompt ,history nil nil ,initial-value ',history ,default-value))
+     (read-string ,prompt ,initial-value ',history ,default-value)))
+
 (defun denote-title-prompt (&optional initial-title prompt-text)
   "Prompt for title string.
 
 With optional INITIAL-TITLE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
-of the default prompt."
-  (read-string
+of the default prompt.
+
+Previous inputs at this prompt are available for minibuffer completion
+if the user option `denote-history-completion-in-prompts' is set to a
+non-nil value."
+  (denote--with-conditional-completion
+   'denote-title-prompt
    (format-prompt (or prompt-text "New file TITLE") denote-title-prompt-current-default)
-   initial-title 'denote-title-history denote-title-prompt-current-default))
+   denote-title-history
+   initial-title
+   denote-title-prompt-current-default))
 
 (defvar denote-file-type-history nil
   "Minibuffer history of `denote-file-type-prompt'.")
@@ -2230,12 +2309,18 @@ packages such as `marginalia' and `embark')."
   "Prompt for signature string.
 With optional INITIAL-SIGNATURE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
-of the default prompt."
+of the default prompt.
+
+Previous inputs at this prompt are available for minibuffer completion
+if the user option `denote-history-completion-in-prompts' is set to a
+non-nil value."
   (when (and initial-signature (string-empty-p initial-signature))
     (setq initial-signature nil))
-  (read-string
+  (denote--with-conditional-completion
+   'denote-signature-prompt
    (format-prompt (or prompt-text "New file SIGNATURE") nil)
-   initial-signature 'denote-signature-history))
+   denote-signature-history
+   initial-signature))
 
 (defvar denote-files-matching-regexp-history nil
   "Minibuffer history of `denote-files-matching-regexp-prompt'.")
