@@ -599,7 +599,7 @@ minibuffer completion, due to the specifics of their data.
 
 Also see `denote-prompts'."
   :type 'boolean
-  :package-version '(denote . "2.3.0")
+  :package-version '(denote . "3.0.0")
   :group 'denote)
 
 (defcustom denote-commands-for-new-notes
