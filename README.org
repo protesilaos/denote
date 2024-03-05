@@ -6,7 +6,7 @@
 #+startup: content
 #+macro: stable-version 2.2.0
 #+macro: release-date 2023-12-10
-#+macro: development-version 3.0.0-dev
+#+macro: development-version 2.3.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -2046,7 +2046,7 @@ infrastructure.
 If ~denote-org-store-link-to-heading~ is set to a nil value, the
 command ~org-store-link~ only stores links to the Denote file (using
 its identifier), but not to the given heading. This is what Denote was
-doing in versions prior to =3.0.0=.
+doing in versions prior to =2.3.0=.
 
 Note that the optional extension =denote-org-extras.el= defines the command
 ~denote-org-extras-link-to-heading~, which always links to a file+heading
@@ -2682,7 +2682,7 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ As part of version 3.0.0 (currently {{{development-version}}}), all
+[ As part of version 2.3.0 (currently {{{development-version}}}), all
   dynamic blocks are defined in the file =denote-org-extras.el=. The
   file which was once called =denote-org-dblock.el= contains aliases
   for the new function names and dipslays a warning about its
@@ -2723,7 +2723,7 @@ Evaluate:
 :CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
 
-[ As part of version 3.0.0 (currently {{{development-version}}}), all
+[ As part of version 2.3.0 (currently {{{development-version}}}), all
   dynamic blocks are defined in the file =denote-org-extras.el=. The
   file which was once called =denote-org-dblock.el= contains aliases
   for the new function names and dipslays a warning about its
@@ -2814,7 +2814,7 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 :CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
 :END:
 
-[ As part of version 3.0.0 (currently {{{development-version}}}), all
+[ As part of version 2.3.0 (currently {{{development-version}}}), all
   dynamic blocks are defined in the file =denote-org-extras.el=. The
   file which was once called =denote-org-dblock.el= contains aliases
   for the new function names and dipslays a warning about its

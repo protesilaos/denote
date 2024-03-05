@@ -126,7 +126,7 @@
 (define-obsolete-variable-alias
  'denote-user-enforced-denote-directory
  'denote-directory
- "3.0.0")
+ "2.3.0")
 
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
@@ -152,7 +152,7 @@ note.
 If this user option is set to a non-nil value, such buffers are
 saved automatically."
   :group 'denote
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "2.3.0")
   :type 'boolean)
 
 (defcustom denote-known-keywords
@@ -398,7 +398,7 @@ string...).
 
 If this user option is set to nil, only store links to the Denote
 file (using its identifier), but not to the given heading.  This
-is what Denote was doing in versions prior to 3.0.0.
+is what Denote was doing in versions prior to 2.3.0.
 
 What `org-store-link' does is merely collect a link.  To actually
 insert it, use the command `org-insert-link'.
@@ -410,7 +410,7 @@ insert it, use the command `org-insert-link'.
   identifier of the file, even if this user option is set to a
   non-nil value.  ]"
   :group 'denote
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "2.3.0")
   :type 'boolean)
 
 (defcustom denote-templates nil
@@ -479,7 +479,7 @@ to perform their operation (e.g. `denote-dired-rename-files' goes
 through each marked Dired file, prompting for the information to
 use, but carries out the renaming without asking for confirmation)."
   :group 'denote
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "2.3.0")
   :type 'boolean)
 
 (defcustom denote-excluded-directories-regexp nil
@@ -530,7 +530,7 @@ This affects the behaviour of the commands `denote-rename-file',
 `denote-keywords-add', `denote-keywords-remove', and any other
 command that builds on top of them."
   :group 'denote
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) Renaming files")
   :type 'hook)
 
@@ -601,7 +601,7 @@ minibuffer completion, due to the specifics of their data.
 
 Also see `denote-prompts'."
   :type 'boolean
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "2.3.0")
   :group 'denote)
 
 (defcustom denote-commands-for-new-notes
@@ -650,7 +650,7 @@ use `denote-sluggify-title', `denote-sluggify-keyword' and
 (make-obsolete
  'denote-file-name-letter-casing
  'denote-file-name-slug-functions
- "3.0.0")
+ "2.3.0")
 
 (defvar denote-file-name-deslug-functions
   '((title . denote-desluggify-title)
@@ -834,7 +834,7 @@ used as the keywords separator in file names."
 (make-obsolete
  'denote-letter-case
  'denote-sluggify
- "3.0.0")
+ "2.3.0")
 
 (defun denote--slug-put-equals (str)
   "Replace spaces and underscores with equals signs in STR.
@@ -864,7 +864,7 @@ any leading and trailing signs."
 (make-obsolete
  'denote-sluggify-and-join
  'denote-sluggify-keyword
- "3.0.0")
+ "2.3.0")
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
@@ -1336,7 +1336,7 @@ Change the front matter format'.")
 (define-obsolete-function-alias
   'denote-surround-with-quotes
   'denote-format-string-for-md-front-matter
-  "3.0.0")
+  "2.3.0")
 
 (defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
@@ -1957,7 +1957,7 @@ where the former does not read dates without a time component."
 (define-obsolete-function-alias
   'denote--valid-date
   'denote-valid-date-p
-  "3.0.0")
+  "2.3.0")
 
 (defun denote-valid-date-p (date)
   "Return DATE as a valid date.
@@ -3521,7 +3521,7 @@ See the `:link' property of `denote-file-types'."
 (define-obsolete-variable-alias
   'denote--link-signature-format
   'denote-link-signature-format
-  "3.0.0")
+  "2.3.0")
 
 (defvar denote-link-signature-format "%s  %s"
   "Format of link description for `denote-link-with-signature'.")
@@ -3933,7 +3933,7 @@ Expand `denote-link-backlinks-display-buffer-action'."
 (define-obsolete-function-alias
   'denote-backlinks-next
   'denote-backlinks-mode-next
-  "3.0.0")
+  "2.3.0")
 
 (defun denote-backlinks-mode-next (n)
   "Use appropriate command for forward motion in backlinks buffer.
@@ -3955,7 +3955,7 @@ matching identifiers."
 (define-obsolete-function-alias
   'denote-backlinks-prev
   'denote-backlinks-mode-previous
-  "3.0.0")
+  "2.3.0")
 
 (defun denote-backlinks-mode-previous (n)
   "Use appropriate command for backward motion in backlinks buffer.
