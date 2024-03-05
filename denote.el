@@ -530,6 +530,7 @@ This affects the behaviour of the commands `denote-rename-file',
 command that builds on top of them."
   :group 'denote
   :package-version '(denote . "3.0.0")
+  :link '(info-link "(denote) Renaming files")
   :type 'hook)
 
 (defcustom denote-region-after-new-note-functions nil
