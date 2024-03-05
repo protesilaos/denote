@@ -559,7 +559,7 @@ structure template as soon as `denote-region' is done:
   :type 'hook)
 
 (defvar denote-prompts-with-history-as-completion
-  '(denote-title-prompt denote-signature-prompt)
+  '(denote-title-prompt denote-signature-prompt denote-files-matching-regexp-prompt)
   "Prompts that conditionally perform completion against their history.
 
 These are minibuffer prompts that ordinarily accept a free form string
@@ -2331,9 +2331,10 @@ non-nil value."
 (defun denote-files-matching-regexp-prompt (&optional prompt-text)
   "Prompt for REGEXP to filter Denote files by.
 With optional PROMPT-TEXT use it instead of a generic prompt."
-  (read-regexp
+  (denote--with-conditional-completion
+   'denote-files-matching-regexp-prompt
    (format-prompt (or prompt-text "Match files with the given REGEXP") nil)
-   nil 'denote-files-matching-regexp-history))
+   denote-files-matching-regexp-history))
 
 ;;;;; Convenience commands as `denote' variants
 
