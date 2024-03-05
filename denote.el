@@ -518,6 +518,7 @@ internally, such as `denote-signature' and `denote-type' (check
 the default value of the user option `denote-commands-for-new-notes')."
   :group 'denote
   :package-version '(denote . "2.1.0")
+  :link '(info-link "(denote) Standard note creation")
   :type 'hook)
 
 (defcustom denote-after-rename-file-hook nil
