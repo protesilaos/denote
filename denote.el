@@ -1264,7 +1264,7 @@ Return an empty list if the minibuffer input is empty."
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
 KEYWORDS is a list of strings, per `denote-keywords-prompt'."
   (if denote-sort-keywords
-      (sort keywords #'string-collate-lessp)
+      (sort (copy-sequence keywords) #'string-collate-lessp)
     keywords))
 
 (define-obsolete-function-alias
