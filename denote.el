@@ -3998,7 +3998,8 @@ matching identifiers."
   :interactive nil
   "Major mode for backlinks buffers."
   (unless denote-backlinks-show-context
-    (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
+    (font-lock-add-keywords nil denote-faces-file-name-keywords t))
+  (add-hook 'project-find-functions #'denote-project-find nil t))
 
 (defun denote-link--prepare-backlinks (fetcher _alist)
   "Create backlinks' buffer for the current note.
@@ -4045,6 +4046,31 @@ ALIST is not used in favour of using
                        nil)))))
     (denote-link--display-buffer buf)))
 
+(cl-defmethod project-root ((project (head denote)))
+  "Denote's implementation of `project-root' method from `project'.
+Return current variable `denote-directory' as the root of the
+current denote PROJECT."
+  (cdr project))
+
+(cl-defmethod project-files ((_project (head denote)) &optional _dirs)
+  "Denote's implementation of `project-files' method from `project'.
+Return all files that have an identifier for the current denote
+PROJECT.  The return value may thus include file types that are
+not implied by `denote-file-type'.  To limit the return value to
+text files, use the function `denote-directory-files' with a
+non-nil `text-only' parameter."
+  (denote-directory-files))
+
+(defun denote-project-find (dir)
+  "Return project instance if DIR is part of variable `denote-directory'.
+The format of project instance is aligned with `project-try-vc'
+defined in `project'."
+  (let ((dir (expand-file-name dir)) ; canonicalize current directory name
+        (root (denote-directory)))
+    (when (or (file-equal-p dir root) ; currently at `denote-directory'
+              (string-prefix-p root dir)) ; or its subdirectory
+      (cons 'denote root))))
+
 (define-obsolete-function-alias
   'denote-link-backlinks
   'denote-backlinks
@@ -4068,7 +4094,8 @@ default, it will show up below the current window."
   (let ((file (buffer-file-name)))
     (when (denote-file-is-writable-and-supported-p file)
       (let* ((id (denote-retrieve-filename-identifier-with-error file))
-             (xref-show-xrefs-function #'denote-link--prepare-backlinks))
+             (xref-show-xrefs-function #'denote-link--prepare-backlinks)
+             (project-find-functions #'denote-project-find))
         (xref--show-xrefs
          (apply-partially #'xref-matches-in-files id
                           (denote-directory-files nil :omit-current :text-only))
