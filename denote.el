@@ -653,8 +653,8 @@ use `denote-sluggify-title' for the title.")
 
 (defvar denote-file-name-deslug-functions
   '((title . denote-desluggify-title)
-    (signature . denote-desluggify-signature)
-    (keyword . denote-desluggify-keyword))
+    (signature . identity)
+    (keyword . identity))
   "Specify the method Denote uses to reverse the process of `denote-sluggify'.
 
 Since `denote-sluggify' is destructive, this is just an attempt
@@ -666,8 +666,7 @@ display it as the default input in commands such as
 See the documentation of `denote-file-name-slug-functions'.
 
 By default, if a function is not specified for a component, we
-use `denote-desluggify-title', `denote-desluggify-keyword' and
-`denote-desluggify-signature'.")
+use `denote-desluggify-title' for the title.")
 
 ;;;; Main variables
 
@@ -894,9 +893,9 @@ to COMPONENT which is one of `title', `signature', `keyword'."
     (cond ((eq component 'title)
            (funcall (or deslug-function #'denote-desluggify-title) str))
           ((eq component 'keyword)
-           (funcall (or deslug-function #'denote-desluggify-keyword) str))
+           (funcall (or deslug-function #'identity) str))
           ((eq component 'signature)
-           (funcall (or deslug-function #'denote-desluggify-signature) str)))))
+           (funcall (or deslug-function #'identity) str)))))
 
 (defun denote-desluggify-title (str)
   "Upcase first char in STR and dehyphenate STR, inverting `denote-sluggify'.
