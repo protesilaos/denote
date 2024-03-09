@@ -1727,8 +1727,8 @@ default value:
 
 #+begin_example emacs-lisp
 '((title . denote-sluggify-title)
-  (signature . denote-sluggify-signature)
-  (keyword . denote-sluggify-keyword))
+  (signature . identity)
+  (keyword . identity))
 #+end_example
 
 What these cons cells of =(COMPONENT . METHOD)= are:
