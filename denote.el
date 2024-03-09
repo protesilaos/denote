@@ -621,8 +621,8 @@ and `denote-link-after-creating-with-command'."
 
 (defvar denote-file-name-slug-functions
   '((title . denote-sluggify-title)
-    (signature . denote-sluggify-signature)
-    (keyword . denote-sluggify-keyword))
+    (signature . identity)
+    (keyword . identity))
   "Specify the method Denote uses to format the components of the file name.
 
 The value is an alist where each element is a cons cell of the
@@ -644,8 +644,7 @@ Note that the `keyword' function is also applied to the keywords
 of the front matter.
 
 By default, if a function is not specified for a component, we
-use `denote-sluggify-title', `denote-sluggify-keyword' and
-`denote-sluggify-signature'.")
+use `denote-sluggify-title' for the title.")
 
 (make-obsolete
  'denote-file-name-letter-casing
@@ -838,9 +837,9 @@ in file names."
                          ((eq component 'keyword)
                           (replace-regexp-in-string
                            "_" ""
-                           (funcall (or slug-function #'denote-sluggify-keyword) str)))
+                           (funcall (or slug-function #'identity) str)))
                          ((eq component 'signature)
-                          (funcall (or slug-function #'denote-sluggify-signature) str)))))
+                          (funcall (or slug-function #'identity) str)))))
     (denote--trim-right-token-characters
      (denote--replace-consecutive-token-characters
       (denote--remove-dot-characters str-slug) component) component)))
