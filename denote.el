@@ -685,13 +685,13 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-id-format'.")
 
-(defconst denote-signature-regexp "==\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-signature-regexp "==\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the SIGNATURE field in a file name.")
 
-(defconst denote-title-regexp "--\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-title-regexp "--\\([^.]*?\\)\\(==.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the TITLE field in a file name.")
 
-(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the KEYWORDS field in a file name.")
 
 (defconst denote-excluded-punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
@@ -785,33 +785,47 @@ EXTRA-CHARACTERS is an optional string.  See
   str)
 
 (defun denote--slug-hyphenate (str)
-  "Replace spaces and underscores with hyphens in STR.
-Also replace multiple hyphens with a single one and remove any
-leading and trailing hyphen."
-  (replace-regexp-in-string
-   "^-\\|-$" ""
-   (replace-regexp-in-string
-    "-\\{2,\\}" "-"
-    (replace-regexp-in-string "_\\|\s+" "-" str))))
+  "Replace spaces and underscores with hyphens in STR."
+  (replace-regexp-in-string "_\\|\s+" "-" str))
 
 (defun denote--remove-dot-characters (str)
-  "Remove the dot character from STR."
+  "Remove dot characters from STR."
   (replace-regexp-in-string "\\." "" str))
 
-(defun denote--trim-right-token-characters (str)
-  "Remove =, - and _ from the end of STR."
-  (string-trim-right str "[=_-]+"))
+(defun denote--trim-right-token-characters (str component)
+  "Remove =, - and _ from the end of STR.
+The removal is done only if necessary according to COMPONENT."
+  (cond ((eq component 'title)
+         (string-trim-right str "[=_]+"))
+        ((eq component 'keyword)
+         (string-trim-right str "[=_-]+"))
+        ((eq component 'signature)
+         (string-trim-right str "[=_-]+"))))
 
-(defun denote--replace-consecutive-token-characters (str)
+(defun denote--replace-consecutive-token-characters (str component)
   "Replace consecutive characters with a single one in STR.
-Spaces, underscores and equal signs are replaced with a single
-one in str."
-  (replace-regexp-in-string
-   "-\\{2,\\}" "-"
-   (replace-regexp-in-string
-    "_\\{2,\\}" "_"
-    (replace-regexp-in-string
-     "=\\{2,\\}" "=" str))))
+Hyphens, underscores and equal signs are replaced with a single
+one in str, if necessary according to COMPONENT."
+  (cond (;; -- are allowed in titles
+         (eq component 'title)
+         (replace-regexp-in-string
+          "_\\{2,\\}" "_"
+          (replace-regexp-in-string
+           "=\\{2,\\}" "=" str)))
+        ((eq component 'keyword)
+         (replace-regexp-in-string
+          "-\\{2,\\}" "-"
+          (replace-regexp-in-string
+           "_\\{2,\\}" "_"
+           (replace-regexp-in-string
+            "=\\{2,\\}" "=" str))))
+        ((eq component 'signature)
+         (replace-regexp-in-string
+          "-\\{2,\\}" "-"
+          (replace-regexp-in-string
+           "_\\{2,\\}" "_"
+           (replace-regexp-in-string
+            "=\\{2,\\}" "=" str))))))
 
 (defun denote-sluggify (component str)
   "Make STR an appropriate slug for file name COMPONENT.
@@ -819,9 +833,10 @@ one in str."
 Apply the function specified in `denote-file-name-slug-function'
 to COMPONENT which is one of `title', `signature', `keyword'.  If
 the resulting string still contains consecutive -,_ or =, they
-are replaced by a single occurence of the character.  If
-COMPONENT is `keyword', remove underscores from STR as they are
-used as the keywords separator in file names."
+are replaced by a single occurence of the character, if necessary
+according to COMPONENT.  If COMPONENT is `keyword', remove
+underscores from STR as they are used as the keywords separator
+in file names."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
          (str-slug (cond ((eq component 'title)
                           (funcall (or slug-function #'denote-sluggify-title) str))
@@ -833,7 +848,7 @@ used as the keywords separator in file names."
                           (funcall (or slug-function #'denote-sluggify-signature) str)))))
     (denote--trim-right-token-characters
      (denote--replace-consecutive-token-characters
-      (denote--remove-dot-characters str-slug)))))
+      (denote--remove-dot-characters str-slug) component) component)))
 
 (make-obsolete
  'denote-letter-case
