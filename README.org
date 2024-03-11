@@ -2585,6 +2585,22 @@ The faces we define for this purpose are:
 + ~denote-faces-time~
 + ~denote-faces-title~
 
+As part of {{{development-version}}} we also provide these faces for
+more fine-grained colouration:
+
+#+vindex denote-faces-year
+#+vindex denote-faces-month
+#+vindex denote-faces-day
+#+vindex denote-faces-hour
+#+vindex denote-faces-minute
+#+vindex denote-faces-second
++ ~denote-faces-year~
++ ~denote-faces-month~
++ ~denote-faces-day~
++ ~denote-faces-hour~
++ ~denote-faces-minute~
++ ~denote-faces-second~
+
 For the time being, the =diredfl= package is not compatible with this
 facility.
 

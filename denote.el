@@ -3267,6 +3267,45 @@ and seconds."
   :group 'denote-faces
   :package-version '(denote . "0.1.0"))
 
+(defface denote-faces-year '((t :inherit denote-faces-date))
+  "Face for file name year in Dired buffers.
+This is the part of the identifier that covers the year, month, and day."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
+(defface denote-faces-month '((t :inherit denote-faces-date))
+  "Face for file name month in Dired buffers.
+This is the part of the identifier that covers the year, month, and day."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
+(defface denote-faces-day '((t :inherit denote-faces-date))
+  "Face for file name day in Dired buffers.
+This is the part of the identifier that covers the year, month, and day."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
+(defface denote-faces-hour '((t :inherit denote-faces-date))
+  "Face for file name hours in Dired buffers.
+This is the part of the identifier that covers the hours, minutes,
+and seconds."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
+(defface denote-faces-minute '((t :inherit denote-faces-date))
+  "Face for file name minutes in Dired buffers.
+This is the part of the identifier that covers the hours, minutes,
+and seconds."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
+(defface denote-faces-second '((t :inherit denote-faces-date))
+  "Face for file name seconds in Dired buffers.
+This is the part of the identifier that covers the hours, minutes,
+and seconds."
+  :group 'denote-faces
+  :package-version '(denote . "2.3.0"))
+
 (defface denote-faces-extension '((t :inherit shadow))
   "Face for file extension type in Dired buffers."
   :group 'denote-faces
@@ -3299,7 +3338,9 @@ and seconds."
 
 (defvar denote-faces--file-name-regexp
   (concat "\\(?11:[\t\s]+\\|.*/\\)?"
-          "\\(?1:[0-9]\\{8\\}\\)\\(?10:T\\)\\(?2:[0-9]\\{6\\}\\)"
+          "\\(?1:[0-9]\\{4\\}\\)\\(?12:[0-9]\\{2\\}\\)\\(?13:[0-9]\\{2\\}\\)"
+          "\\(?10:T\\)"
+          "\\(?2:[0-9]\\{2\\}\\)\\(?14:[0-9]\\{2\\}\\)\\(?15:[0-9]\\{2\\}\\)"
           "\\(?:\\(?3:==\\)\\(?4:[^.]*?\\)\\)?"
           "\\(?:\\(?5:--\\)\\(?6:[^.]*?\\)\\)?"
           "\\(?:\\(?7:__\\)\\(?8:[^.]*?\\)\\)?"
@@ -3309,9 +3350,13 @@ and seconds."
 (defconst denote-faces-file-name-keywords
   `((,denote-faces--file-name-regexp
      (11 'denote-faces-subdirectory nil t)
-     (1 'denote-faces-date)
+     (1 'denote-faces-year nil t)
+     (12 'denote-faces-month nil t)
+     (13 'denote-faces-day nil t)
      (10 'denote-faces-time-delimiter nil t)
-     (2 'denote-faces-time)
+     (2 'denote-faces-hour nil t)
+     (14 'denote-faces-minute nil t)
+     (15 'denote-faces-second nil t)
      (3 'denote-faces-delimiter nil t)
      (4 'denote-faces-signature nil t)
      (5 'denote-faces-delimiter nil t)
