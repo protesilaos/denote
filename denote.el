@@ -1693,7 +1693,7 @@ Return matched keywords as a single string."
       (match-string 1 filename))))
 
 (defun denote-retrieve-filename-title (file)
-  "Extract Denote title component from FILE name, else return an empty string."
+  "Extract Denote title component from FILE name, else return nil."
   (let ((filename (file-name-nondirectory file)))
     (when (string-match denote-title-regexp filename)
       (match-string 1 filename))))
