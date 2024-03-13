@@ -2505,20 +2505,20 @@ See the format of `denote-file-types'."
 
 (defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
-Use the file extension to detect the file type of the file.
+If in the process of `org-capture', consider the file type to be that of
+Org.  Otherwise, use the file extension to detect the file type of FILE.
 
-If more than one file type correspond to this file extension, use
-the first file type for which the key-title-kegexp matches in the
-file or, if none matches, use the first type with this file
-extension in `denote-file-type'.
+If more than one file type correspond to this file extension, use the
+first file type for which the :title-key-regexp in `denote-file-types'
+matches in the file.
 
-If no file types in `denote-file-types' has the file extension,
-the file type is assumed to be the first of `denote-file-types'."
+If no file type in `denote-file-types' has the file extension,
+the file type is assumed to be the first one in `denote-file-types'."
   (if (denote--file-type-org-capture-p)
       'org
     (let* ((extension (denote-get-file-extension-sans-encryption file))
            (types (denote--file-types-with-extension extension)))
-      (cond ((not types)
+      (cond ((null types)
              (caar denote-file-types))
             ((= (length types) 1)
              (caar types))
