@@ -2596,8 +2596,8 @@ in a Denote note.
 For the purposes of this test, FILE is a Denote note when it
 contains a title line, a keywords line or both."
   (and (denote--front-matter file-type)
-       (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
-       (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file)))
+       (or (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
+           (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file))))
 
 (defun denote-rewrite-keywords (file keywords file-type &optional save-buffer)
   "Rewrite KEYWORDS in FILE outright according to FILE-TYPE.
