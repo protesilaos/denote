@@ -3162,6 +3162,31 @@ them, based on the aforementioned file-naming scheme.  For other common
 operations the user is advised to rely on standard Emacs facilities or
 specialised third-party packages.  This section covers the details.
 
+** Create a new note in any directory
+:PROPERTIES:
+:CUSTOM_ID: h:c9d7c157-85a6-4bb7-bd21-d00bccf5e799
+:END:
+
+The commands that create new files are designed to write to the
+~denote-directory~. The idea is that the linking mechanism can find
+any file by its identifier if it is in the ~denote-directory~
+(searching the entire file system would be cumbersome).
+
+However, these are cases where the user needs to create a new note in
+an arbitrary directory. The following command can do this. Put the
+code in your configuration file and evaluate it. Then call the command
+by its name with =M-x=.
+
+#+begin_src emacs-lisp
+(defun my-denote-create-note-in-any-directory ()
+  "Create new Denote note in any directory.
+Prompt for the directory using minibuffer completion."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-directory (read-directory-name "New note in: " nil nil :must-match)))
+    (call-interactively 'denote)))
+#+end_src
+
 ** Narrow the list of files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:ea173a01-69ef-4574-89a7-6e60ede02f13
@@ -5312,8 +5337,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
   Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
   Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
-  Manerikar, Wesley Harvey, arsaber101, ezchi, jarofromel, leinfink
-  (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
+  Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101, ezchi, jarofromel,
+  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
   mentalisttraceur, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
