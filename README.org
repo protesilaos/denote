@@ -1530,6 +1530,9 @@ the buffer. Similarly, they both interpret a non-nil value for the
 user option ~denote-rename-no-confirm~ the same as the prefix argument
 ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
 
+Furthermore, both commands call the ~denote-after-rename-file-hook~ as
+a final step after carrying out their task.
+
 #+findex: denote-rename-add-keywords
 #+findex: denote-rename-remove-keywords
 Aliases for these commands are: ~denote-rename-add-keywords~ and

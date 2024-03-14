@@ -3072,7 +3072,9 @@ the buffer unsaved for further review.
 
 If the user option `denote-rename-no-confirm' is non-nil,
 interpret it the same way as SAVE-BUFFER, making SAVE-BUFFER
-reduntant."
+reduntant.
+
+Run `denote-after-rename-file-hook' as a final step."
   (interactive (list (denote-keywords-prompt "Add KEYWORDS") current-prefix-arg))
   ;; A combination of if-let and let, as we need to take into account
   ;; the scenario in which there are no keywords yet.
@@ -3114,7 +3116,9 @@ review.
 
 If the user option `denote-rename-no-confirm' is non-nil,
 interpret it the same way as SAVE-BUFFER, making SAVE-BUFFER
-reduntant."
+reduntant.
+
+Run `denote-after-rename-file-hook' as a final step."
   (declare (interactive-only t))
   (interactive "P")
   (if-let ((file (buffer-file-name))
