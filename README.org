@@ -1538,6 +1538,34 @@ a final step after carrying out their task.
 Aliases for these commands are: ~denote-rename-add-keywords~ and
 ~denote-rename-remove-keywords~.
 
+** Rename a file by adding or removing a signature interactively
+:PROPERTIES:
+:CUSTOM_ID: h:b08a350f-b269-47ed-8c2a-b8ecf1b63c7f
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-rename-add-signature
+#+findex: denote-rename-remove-signature
+The commands ~denote-rename-add-signature~ and
+~denote-rename-remove-signature~ streamline the process of
+interactively adding or removing a signature from a given file ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+The ~denote-rename-add-signature~ prompts for a file and a signature. The
+default value for the file prompt is the file of the currently open
+buffer or the file-at-point in a Dired buffer. The signature is an
+ordinary string, defaulting to the selected file's signature, if any.
+
+The ~denote-rename-remove-signature~ uses the same file prompt as
+above. It performs its action only if the selected file has a
+signature. Otherwise, it does nothing.
+
+Both commands ask for confirmation before carrying out their action.
+They do so unless the user option ~denote-rename-no-confirm~ is set to
+a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]). They also
+both take care to reload any Dired buffers and run the
+~denote-after-rename-file-hook~ as a final step.
+
 ** Faces used by rename commands
 :PROPERTIES:
 :CUSTOM_ID: h:ab3f355a-f763-43ae-a4c9-179d2d9265a5

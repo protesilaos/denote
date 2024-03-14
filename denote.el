@@ -3137,6 +3137,79 @@ Run `denote-after-rename-file-hook' as a final step."
 (defalias 'denote-rename-remove-keywords 'denote-keywords-remove
   "Alias for `denote-keywords-remove'.")
 
+;;;;;; Interactively add or remove file name signature
+
+;;;###autoload
+(defun denote-rename-add-signature (file signature)
+  "Add to FILE name the SIGNATURE.
+In interactive use, prompt for FILE, defaulting either to the current
+buffer's file or the one at point in a Dired buffer.  Also prompt for
+SIGNATURE, using the existing one, if any, as the initial value.
+
+When called from Lisp, FILE is a string pointing to a file system path
+and SIGNATURE is a string.
+
+Ask for confirmation before renaming the file to include the new
+signature.  Do it unless the user option `denote-rename-no-confirm' is
+set to a non-nil value.
+
+Once the operation is done, reload any Dired buffers and run the
+`denote-after-rename-file-hook'.
+
+Also see `denote-rename-remove-signature'."
+  (interactive
+   (let* ((file (denote--rename-dired-file-or-prompt))
+          (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name)))
+     (list
+      file
+      (denote-signature-prompt
+       (or (denote-retrieve-filename-signature file) "")
+       (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))))
+  (let* ((type (denote-filetype-heuristics file))
+         (title (denote--retrieve-title-or-filename file type))
+         (keywords-string (denote-retrieve-filename-keywords file))
+         (keywords (when keywords-string (split-string keywords-string "_" :omit-nulls "_")))
+         (dir (file-name-directory file))
+         (id (or (denote-retrieve-filename-identifier file)
+                 (denote-create-unique-file-identifier file (denote--get-all-used-ids))))
+         (extension (denote-get-file-extension file))
+         (new-name (denote-format-file-name dir id keywords title extension signature)))
+    (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
+      (denote-rename-file-and-buffer file new-name)
+      (denote-update-dired-buffers)
+      (run-hooks 'denote-after-rename-file-hook))))
+
+;;;###autoload
+(defun denote-rename-remove-signature (file)
+  "Remove the signature of FILE.
+In interactive use, prompt for FILE, defaulting either to the current
+buffer's file or the one at point in a Dired buffer.  When called from
+Lisp, FILE is a string pointing to a file system path.
+
+Ask for confirmation before renaming the file to remove its signature.
+Do it unless the user option `denote-rename-no-confirm' is set to a
+non-nil value.
+
+Once the operation is done, reload any Dired buffers and run the
+`denote-after-rename-file-hook'.
+
+Also see `denote-rename-add-signature'."
+  (interactive (list (denote--rename-dired-file-or-prompt)))
+  (when (denote-retrieve-filename-signature file)
+    (let* ((type (denote-filetype-heuristics file))
+           (title (denote--retrieve-title-or-filename file type))
+           (keywords-string (denote-retrieve-filename-keywords file))
+           (keywords (when keywords-string (split-string keywords-string "_" :omit-nulls "_")))
+           (dir (file-name-directory file))
+           (id (or (denote-retrieve-filename-identifier file)
+                   (denote-create-unique-file-identifier file (denote--get-all-used-ids))))
+           (extension (denote-get-file-extension file))
+           (new-name (denote-format-file-name dir id keywords title extension nil)))
+      (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
+        (denote-rename-file-and-buffer file new-name)
+        (denote-update-dired-buffers)
+        (run-hooks 'denote-after-rename-file-hook)))))
+
 ;;;;; Creation of front matter
 
 ;;;###autoload
