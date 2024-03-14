@@ -5339,7 +5339,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
   Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101, ezchi, jarofromel,
   leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
-  mentalisttraceur, relict007.
+  mentalisttraceur, pmenair, relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alfredo Borrás, Ashton
