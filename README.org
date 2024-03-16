@@ -1224,6 +1224,12 @@ The command does the same for the =SIGNATURE= prompt, subject to
 ~denote-prompts~, by prefilling the minibuffer with the current
 signature of =FILE=, if any.
 
+In interactive use, if =FILE= has a signature, ~denote-rename-file~
+produces a =SIGNATURE= prompt regardless of the value of ~denote-prompts~.
+This way, notes created with the ~denote-signature~ command, or
+equivalent, as a derogation from the norm imposed by ~denote-prompt~,
+do not necessarily lose their signature.
+
 Same principle for the =KEYWORDS= prompt: it converts the keywords in
 the file name into a comma-separated string and prefills the minibuffer
 with it (the =KEYWORDS= prompt accepts more than one keywords, each
