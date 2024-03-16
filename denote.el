@@ -155,14 +155,14 @@ saved automatically."
   :package-version '(denote . "2.3.0")
   :type 'boolean)
 
-;;;###autoload (put 'denote-known-keywords 'safe-local-variable (lambda (val) (or (listp val) (null val))))
+;;;###autoload (put 'denote-known-keywords 'safe-local-variable #'listp)
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
   "List of strings with predefined keywords for `denote'.
 Also see user options: `denote-infer-keywords',
 `denote-sort-keywords', `denote-file-name-slug-functions'."
   :group 'denote
-  :safe (lambda (val) (or (listp val) (null val)))
+  :safe #'listp
   :package-version '(denote . "0.1.0")
   :type '(repeat string))
 
