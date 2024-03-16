@@ -2827,22 +2827,22 @@ one-by-one, use `denote-dired-rename-files'."
          ('title
           (aset args 0 (denote-title-prompt
                         (denote--retrieve-title-or-filename file file-type)
-                        (format "Rename `%s' with title (empty to remove)" file-in-prompt))))
+                        (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
          ('keywords
           (aset args 1 (denote-keywords-prompt
-                        (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                        (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
                         (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
          ('signature
           (aset args 2 (denote-signature-prompt
                         (or (denote-retrieve-filename-signature file) "")
-                        (format "Rename `%s' with signature (empty to remove)" file-in-prompt))))
+                        (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
          ('date
           (unless (denote-file-has-identifier-p file)
             (aset args 3 (denote-date-prompt))))))
      (when (denote-file-has-signature-p file)
        (aset args 2 (denote-signature-prompt
                      (or (denote-retrieve-filename-signature file) "")
-                     (format "Rename `%s' with signature (empty to remove)" file-in-prompt))))
+                     (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
      (append (vector file) args nil)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
@@ -2892,16 +2892,16 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                  (title (when title-p
                           (denote-title-prompt
                            (denote--retrieve-title-or-filename file file-type)
-                           (format "Rename `%s' with title (empty to remove)" file-in-prompt))))
+                           (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
                  (keywords (when keywords-p
                              (denote-keywords-sort
                               (denote-keywords-prompt
-                               (format "Rename `%s' with keywords (empty to remove)" file-in-prompt)
+                               (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
                                (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))))
                  (signature (when (or signature-p (denote-file-has-signature-p file))
                               (denote-signature-prompt
                                (or (denote-retrieve-filename-signature file) "")
-                               (format "Rename `%s' with signature (empty to remove)" file-in-prompt))))
+                               (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords title extension signature)))
             (denote-rename-file-and-buffer file new-name)
@@ -2960,7 +2960,7 @@ Run the `denote-after-rename-file-hook' after renaming is done.
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-sort
-                       (denote-keywords-prompt "Rename marked files with keywords, overwriting existing (empty to ignore/remove)")))
+                       (denote-keywords-prompt "Rename marked files with KEYWORDS, overwriting existing (empty to ignore/remove)")))
             (used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
                         (denote--get-all-used-ids))))
         (dolist (file marks)
@@ -3173,7 +3173,7 @@ Also see `denote-rename-remove-signature'."
       file
       (denote-signature-prompt
        (or (denote-retrieve-filename-signature file) "")
-       (format "Rename `%s' with signature (empty to remove)" file-in-prompt)))))
+       (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt)))))
   (let* ((type (denote-filetype-heuristics file))
          (title (denote--retrieve-title-or-filename file type))
          (keywords-string (denote-retrieve-filename-keywords file))
