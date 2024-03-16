@@ -1782,8 +1782,18 @@ that internally)."
 (defalias 'denote-retrieve-keywords-value-as-string 'denote-retrieve-front-matter-keywords-value-as-string
  "Alias for `denote-retrieve-front-matter-keywords-value-as-string'.")
 
+(define-obsolete-function-alias
+  'denote--retrieve-title-or-filename
+  'denote-retrieve-title-or-filename
+  "2.3.0")
+
 (defun denote-retrieve-title-or-filename (file type)
-  "Return appropriate title for FILE given its TYPE."
+  "Return appropriate title for FILE given its TYPE.
+Try to find the value of the title in the front matter of FILE,
+otherwise use its file name.
+
+This is a wrapper for `denote-retrieve-front-matter-title-value' and
+`denote-retrieve-filename-title'."
   (if-let (((denote-file-is-note-p file))
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
@@ -2826,7 +2836,7 @@ one-by-one, use `denote-dired-rename-files'."
        (pcase prompt
          ('title
           (aset args 0 (denote-title-prompt
-                        (denote--retrieve-title-or-filename file file-type)
+                        (denote-retrieve-title-or-filename file file-type)
                         (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
          ('keywords
           (aset args 1 (denote-keywords-prompt
@@ -2891,7 +2901,7 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                          (denote-create-unique-file-identifier file used-ids)))
                  (title (when title-p
                           (denote-title-prompt
-                           (denote--retrieve-title-or-filename file file-type)
+                           (denote-retrieve-title-or-filename file file-type)
                            (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
                  (keywords (when keywords-p
                              (denote-keywords-sort
@@ -2969,7 +2979,7 @@ Run the `denote-after-rename-file-hook' after renaming is done.
                          (denote-create-unique-file-identifier file used-ids)))
                  (signature (or (denote-retrieve-filename-signature file) ""))
                  (file-type (denote-filetype-heuristics file))
-                 (title (denote--retrieve-title-or-filename file file-type))
+                 (title (denote-retrieve-title-or-filename file file-type))
                  (extension (denote-get-file-extension file))
                  (new-name (denote-format-file-name dir id keywords title extension signature)))
             (denote-rename-file-and-buffer file new-name)
@@ -3175,7 +3185,7 @@ Also see `denote-rename-remove-signature'."
        (or (denote-retrieve-filename-signature file) "")
        (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt)))))
   (let* ((type (denote-filetype-heuristics file))
-         (title (denote--retrieve-title-or-filename file type))
+         (title (denote-retrieve-title-or-filename file type))
          (keywords-string (denote-retrieve-filename-keywords file))
          (keywords (when keywords-string (split-string keywords-string "_" :omit-nulls "_")))
          (dir (file-name-directory file))
@@ -3206,7 +3216,7 @@ Also see `denote-rename-add-signature'."
   (interactive (list (denote--rename-dired-file-or-prompt)))
   (when (denote-retrieve-filename-signature file)
     (let* ((type (denote-filetype-heuristics file))
-           (title (denote--retrieve-title-or-filename file type))
+           (title (denote-retrieve-title-or-filename file type))
            (keywords-string (denote-retrieve-filename-keywords file))
            (keywords (when keywords-string (split-string keywords-string "_" :omit-nulls "_")))
            (dir (file-name-directory file))
@@ -3302,7 +3312,7 @@ of the file.  This needs to be done manually."
   (let* ((dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file) ""))
-         (title (denote--retrieve-title-or-filename file old-file-type))
+         (title (denote-retrieve-title-or-filename file old-file-type))
          (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
          (old-extension (denote-get-file-extension file))
@@ -3688,7 +3698,7 @@ file is returned as the description.")
   description."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
-         (title (denote--retrieve-title-or-filename file file-type))
+         (title (denote-retrieve-title-or-filename file file-type))
          (region-text (denote--get-active-region-content)))
     (cond (region-text
            region-text)
