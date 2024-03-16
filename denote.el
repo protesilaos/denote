@@ -2826,25 +2826,28 @@ one-by-one, use `denote-dired-rename-files'."
    (let* ((file (denote--rename-dired-file-or-prompt))
           (file-type (denote-filetype-heuristics file))
           (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
-          (args (make-vector 4 nil)))
+          (date nil)
+          (title (denote-retrieve-title-or-filename file file-type))
+          (keywords (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
+          (signature (or (denote-retrieve-filename-signature file) "")))
      (dolist (prompt denote-prompts)
        (pcase prompt
          ('title
-          (aset args 0 (denote-title-prompt
-                        (denote-retrieve-title-or-filename file file-type)
-                        (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
+          (setq title (denote-title-prompt
+                       title
+                       (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
          ('keywords
-          (aset args 1 (denote-keywords-prompt
-                        (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
-                        (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))))
+          (setq keywords (denote-keywords-prompt
+                          (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
+                          keywords)))
          ('signature
-          (aset args 2 (denote-signature-prompt
-                        (or (denote-retrieve-filename-signature file) "")
-                        (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
+          (setq signature (denote-signature-prompt
+                           signature
+                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
          ('date
           (unless (denote-file-has-identifier-p file)
-            (aset args 3 (denote-date-prompt))))))
-     (append (vector file) args nil)))
+            (setq date (denote-date-prompt))))))
+     (list file title keywords signature date)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) date)))
@@ -2877,42 +2880,42 @@ setting `denote-rename-no-confirm' to a non-nil value)."
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
       (let ((used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
-                        (denote--get-all-used-ids)))
-            (date-p (memq 'date denote-prompts))
-            (title-p (memq 'title denote-prompts))
-            (keywords-p (memq 'keywords denote-prompts))
-            (signature-p (memq 'signature denote-prompts)))
+                        (denote--get-all-used-ids))))
         (dolist (file marks)
           (let* ((file-type (denote-filetype-heuristics file))
                  (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
                  (dir (file-name-directory file))
-                 (id (or (when date-p
-                           (denote-prompt-for-date-return-id))
-                         (denote-retrieve-filename-identifier file)
+                 (id (or (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
-                 (title (when title-p
-                          (denote-title-prompt
-                           (denote-retrieve-title-or-filename file file-type)
-                           (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
-                 (keywords (when keywords-p
-                             (denote-keywords-sort
-                              (denote-keywords-prompt
-                               (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
-                               (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))))
-                 (signature (when signature-p
-                              (denote-signature-prompt
-                               (or (denote-retrieve-filename-signature file) "")
-                               (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
-                 (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name dir id keywords title extension signature)))
-            (denote-rename-file-and-buffer file new-name)
-            (when (denote-file-is-writable-and-supported-p new-name)
-              (if (denote--edit-front-matter-p new-name file-type)
-                  (denote-rewrite-front-matter new-name title keywords file-type :no-confirm)
-                (denote--add-front-matter new-name title keywords id file-type :save-buffer)))
-            (run-hooks 'denote-after-rename-file-hook)
-            (when used-ids
-              (puthash id t used-ids))))
+                 (title (denote-retrieve-title-or-filename file file-type))
+                 (keywords (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
+                 (signature (or (denote-retrieve-filename-signature file) ""))
+                 (extension (denote-get-file-extension file)))
+            (dolist (prompt denote-prompts)
+              (pcase prompt
+                ('title
+                 (setq title (denote-title-prompt
+                              title
+                              (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
+                ('keywords
+                 (setq keywords (denote-keywords-prompt
+                                 (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
+                                 keywords)))
+                ('signature
+                 (setq signature (denote-signature-prompt
+                                  signature
+                                  (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
+                ('date
+                 (setq id (denote-prompt-for-date-return-id)))))
+            (let ((new-name (denote-format-file-name dir id keywords title extension signature)))
+              (denote-rename-file-and-buffer file new-name)
+              (when (denote-file-is-writable-and-supported-p new-name)
+                (if (denote--edit-front-matter-p new-name file-type)
+                    (denote-rewrite-front-matter new-name title keywords file-type :no-confirm)
+                  (denote--add-front-matter new-name title keywords id file-type :save-buffer)))
+              (run-hooks 'denote-after-rename-file-hook)
+              (when used-ids
+                (puthash id t used-ids)))))
         (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
 
