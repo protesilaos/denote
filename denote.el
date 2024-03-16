@@ -1782,7 +1782,7 @@ that internally)."
 (defalias 'denote-retrieve-keywords-value-as-string 'denote-retrieve-front-matter-keywords-value-as-string
  "Alias for `denote-retrieve-front-matter-keywords-value-as-string'.")
 
-(defun denote--retrieve-title-or-filename (file type)
+(defun denote-retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE."
   (if-let (((denote-file-is-note-p file))
            (title (denote-retrieve-front-matter-title-value file type))
