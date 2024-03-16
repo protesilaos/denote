@@ -2753,14 +2753,9 @@ minibuffer that consists of the current title of FILE.  The
 current title is either retrieved from the front matter (such as
 the #+title in Org) or from the file name.
 
-Do the same for the SIGNATURE prompt, subject to `denote-prompts', by
-prefilling the minibuffer with the current signature of FILE, if any.
-
-In interactive use, if FILE has a signature, produce a SIGNATURE prompt
-regardless of the value of `denote-prompts'.  This way, notes created
-with the `denote-signature' command, or equivalent, as a derogation from
-the norm imposed by `denote-prompt', do not necessarily lose their
-signature.
+Do the same for the SIGNATURE prompt, subject to `denote-prompts',
+by prefilling the minibuffer with the current signature of FILE,
+if any.
 
 Same principle for the KEYWORDS prompt: convert the keywords in
 the file name into a comma-separated string and prefill the
@@ -2849,10 +2844,6 @@ one-by-one, use `denote-dired-rename-files'."
          ('date
           (unless (denote-file-has-identifier-p file)
             (aset args 3 (denote-date-prompt))))))
-     (when (denote-file-has-signature-p file)
-       (aset args 2 (denote-signature-prompt
-                     (or (denote-retrieve-filename-signature file) "")
-                     (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
      (append (vector file) args nil)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
@@ -2908,7 +2899,7 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                               (denote-keywords-prompt
                                (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
                                (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) ""))))))
-                 (signature (when (or signature-p (denote-file-has-signature-p file))
+                 (signature (when signature-p
                               (denote-signature-prompt
                                (or (denote-retrieve-filename-signature file) "")
                                (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
