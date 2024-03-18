@@ -222,7 +222,7 @@ The value is a list of symbols, which includes any of the following:
   is non-nil, keywords in existing note file names are included in the
   list of candidates.  The =keywords= prompt uses
   ~completing-read-multiple~, meaning that it can accept multiple
-  keywords separated by a comma (or whatever the value of ~crm-sepator~
+  keywords separated by a comma (or whatever the value of ~crm-separator~
   is).
 
 - =file-type=: Prompts with completion for the file type of the new
@@ -1227,7 +1227,7 @@ signature of =FILE=, if any.
 Same principle for the =KEYWORDS= prompt: it converts the keywords in
 the file name into a comma-separated string and prefills the minibuffer
 with it (the =KEYWORDS= prompt accepts more than one keywords, each
-separated by a comma, else the ~crm-sepator~).
+separated by a comma, else the ~crm-separator~).
 
 For all prompts, the ~denote-rename-file~ interprets an empty input as
 an instruction to remove that file name component. For example, if a

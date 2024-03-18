@@ -2775,7 +2775,7 @@ if any.
 Same principle for the KEYWORDS prompt: convert the keywords in
 the file name into a comma-separated string and prefill the
 minibuffer with it (the KEYWORDS prompt accepts more than one
-keywords, each separated by a comma, else the `crm-sepator').
+keywords, each separated by a comma, else the `crm-separator').
 
 For all prompts, interpret an empty input as an instruction to
 remove that file name component.  For example, if a TITLE prompt
@@ -3123,7 +3123,7 @@ Run `denote-after-rename-file-hook' as a final step."
 (defun denote--keywords-delete-prompt (keywords)
   "Prompt for one or more KEYWORDS.
 In the case of multiple entries, those are separated by the
-`crm-sepator', which typically is a comma.  In such a case, the
+`crm-separator', which typically is a comma.  In such a case, the
 output is sorted with `string-collate-lessp'."
   (let ((choice (denote--keywords-crm keywords "Keywords to remove")))
     (if denote-sort-keywords
