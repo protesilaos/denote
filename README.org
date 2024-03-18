@@ -1707,22 +1707,42 @@ file names by default:
 
 + Spaces or other delimiters are removed from keywords, meaning that
   =hello-world= becomes =helloworld=.  This is because hyphens in
-  keywords do not work everywhere, such as in Org.
+  keywords do not work everywhere, such as in Org. Plus, hyphens are
+  word separators in the title and we want to keep distinct separators
+  for each component to make search easier and semantic
+  ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
 
 + Signatures are like the above, but use the equals sign instead of
-  hyphens.
+  hyphens as a word separator.
 
-+ All file name components are downcased.  Consider a =helloWorld= or
-  =HelloWorld= convention for those cases where you would want to have a
-  hyphen between constituent words of a keyword.
++ All file name components are downcased. Further down we document how
+  to deviate from these rules, such as to accept input of the form
+  =helloWorld= or =HelloWorld= verbatim.
+
+Denote imposes these restrictions to enforce uniformity, which is
+helpful long-term as it keeps all files with the same predictable
+pattern. Too many permutations make searches more difficult to express
+accurately and be confident that the matches cover all files.
+Nevertheless, one of the principles of Denote is its flexibility or
+hackability and so users can deviate from the aforementioned
+([[#h:d375c6d2-92c7-425f-9d9d-219ff47ed2a3][User-defined sluggification of file name components]]).
+
+** User-defined sluggification of file name components
+:PROPERTIES:
+:CUSTOM_ID: h:d375c6d2-92c7-425f-9d9d-219ff47ed2a3
+:END:
+
+[ Part of {{{development-version}}}, superseding the deprecated user
+  option ~denote-file-name-letter-casing~. ]
 
 #+vindex: denote-file-name-slug-functions
-The user option ~denote-file-name-slug-functions~ can be used to control
-the sluggification of the components of file names ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming
-scheme]]).  The default method is explained in the previous section.
+The user option ~denote-file-name-slug-functions~ controls the
+sluggification of file name components ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
+The default method is outlined above and in the previous section
+([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 The value of this user option is an alist where each element is a cons
-cell of the form =(COMPONENT . METHOD)=.  For example, here is the
+cell of the form =(COMPONENT . METHOD)=. For example, here is the
 default value:
 
 #+begin_example emacs-lisp
@@ -1731,19 +1751,75 @@ default value:
   (keyword . denote-sluggify-keyword))
 #+end_example
 
-What these cons cells of =(COMPONENT . METHOD)= are:
-
 - The =COMPONENT= is an unquoted symbol among =title=, =signature=,
   =keyword=, which refers to the corresponding component of the file
   name.
 
-- The =METHOD= is the function to be used to format the given component.
-  This function should take a string as its parameter and return the
-  string formatted for the file name.  In the case of the `keyword'
-  component, the function receives a SINGLE string representing a single
-  keyword and return it formatted for the file name.  Joining the
-  keywords together is handled by Denote.  Note that the `keyword'
-  function is also applied to the keywords of the front matter.
+- The =METHOD= is a function to format the given component. This
+  function must take a string as its parameter and return the string
+  formatted for the file name. Note that even in the case of the
+  =keyword= component, the function receives one string representing a
+  single keyword and returns it formatted for the file name. Joining
+  the keywords together is handled internally by Denote.
+
+One commonly requested deviation from the sluggification rules is to
+not sluggify individual keywords, such that the user's input is taken
+as-is. This can be done as follows:
+
+#+begin_src emacs-lisp
+(setq denote-file-name-slug-functions
+      '((title . denote-sluggify-title)
+        (keyword . identity)
+        (signature . denote-sluggify-signature)))
+#+end_src
+
+The ~identity~ function simply returns the string it receives, thus
+not altering it in any way.
+
+Another approach is to keep the sluggification but not downcase the
+string. We can do this by modifying the original functions used by
+Denote. For example, we have this:
+
+#+begin_src emacs-lisp
+;; The original function for reference
+(defun denote-sluggify-title (str)
+  "Make STR an appropriate slug for title."
+  (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+
+;; Our variant of the above, which does the same thing except from
+;; downcasing the string.
+(defun my-denote-sluggify-title (str)
+  "Make STR an appropriate slug for title."
+  (denote--slug-hyphenate (denote--slug-no-punct str)))
+
+;; Now we use our function to sluggify titles without affecting their
+;; letter casing.
+(setq denote-file-name-slug-functions
+      '((title . my-denote-sluggify-title) ; our function here
+        (signature . denote-sluggify-signature)
+        (keyword . denote-sluggify-keyword)))
+#+end_src
+
+Follow this principle for all the sluggification functions.
+
+To access the source code, use either of the following built-in
+methods:
+
+1. Call the command ~find-library~ and search for ~denote~. Then
+   navigate to the symbol you are searching for.
+
+2. Invoke the command ~describe-symbol~, search for the symbol you are
+   interested in, and from the resulting Help buffer either click on
+   the first link or do =M-x help-view-source= (bound to =s= in Help
+   buffers, by default).
+
+Remember that deviating from the default file-naming scheme of Denote
+will make things harder to search in the future, as files can/will
+have permutations that create uncertainty. The sluggification scheme
+and concomitant restrictions we impose by default are there for a very
+good reason: they are the distillation of years of experience. Here we
+give you what you wish, but bear in mind it may not be what you need.
+You have been warned.
 
 ** Features of the file-naming scheme for searching or filtering
 :PROPERTIES:

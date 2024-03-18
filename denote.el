@@ -623,7 +623,7 @@ and `denote-link-after-creating-with-command'."
   :link '(info-link "(denote) Choose which commands to prompt for")
   :type '(repeat symbol))
 
-(defvar denote-file-name-slug-functions
+(defcustom denote-file-name-slug-functions
   '((title . denote-sluggify-title)
     (signature . denote-sluggify-signature)
     (keyword . denote-sluggify-keyword))
@@ -649,7 +649,22 @@ of the front matter.
 
 By default, if a function is not specified for a component, we
 use `denote-sluggify-title', `denote-sluggify-keyword' and
-`denote-sluggify-signature'.")
+`denote-sluggify-signature'.
+
+Remember that deviating from the default file-naming scheme of Denote
+will make things harder to search in the future, as files can/will have
+permutations that create uncertainty.  The sluggification scheme and
+concomitant restrictions we impose by default are there for a very good
+reason: they are the distillation of years of experience.  Here we give
+you what you wish, but bear in mind it may not be what you need.  You
+have been warned."
+  :group 'denote
+  :package-version '(denote . "2.3.0")
+  :link '(info-link "(denote) User-defined sluggification of file name components")
+  :type '(alist :key (choice (const title)
+                             (const signature)
+                             (const keyword))
+                :value function))
 
 (make-obsolete
  'denote-file-name-letter-casing
