@@ -2861,10 +2861,13 @@ one-by-one, use `denote-dired-rename-files'."
           (unless (denote-file-has-identifier-p file)
             (setq date (denote-date-prompt))))))
      (list file title keywords signature date)))
+  (setq keywords (denote-keywords-sort
+                  (if (stringp keywords)
+                      (split-string keywords "," :omit-nulls)
+                    keywords)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) date)))
-         (keywords (denote-keywords-sort keywords))
          ;; TODO 2024-02-13: Should we derive the extension from the
          ;; `denote-file-type-prompt' if we are conforming with the
          ;; `denote-prompts'?
@@ -2920,6 +2923,10 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                                   (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
                 ('date
                  (setq id (denote-prompt-for-date-return-id)))))
+            (setq keywords (denote-keywords-sort
+                            (if (stringp keywords)
+                                (split-string keywords "," :omit-nulls)
+                              keywords)))
             (let ((new-name (denote-format-file-name dir id keywords title extension signature)))
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
