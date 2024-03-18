@@ -1689,17 +1689,17 @@ Files names can contain any character that the file system
 permits. Denote imposes a few additional restrictions:
 
 + The tokens "==", =__= and =--= are interpreted by Denote and should
-  appear only once. =_= is the separator for keywords.
+  appear only once.
 
 + The dot character is not allowed in a note's file name, except to
-  indicate the extension.
+  indicate the file type extension. Denote recognises two extensions
+  for encrypted files, like =.txt.gpg=.
 
-By default, Denote enforce other rules to file names through the user
-option ~denote-file-name-slug-functions~.
+By default, Denote enforces other rules to file names through the user
+option ~denote-file-name-slug-functions~. These rules are applied to
+file names by default:
 
-These rules are applied to file names by default:
-
-+ What we count as "illegal characters" are removed.  The variable
++ What we count as "illegal characters" are removed.  The constant
   ~denote-excluded-punctuation-regexp~ holds the relevant value.
 
 + Input for a file title is hyphenated.  The original value is
