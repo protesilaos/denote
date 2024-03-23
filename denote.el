@@ -1132,19 +1132,23 @@ file in the returned list."
 
 ;; NOTE 2024-02-29: Based on `project--read-file-cpd-relative' from
 ;; the built-in project.el
-(defun denote-file-prompt (&optional files-matching-regexp)
+(defun denote-file-prompt (&optional files-matching-regexp prompt-text)
   "Prompt for file with identifier in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
-the given regular expression."
+the given regular expression.
+
+With optional PROMPT-TEXT, use it instead of the default call to
+\"Select NOTE\"."
   (when-let ((all-files (denote-directory-files files-matching-regexp :omit-current)))
     (let* ((common-parent-directory
             (let ((common-prefix (try-completion "" all-files)))
               (if (> (length common-prefix) 0)
                   (file-name-directory common-prefix))))
            (cpd-length (length common-parent-directory))
+           (prompt-prefix (or prompt-text "Select NOTE"))
            (prompt (if (zerop cpd-length)
-                       "Select note: "
-                     (format "Select note in %s: " common-parent-directory)))
+                       (format "%s: " prompt-prefix)
+                     (format "%s in %s: " prompt-prefix common-parent-directory)))
            (included-cpd (when (member common-parent-directory all-files)
                            (setq all-files
                                  (delete common-parent-directory all-files))
