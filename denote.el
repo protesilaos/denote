@@ -2653,8 +2653,8 @@ Throw error if FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
       (let* ((file (buffer-file-name))
              (format (if file
-                         (format "Rename file Denote-style [%s]: " file)
-                       "Rename file Denote-style: "))
+                         (format "Rename FILE Denote-style [%s]: " file)
+                       "Rename FILE Denote-style: "))
              (selected-file (read-file-name format nil file t nil)))
         (if (or (file-directory-p selected-file)
                 (not (file-regular-p selected-file)))
