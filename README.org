@@ -4313,11 +4313,6 @@ might change them without further notice.
 + Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
   separate words.
 
-#+findex: denote-desluggify
-+ Function ~denote-desluggify~ :: Upcase first char in =STR= and
-  dehyphenate =STR=, inverting ~denote-sluggify~.  Basically, convert
-  =this-is-a-test= to =This is a test=.
-
 #+findex: denote-sluggify-signature
 + Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
   slug for signatures ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
