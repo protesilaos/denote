@@ -3721,7 +3721,7 @@ system path.  FILE-TYPE is a symbol as described in
 `denote-file-type'.  DESCRIPTION is a string.  Whether the caller
 treats the active region specially, is up to it."
   (interactive
-   (let* ((file (denote-file-prompt))
+   (let* ((file (denote-file-prompt nil "Link to FILE"))
           (file-type (when buffer-file-name
                        (denote-filetype-heuristics buffer-file-name)))
           (description (when (file-exists-p file)
