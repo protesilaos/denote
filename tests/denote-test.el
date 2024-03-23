@@ -96,11 +96,6 @@ The function also account for the value of the user option
    (equal (denote-sluggify-keywords '("one !@# --- one" "   two" "__  three  __"))
           '("oneone" "two" "three"))))
 
-(ert-deftest denote-test--denote-desluggify ()
-  "Test that `denote-desluggify' upcases first character and de-hyphenates string."
-  (should (equal (denote-desluggify 'title "this-is-a-test") "This is a test"))
-  (should (null (equal (denote-desluggify 'title "this=is=a=test") "This is a test"))))
-
 (ert-deftest denote-test--denote--file-empty-p ()
   "Test that `denote--file-empty-p' returns non-nil on empty file."
   ;; (should (null (denote--file-empty-p user-init-file))

@@ -671,24 +671,6 @@ have been warned."
  'denote-file-name-slug-functions
  "2.3.0")
 
-(defvar denote-file-name-deslug-functions
-  '((title . denote-desluggify-title)
-    (signature . denote-desluggify-signature)
-    (keyword . denote-desluggify-keyword))
-  "Specify the method Denote uses to reverse the process of `denote-sluggify'.
-
-Since `denote-sluggify' is destructive, this is just an attempt
-to get back a more human-friendly component.  This is useful when
-you want to retrieve a title or signature from the file name and
-display it as the default input in commands such as
-`denote-rename-file'.
-
-See the documentation of `denote-file-name-slug-functions'.
-
-By default, if a function is not specified for a component, we
-use `denote-desluggify-title', `denote-desluggify-keyword' and
-`denote-desluggify-signature'.")
-
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -890,38 +872,6 @@ any leading and trailing signs."
   (mapcar (lambda (keyword)
             (denote-sluggify 'keyword keyword))
           keywords))
-
-(defun denote-desluggify (component str)
-  "Attempt to reverse the process of `denote-sluggify' for STR on COMPONENT.
-
-Apply the function specified in `denote-file-name-deslug-function'
-to COMPONENT which is one of `title', `signature', `keyword'."
-  (let ((deslug-function (alist-get component denote-file-name-deslug-functions)))
-    (cond ((eq component 'title)
-           (funcall (or deslug-function #'denote-desluggify-title) str))
-          ((eq component 'keyword)
-           (funcall (or deslug-function #'denote-desluggify-keyword) str))
-          ((eq component 'signature)
-           (funcall (or deslug-function #'denote-desluggify-signature) str)))))
-
-(defun denote-desluggify-title (str)
-  "Upcase first char in STR and dehyphenate STR, inverting `denote-sluggify'.
-The intent of this function is to be used on individual strings,
-such as the TITLE component of a Denote file name, but not on the
-entire file name."
-  (let ((str (replace-regexp-in-string "-" " " str)))
-    (aset str 0 (upcase (aref str 0)))
-    str))
-
-;; NOTE 2024-01-01: This is not used for now.
-(defun denote-desluggify-signature (str)
-  "Reverse of `denote-sluggify-signature' for STR."
-  str)
-
-;; NOTE 2023-12-25: This is not used for now.
-(defun denote-desluggify-keyword (str)
-  "Reverse of `denote-sluggify-keyword' for STR."
-  str)
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
@@ -1813,9 +1763,8 @@ This is a wrapper for `denote-retrieve-front-matter-title-value' and
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
-    (if-let ((title (denote-retrieve-filename-title file)))
-        (denote-desluggify 'title title)
-      (file-name-base file))))
+    (or (denote-retrieve-filename-title file)
+        (file-name-base file))))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
