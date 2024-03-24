@@ -1187,7 +1187,7 @@ line or switching between then with commands like ~switch-to-buffer~.
   the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
   This version also broadens the scope of the user option
   ~denote-rename-no-confirm~, such that it automatically saves the
-  affcted buffers, post-rename. ]
+  affected buffers, post-rename. ]
 
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
@@ -2136,15 +2136,16 @@ buttonization. Interested users can refer to the function
 The user option ~denote-org-store-link-to-heading~ determines whether
 ~org-store-link~ links to the current Org heading (such links are
 merely "stored" and need to be inserted afterwards with the command
-~org-insert-link~).
+~org-insert-link~). Note that the ~org-capture~ command uses the
+~org-link~ internally if it has to store a link.
 
 When its value is non-nil, ~org-store-link~ stores a link to the
-current Org heading inside the Denote file. If the heading does not
-have a =CUSTOM_ID=, it creates it and includes it in the heading's
+current Org heading inside the Denote Org file. If the heading does
+not have a =CUSTOM_ID=, it creates it and includes it in the heading's
 =PROPERTIES= drawer. If a =CUSTOM_ID= exists, ~org-store-link~ use it
 as-is.
 
-This make the resulting link a combination of the =denote:= link type,
+This makes the resulting link a combination of the =denote:= link type,
 pointing to the identifier of the current file, plus the value of the
 heading's =CUSTOM_ID=, such as:
 
@@ -5455,13 +5456,14 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Eduardo Grajeda, Elias Storms, Eshel Yaron, Florian, Glenna D.,
   Graham Marlow, Hilde Rhyne, Ivan Sokolov, Jack Baty, Jean-Charles
   Bagneris, Jean-Philippe Gagné Guay, Joseph Turner, Jürgen Hötzel,
-  Kaushal Modi, Kai von Fintel, Kostas Andreadis, Kyle Meyer, Marc
-  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
-  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
-  Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
-  Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101, ezchi, jarofromel,
-  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
-  mentalisttraceur, pmenair, relict007.
+  Kaushal Modi, Kai von Fintel, Kostas Andreadis, Kristoffer
+  Balintona, Kyle Meyer, Marc Fargas, Matthew Lemon, Noboru Ota
+  (nobiot), Norwid Behrnd, Peter Prevos, Philip Kaludercic, Quiliro
+  Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut
+  Benjamin, Tomasz Hołubowicz, Vedang Manerikar, Wesley Harvey, Zhenxu
+  Xu, arsaber101, ezchi, jarofromel, leinfink (Henrik), l-o-l-h
+  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
+  relict007.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alfredo Borrás, Ashton
