@@ -197,9 +197,15 @@ the appropriate list of strings."
   :type 'boolean)
 
 (defcustom denote-prompts '(title keywords)
-  "Specify the prompts of the `denote' command for interactive use.
+  "Specify the prompts followed by relevant Denote commands.
 
-The value is a list of symbols, which includes any of the following:
+Commands that prompt for user input to construct a Denote file name
+include, but are not limited to: `denote', `denote-signature',
+`denote-type', `denote-date', `denote-subdirectory',
+`denote-rename-file', `denote-dired-rename-files'.
+
+The value of this user option is a list of symbols, which includes any
+of the following:
 
 - `title': Prompt for the title of the new note.
 
@@ -272,15 +278,13 @@ When in doubt, always include the `title' and `keywords'
 prompts (the default style).
 
 Finally, this user option only affects the interactive use of the
-`denote' command (advanced users can call it from Lisp).  For
-ad-hoc interactive actions that do not change the default
-behaviour of the `denote' command, users can invoke these
-convenience commands: `denote-type', `denote-subdirectory',
-`denote-date', `denote-template', `denote-signature'.
+`denote' or other relevant commands (advanced users can call it from
+Lisp).  In Lisp usage, the behaviour is always what the caller
+specifies, based on the supplied arguments.
 
 Also see `denote-history-completion-in-prompts'."
   :group 'denote
-  :package-version '(denote . "2.0.0")
+  :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t

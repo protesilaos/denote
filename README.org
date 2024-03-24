@@ -208,11 +208,25 @@ alias ~denote-create-note~.
 :CUSTOM_ID: h:f9204f1f-fcee-49b1-8081-16a08a338099
 :END:
 
+[ As part of {{{development-version}}}, all commands that produce or
+  modify a Denote file name are revised to do their work while
+  conforming with the value of ~denote-prompts~, where that is
+  reasonable to do. ]
+
 #+vindex: denote-prompts
 The user option ~denote-prompts~ determines how the ~denote~ command
 will behave interactively ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
-The value is a list of symbols, which includes any of the following:
+Commands that prompt for user input to construct a Denote file name
+include, but are not limited to: ~denote~, ~denote-signature~,
+~denote-type~, ~denote-date~, ~denote-subdirectory~,
+~denote-rename-file~, ~denote-dired-rename-files~.
+
+- [[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]].
+- [[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]].
+
+The value of this user option is a list of symbols, which includes any
+of the following:
 
 - =title=: Prompt for the title of the new note ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
 
@@ -278,12 +292,9 @@ those permutations:
 When in doubt, always include the =title= and =keywords= prompts.
 
 Finally, this user option only affects the interactive use of the
-~denote~ command (advanced users can call it from Lisp).  For ad-hoc
-interactive actions that do not change the default behaviour of the
-~denote~ command, users can invoke these convenience commands:
-~denote-type~, ~denote-subdirectory~, ~denote-date~,
-~denote-signature~.  They are described in the subsequent section
-([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).
+~denote~ or other relevant commands (advanced users can call it from
+Lisp). In Lisp usage, the behaviour is always what the caller
+specifies, based on the supplied arguments.
 
 *** The ~denote-history-completion-in-prompts~ option
 :PROPERTIES:
