@@ -1817,9 +1817,9 @@ methods:
    buffers, by default).
 
 Remember that deviating from the default file-naming scheme of Denote
-will make things harder to search in the future, as files can/will
-have permutations that create uncertainty. The sluggification scheme
-and concomitant restrictions we impose by default are there for a very
+will make things harder to use in the future, as files can/will have
+permutations that create uncertainty. The sluggification scheme and
+concomitant restrictions we impose by default are there for a very
 good reason: they are the distillation of years of experience. Here we
 give you what you wish, but bear in mind it may not be what you need.
 You have been warned.
