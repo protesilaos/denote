@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 2.2.0
-#+macro: release-date 2023-12-10
-#+macro: development-version 2.3.0-dev
+#+macro: stable-version 2.3.0
+#+macro: release-date 2024-03-24
+#+macro: development-version 3.0.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -51,7 +51,7 @@ the GNU ELPA machinery automatically generates an Info manual out of it.
 :CUSTOM_ID: h:40b18bb2-4dc1-4202-bd0b-6fab535b2a0f
 :END:
 
-Copyright (C) 2022-2023  Free Software Foundation, Inc.
+Copyright (C) 2022-2024  Free Software Foundation, Inc.
 
 #+begin_quote
 Permission is granted to copy, distribute and/or modify this document
@@ -208,11 +208,6 @@ alias ~denote-create-note~.
 :CUSTOM_ID: h:f9204f1f-fcee-49b1-8081-16a08a338099
 :END:
 
-[ As part of {{{development-version}}}, all commands that produce or
-  modify a Denote file name are revised to do their work while
-  conforming with the value of ~denote-prompts~, where that is
-  reasonable to do. ]
-
 #+vindex: denote-prompts
 The user option ~denote-prompts~ determines how the ~denote~ command
 will behave interactively ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
@@ -300,8 +295,6 @@ specifies, based on the supplied arguments.
 :PROPERTIES:
 :CUSTOM_ID: h:403422a7-7578-494b-8f33-813874c12da3
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+vindex: denote-history-completion-in-prompts
 The user option ~denote-history-completion-in-prompts~ toggles history
@@ -410,8 +403,7 @@ option, there are cases where an ad-hoc method is the appropriate one
 
 To this end, Denote provides the following interactive convenience
 commands for note creation. They all work by appending a new prompt to
-the existing ~denote-prompts~. [ Appending to the existing
-~denote-prompts~ is defined in {{{development-version}}}. ]
+the existing ~denote-prompts~.
 
 + Create note by specifying file type :: The ~denote-type~ command
   creates a note while prompting for a file type.
@@ -550,8 +542,6 @@ to the list of commands available at the ~denote-command-prompt~
 :CUSTOM_ID: h:bf80f4cd-6f56-4f7c-a991-8573161e4511
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+vindex: denote-save-buffer-after-creation
 The user option ~denote-save-buffer-after-creation~ controls whether
 commands that creeate new notes save their buffer outright.
@@ -583,8 +573,6 @@ that is common in interactions with Org mode, can set the user option
 :PROPERTIES:
 :CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd
 :END:
-
-[ Rewritten as part of {{{development-version}}}. ]
 
 In Org parlance, an entry with all its subheadings and other contents
 is a "subtree". Denote can operate on the subtree to extract it from
@@ -1047,9 +1035,6 @@ To see another example of a wrapper function that =let= binds
 :CUSTOM_ID: h:e43baf95-f201-4fec-8620-c0eb5eaa1c85
 :END:
 
-[ As part of {{{development-version}}}, we fixed an issue where a
-  =C-u= prefix argument was needed to select a silo. ]
-
 The =denote-silo-extras.el= provides optional convenience functions for
 working with silos ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
 Start by loading the relevant library:
@@ -1130,8 +1115,7 @@ development log: <https://protesilaos.com/codelog/2023-03-31-emacs-denote-menu/>
 
 #+findex: denote-menu-bar-mode
 The command ~denote-menu-bar-mode~ toggles the presentation of the
-menu. It is enabled by default. [ The ~denote-menu-bar-mode~ is part
-of {{{development-version}}}. ]
+menu. It is enabled by default.
 
 Emacs also provides support for operations through a context menu.
 This is typically the set of actions that are made available via a
@@ -1169,7 +1153,7 @@ mechanisms to facilitate the task of renaming them.
 
 #+vindex: denote-after-rename-file-hook
 All renaming commands run the ~denote-after-rename-file-hook~ after a
-succesful operation. [ Part of {{{development-version}}}. ]
+succesful operation.
 
 Apart from renaming files, Denote can also rename only the buffer.
 The idea is that the underlying file name is correct but it can be
@@ -1182,12 +1166,6 @@ line or switching between then with commands like ~switch-to-buffer~.
 :PROPERTIES:
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
-
-[ Revised as part of {{{development-version}}} to honour the value of
-  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
-  This version also broadens the scope of the user option
-  ~denote-rename-no-confirm~, such that it automatically saves the
-  affected buffers, post-rename. ]
 
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
@@ -1293,10 +1271,6 @@ one-by-one, use ~denote-dired-rename-files~ ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a
 :CUSTOM_ID: h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7
 :END:
 
-[ Revised as part of {{{development-version}}} to save the underlying
-  buffer. The assumption is that the user who opts in to this feature is
-  familiar with the Denote renaming operation and knows it is reliable. ]
-
 #+vindex: denote-rename-no-confirm
 The user option ~denote-rename-no-confirm~ makes all commands that
 rename files not prompt for confirmation and save buffers outright ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
@@ -1331,12 +1305,6 @@ use, but carries out the renaming without asking for confirmation
 :PROPERTIES:
 :CUSTOM_ID: h:3ab08ff4-81fa-4d24-99cb-79f97c13a373
 :END:
-
-[ Revised as part of {{{development-version}}} to (i) accept an
-  optional double prefix argument to automatically save the buffer and
-  (ii) to not ask for confirmation while renaming and to automatically
-  save the buffer if the user option ~denote-rename-no-confirm~ is
-  non-nil ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]). ]
 
 #+findex: denote-rename-file-using-front-matter
 In the previous section, we covered the more general mechanism of the
@@ -1383,8 +1351,6 @@ If called interactively with a prefix argument (=C-u= by default) or
 from Lisp with a non-nil =NO-CONFIRM= argument, this "yes or no"
 prompt is skipped and the renaming is done outright.
 
-[ The following are part of {{{development-version}}}. ]
-
 If called interactively with a double prefix argument (=C-u C-u= by
 default) or from Lisp with a non-nil =SAVE-BUFFER= argument, the
 buffer is saved after the front matter is updated and the file is
@@ -1403,13 +1369,6 @@ the like.
 :PROPERTIES:
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
 :END:
-
-[ Revised as part of {{{development-version}}} to honour the value of
-  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). ]
-
-[ As part of {{{development-version}}} the
-~denote-dired-rename-marked-files~ is an alias for
-~denote-dired-rename-files~. ]
 
 #+findex: denote-dired-rename-files
 #+findex: denote-dired-rename-marked-files
@@ -1433,9 +1392,6 @@ check the command ~denote-dired-rename-marked-files-with-keywords~.
 :PROPERTIES:
 :CUSTOM_ID: h:f365ff7e-2140-4e14-a92f-666ae97382a4
 :END:
-
-[ Revised as part of {{{development-version}}} to honour the value of
-  the user option ~denote-prompts~ where that makes sense ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]). ]
 
 #+findex: denote-dired-rename-marked-files-with-keywords
 The ~denote-dired-rename-marked-files-with-keywords~ command renames
@@ -1532,8 +1488,6 @@ Similarly, the ~denote-keywords-remove~ removes one or more keywords
 from the list of existing keywords and then renames the file
 accordingly.
 
-[ The following are part of {{{development-version}}}. ]
-
 Both commands accept an optional prefix argument to automatically save
 the buffer. Similarly, they both interpret a non-nil value for the
 user option ~denote-rename-no-confirm~ the same as the prefix argument
@@ -1551,8 +1505,6 @@ Aliases for these commands are: ~denote-rename-add-keywords~ and
 :PROPERTIES:
 :CUSTOM_ID: h:b08a350f-b269-47ed-8c2a-b8ecf1b63c7f
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+findex: denote-rename-add-signature
 #+findex: denote-rename-remove-signature
@@ -1734,9 +1686,6 @@ hackability and so users can deviate from the aforementioned
 :PROPERTIES:
 :CUSTOM_ID: h:d375c6d2-92c7-425f-9d9d-219ff47ed2a3
 :END:
-
-[ Part of {{{development-version}}}, superseding the deprecated user
-  option ~denote-file-name-letter-casing~. ]
 
 #+vindex: denote-file-name-slug-functions
 The user option ~denote-file-name-slug-functions~ controls the
@@ -2115,8 +2064,6 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
-[ The following is part of {{{development-version}}}. ]
-
 #+findex: denote-link-markdown-follow
 In files whose major mode is ~markdown-mode~, the default key binding
 =C-c C-o= (which calls the command ~markdown-follow-thing-at-point~)
@@ -2129,8 +2076,6 @@ buttonization. Interested users can refer to the function
 :PROPERTIES:
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+vindex: denote-org-store-link-to-heading
 The user option ~denote-org-store-link-to-heading~ determines whether
@@ -2179,8 +2124,6 @@ regardless of the aforementioned user option ([[#h:fc1ad245-ec08-41be-8d1e-7153d
 :PROPERTIES:
 :CUSTOM_ID: h:fc1ad245-ec08-41be-8d1e-7153d99daf02
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+findex: denote-org-extras-link-to-heading
 As part of the optional =denote-org-extras.el= extension, the command
@@ -2583,8 +2526,6 @@ creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing 
 :CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 Sometimes the user needs to translate all =denote:= link types to
 their =file:= equivalent. This may be because some other tool does not
 recognise =denote:= links (or other custom links types---which are a
@@ -2702,8 +2643,7 @@ The faces we define for this purpose are:
 + ~denote-faces-time~
 + ~denote-faces-title~
 
-As part of {{{development-version}}} we also provide these faces for
-more fine-grained colouration:
+For more control, we also provide these:
 
 #+vindex denote-faces-year
 #+vindex denote-faces-month
@@ -2815,15 +2755,14 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ As part of version 2.3.0 (currently {{{development-version}}}), all
-  dynamic blocks are defined in the file =denote-org-extras.el=. The
-  file which was once called =denote-org-dblock.el= contains aliases
-  for the new function names and dipslays a warning about its
-  deprecation. There is no need to ~require~ the ~denote-org-extras~
-  feature because all of Denote's Org dynamic blocks are autoloaded
-  (meaning that they work as soon as they are used). For backward
-  compatibility, all dynamic blocks retain their original names as an
-  alias for the newer one. ]
+[ As part of version 2.3.0, all dynamic blocks are defined in the file
+  =denote-org-extras.el=. The file which was once called
+  =denote-org-dblock.el= contains aliases for the new function names
+  and dipslays a warning about its deprecation. There is no need to
+  ~require~ the ~denote-org-extras~ feature because all of Denote's
+  Org dynamic blocks are autoloaded (meaning that they work as soon as
+  they are used). For backward compatibility, all dynamic blocks
+  retain their original names as an alias for the newer one. ]
 
 Denote can optionally integrate with Org mode's "dynamic blocks"
 facility. This means that it can use special blocks that are evaluated
@@ -2856,15 +2795,14 @@ Evaluate:
 :CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
 
-[ As part of version 2.3.0 (currently {{{development-version}}}), all
-  dynamic blocks are defined in the file =denote-org-extras.el=. The
-  file which was once called =denote-org-dblock.el= contains aliases
-  for the new function names and dipslays a warning about its
-  deprecation. There is no need to ~require~ the ~denote-org-extras~
-  feature because all of Denote's Org dynamic blocks are autoloaded
-  (meaning that they work as soon as they are used). For backward
-  compatibility, all dynamic blocks retain their original names as an
-  alias for the newer one. ]
+[ As part of version 2.3.0, all dynamic blocks are defined in the file
+  =denote-org-extras.el=. The file which was once called
+  =denote-org-dblock.el= contains aliases for the new function names
+  and dipslays a warning about its deprecation. There is no need to
+  ~require~ the ~denote-org-extras~ feature because all of Denote's
+  Org dynamic blocks are autoloaded (meaning that they work as soon as
+  they are used). For backward compatibility, all dynamic blocks
+  retain their original names as an alias for the newer one. ]
 
 #+findex: denote-org-extras-dblock-insert-links
 The =denote-links= block can be inserted at point with the command
@@ -2925,9 +2863,6 @@ this in an Org file:
 :
 : #+END:
 
-[ The ~denote-org-extras-dblock-insert-missing-links~ is part of
-  {{{development-version}}}. ]
-
 #+findex: denote-org-extras-dblock-insert-missing-links
 Finally, the =denote-missing-links= block is available with the
 command ~denote-org-extras-dblock-insert-missing-links~. It is like
@@ -2947,15 +2882,14 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 :CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
 :END:
 
-[ As part of version 2.3.0 (currently {{{development-version}}}), all
-  dynamic blocks are defined in the file =denote-org-extras.el=. The
-  file which was once called =denote-org-dblock.el= contains aliases
-  for the new function names and dipslays a warning about its
-  deprecation. There is no need to ~require~ the ~denote-org-extras~
-  feature because all of Denote's Org dynamic blocks are autoloaded
-  (meaning that they work as soon as they are used). For backward
-  compatibility, all dynamic blocks retain their original names as an
-  alias for the newer one. ]
+[ As part of version 2.3.0, all dynamic blocks are defined in the file
+  =denote-org-extras.el=. The file which was once called
+  =denote-org-dblock.el= contains aliases for the new function names
+  and dipslays a warning about its deprecation. There is no need to
+  ~require~ the ~denote-org-extras~ feature because all of Denote's
+  Org dynamic blocks are autoloaded (meaning that they work as soon as
+  they are used). For backward compatibility, all dynamic blocks
+  retain their original names as an alias for the newer one. ]
 
 Denote can optionally use Org's dynamic blocks facility to produce a
 section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
@@ -3163,9 +3097,6 @@ there are multiple journal entries for the current date, it prompts
 for one among them using minibuffer completion.  If there is only one,
 it visits it outright.  If there is no journal entry, it creates one
 by calling ~denote-journal-extra-new-entry~ (as described above).
-
-[ The ~denote-journal-extras-link-or-create-entry~ is part of
-  {{{development-version}}}. ]
 
 #+findex: denote-journal-extras-link-or-create-entry
 The command ~denote-journal-extras-link-or-create-entry~ links to the
@@ -3855,8 +3786,7 @@ or by advising the Org export function.
 
 Denote also provides commands to convert =denote:= links to their
 =file:= equivalent, in case this is a required pre-processing step for
-export purposes ([[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links]]). [ This is
-part of {{{development-version}}}. ]
+export purposes ([[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links]]).
 
 **** Manually configure Org export
 :PROPERTIES:
@@ -4248,8 +4178,7 @@ might change them without further notice.
   with keywords readable by ~completing-read-multiple~. =STRING=
   consists of underscore-separated words, as those appear in the
   keywords component of a Denote file name. =STRING= is the same as
-  the return value of ~denote-retrieve-filename-keywords~. [ Part of
-  {{{development-version}}}. ]
+  the return value of ~denote-retrieve-filename-keywords~.
 
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
@@ -4266,15 +4195,12 @@ might change them without further notice.
   valid =DATE= is a value that can be parsed by either ~decode-time~
   or ~date-to-time~ .Those functions signal an error if =DATE= is a
   value they do not recognise. If =DATE= is nil, return nil.
-  [ Part of {{{development-version}}}. ]
 
 #+findex: denote-parse-date
 + Function ~denote-parse-date~ :: Return =DATE= as an appropriate
   value for the ~denote~ command. Pass =DATE= through
   ~denote-valid-date-p~ and use its return value. If either that or
-  =DATE= is nil, return ~current-time~. [ The ~denote-valid-date-p~ is
-  the new name of ~denote--valid-date~, with enhanced functionality.
-  Done as part of {{{development-version}}}. ]
+  =DATE= is nil, return ~current-time~.
 
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
@@ -4409,15 +4335,12 @@ might change them without further notice.
   title for =FILE= given its =TYPE=. Try to find the value of the
   title in the front matter of FILE, otherwise use its file name. This
   is a wrapper for ~denote-retrieve-front-matter-title-value~ and
-  =denote-retrieve-filename-title=. [ This was known as the private
-  function ~denote--retrieve-title-or-filename~. It is made public as
-  part of {{{development-version}}}. ]
+  =denote-retrieve-filename-title=.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
   identifier using ~denote-id-format~. =DATE= is parsed by
   ~denote-valid-date-p~. If =DATE= is nil, use the current time.
-  [ Part of {{{development-version}}}. ]
 
 #+findex: denote-create-unique-file-identifier
 + Function ~denote-create-unique-file-identifier~ :: Create a new unique
@@ -4470,18 +4393,12 @@ might change them without further notice.
   of the default prompt. Previous inputs at this prompt are available
   for minibuffer completion if the user option ~denote-history-completion-in-prompts~
   is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
-  [ Revised as part of {{{development-version}}} to optionally not
-  provide completion against its previous input history. ]
 
 #+findex: denote-file-prompt
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
   variable ~denote-directory~. With optional =FILES-MATCHING-REGEXP=,
   filter the candidates per the given regular expression. With
   optional =PROMPT-TEXT=, use it instead of the default "Select NOTE".
-  [ As part of {{{development-version}}}, completion candidates have a
-  relative file path, but the return value and what is stored in the
-  minibuffer history is still the full file system path. Furthermore,
-  the =PROMPT-TEXT= is added. ]
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
@@ -4489,8 +4406,7 @@ might change them without further notice.
   ~crm-separator~, which typically is a comma. With optional
   =PROMPT-TEXT=, use it to prompt the user for keywords. Else use a
   generic prompt. With optional =INITIAL-KEYWORDS= use them as the
-  initial minibuffer text. [ The optional =INITIAL-KEYWORDS= argument is
-  part of {{{development-version}}}. ]
+  initial minibuffer text.
 
 #+findex: denote-title-prompt
 + Function ~denote-title-prompt~ :: Prompt for title string. With
@@ -4499,8 +4415,6 @@ might change them without further notice.
   default prompt. Previous inputs at this prompt are available
   for minibuffer completion if the user option ~denote-history-completion-in-prompts~
   is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
-  [ Revised as part of {{{development-version}}} to optionally not
-  provide completion against its previous input history. ]
 
 #+vindex: denote-title-prompt-current-default
 + Variable ~denote-title-prompt-current-default~ :: Currently bound
@@ -4534,7 +4448,6 @@ might change them without further notice.
   optionally perform completion against their own minibuffer history
   when the user option ~denote-history-completion-in-prompts~ is set
   to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
-  [ This is part of {{{development-version}}}. ]
 
 #+findex: denote-files-matching-regexp-prompt
 + Function ~denote-files-matching-regexp-prompt~ ::  Prompt for
@@ -4572,8 +4485,7 @@ might change them without further notice.
   the rewriting of the front matter. Otherwise produce a ~y-or-n-p~
   prompt to that effect. With optional =NO-CONFIRM=, save the buffer
   after performing the rewrite. Otherwise leave it unsaved for
-  furthter review by the user. [ The =NO-CONFIRM= saves the buffer as
-  part of {{{development-version}}}. ]
+  furthter review by the user.
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
@@ -4582,8 +4494,7 @@ might change them without further notice.
   confirmation. With optional =SAVE-BUFFER=, save the buffer
   corresponding to =FILE=. This function is for use in the commands
   ~denote-keywords-add~, ~denote-keywords-remove~,
-  ~denote-dired-rename-files~, or related. [ The =SAVE-BUFFER= saves
-  the buffer as part of {{{development-version}}}. ]
+  ~denote-dired-rename-files~, or related.
 
 #+findex: denote-update-dired-buffers
 + Function ~denote-update-dired-buffers~ :: Update Dired buffers of
@@ -4591,8 +4502,6 @@ might change them without further notice.
   even if it is not inside the ~denote-directory~. Note that the
   ~denote-directory~ accepts a directory-local value for what we
   internally refer to as "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
-  [ Refined as part of {{{development-version}}} to also revert the
-    current Dired buffer. ]
 
 #+vindex: denote-file-types
 + Variable ~denote-file-types~ :: Alist of ~denote-file-type~ and
@@ -4727,15 +4636,13 @@ might change them without further notice.
 #+findex: denote-format-string-for-org-front-matter
 + Function ~denote-format-string-for-org-front-matter~ :: Return
   string =S= as-is for Org or plain text front matter. If =S= is not a
-  string, return an empty string. [ Part of {{{development-version}}}. ]
+  string, return an empty string.
 
 #+findex: denote-format-string-for-md-front-matter
 + Function ~denote-format-string-for-md-front-matter~ :: Surround
   string =S= with quotes. If =S= is not a string, return a literal
   emptry string. This can be used in ~denote-file-types~ to format
-  front mattter. [ Revised as part of {{{development-version}}} and
-  renamed from ~denote-surround-with-quotes~ to
-  ~denote-format-string-for-md-front-matter~. ]
+  front mattter.
 
 #+findex: denote-format-keywords-for-md-front-matter
 + Function ~denote-format-keywords-for-md-front-matter~ :: Format
@@ -4765,8 +4672,6 @@ might change them without further notice.
 #+findex: denote-link-return-backlinks
 + Function ~denote-link-return-backlinks~ :: Return list of backlinks
   in current or optional =FILE=.  Also see ~denote-link-return-links~.
-
-[ All of the following are part of {{{development-version}}}. ]
 
 #+vindex: denote-link-signature-format
 + Variable ~denote-link-signature-format~ :: Format of link
