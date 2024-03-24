@@ -2337,8 +2337,8 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 (defun denote-type ()
   "Create note while prompting for a file type.
 
-This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\='(file-type title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `file-type' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts (denote--add-prompts '(file-type))))
@@ -2356,8 +2356,8 @@ that plus the time: 2022-06-16 14:30.  When the user option
 `denote-date-prompt-use-org-read-date' is non-nil, the date
 prompt uses the more powerful Org+calendar system.
 
-This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\='(date title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `date' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts (denote--add-prompts '(date))))
@@ -2373,8 +2373,8 @@ is set to \\='(date title keywords)."
 Available candidates include the value of the variable
 `denote-directory' and any subdirectory thereof.
 
-This is equivalent to calling `denote' when `denote-prompts' is
-set to \\='(subdirectory title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `subdirectory' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts (denote--add-prompts '(subdirectory))))
@@ -2391,8 +2391,8 @@ Available candidates include the keys in the `denote-templates'
 alist.  The value of the selected key is inserted in the newly
 created note after the front matter.
 
-This is equivalent to calling `denote' when `denote-prompts' is
-set to \\='(template title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `template' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts (denote--add-prompts '(template))))
@@ -2405,8 +2405,8 @@ set to \\='(template title keywords)."
 (defun denote-signature ()
   "Create note while prompting for a file signature.
 
-This is the equivalent to calling `denote' when `denote-prompts'
-is set to \\='(signature title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `signature' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts (denote--add-prompts '(signature))))

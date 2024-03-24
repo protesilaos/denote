@@ -410,18 +410,16 @@ option, there are cases where an ad-hoc method is the appropriate one
 
 To this end, Denote provides the following interactive convenience
 commands for note creation. They all work by appending a new prompt to
-the existing ~denote-prompts~. For these examples, we assume the
-default value of ~denote-prompts~, which is ='(title keywords)=. [
-Appending to the existing ~denote-prompts~ is a behaviour defined in
-{{{development-version}}}. ]
+the existing ~denote-prompts~. [ Appending to the existing
+~denote-prompts~ is defined in {{{development-version}}}. ]
 
 + Create note by specifying file type :: The ~denote-type~ command
   creates a note while prompting for a file type.
 
-  This is the equivalent to calling ~denote~ when ~denote-prompts~ is
-  set to ='(file-type title keywords)=.  In practical terms, this lets
-  you produce, say, a note in Markdown even though you normally write in
-  Org ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+  This is the equivalent of calling ~denote~ when ~denote-prompts~ has
+  the =file-type= prompt appended to its existing prompts. In practical
+  terms, this lets you produce, say, a note in Markdown even though
+  you normally write in Org ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
   #+findex: denote-create-note-using-type
   The ~denote-create-note-using-type~ is an alias of ~denote-type~.
@@ -437,8 +435,8 @@ Appending to the existing ~denote-prompts~ is a behaviour defined in
 
   [[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]].
 
-  This is the equivalent to calling ~denote~ when ~denote-prompts~ is
-  set to ='(date title keywords)=.
+  This is the equivalent of calling ~denote~ when ~denote-prompts~ has
+  the =date= prompt appended to its existing prompts.
 
   #+findex: denote-create-note-using-date
   The ~denote-create-note-using-date~ is an alias of ~denote-date~.
@@ -448,8 +446,8 @@ Appending to the existing ~denote-prompts~ is a behaviour defined in
   candidates include the value of the variable ~denote-directory~ and
   any subdirectory thereof (Denote does not create subdirectories).
 
-  This is equivalent to calling ~denote~ when ~denote-prompts~ is set to
-  ='(subdirectory title keywords)=.
+  This is the equivalent of calling ~denote~ when ~denote-prompts~ has
+  the =subdirectory= prompt appended to its existing prompts.
 
   #+findex: denote-create-note-in-subdirectory
   The ~denote-create-note-in-subdirectory~ is a more descriptive alias
@@ -460,8 +458,8 @@ Appending to the existing ~denote-prompts~ is a behaviour defined in
   matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).  Available candidates for
   templates are specified in the user option ~denote-templates~.
 
-  This is equivalent to calling ~denote~ when ~denote-prompts~ is
-  set to ='(template title keywords)=.
+  This is the equivalent of calling ~denote~ when ~denote-prompts~ has
+  the =template= prompt appended to its existing prompts.
 
   #+findex: denote-create-note-with-template
   The ~denote-create-note-with-template~ is an alias of the command
@@ -473,6 +471,9 @@ Appending to the existing ~denote-prompts~ is a behaviour defined in
   Signatures are arbitrary strings of alphanumeric characters which
   can be used to establish sequential relations between file at the
   level of their file name (e.g. 1, 1a, 1b, 1b1, 1b2, ...).
+
+  This is the equivalent of calling ~denote~ when ~denote-prompts~ has
+  the =signature= prompt appended to its existing prompts.
 
   The ~denote-create-note-using-signature~ is an alias of the command
   ~denote-signature~ intended to make the functionality more
