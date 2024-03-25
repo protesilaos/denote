@@ -3727,12 +3727,11 @@ system path.  FILE-TYPE is a symbol as described in
 treats the active region specially, is up to it."
   (interactive
    (let* ((file (denote-file-prompt nil "Link to FILE"))
-          (file-type (when buffer-file-name
-                       (denote-filetype-heuristics buffer-file-name)))
+          (file-type (denote-filetype-heuristics buffer-file-name))
           (description (when (file-exists-p file)
                          (denote--link-get-description file))))
        (list file file-type description current-prefix-arg)))
-  (unless (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name))
+  (unless (or file-type (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (unless (file-exists-p file)
     (user-error "The linked file does not exist"))
