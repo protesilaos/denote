@@ -2497,8 +2497,9 @@ matches in the file.
 
 If no file type in `denote-file-types' has the file extension,
 the file type is assumed to be the first one in `denote-file-types'."
-  (if (denote--file-type-org-capture-p)
-      'org
+  (cond
+   ((denote--file-type-org-capture-p) 'org)
+   (file
     (let* ((extension (denote-get-file-extension-sans-encryption file))
            (types (denote--file-types-with-extension extension)))
       (cond ((null types)
@@ -2510,7 +2511,7 @@ the file type is assumed to be the first one in `denote-file-types'."
                        (lambda (type)
                          (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
                        types))
-                 (caar types)))))))
+                 (caar types))))))))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
