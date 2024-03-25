@@ -2481,7 +2481,7 @@ See the format of `denote-file-types'."
               denote-file-types))
 
 (defun denote--file-type-org-capture-p ()
-  "Return Org `denote-file-type' if this is an `org-capture' buffer."
+  "Return non-nil if this is an `org-capture' buffer."
   (and (bound-and-true-p org-capture-mode)
        (derived-mode-p 'org-mode)
        (string-match-p "\\`CAPTURE.*\\.org" (buffer-name))))
