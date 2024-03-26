@@ -101,11 +101,13 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
 
 (defun denote-journal-extras-directory ()
   "Make the variable `denote-journal-extras-directory' and its parents."
-  (when-let (((stringp denote-journal-extras-directory))
-             (directory (file-name-as-directory (expand-file-name denote-journal-extras-directory))))
-    (when (not (file-directory-p denote-journal-extras-directory))
-      (make-directory directory :parents))
-    directory))
+  (if-let (((stringp denote-journal-extras-directory))
+           (directory (file-name-as-directory (expand-file-name denote-journal-extras-directory))))
+      (progn
+        (when (not (file-directory-p denote-journal-extras-directory))
+          (make-directory directory :parents))
+        directory)
+    (denote-directory)))
 
 (defun denote-journal-extras-daily--title-format (&optional date)
   "Return present date in `denote-journal-extras-title-format' or prompt for title.
