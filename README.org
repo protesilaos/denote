@@ -549,7 +549,8 @@ commands that creeate new notes save their buffer outright.
 The default behaviour of commands such as ~denote~ (or related) is to
 not save the buffer they create ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). This gives the user
 the chance to review the text before writing it to a file. The user
-may choose to delete the unsaved buffer, thus not creating a new note.
+may choose to delete the unsaved buffer, thus not creating a new note
+([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffer-after-creation~ option]]).
 
 If ~denote-save-buffer-after-creation~ is set to a non-nil value, such
 buffers are saved automatically.

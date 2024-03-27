@@ -3886,7 +3886,7 @@ However, for this command the creation of the note happens in the
 background and the user may miss the step of saving their buffer.
 We thus have to save the buffer in order to (i) establish valid
 links, and (ii) retrieve whatever front matter from the target
-file."
+file.  Though see `denote-save-buffer-after-creation'."
   (interactive "P")
   (unless (or (denote--file-type-org-capture-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
