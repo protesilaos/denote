@@ -2213,7 +2213,7 @@ Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
 here for clarity."
   (completing-read
-   "Select file type: " (denote--file-type-keys) nil t
+   "Select file TYPE: " (denote--file-type-keys) nil t
    nil 'denote-file-type-history))
 
 (defvar denote-date-history nil
@@ -2259,8 +2259,8 @@ Use Org's more advanced date selection utility if the user option
   (let* ((def (car denote-subdirectory-history))
          (table (denote--completion-table 'file dirs))
          (prompt (if def
-                     (format "Select subdirectory [%s]: " def)
-                   "Select subdirectory: ")))
+                     (format "Select SUBDIRECTORY [%s]: " def)
+                   "Select SUBDIRECTORY: ")))
     (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
 
 (defun denote-subdirectory-prompt ()
@@ -2284,7 +2284,7 @@ packages such as `marginalia' and `embark')."
     (alist-get
      (intern
       (completing-read
-       "Select template KEY: " (mapcar #'car templates)
+       "Select TEMPLATE key: " (mapcar #'car templates)
        nil t nil 'denote-template-history))
      templates)))
 
