@@ -1150,7 +1150,7 @@ With optional PROMPT-TEXT, use it instead of the default call to
               (if (> (length common-prefix) 0)
                   (file-name-directory common-prefix))))
            (cpd-length (length common-parent-directory))
-           (prompt-prefix (or prompt-text "Select NOTE"))
+           (prompt-prefix (or prompt-text "Select FILE"))
            (prompt (if (zerop cpd-length)
                        (format "%s: " prompt-prefix)
                      (format "%s in %s: " prompt-prefix common-parent-directory)))
