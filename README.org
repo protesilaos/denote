@@ -2258,7 +2258,7 @@ for our purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
 ** Link to an existing note or create a new one
 :PROPERTIES:
-:CUSTOM_ID: h:9e41e7df-2aac-4835-94c5-659b6111e6de
+:CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
 :END:
 
 In one's note-taking workflow, there may come a point where they are
@@ -2283,13 +2283,14 @@ this end, Denote provides two convenience commands:
   ~denote-link~ ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
 
   IMPORTANT NOTE: Normally, ~denote~ does not save the buffer it
-  produces for the new note.  This is a safety precaution to not write
-  to disk unless the user wants it (e.g. the user may choose to kill the
-  buffer, thus cancelling the creation of the note).  However, for this
-  command the creation of the note happens in the background and the
-  user may miss the step of saving their buffer.  We thus have to save
-  the buffer in order to (i) establish valid links, and (ii) retrieve
-  whatever front matter from the target file.
+  produces for the new note ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffer-after-creation~ option]]). 
+  This is a safety precaution to not write to disk unless the user
+  wants it (e.g. the user may choose to kill the buffer, thus
+  cancelling the creation of the note). However, for this command the
+  creation of the note happens in the background and the user may miss
+  the step of saving their buffer. We thus have to save the buffer in
+  order to (i) establish valid links, and (ii) retrieve whatever front
+  matter from the target file.
 
 #+findex: denote-link-after-creating-with-command
 + ~denote-link-after-creating-with-command~ :: This command is like
@@ -2318,6 +2319,20 @@ this end, Denote provides two convenience commands:
 
   This command has the alias ~denote-link-to-existing-or-new-note~,
   which helps with discoverability.
+
+#+findex: denote-link-or-create-with-command
++ ~denote-link-or-create-with-command~ :: This is like the above,
+  except when it is about to create the new note it first prompts for
+  the specific file-creating command to use ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). For
+  example, the user may want to specify a signature for this new file,
+  so they can select the ~denote-signature~ command.
+
+In all of the above, an optional prefix argument (=C-u= by default)
+creates a link that consists of just the identifier.  This has the
+same meaning as in the regular ~denote-link~ command.
+
+Denote provides similar functionality for opening an existing note or
+creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing note or create it if missing]]).
 
 ** The backlinks' buffer
 :PROPERTIES:
@@ -2463,64 +2478,6 @@ session).
 To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
 in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
-
-** Link to a note or create it if missing
-:PROPERTIES:
-:CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
-:END:
-
-#+findex: denote-link-after-creating
-#+findex: denote-link-after-creating-with-command
-#+findex: denote-link-or-create
-#+findex: denote-link-or-create-with-command
-During a writing session, it is possible that a thought occurs which
-does not require immediate attention but nonetheless must be linked to
-from the current context.  Denote can be used in this case to
-establish a link to an existing note or, if that is missing, to create
-it.  The commands are ~denote-link-after-creating~, its more flexible
-variant ~denote-link-after-creating-with-command~, the
-~denote-link-or-create~, and ~denote-link-or-create-with-command~.
-
-The command ~denote-link-or-create~ prompts for an existing file in
-the ~denote-directory~ in order to link to it ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).  At
-this point, the user must type in search terms that match a file name.
-If the input does not return any matches and the user confirms their
-choice to proceed (usually by typing RET twice, depending on the
-minibuffer settings), ~denote-link-or-create~ will call the ~denote~
-command interactively to create a new note.  It will then use whatever
-prompts ~denote~ normally has, per the user option ~denote-prompts~
-([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  If the title prompt is involved (the default
-behaviour), the ~denote-link-or-create~ sets up this prompt to have
-the previous input as the default title of the note to-be-created.
-This means that the user can type RET at the empty prompt to re-use
-what they typed in previously.  Commands to use previous inputs from
-the history are also available (=M-p= or =M-n= in the minibuffer,
-which call ~previous-history-element~ and ~next-history-element~ by
-default).  Accessing the history is helpful to, for example, make
-further edits to the available text.
-
-In the case where a file is created, the process happens in the
-background, meaning that the new file is not displayed.  It is simply
-linked to from the current context.
-
-The ~denote-link-or-create-with-command~ is like the above, except
-when it is about to create the new note it first prompts for the
-specific file-creating command to use ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  For example,
-the user may want to specify a signature for this new file, so they
-can select the ~denote-signature~ command.
-
-The commands ~denote-link-after-creating~ and ~denote-link-or-create-with-command~
-are conceptually the same as above except they do not have the "or
-create" logic: they always create a new file in the backgroun (in
-fact, the aforementioned use those two to perform the linking, which
-is consistent with the composability and hackability of Denote).
-
-In all of the above, an optional prefix argument (=C-u= by default)
-creates a link that consists of just the identifier.  This has the
-same meaning as in the regular ~denote-link~ command.
-
-Denote provides similar functionality for opening an existing note or
-creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing note or create it if missing]]).
 
 ** Convert =denote:= links to =file:= links
 :PROPERTIES:
