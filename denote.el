@@ -676,6 +676,20 @@ have been warned."
  'denote-file-name-slug-functions
  "2.3.0")
 
+(defcustom denote-link-description-function #'denote-link-description-with-signature-and-title
+  "Function to create the description of links.
+
+The function specified takes a FILE argument and returns the description
+as a string.
+
+By default, the title of the file is returned as the description.  If
+the file has a signature, it is prepended to the title."
+  :group 'denote
+  :type '(choice
+          (function :tag "Link to title and include signature, if present" denote-link-description-with-signature-and-title)
+          (function :tag "Custom function like `denote-link-description-with-signature-and-title'"))
+  :package-version '(denote . "2.3.0"))
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -3631,27 +3645,7 @@ See the `:link' property of `denote-file-types'."
    description))
 
 (make-obsolete 'denote-link--format-link 'denote-format-link "2.1.0")
-
-;; NOTE 2023-12-05 04:16 +0200: This is a candidate for a user option,
-;; subject to feedback.  I think the signature should be better
-;; disambiguated in this context, although the double space is a good
-;; start.
-(define-obsolete-variable-alias
-  'denote--link-signature-format
-  'denote-link-signature-format
-  "2.3.0")
-
-(defvar denote-link-signature-format "%s  %s"
-  "Format of link description for `denote-link-with-signature'.")
-
-;; TODO 2024-02-22: Consider documenting this, such as:
-;; <https://github.com/protesilaos/denote/issues/255#issuecomment-1949634482>.
-(defvar denote-link-description-function #'denote-link-description-with-signature-and-title
-  "Function to use to create the description of links.
-
-The function specified should take a FILE argument and should
-return the description as a string.  By default, the title of the
-file is returned as the description.")
+(make-obsolete 'denote-link-signature-format nil "2.3.0")
 
 (defun denote--link-get-description (file)
   "Return link description for FILE."
@@ -3664,21 +3658,22 @@ file is returned as the description.")
 
 - If the region is active, use it as the description.
 
-- If FILE as a signature, then use the `denote-link-signature-format'.
-  By default, this looks like \"signature   title\".
+- If FILE as a signature, then format the description as a sequence of
+  the signature text and the title with two spaces between them.
 
 - If FILE does not have a signature, then use its title as the
-  description."
+  description.
+
+This is useful as the value of the user option
+`denote-link-description-function'."
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
          (title (denote-retrieve-title-or-filename file file-type))
          (region-text (denote--get-active-region-content)))
-    (cond (region-text
-           region-text)
-          (signature
-           (format denote-link-signature-format signature title))
-          (t
-           (format "%s" title)))))
+    (cond
+     (region-text region-text)
+     ((and signature title) (format "%s  %s" signature title))
+     (t title))))
 
 (defun denote--get-active-region-content ()
   "Return the text of the active region, else nil."

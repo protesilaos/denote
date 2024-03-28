@@ -2526,6 +2526,20 @@ aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
 these aliases is to offer alternative, more descriptive names of
 select commands.
 
+*** The ~denote-link-description-function~ to format links
+:PROPERTIES:
+:CUSTOM_ID: h:f634427c-b451-40e2-993e-e00ac627af68
+:END:
+
+#+vindex: denote-link-description-function
+The user option ~denote-link-description-function~ takes as its value
+the symbol of a function. This is used to format the text of the link.
+The default function inserts the title. If the file has a signature,
+it includes that as well, prepending it to the title.
+
+The function specified accepts a single =FILE= argument and returns
+the description as a string.
+
 * Choose which commands to prompt for
 :PROPERTIES:
 :CUSTOM_ID: h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51
