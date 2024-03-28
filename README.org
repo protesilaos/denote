@@ -2007,11 +2007,9 @@ front matter.
 
 Denote offers several commands for linking between notes.
 
-All links target files which are Denote notes.  This means that they
-have our file-naming scheme, are writable/regular (not directory, named
-pipe, etc.), and use the appropriate file type extension (per
-~denote-file-type~).  Furthermore, the files need to be inside the
-~denote-directory~ or one of its subdirectories.  No other file is
+All links target files which are Denote files. This means that they
+have our file-naming scheme. Files need to be inside the
+~denote-directory~ or one of its subdirectories. No other file is
 recognised.
 
 The following sections delve into the details.
