@@ -2511,6 +2511,11 @@ that are relevant for this use-case:
 :CUSTOM_ID: h:dd8f2231-8d77-49b9-acc4-af525c68b271
 :END:
 
+*** Aliases for the linking commands
+:PROPERTIES:
+:CUSTOM_ID: h:078856d9-f608-43a8-be84-f2cad4c27d0e
+:END:
+
 #+findex: denote-insert-link
 #+findex: denote-show-backlinks-buffer
 #+findex: denote-link-insert-links-matching-regexp
