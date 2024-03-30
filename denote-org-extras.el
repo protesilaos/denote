@@ -332,7 +332,11 @@ Also see `denote-org-extras-dblock--files'."
                            :id-only nil))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-links" 'denote-org-extras-dblock-insert-links)
+;; NOTE 2024-03-30: This is how the autoload is done in org.el.
+;;;###autoload
+(eval-after-load 'org
+  '(progn
+     (org-dynamic-block-define "denote-links" 'denote-org-extras-dblock-insert-links)))
 
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
@@ -363,7 +367,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                            :id-only nil))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-missing-links" 'denote-org-extras-dblock-insert-links)
+;; NOTE 2024-03-30: This is how the autoload is done in org.el.
+;;;###autoload
+(eval-after-load 'org
+  '(progn
+     (org-dynamic-block-define "denote-missing-links" 'denote-org-extras-dblock-insert-links)))
 
 (defun org-dblock-write:denote-missing-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
@@ -402,7 +410,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                            :id-only nil))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-backlinks" 'denote-org-extras-dblock-insert-backlinks)
+;; NOTE 2024-03-30: This is how the autoload is done in org.el.
+;;;###autoload
+(eval-after-load 'org
+  '(progn
+     (org-dynamic-block-define "denote-backlinks" 'denote-org-extras-dblock-insert-backlinks)))
 
 (defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
@@ -506,7 +518,11 @@ among `denote-sort-components'."
                            :add-links nil))
   (org-update-dblock))
 
-(org-dynamic-block-define "denote-files" 'denote-org-extras-dblock-insert-files)
+;; NOTE 2024-03-30: This is how the autoload is done in org.el.
+;;;###autoload
+(eval-after-load 'org
+  '(progn
+     (org-dynamic-block-define "denote-files" 'denote-org-extras-dblock-insert-files)))
 
 (defun org-dblock-write:denote-files (params)
   "Function to update `denote-files' Org Dynamic blocks.
