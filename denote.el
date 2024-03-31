@@ -4631,7 +4631,9 @@ Consult the manual for template samples."
          (directory (if (denote--dir-in-denote-directory-p subdirectory)
                         (file-name-as-directory subdirectory)
                       (denote-directory)))
-         (template (or (alist-get template denote-templates) ""))
+         (template (if (stringp template)
+                       template
+                     (or (alist-get template denote-templates) "")))
          (signature (or signature ""))
          (front-matter (denote--format-front-matter
                         title (denote--date nil 'org) keywords
