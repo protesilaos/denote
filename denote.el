@@ -1936,9 +1936,12 @@ returned."
                ((stringp filetype) (intern filetype))
                ((symbolp filetype) filetype)
                (t (error "The `%s' is neither a string nor a symbol" filetype)))))
-    (if (memq type (denote--file-type-keys))
-        type
-      (caar denote-file-types))))
+    (cond ((memq type (denote--file-type-keys))
+           type)
+          ((null denote-file-types)
+           (user-error "At least one file type must be defined in `denote-file-types' to create a note"))
+          (t
+           (caar denote-file-types)))))
 
 (defun denote--date-add-current-time (date)
   "Add current time to DATE, if necessary.
