@@ -2494,11 +2494,14 @@ See the format of `denote-file-types'."
                 (string-equal (plist-get (cdr type) :extension) extension))
               denote-file-types))
 
-(defun denote--file-type-org-capture-p ()
-  "Return non-nil if this is an `org-capture' buffer."
-  (and (bound-and-true-p org-capture-mode)
-       (derived-mode-p 'org-mode)
-       (string-match-p "\\`CAPTURE.*\\.org" (buffer-name))))
+(defun denote--file-type-org-extra-p ()
+  "Return non-nil if this is an `org-capture' or Org Note buffer."
+  (or
+   (and (bound-and-true-p org-capture-mode)
+        (derived-mode-p 'org-mode)
+        (string-match-p "\\`CAPTURE.*\\.org" (buffer-name)))
+   (and (derived-mode-p 'org-mode)
+        (string-match-p "\\`\\*Org Note\\*" (buffer-name)))))
 
 (defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
@@ -2512,7 +2515,7 @@ matches in the file.
 If no file type in `denote-file-types' has the file extension,
 the file type is assumed to be the first one in `denote-file-types'."
   (cond
-   ((denote--file-type-org-capture-p) 'org)
+   ((denote--file-type-org-extra-p) 'org)
    (file
     (let* ((extension (denote-get-file-extension-sans-encryption file))
            (types (denote--file-types-with-extension extension)))
@@ -3727,7 +3730,7 @@ treats the active region specially, is up to it."
           (description (when (file-exists-p file)
                          (denote--link-get-description file))))
        (list file file-type description current-prefix-arg)))
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (unless (file-exists-p file)
@@ -3759,7 +3762,7 @@ For more advanced uses with Lisp, refer to the `denote-link'
 function."
   (declare (interactive-only t))
   (interactive)
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let* ((file (denote-file-prompt "="))
@@ -3883,7 +3886,7 @@ We thus have to save the buffer in order to (i) establish valid
 links, and (ii) retrieve whatever front matter from the target
 file.  Though see `denote-save-buffer-after-creation'."
   (interactive "P")
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let* ((type (denote-filetype-heuristics (buffer-file-name)))
@@ -3903,7 +3906,7 @@ Optional ID-ONLY has the same meaning as in the command
    (list
     (denote-command-prompt)
     current-prefix-arg))
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let* ((type (denote-filetype-heuristics (buffer-file-name)))
@@ -3934,7 +3937,7 @@ file's title.  This has the same meaning as in `denote-link'."
      (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (denote-link target
@@ -4258,7 +4261,7 @@ inserts links with just the identifier."
    (list
     (denote-files-matching-regexp-prompt "Insert links matching REGEXP")
     current-prefix-arg))
-  (unless (or (denote--file-type-org-capture-p)
+  (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
