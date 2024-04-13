@@ -4139,7 +4139,7 @@ ALIST is not used in favour of using
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (when-let  ((title (denote-retrieve-front-matter-title-value file file-type))
+      (when-let  ((title (denote-retrieve-title-or-filename file file-type))
                   (heading (format "Backlinks to %S (%s)" title id))
                   (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
@@ -4180,14 +4180,12 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (let ((file (buffer-file-name)))
-    (when (denote-file-is-writable-and-supported-p file)
-      (let* ((id (denote-retrieve-filename-identifier-with-error file))
+  (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name))
              (xref-show-xrefs-function #'denote-link--prepare-backlinks))
-        (xref--show-xrefs
-         (apply-partially #'xref-matches-in-files id
-                          (denote-directory-files nil :omit-current :text-only))
-         nil)))))
+    (xref--show-xrefs
+     (apply-partially #'xref-matches-in-files id
+                      (denote-directory-files nil :omit-current :text-only))
+     nil)))
 
 (define-obsolete-function-alias
   'denote-link-show-backlinks-buffer
