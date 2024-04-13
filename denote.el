@@ -1908,7 +1908,7 @@ path to DIR."
       (denote-date-org-timestamp date)))))
 
 (defun denote--prepare-note (title keywords date id directory file-type template signature)
-  "Prepare a new note file.
+  "Prepare a new note file and return its path.
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 TEMPLATE, and SIGNATURE should be valid for note creation."
@@ -1920,7 +1920,8 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
                   file-type)))
     (with-current-buffer buffer
       (insert header)
-      (insert template))))
+      (insert template))
+    path))
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
@@ -2109,7 +2110,8 @@ The path of the newly created file is returned."
 (defun denote (&optional title keywords file-type subdirectory date template signature)
   "Create a new note with the appropriate metadata and file name.
 
-Run the `denote-after-new-note-hook' after creating the new note.
+Run the `denote-after-new-note-hook' after creating the new note
+and return its path.
 
 When called interactively, the metadata and file name are prompted
 according to the value of `denote-prompts'.
@@ -2168,11 +2170,12 @@ When called from Lisp, all arguments are optional.
          (template (if (stringp template)
                        template
                      (or (alist-get template denote-templates) "")))
-         (signature (or signature "")))
-    (denote--prepare-note title kws date id directory file-type template signature)
+         (signature (or signature ""))
+         (note-path (denote--prepare-note title kws date id directory file-type template signature)))
     (when denote-save-buffer-after-creation (save-buffer))
     (denote--keywords-add-to-history keywords)
-    (run-hooks 'denote-after-new-note-hook)))
+    (run-hooks 'denote-after-new-note-hook)
+    note-path))
 
 (defvar denote-title-history nil
   "Minibuffer history of `denote-title-prompt'.")
