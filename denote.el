@@ -1873,13 +1873,6 @@ Apply `denote-sluggify' to KEYWORDS."
   (let ((kws (denote-sluggify-keywords keywords)))
     (funcall (denote--keywords-value-function file-type) kws)))
 
-(defun denote--path (title keywords dir id file-type signature)
-  "Return path to new file.
-Use ID, TITLE, KEYWORDS, FILE-TYPE and SIGNATURE to construct
-path to DIR."
-  (denote-format-file-name
-   dir id keywords title (denote--file-extension file-type) signature))
-
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote-date-rfc3339 (date)
@@ -1912,7 +1905,8 @@ path to DIR."
 
 Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 TEMPLATE, and SIGNATURE should be valid for note creation."
-  (let* ((path (denote--path title keywords directory id file-type signature))
+  (let* ((path (denote-format-file-name
+                directory id keywords title (denote--file-extension file-type) signature))
          (buffer (find-file path))
          (header (denote--format-front-matter
                   title (denote--date date file-type) keywords
@@ -4640,7 +4634,7 @@ Consult the manual for template samples."
                         title (denote--date nil 'org) keywords
                         (denote-get-identifier) 'org)))
     (setq denote-last-path
-          (denote--path title keywords directory id 'org signature))
+          (denote-format-file-name directory id keywords title ".org" signature))
     (denote--keywords-add-to-history keywords)
     (concat front-matter template denote-org-capture-specifiers))))
 
