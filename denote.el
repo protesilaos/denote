@@ -3007,7 +3007,12 @@ Run the `denote-after-rename-file-hook' after renaming is done.
   check them to confirm that the new front matter does not cause
   any problems (e.g. with the `diff-buffer-with-file' command).
   Multiple buffers can be saved in one go with the command
-  `save-some-buffers' (read its doc string).  ]"
+  `save-some-buffers' (read its doc string).  ]
+
+Also see the specialized commands to only add or remove keywords:
+
+- `denote-dired-rename-marked-files-add-keywords'.
+- `denote-dired-rename-marked-files-remove-keywords'."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (denote-dired-rename-marked-files--change-keywords
@@ -3015,36 +3020,7 @@ Run the `denote-after-rename-file-hook' after renaming is done.
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-add-keywords ()
-  "Rename marked files in Dired to a Denote file name by writing keywords.
-
-Specifically, do the following:
-
-- retain the file's existing name and make it the TITLE field,
-  per Denote's file-naming scheme;
-
-- sluggify the TITLE, according to our conventions (check the
-  user option `denote-file-name-slug-functions');
-
-- prepend an identifier to the TITLE;
-
-- preserve the file's extension, if any;
-
-- prompt once for KEYWORDS and apply the user's input to the
-  corresponding field in the file name, adding to any keywords
-  that may already exist;
-
-- add or rewrite existing front matter to the underlying file, if
-  it is recognized as a Denote note (per `denote-file-type'),
-  such that it includes the new keywords.
-
-Run the `denote-after-rename-file-hook' after renaming is done.
-
-[ Note that the affected buffers are not saved, unless the user
-  option `denote-rename-no-confirm' is non-nil.  Users can thus
-  check them to confirm that the new front matter does not cause
-  any problems (e.g. with the `diff-buffer-with-file' command).
-  Multiple buffers can be saved in one go with the command
-  `save-some-buffers' (read its doc string).  ]"
+  "Like `denote-dired-rename-marked-files-with-keywords' to only add keywords."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (denote-dired-rename-marked-files--change-keywords
@@ -3052,36 +3028,7 @@ Run the `denote-after-rename-file-hook' after renaming is done.
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-remove-keywords ()
-  "Rename marked files in Dired to a Denote file name by writing keywords.
-
-Specifically, do the following:
-
-- retain the file's existing name and make it the TITLE field,
-  per Denote's file-naming scheme;
-
-- sluggify the TITLE, according to our conventions (check the
-  user option `denote-file-name-slug-functions');
-
-- prepend an identifier to the TITLE;
-
-- preserve the file's extension, if any;
-
-- prompt once for KEYWORDS and apply the user's input to the
-  corresponding field in the file name, removing user's input from any
-  keywords that may already exist;
-
-- add or rewrite existing front matter to the underlying file, if
-  it is recognized as a Denote note (per `denote-file-type'),
-  such that it includes the new keywords.
-
-Run the `denote-after-rename-file-hook' after renaming is done.
-
-[ Note that the affected buffers are not saved, unless the user
-  option `denote-rename-no-confirm' is non-nil.  Users can thus
-  check them to confirm that the new front matter does not cause
-  any problems (e.g. with the `diff-buffer-with-file' command).
-  Multiple buffers can be saved in one go with the command
-  `save-some-buffers' (read its doc string).  ]"
+  "Like `denote-dired-rename-marked-files-with-keywords' to only remove keywords."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (denote-dired-rename-marked-files--change-keywords
