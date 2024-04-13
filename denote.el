@@ -2920,6 +2920,65 @@ setting `denote-rename-no-confirm' to a non-nil value)."
 (defalias 'denote-dired-rename-marked-files 'denote-dired-rename-files
   "Alias for `denote-dired-rename-files'.")
 
+(defun denote-keywords--combine (combination-type user-input-keywords keywords)
+  "COMBINATION-TYPE is either `:add', `:remove' or `:replace'.
+
+USER-INPUT-KEYWORDS are new keywords collected from the end-user.
+KEYWORDS are the existing keywords for the underlying file.
+
+This function is an internal implementation function."
+  (cond
+   ((eq combination-type :add)
+    (denote-keywords-sort
+     (delete-dups
+      (append user-input-keywords keywords))))
+
+   ((eq combination-type :replace)
+    (denote-keywords-sort user-input-keywords))
+
+   ((eq combination-type :remove)
+    (denote-keywords-sort
+     (dolist (k user-input-keywords keywords)
+       (setq keywords (delete k keywords)))))
+
+   (t
+    (error "Unknown operation in denote-keywords--combine: %s"
+           combination-type))))
+
+(defun denote-dired-rename-marked-files--change-keywords (combination-type keywords-prompt)
+  "COMBINATION-TYPE is either `:add', `:remove' or `:replace'.
+
+KEYWORDS-PROMPT is the prompt we show the end-user, when taking keywords
+as input.
+
+This function is an internal implementation function."
+  (if-let ((marks (dired-get-marked-files)))
+      (let ((user-input-keywords (denote-keywords-prompt keywords-prompt))
+            (used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
+                        (denote--get-all-used-ids))))
+        (dolist (file marks)
+          (let* ((dir (file-name-directory file))
+                 (id (or (denote-retrieve-filename-identifier file)
+                         (denote-create-unique-file-identifier file used-ids)))
+                 (signature (or (denote-retrieve-filename-signature file) ""))
+                 (file-type (denote-filetype-heuristics file))
+                 (title (denote-retrieve-title-or-filename file file-type))
+                 (extension (denote-get-file-extension file))
+                 (keywords (split-string (or (denote-retrieve-filename-keywords file) "")
+                                         "_" :omit-nulls "_"))
+                 (new-keywords (denote-keywords--combine combination-type user-input-keywords keywords))
+                 (new-name (denote-format-file-name dir id new-keywords title extension signature)))
+            (denote-rename-file-and-buffer file new-name)
+            (when (denote-file-is-writable-and-supported-p new-name)
+              (if (denote--edit-front-matter-p new-name file-type)
+                  (denote-rewrite-keywords new-name new-keywords file-type denote-rename-no-confirm)
+                (denote--add-front-matter new-name title new-keywords id file-type denote-rename-no-confirm)))
+            (run-hooks 'denote-after-rename-file-hook)
+            (when used-ids
+              (puthash id t used-ids))))
+        (denote-update-dired-buffers))
+    (user-error "No marked files; aborting")))
+
 ;;;###autoload
 (defun denote-dired-rename-marked-files-with-keywords ()
   "Rename marked files in Dired to a Denote file name by writing keywords.
@@ -2955,30 +3014,82 @@ Run the `denote-after-rename-file-hook' after renaming is done.
   `save-some-buffers' (read its doc string).  ]"
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files)))
-      (let ((keywords (denote-keywords-sort
-                       (denote-keywords-prompt "Rename marked files with KEYWORDS, overwriting existing (empty to ignore/remove)")))
-            (used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
-                        (denote--get-all-used-ids))))
-        (dolist (file marks)
-          (let* ((dir (file-name-directory file))
-                 (id (or (denote-retrieve-filename-identifier file)
-                         (denote-create-unique-file-identifier file used-ids)))
-                 (signature (or (denote-retrieve-filename-signature file) ""))
-                 (file-type (denote-filetype-heuristics file))
-                 (title (denote-retrieve-title-or-filename file file-type))
-                 (extension (denote-get-file-extension file))
-                 (new-name (denote-format-file-name dir id keywords title extension signature)))
-            (denote-rename-file-and-buffer file new-name)
-            (when (denote-file-is-writable-and-supported-p new-name)
-              (if (denote--edit-front-matter-p new-name file-type)
-                  (denote-rewrite-keywords new-name keywords file-type denote-rename-no-confirm)
-                (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm)))
-            (run-hooks 'denote-after-rename-file-hook)
-            (when used-ids
-              (puthash id t used-ids))))
-        (denote-update-dired-buffers))
-    (user-error "No marked files; aborting")))
+  (denote-dired-rename-marked-files--change-keywords
+   :replace "Rename marked files with KEYWORDS, overwriting existing (empty to ignore/remove)"))
+
+;;;###autoload
+(defun denote-dired-rename-marked-files-add-keywords ()
+  "Rename marked files in Dired to a Denote file name by writing keywords.
+
+Specifically, do the following:
+
+- retain the file's existing name and make it the TITLE field,
+  per Denote's file-naming scheme;
+
+- sluggify the TITLE, according to our conventions (check the
+  user option `denote-file-name-slug-functions');
+
+- prepend an identifier to the TITLE;
+
+- preserve the file's extension, if any;
+
+- prompt once for KEYWORDS and apply the user's input to the
+  corresponding field in the file name, adding to any keywords
+  that may already exist;
+
+- add or rewrite existing front matter to the underlying file, if
+  it is recognized as a Denote note (per `denote-file-type'),
+  such that it includes the new keywords.
+
+Run the `denote-after-rename-file-hook' after renaming is done.
+
+[ Note that the affected buffers are not saved, unless the user
+  option `denote-rename-no-confirm' is non-nil.  Users can thus
+  check them to confirm that the new front matter does not cause
+  any problems (e.g. with the `diff-buffer-with-file' command).
+  Multiple buffers can be saved in one go with the command
+  `save-some-buffers' (read its doc string).  ]"
+  (declare (interactive-only t))
+  (interactive nil dired-mode)
+  (denote-dired-rename-marked-files--change-keywords
+   :add "Add KEYWORDS to marked files"))
+
+;;;###autoload
+(defun denote-dired-rename-marked-files-remove-keywords ()
+  "Rename marked files in Dired to a Denote file name by writing keywords.
+
+Specifically, do the following:
+
+- retain the file's existing name and make it the TITLE field,
+  per Denote's file-naming scheme;
+
+- sluggify the TITLE, according to our conventions (check the
+  user option `denote-file-name-slug-functions');
+
+- prepend an identifier to the TITLE;
+
+- preserve the file's extension, if any;
+
+- prompt once for KEYWORDS and apply the user's input to the
+  corresponding field in the file name, removing user's input from any
+  keywords that may already exist;
+
+- add or rewrite existing front matter to the underlying file, if
+  it is recognized as a Denote note (per `denote-file-type'),
+  such that it includes the new keywords.
+
+Run the `denote-after-rename-file-hook' after renaming is done.
+
+[ Note that the affected buffers are not saved, unless the user
+  option `denote-rename-no-confirm' is non-nil.  Users can thus
+  check them to confirm that the new front matter does not cause
+  any problems (e.g. with the `diff-buffer-with-file' command).
+  Multiple buffers can be saved in one go with the command
+  `save-some-buffers' (read its doc string).  ]"
+  (declare (interactive-only t))
+  (interactive nil dired-mode)
+  (denote-dired-rename-marked-files--change-keywords
+   :remove "Remove KEYWORDS from marked files"))
 
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file &optional no-confirm save-buffer)
