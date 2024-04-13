@@ -2496,12 +2496,10 @@ See the format of `denote-file-types'."
 
 (defun denote--file-type-org-extra-p ()
   "Return non-nil if this is an `org-capture' or Org Note buffer."
-  (or
-   (and (bound-and-true-p org-capture-mode)
-        (derived-mode-p 'org-mode)
-        (string-match-p "\\`CAPTURE.*\\.org" (buffer-name)))
-   (and (derived-mode-p 'org-mode)
-        (string-match-p "\\`\\*Org Note\\*" (buffer-name)))))
+  (and (derived-mode-p 'org-mode)
+       (or (and (bound-and-true-p org-capture-mode)
+                (string-match-p "\\`CAPTURE.*\\.org" (buffer-name)))
+           (string-match-p "\\`\\*Org Note\\*" (buffer-name)))))
 
 (defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
