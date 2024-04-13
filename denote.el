@@ -1193,7 +1193,7 @@ with an underscore.
 
 If PATH has no such keywords, return nil."
   (when-let ((kws (denote-retrieve-filename-keywords path)))
-    (split-string kws "_")))
+    (split-string kws "_" :omit-nulls)))
 
 (defun denote--inferred-keywords ()
   "Extract keywords from `denote-directory-files'.
@@ -2814,7 +2814,7 @@ one-by-one, use `denote-dired-rename-files'."
           (file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
           (date nil)
           (title (denote-retrieve-title-or-filename file file-type))
-          (keywords (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
+          (keywords (denote-extract-keywords-from-path file))
           (signature (or (denote-retrieve-filename-signature file) "")))
      (dolist (prompt denote-prompts)
        (pcase prompt
@@ -2825,7 +2825,7 @@ one-by-one, use `denote-dired-rename-files'."
          ('keywords
           (setq keywords (denote-keywords-prompt
                           (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
-                          keywords)))
+                          (string-join keywords ","))))
          ('signature
           (setq signature (denote-signature-prompt
                            signature
@@ -2834,13 +2834,11 @@ one-by-one, use `denote-dired-rename-files'."
           (unless (denote-file-has-identifier-p file)
             (setq date (denote-date-prompt))))))
      (list file title keywords signature date)))
-  (setq keywords (denote-keywords-sort
-                  (if (stringp keywords)
-                      (split-string keywords "," :omit-nulls)
-                    keywords)))
   (let* ((dir (file-name-directory file))
          (id (or (denote-retrieve-filename-identifier file)
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids) date)))
+         (title (or title ""))
+         (keywords (denote-keywords-sort keywords))
          ;; TODO 2024-02-13: Should we derive the extension from the
          ;; `denote-file-type-prompt' if we are conforming with the
          ;; `denote-prompts'?
@@ -2877,7 +2875,7 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                  (id (or (denote-retrieve-filename-identifier file)
                          (denote-create-unique-file-identifier file used-ids)))
                  (title (denote-retrieve-title-or-filename file file-type))
-                 (keywords (denote-convert-file-name-keywords-to-crm (or (denote-retrieve-filename-keywords file) "")))
+                 (keywords (denote-extract-keywords-from-path file))
                  (signature (or (denote-retrieve-filename-signature file) ""))
                  (extension (denote-get-file-extension file)))
             (dolist (prompt denote-prompts)
@@ -2889,18 +2887,15 @@ setting `denote-rename-no-confirm' to a non-nil value)."
                 ('keywords
                  (setq keywords (denote-keywords-prompt
                                  (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
-                                 keywords)))
+                                 (string-join keywords ","))))
                 ('signature
                  (setq signature (denote-signature-prompt
                                   signature
                                   (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
                 ('date
                  (setq id (denote-prompt-for-date-return-id)))))
-            (setq keywords (denote-keywords-sort
-                            (if (stringp keywords)
-                                (split-string keywords "," :omit-nulls)
-                              keywords)))
-            (let ((new-name (denote-format-file-name dir id keywords title extension signature)))
+            (let* ((keywords (denote-keywords-sort keywords))
+                   (new-name (denote-format-file-name dir id keywords title extension signature)))
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
                 (if (denote--edit-front-matter-p new-name file-type)
