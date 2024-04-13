@@ -1425,6 +1425,14 @@ so by writing keywords to them. Specifically, it does the following:
   saved in one go with the command ~save-some-buffers~ (read its doc
   string). ]
 
+[ The following two commands are part of {{{development-version}}}. ]
+
+#+findex: denote-dired-rename-marked-files-add-keywords
+#+findex: denote-dired-rename-marked-files-remove-keywords
+For more specialized versions of this command that only add or remove
+keywords, use ~denote-dired-rename-marked-files-add-keywords~ and
+~denote-dired-rename-marked-files-remove-keywords~, respectively.
+
 ** Rename multiple files based on their front matter
 :PROPERTIES:
 :CUSTOM_ID: h:ea5673cd-e6ca-4c42-a066-07dc6c9d57f8
