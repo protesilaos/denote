@@ -544,7 +544,7 @@ to the list of commands available at the ~denote-command-prompt~
 
 #+vindex: denote-save-buffer-after-creation
 The user option ~denote-save-buffer-after-creation~ controls whether
-commands that creeate new notes save their buffer outright.
+commands that create new notes save their buffer outright.
 
 The default behaviour of commands such as ~denote~ (or related) is to
 not save the buffer they create ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). This gives the user
