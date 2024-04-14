@@ -4354,16 +4354,7 @@ might change them without further notice.
 #+findex: denote-retrieve-front-matter-keywords-value
 + Function ~denote-retrieve-front-matter-keywords-value~ :: Return keywords value
   from =FILE= front matter per =FILE-TYPE=. The return value is a list
-  of strings. To get a combined string the way it would appear in a
-  Denote file name, use ~denote-retrieve-front-matter-keywords-value-as-string~.
-
-#+findex: denote-retrieve-front-matter-keywords-value-as-string
-+ Function ~denote-retrieve-front-matter-keywords-value-as-string~ :: Return
-  keywords value from =FILE= front matter per =FILE-TYPE=. The return
-  value is a string, with the underscrore as a separator between
-  individual keywords. To get a list of strings instead, use
-  ~denote-retrieve-front-matter-keywords-value~ (the current function uses that
-  internally).
+  of strings.
 
 #+findex: denote-retrieve-front-matter-keywords-line
 + Function ~denote-retrieve-front-matter-keywords-line~ :: Return keywords line
