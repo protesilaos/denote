@@ -4547,7 +4547,7 @@ If the entry already has a CUSTOM_ID, return it as-is, else
 create a new one."
   (let* ((pos (point))
          (id (org-entry-get pos "CUSTOM_ID")))
-    (if (and id (stringp id) (string-match-p "\\S-" id))
+    (if (and (stringp id) (string-match-p "\\S-" id))
         id
       (setq id (org-id-new "h"))
       (org-entry-put pos "CUSTOM_ID" id)
