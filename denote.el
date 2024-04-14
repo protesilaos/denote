@@ -2925,18 +2925,11 @@ KEYWORDS are the existing keywords for the underlying file.
 This function is an internal implementation function."
   (cond
    ((eq combination-type :add)
-    (denote-keywords-sort
-     (delete-dups
-      (append user-input-keywords keywords))))
-
+    (seq-union keywords user-input-keywords))
    ((eq combination-type :replace)
-    (denote-keywords-sort user-input-keywords))
-
+    user-input-keywords)
    ((eq combination-type :remove)
-    (denote-keywords-sort
-     (dolist (k user-input-keywords keywords)
-       (setq keywords (delete k keywords)))))
-
+    (seq-difference keywords user-input-keywords))
    (t
     (error "Unknown operation in denote-keywords--combine: %s"
            combination-type))))
@@ -2962,7 +2955,8 @@ This function is an internal implementation function."
                  (extension (denote-get-file-extension file))
                  (keywords (split-string (or (denote-retrieve-filename-keywords file) "")
                                          "_" :omit-nulls "_"))
-                 (new-keywords (denote-keywords--combine combination-type user-input-keywords keywords))
+                 (new-keywords (denote-keywords-sort
+                                (denote-keywords--combine combination-type user-input-keywords keywords)))
                  (new-name (denote-format-file-name dir id new-keywords title extension signature)))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
