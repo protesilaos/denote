@@ -4156,13 +4156,6 @@ might change them without further notice.
   ~denote-known-keywords~.  Else use only the latter set of keywords
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
-#+findex: denote-convert-file-name-keywords-to-crm
-+ Function ~denote-convert-file-name-keywords-to-crm~ :: Make =STRING=
-  with keywords readable by ~completing-read-multiple~. =STRING=
-  consists of underscore-separated words, as those appear in the
-  keywords component of a Denote file name. =STRING= is the same as
-  the return value of ~denote-retrieve-filename-keywords~.
-
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
   ~denote-sort-keywords~ is non-nil.  =KEYWORDS= is a list of strings,

@@ -1217,13 +1217,6 @@ Inferred keywords are filtered by the user option
        (append (denote--inferred-keywords) denote-known-keywords)
      denote-known-keywords)))
 
-(defun denote-convert-file-name-keywords-to-crm (string)
-  "Make STRING with keywords readable by `completing-read-multiple'.
-STRING consists of underscore-separated words, as those appear in
-the keywords component of a Denote file name.  STRING is the same
-as the return value of `denote-retrieve-filename-keywords'."
-  (string-join (split-string string "_" :omit-nulls "_") ","))
-
 (defvar denote-keyword-history nil
   "Minibuffer history of inputted keywords.")
 
