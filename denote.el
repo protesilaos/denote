@@ -1217,13 +1217,6 @@ Inferred keywords are filtered by the user option
        (append (denote--inferred-keywords) denote-known-keywords)
      denote-known-keywords)))
 
-(defun denote-convert-file-name-keywords-to-crm (string)
-  "Make STRING with keywords readable by `completing-read-multiple'.
-STRING consists of underscore-separated words, as those appear in
-the keywords component of a Denote file name.  STRING is the same
-as the return value of `denote-retrieve-filename-keywords'."
-  (string-join (split-string string "_" :omit-nulls "_") ","))
-
 (defvar denote-keyword-history nil
   "Minibuffer history of inputted keywords.")
 
@@ -1733,21 +1726,11 @@ Subroutine of `denote--file-with-temp-buffer'."
 
 (defun denote-retrieve-front-matter-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
-The return value is a list of strings.  To get a combined string
-the way it would appear in a Denote file name, use
-`denote-retrieve-front-matter-keywords-value-as-string'."
+The return value is a list of strings."
   (denote--file-with-temp-buffer file
     (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
-
-(defun denote-retrieve-front-matter-keywords-value-as-string (file file-type)
-  "Return keywords value from FILE front matter per FILE-TYPE.
-The return value is a string, with the underscrore as a separator
-between individual keywords.  To get a list of strings instead,
-use `denote-retrieve-front-matter-keywords-value' (the current function uses
-that internally)."
-  (denote-keywords-combine (denote-retrieve-front-matter-keywords-value file file-type)))
 
 (defun denote-retrieve-front-matter-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
@@ -1766,9 +1749,6 @@ that internally)."
 
 (defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
  "Alias for `denote-retrieve-front-matter-keywords-line'.")
-
-(defalias 'denote-retrieve-keywords-value-as-string 'denote-retrieve-front-matter-keywords-value-as-string
- "Alias for `denote-retrieve-front-matter-keywords-value-as-string'.")
 
 (define-obsolete-function-alias
   'denote--retrieve-title-or-filename
