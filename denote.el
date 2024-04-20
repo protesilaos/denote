@@ -4143,10 +4143,6 @@ matching identifiers."
 FETCHER is a function that fetches a list of xrefs.  It is called
 with `funcall' with no argument like `xref--fetcher'.
 
-In the case of `denote', `apply-partially' is used to create a
-function that has already applied another function to multiple
-arguments.
-
 ALIST is not used in favour of using
 `denote-link-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
