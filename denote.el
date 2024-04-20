@@ -4073,12 +4073,13 @@ To be assigned to `markdown-follow-link-functions'."
   "Action for BUTTON to `find-file'."
   (funcall denote-link-button-action (buffer-substring (button-start button) (button-end button))))
 
-(defun denote-link--display-buffer (buf)
-  "Run `display-buffer' on BUF.
-Expand `denote-link-backlinks-display-buffer-action'."
+(defun denote-link--display-buffer (buf &optional action)
+  "Run `display-buffer' on BUF using optional ACTION alist.
+ACTION is an alist of the form described in the user option
+`denote-link-backlinks-display-buffer-action'."
   (display-buffer
    buf
-   `(,@denote-link-backlinks-display-buffer-action)))
+   `(,@(or action denote-link-backlinks-display-buffer-action))))
 
 (define-obsolete-function-alias
   'denote-backlinks-next
@@ -4138,13 +4139,13 @@ matching identifiers."
   (unless denote-backlinks-show-context
     (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
 
-(defun denote-link--prepare-backlinks (fetcher _alist)
+(defun denote-link--prepare-backlinks (fetcher &optional alist)
   "Create backlinks' buffer for the current note.
 FETCHER is a function that fetches a list of xrefs.  It is called
 with `funcall' with no argument like `xref--fetcher'.
 
-ALIST is not used in favour of using
-`denote-link-backlinks-display-buffer-action'."
+Optional ALIST is like what `denote-link-backlinks-display-buffer-action'
+has as its value."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          (file-type (denote-filetype-heuristics file))
@@ -4187,7 +4188,7 @@ ALIST is not used in favour of using
                        (apply-partially #'xref-matches-in-files id
                                         (denote-directory-files nil :omit-current :text-only))
                        nil)))))
-    (denote-link--display-buffer buf)))
+    (denote-link--display-buffer buf alist)))
 
 (define-obsolete-function-alias
   'denote-link-backlinks
