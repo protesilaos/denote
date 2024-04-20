@@ -4139,16 +4139,19 @@ matching identifiers."
   (unless denote-backlinks-show-context
     (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
 
-(defun denote-link--prepare-backlinks (fetcher &optional alist)
+(defun denote-link--prepare-backlinks (fetcher &optional alist query)
   "Create backlinks' buffer for the current note.
 FETCHER is a function that fetches a list of xrefs.  Optional ALIST is
 like what `denote-link-backlinks-display-buffer-action' has as its
-value."
+value.
+
+Optional QUERY is what to search for.  If nil, use the Denote identifier
+of the current file."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          (file-type (denote-filetype-heuristics file))
-         (id (denote-retrieve-filename-identifier-with-error file))
-         (buf (format "*denote-backlinks to %s*" id))
+         (search (or query (denote-retrieve-filename-identifier-with-error file)))
+         (buf (format "*denote-backlinks to %s*" search))
          ;; We retrieve results in absolute form and change the
          ;; absolute path to a relative path a few lines below. We
          ;; could add a suitable function and the results would be
@@ -4167,9 +4170,9 @@ value."
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (when-let  ((title (denote-retrieve-title-or-filename file file-type))
-                  (heading (format "Backlinks to %S (%s)" title id))
-                  (l (length heading)))
+      (when-let ((title (denote-retrieve-title-or-filename file file-type))
+                 (heading (format "Backlinks to %S (%s)" title search))
+                 (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (if denote-backlinks-show-context
           (xref--insert-xrefs xref-alist)
@@ -4183,7 +4186,7 @@ value."
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file))
                       (denote-link--prepare-backlinks
-                       (apply-partially #'xref-matches-in-files id
+                       (apply-partially #'xref-matches-in-files search
                                         (denote-directory-files nil :omit-current :text-only))
                        nil)))))
     (denote-link--display-buffer buf alist)))
@@ -4208,9 +4211,8 @@ The placement of the backlinks' buffer is controlled by the user
 option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
-  (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name))
-             (xref-show-xrefs-function #'denote-link--prepare-backlinks))
-    (xref--show-xrefs
+  (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
+    (denote-link--prepare-backlinks
      (apply-partially #'xref-matches-in-files id
                       (denote-directory-files nil :omit-current :text-only))
      nil)))
