@@ -4149,11 +4149,11 @@ value."
          (file-type (denote-filetype-heuristics file))
          (id (denote-retrieve-filename-identifier-with-error file))
          (buf (format "*denote-backlinks to %s*" id))
-         ;; We retrieve results in absolute form and change the absolute
-         ;; path to a relative path a few lines below. We could add a
-         ;; suitable function to project-find-functions and the results
-         ;; would be automatically in relative form, but eventually
-         ;; notes may not be all under a common directory (or project).
+         ;; We retrieve results in absolute form and change the
+         ;; absolute path to a relative path a few lines below. We
+         ;; could add a suitable function and the results would be
+         ;; automatically in relative form, but eventually notes may
+         ;; not be all under a common directory (or project).
          (xref-file-name-display 'abs)
          (xref-alist (xref--analyze (funcall fetcher)))
          (dir (denote-directory)))
