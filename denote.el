@@ -4141,11 +4141,9 @@ matching identifiers."
 
 (defun denote-link--prepare-backlinks (fetcher &optional alist)
   "Create backlinks' buffer for the current note.
-FETCHER is a function that fetches a list of xrefs.  It is called
-with `funcall' with no argument like `xref--fetcher'.
-
-Optional ALIST is like what `denote-link-backlinks-display-buffer-action'
-has as its value."
+FETCHER is a function that fetches a list of xrefs.  Optional ALIST is
+like what `denote-link-backlinks-display-buffer-action' has as its
+value."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          (file-type (denote-filetype-heuristics file))
