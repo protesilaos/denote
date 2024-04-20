@@ -136,10 +136,7 @@ that for the details.
 Also see `denote-org-extras-link-to-heading'."
   (interactive)
   (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id buffer-file-name)))
-    (denote-link--prepare-backlinks
-     (apply-partially #'xref-matches-in-files heading-id
-                      (denote-directory-files nil :omit-current :text-only))
-     nil heading-id)))
+    (denote-link--prepare-backlinks heading-id)))
 
 ;;;; Extract subtree into its own note
 

@@ -4139,26 +4139,24 @@ matching identifiers."
   (unless denote-backlinks-show-context
     (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
 
-(defun denote-link--prepare-backlinks (fetcher &optional alist query)
-  "Create backlinks' buffer for the current note.
-FETCHER is a function that fetches a list of xrefs.  Optional ALIST is
-like what `denote-link-backlinks-display-buffer-action' has as its
-value.
-
-Optional QUERY is what to search for.  If nil, use the Denote identifier
-of the current file."
+(defun denote-link--prepare-backlinks (query &optional alist)
+  "Create backlinks' buffer for the current note matching QUERY.
+Optional ALIST is what `denote-link-backlinks-display-buffer-action' has
+as its value or equivalent."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          (file-type (denote-filetype-heuristics file))
-         (search (or query (denote-retrieve-filename-identifier-with-error file)))
-         (buf (format "*denote-backlinks to %s*" search))
+         (buf (format "*denote-backlinks to %s*" query))
          ;; We retrieve results in absolute form and change the
          ;; absolute path to a relative path a few lines below. We
          ;; could add a suitable function and the results would be
          ;; automatically in relative form, but eventually notes may
          ;; not be all under a common directory (or project).
          (xref-file-name-display 'abs)
-         (xref-alist (xref--analyze (funcall fetcher)))
+         (xref-alist (xref--analyze
+                      (funcall
+                       (apply-partially #'xref-matches-in-files query
+                                        (denote-directory-files nil :omit-current :text-only)))))
          (dir (denote-directory)))
     ;; Change the GROUP of each item in xref-alist to a relative path
     (mapc (lambda (x)
@@ -4171,7 +4169,7 @@ of the current file."
       (denote-backlinks-mode)
       (goto-char (point-min))
       (when-let ((title (denote-retrieve-title-or-filename file file-type))
-                 (heading (format "Backlinks to %S (%s)" title search))
+                 (heading (format "Backlinks to %S (%s)" title query))
                  (l (length heading)))
         (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (if denote-backlinks-show-context
@@ -4185,10 +4183,7 @@ of the current file."
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file))
-                      (denote-link--prepare-backlinks
-                       (apply-partially #'xref-matches-in-files search
-                                        (denote-directory-files nil :omit-current :text-only))
-                       nil)))))
+                      (denote-link--prepare-backlinks query)))))
     (denote-link--display-buffer buf alist)))
 
 (define-obsolete-function-alias
@@ -4212,10 +4207,7 @@ option `denote-link-backlinks-display-buffer-action'.  By
 default, it will show up below the current window."
   (interactive)
   (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
-    (denote-link--prepare-backlinks
-     (apply-partially #'xref-matches-in-files id
-                      (denote-directory-files nil :omit-current :text-only))
-     nil)))
+    (denote-link--prepare-backlinks id)))
 
 (define-obsolete-function-alias
   'denote-link-show-backlinks-buffer
@@ -4473,27 +4465,27 @@ This command is meant to be used from a Dired buffer."
 (declare-function org-link-open-as-file "ol" (path arg))
 
 (defun denote-link--ol-resolve-link-to-target (link &optional full-data)
-  "Resolve LINK to target file, with or without additioanl search terms.
-With optional FULL-DATA return a list in the form of (path id search)."
-  (let* ((search (and (string-match "::\\(.*\\)\\'" link)
+  "Resolve LINK to target file, with or without additioanl query terms.
+With optional FULL-DATA return a list in the form of (path id query)."
+  (let* ((query (and (string-match "::\\(.*\\)\\'" link)
                       (match-string 1 link)))
-         (id (if (and search (not (string-empty-p search)))
+         (id (if (and query (not (string-empty-p query)))
                  (substring link 0 (match-beginning 0))
                link))
          (path (denote-get-path-by-id id)))
     (cond
      (full-data
-      (list path id search))
-     ((and search (not (string-empty-p search)))
-      (concat path "::" search))
+      (list path id query))
+     ((and query (not (string-empty-p query)))
+      (concat path "::" query))
      (path))))
 
 ;;;###autoload
 (defun denote-link-ol-follow (link)
   "Find file of type `denote:' matching LINK.
 LINK is the identifier of the note, optionally followed by a
-search option akin to that of standard Org `file:' link types.
-Read Info node `(org) Search Options'.
+query option akin to that of standard Org `file:' link types.
+Read Info node `(org) Query Options'.
 
 Uses the function `denote-directory' to establish the path to the
 file."
@@ -4568,16 +4560,16 @@ backend."
   (let* ((path-id (denote-link--ol-resolve-link-to-target link :full-data))
          (path (file-relative-name (nth 0 path-id)))
          (id (nth 1 path-id))
-         (search (nth 2 path-id))
+         (query (nth 2 path-id))
          (anchor (file-name-sans-extension path))
          (desc (cond
                 (description)
-                (search (format "denote:%s::%s" id search))
+                (query (format "denote:%s::%s" id query))
                 (t (concat "denote:" id)))))
     (cond
      ((eq format 'html)
-      (if search
-          (format "<a href=\"%s.html%s\">%s</a>" anchor search desc)
+      (if query
+          (format "<a href=\"%s.html%s\">%s</a>" anchor query desc)
         (format "<a href=\"%s.html\">%s</a>" anchor desc)))
      ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
      ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
