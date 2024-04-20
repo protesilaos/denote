@@ -1223,6 +1223,11 @@ Inferred keywords are filtered by the user option
 (defalias 'denote--keyword-history 'denote-keyword-history
   "Compatibility alias for `denote-keyword-history'.")
 
+(make-obsolete
+ 'denote-convert-file-name-keywords-to-crm
+ nil
+ "3.0.0: Keywords are always returned as a list")
+
 (defun denote--keywords-crm (keywords &optional prompt initial)
   "Use `completing-read-multiple' for KEYWORDS.
 With optional PROMPT, use it instead of a generic text for file
