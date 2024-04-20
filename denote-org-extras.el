@@ -102,7 +102,9 @@ to the current heading.  Such links look the same as those of
 this command, though the functionality defined herein is
 independent of it.
 
-To only link to a file, use the `denote-link' command."
+To only link to a file, use the `denote-link' command.
+
+Also see `denote-org-extras-backlinks-for-heading'."
   (declare (interactive-only t))
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
@@ -116,6 +118,28 @@ To only link to a file, use the `denote-link' command."
              (heading-id (cdr heading-data))
              (description (denote-link-format-heading-description file-text heading-text)))
     (insert (denote-org-extras-format-link-with-heading file heading-id description))))
+
+;;;; Heading backlinks
+
+(defun denote-org-extras--get-file-id-and-heading-id (file)
+  "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for FILE heading at point."
+  (if-let ((heading-id (org-entry-get (point) "CUSTOM_ID")))
+      (concat (denote-retrieve-filename-identifier-with-error file) "::#" heading-id)
+    (error "No CUSTOM_ID for heading at point in file `%s'" file)))
+
+;;;###autoload
+(defun denote-org-extras-backlinks-for-heading ()
+  "Produce backlinks for the current heading.
+This otherwise has the same behaviour as `denote-backlinks'---refer to
+that for the details.
+
+Also see `denote-org-extras-link-to-heading'."
+  (interactive)
+  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id buffer-file-name)))
+    (denote-link--prepare-backlinks
+     (apply-partially #'xref-matches-in-files heading-id
+                      (denote-directory-files nil :omit-current :text-only))
+     nil heading-id)))
 
 ;;;; Extract subtree into its own note
 

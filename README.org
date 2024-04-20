@@ -2425,6 +2425,20 @@ Reproducing it here for the sake of convenience:
         (window-width . 0.3)))
 #+end_src
 
+*** Backlinks for Org headings
+:PROPERTIES:
+:CUSTOM_ID: h:604bf92a-908a-485c-98b8-37ccae559afd
+:END:
+
+[ This is part of {{{development-version}}}. ]
+
+The optional =denote-org-extras.el= can produce Denote links to
+individual headings ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
+It is then possible to produce a corresponding backlinks buffer with
+the command ~denote-org-extras-backlinks-for-heading~. The resulting
+buffer behaves the same way as the standard backlinks buffer we
+provide ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+
 ** Writing metanotes
 :PROPERTIES:
 :CUSTOM_ID: h:6060a7e6-f179-4d42-a9de-a9968aaebecc
