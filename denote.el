@@ -4379,7 +4379,7 @@ This command is meant to be used from a Dired buffer."
   (when (null files)
     (user-error "No note files to link to"))
   (with-current-buffer buffer
-    (unless (or (denote--file-type-org-capture-p)
+    (unless (or (denote--file-type-org-extra-p)
                 (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
       (user-error "The buffer's file type is not recognized by Denote")))
   (when (y-or-n-p (format "Create links at point in %s?" buffer))
