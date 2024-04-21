@@ -3601,7 +3601,9 @@ also enable it in all subdirectories."
 
 (defcustom denote-link-backlinks-display-buffer-action
   '((display-buffer-reuse-window display-buffer-below-selected)
-    (window-height . fit-window-to-buffer))
+    (window-height . fit-window-to-buffer)
+    (dedicated . t)
+    (preserve-size . (t . t)))
   "The action used to display the current file's backlinks buffer.
 
 The value has the form (FUNCTION . ALIST), where FUNCTION is
@@ -3613,18 +3615,19 @@ Sample configuration to display the buffer in a side window on
 the left of the Emacs frame:
 
     (setq denote-link-backlinks-display-buffer-action
-          (quote ((display-buffer-reuse-window
-                   display-buffer-in-side-window)
+          (quote ((display-buffer-reuse-window display-buffer-in-side-window)
                   (side . left)
                   (slot . 99)
-                  (window-width . 0.3))))
+                  (window-width . 0.3)
+                  (dedicated . t)
+                  (preserve-size . (t . t)))))
 
 See Info node `(elisp) Displaying Buffers' for more details
 and/or the documentation string of `display-buffer'."
   :type '(cons (choice (function :tag "Display Function")
                        (repeat :tag "Display Functions" function))
                alist)
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "3.0.0")
   :group 'denote-link)
 
 ;;;;; Link to note

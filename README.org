@@ -2407,6 +2407,11 @@ Backlinks to the current file can also be visited by using the
 minibuffer completion interface with the ~denote-find-backlink~
 command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
+[ As part of {{{development-version}}} the value of the user option
+  ~denote-link-backlinks-display-buffer-action~ is slightly modified to
+  (i) make the buffer dedicated to its window and (ii) try to preserve
+  its size during automatic recombinations of the frame's layout. ]
+
 #+vindex: denote-link-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
 ~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
@@ -2422,7 +2427,9 @@ Reproducing it here for the sake of convenience:
          display-buffer-in-side-window)
         (side . left)
         (slot . 99)
-        (window-width . 0.3)))
+        (window-width . 0.3)
+        (dedicated . t)
+        (preserve-size . (t . t))))
 #+end_src
 
 *** Backlinks for Org headings
