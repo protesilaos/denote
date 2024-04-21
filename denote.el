@@ -4158,6 +4158,8 @@ as its value or equivalent."
          (xref-file-name-display 'abs)
          (xref-alist (xref--analyze (xref-matches-in-files query (denote-directory-files nil :omit-current :text-only))))
          (dir (denote-directory)))
+    (unless xref-alist
+      (error "No backlinks for query `%s'" query))
     ;; Change the GROUP of each item in xref-alist to a relative path
     (mapc (lambda (x)
             (setf (car x) (denote-get-file-name-relative-to-denote-directory (car x))))
