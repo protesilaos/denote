@@ -4170,10 +4170,6 @@ as its value or equivalent."
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (when-let ((title (denote-retrieve-title-or-filename file file-type))
-                 (heading (format "Backlinks to %S (%s)" title query))
-                 (l (length heading)))
-        (insert (format "%s\n%s\n\n" heading (make-string l ?-))))
       (if denote-backlinks-show-context
           (xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
