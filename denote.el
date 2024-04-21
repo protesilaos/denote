@@ -4153,10 +4153,7 @@ as its value or equivalent."
          ;; automatically in relative form, but eventually notes may
          ;; not be all under a common directory (or project).
          (xref-file-name-display 'abs)
-         (xref-alist (xref--analyze
-                      (funcall
-                       (apply-partially #'xref-matches-in-files query
-                                        (denote-directory-files nil :omit-current :text-only)))))
+         (xref-alist (xref--analyze (xref-matches-in-files query (denote-directory-files nil :omit-current :text-only))))
          (dir (denote-directory)))
     ;; Change the GROUP of each item in xref-alist to a relative path
     (mapc (lambda (x)
