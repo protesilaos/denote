@@ -2153,6 +2153,9 @@ the user the option to then call ~org-insert-link~ wherever they see
 fit. By contrast, the command ~denote-org-extras-link-to-heading~
 prompts for a file, then a heading, and inserts the link at point.
 
+Just as with files, it is possible to show backlinks for the given
+heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). [ Part of {{{development-version}}}. ] 
+
 ** Insert links matching a regexp
 :PROPERTIES:
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
