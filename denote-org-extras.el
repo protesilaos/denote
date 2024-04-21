@@ -78,6 +78,9 @@ the current file."
 
 (defun denote-org-extras-format-link-with-heading (file heading-id description)
   "Prepare link to FILE with HEADING-ID using DESCRIPTION."
+  (when (region-active-p)
+    (setq description (buffer-substring-no-properties (region-beginning) (region-end)))
+    (denote--delete-active-region-content))
   (format "[[denote:%s::#%s][%s]]"
           (denote-retrieve-filename-identifier file)
           heading-id
