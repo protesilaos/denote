@@ -537,12 +537,15 @@ variants which you can then assign to keys, invoke with =M-x=, or add
 to the list of commands available at the ~denote-command-prompt~
 ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
 
-*** The ~denote-save-buffer-after-creation~ option
+*** The ~denote-save-buffers~ option
 :PROPERTIES:
 :CUSTOM_ID: h:bf80f4cd-6f56-4f7c-a991-8573161e4511
 :END:
 
-#+vindex: denote-save-buffer-after-creation
+[ As part of {{{development-version}}}, the user option
+  ~denote-save-buffer-after-creation~ is renamed to ~denote-save-buffers~. ]
+
+#+vindex: denote-save-buffers
 The user option ~denote-save-buffer-after-creation~ controls whether
 commands that create new notes save their buffer outright.
 
@@ -552,8 +555,13 @@ the chance to review the text before writing it to a file. The user
 may choose to delete the unsaved buffer, thus not creating a new note
 ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffer-after-creation~ option]]).
 
-If ~denote-save-buffer-after-creation~ is set to a non-nil value, such
-buffers are saved automatically.
+This option also applies to notes affected by the renaming commands
+(~denote-rename-file~ and related).
+
+If this user option is set to a non-nil value, such buffers are saved
+automatically. The assumption is that the user who opts in to this
+feature is familiar with the ~denote-rename-file~ operation (or
+related) and knows it is reliable ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
 
 *** The ~denote-date-prompt-use-org-read-date~ option
 :PROPERTIES:
@@ -3969,7 +3977,7 @@ Everything is in place to set up the package.
 
 ;; Remember to check the doc strings of those variables.
 (setq denote-directory (expand-file-name "~/Documents/notes/"))
-(setq denote-save-buffer-after-creation nil)
+(setq denote-save-buffers nil)
 (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
 (setq denote-infer-keywords t)
 (setq denote-sort-keywords t)
