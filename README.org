@@ -1176,6 +1176,9 @@ line or switching between then with commands like ~switch-to-buffer~.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
+[ Revised as part of {{{development-version}}} to respect the user
+  options ~denote-rename-confirmations~ and ~denote-save-buffers~. ]
+
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate. It is possible to do the same with
@@ -1383,16 +1386,16 @@ the like.
 
 #+findex: denote-dired-rename-files
 #+findex: denote-dired-rename-marked-files
-The command ~denote-dired-rename-files~ (alias
-~denote-dired-rename-marked-files~) renames the files that are
-marked in a Dired buffer. Its behaviour is similar to the
-~denote-rename-file~ in that it prompts for a title, keywords, and
-signature ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]). It does so over each marked file,
-renaming one after the other.
+The command ~denote-dired-rename-files~ (alias ~denote-dired-rename-marked-files~)
+renames the files that are marked in a Dired buffer. Its behaviour is
+similar to the ~denote-rename-file~ in that it prompts for a title,
+keywords, and signature ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]). It does so over each
+marked file, renaming one after the other.
 
 Unlike ~denote-rename-file~, the command ~denote-dired-rename-files~
 does not ask to confirm the changes made to the files: it performs
-them outright. This is done to make it easier to rename multiple files
+them outright (same as setting ~denote-rename-confirmations~ to a nil
+value). This is done to make it easier to rename multiple files
 without having to confirm each step. For an even more direct approach,
 check the command ~denote-dired-rename-marked-files-with-keywords~.
 
@@ -1493,6 +1496,9 @@ difference between old and new file names.
 :CUSTOM_ID: h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4
 :END:
 
+[ Revised as part of {{{development-version}}} to respect the user
+  options ~denote-rename-confirmations~ and ~denote-save-buffers~. ]
+
 #+findex: denote-keywords-add
 #+findex: denote-keywords-remove
 The commands ~denote-keywords-add~ and ~denote-keywords-remove~
@@ -1507,10 +1513,11 @@ Similarly, the ~denote-keywords-remove~ removes one or more keywords
 from the list of existing keywords and then renames the file
 accordingly.
 
-Both commands accept an optional prefix argument to automatically save
-the buffer. Similarly, they both interpret a non-nil value for the
-user option ~denote-rename-no-confirm~ the same as the prefix argument
-([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+Both commands respect the values of ~denote-rename-confirmations~ and
+~denote-save-buffers~:
+
+- [[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-confirmations~ option]].
+- [[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]].
 
 Furthermore, both commands call the ~denote-after-rename-file-hook~ as
 a final step after carrying out their task.
@@ -1524,6 +1531,9 @@ Aliases for these commands are: ~denote-rename-add-keywords~ and
 :PROPERTIES:
 :CUSTOM_ID: h:b08a350f-b269-47ed-8c2a-b8ecf1b63c7f
 :END:
+
+[ Revised as part of {{{development-version}}} to respect the user
+  option ~denote-rename-confirmations~. ]
 
 #+findex: denote-rename-add-signature
 #+findex: denote-rename-remove-signature
@@ -1540,11 +1550,10 @@ The ~denote-rename-remove-signature~ uses the same file prompt as
 above. It performs its action only if the selected file has a
 signature. Otherwise, it does nothing.
 
-Both commands ask for confirmation before carrying out their action.
-They do so unless the user option ~denote-rename-no-confirm~ is set to
-a non-nil value ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]). They also
-both take care to reload any Dired buffers and run the
-~denote-after-rename-file-hook~ as a final step.
+Both commands respect the value of ~denote-rename-confirmations~
+([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename--confirmations~ option]]). They also both take care
+to reload any Dired buffers and run the ~denote-after-rename-file-hook~
+as a final step.
 
 ** Faces used by rename commands
 :PROPERTIES:
@@ -2164,7 +2173,7 @@ fit. By contrast, the command ~denote-org-extras-link-to-heading~
 prompts for a file, then a heading, and inserts the link at point.
 
 Just as with files, it is possible to show backlinks for the given
-heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). [ Part of {{{development-version}}}. ] 
+heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). [ Part of {{{development-version}}}. ]
 
 ** Insert links matching a regexp
 :PROPERTIES:
@@ -2302,7 +2311,7 @@ this end, Denote provides two convenience commands:
   ~denote-link~ ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
 
   IMPORTANT NOTE: Normally, ~denote~ does not save the buffer it
-  produces for the new note ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffer-after-creation~ option]]). 
+  produces for the new note ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffer-after-creation~ option]]).
   This is a safety precaution to not write to disk unless the user
   wants it (e.g. the user may choose to kill the buffer, thus
   cancelling the creation of the note). However, for this command the
