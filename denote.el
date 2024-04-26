@@ -1113,7 +1113,7 @@ something like .org even if the actual file extension is
   (let ((files
          (seq-filter
           (lambda (file)
-            (string-prefix-p id (file-name-nondirectory file)))
+            (string= id (denote-retrieve-filename-identifier file)))
           (denote-directory-files))))
     (if (length< files 2)
         (car files)
@@ -1986,7 +1986,7 @@ If either that or DATE is nil, return `current-time'."
   "Return non-nil if IDENTIFIER already exists."
   (seq-some
    (lambda (file)
-     (string-prefix-p identifier (file-name-nondirectory file)))
+     (string= identifier (denote-retrieve-filename-identifier file)))
    (append (denote-directory-files) (denote--buffer-file-names))))
 
 (defun denote--get-all-used-ids ()
@@ -3810,7 +3810,7 @@ function."
         found-files)
     (dolist (file files)
       (dolist (i (denote-link--collect-identifiers regexp))
-        (when (string-prefix-p i (file-name-nondirectory file))
+        (when (string= i (denote-retrieve-filename-identifier file))
           (push file found-files))))
     found-files))
 
