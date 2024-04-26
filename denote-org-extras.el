@@ -241,6 +241,15 @@ description."
     (format "\\[\\[\\(?1:%s:\\)\\(?:\\(?2:.*?\\)\\(?3:::.*\\)?\\]\\|\\]\\)\\(?4:\\[\\(?:.*?\\)\\]\\)?\\]" group-1)))
 
 ;;;###autoload
+(defun denote-org-extras-get-path-by-id (id)
+  "Return the path, relative or absolute, as indicated by
+org-link-file-path-type, to the denote file matching id."
+  (if (or (eql org-link-file-path-type 'adaptive)
+          (eql org-link-file-path-type 'relative))
+      (denote-get-relative-path-by-id id)
+    (denote-get-path-by-id id)))
+
+;;;###autoload
 (defun denote-org-extras-convert-links-to-file-type ()
   "Convert denote: links to file: links in the current Org buffer.
 Ignore all other link types.  Also ignore links that do not
@@ -253,7 +262,7 @@ resolve to a file in the variable `denote-directory'."
           (let* ((id (match-string-no-properties 2))
                  (search (or (match-string-no-properties 3) ""))
                  (desc (or (match-string-no-properties 4) ""))
-                 (file (save-match-data (denote-get-path-by-id id))))
+                 (file (save-match-data (denote-org-extras-get-path-by-id id))))
             (when id
               (let ((new-text (if desc
                                   (format "[[file:%s%s]%s]" file search desc)
