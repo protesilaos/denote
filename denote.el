@@ -471,29 +471,29 @@ current note."
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
 
-This affects the behaviour of renaming commands.
+This affects the behaviour of renaming commands.  The value is either
+nil, in which case no confirmation is ever requested, or a list of
+symbols among the following:
 
-If the symbol `rewrite-front-matter' is present, renaming
-commands will ask for confirmation before the front matter is
-rewritten.
+- `modify-file-name' means that renaming commands will ask for
+  confirmation before modifying the file name.
 
-If the symbol `add-front-matter' is present, renaming commands
-will ask for confirmation before a new front matter is added to a
-file.
+- `rewrite-front-matter' means that renaming commands will ask for
+  confirmation before rewritting the front matter.
 
-If the symbol `modify-file-name' is present, renaming commands
-will ask for confirmation before the file name is modified.
+- `add-front-matter' means that renaming commands will ask for
+  confirmation before adding new front matter to the file.
 
-The default behaviour of the `denote-rename-file' command (and
-others like it) is to ask for an affirmative answer as a final
-step before changing the file name and, where relevant, inserting
-or updating the corresponding front matter.
+The default behaviour of the `denote-rename-file' command (and others
+like it) is to ask for an affirmative answer as a final step before
+changing the file name and, where relevant, inserting or updating the
+corresponding front matter.
 
-Specialized commands that build on top of `denote-rename-file' (or related)
-may internally bind this user option to a non-nil value in order
-to perform their operation (e.g. `denote-dired-rename-files' goes
-through each marked Dired file, prompting for the information to
-use, but carries out the renaming without asking for confirmation)."
+Specialized commands that build on top of `denote-rename-file' (or
+related) may internally bind this user option to a non-nil value in
+order to perform their operation (e.g. `denote-dired-rename-files' goes
+through each marked Dired file, prompting for the information to use,
+but carries out the renaming without asking for confirmation)."
   :group 'denote
   :type '(radio (const :tag "Disable all confirmations" nil)
                 (set :tag "Available confirmations" :greedy t
