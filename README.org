@@ -4470,8 +4470,11 @@ might change them without further notice.
   and ~embark~).
 
 #+findex: denote-rename-file-prompt
-+ Function ~denote-rename-file-prompt~ :: Prompt to rename file named
-  =OLD-NAME= to =NEW-NAME=.
+- Function ~denote-rename-file-prompt~ :: Prompt to rename file named
+  =OLD-NAME= to =NEW-NAME=. If ~denote-rename-confirmations~ does not
+  contain ~modify-file-name~, return t without prompting. [ Revised as
+  part of {{{development-version}}} to conform with the user option
+  ~denote-rename-confirmations~. ]
 
 #+findex: denote-rename-file-and-buffer
 + Function ~denote-rename-file-and-buffer~ :: Rename file named
@@ -4482,11 +4485,18 @@ might change them without further notice.
   note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
   =KEYWORDS=, and =FILE-TYPE= arguments are given by the renaming
   command and are used to construct new front matter values if
-  appropriate. With optional =NO-CONFIRM=, do not prompt to confirm
-  the rewriting of the front matter. Otherwise produce a ~y-or-n-p~
-  prompt to that effect. With optional =NO-CONFIRM=, save the buffer
-  after performing the rewrite. Otherwise leave it unsaved for
-  furthter review by the user.
+  appropriate. If ~denote-rename-confirmations~ contains
+  ~rewrite-front-matter~, prompt to confirm the rewriting of the front
+  matter. Otherwise produce a ~y-or-n-p~ prompt to that effect. [
+  Revised as part of {{{development-version}}} to conform with the
+  user option ~denote-rename-confirmations~. ]
+
+#+findex: denote-add-front-matter-prompt
++ Function ~denote-add-front-matter-prompt~ :: Prompt to add a
+  front-matter to =FILE=. Return non-nil if a new front matter should
+  be added. If ~denote-rename-confirmations~ does not contain
+  ~add-front-matter~, return t without prompting. [ Part of
+  {{{development-version}}}. ]
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
