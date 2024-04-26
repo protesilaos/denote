@@ -1263,10 +1263,9 @@ of the =TITLE= and =KEYWORDS= in the front matter should not affect
 the rest of the front matter.
 
 If the file does not have front matter but is among the supported file
-types (per ~denote-file-type~), the ~denote-rename-file~ adds front
-matter to the top of it and leaves the buffer unsaved for further
-inspection. It actually saves the buffer if ~denote-rename-no-confirm~
-is non-nil ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+types (per ~denote-file-type~), add front matter to the top of it and
+leave the buffer unsaved for further inspection ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]). Save
+the buffer if ~denote-save-buffers~ is non-nil ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]]).
 
 This command is intended to (i) rename Denote files, (ii) convert
 existing supported file types to Denote notes, and (ii) rename
