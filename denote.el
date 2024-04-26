@@ -3108,8 +3108,8 @@ When called from Lisp, KEYWORDS is a list of strings.
 Rename the file without further prompt so that its name reflects
 the new front matter, per `denote-rename-file-using-front-matter'.
 
-The values of `denote-rename-confirmations' and
-`denote-save-buffers' are respected.
+Respect the values of `denote-rename-confirmations' and
+`denote-save-buffers'.
 
 Run `denote-after-rename-file-hook' as a final step."
   (interactive (list (denote-keywords-prompt "Add KEYWORDS")))
@@ -3147,8 +3147,8 @@ Keywords are retrieved from the file's front matter.
 Rename the file without further prompt so that its name reflects
 the new front matter, per `denote-rename-file-using-front-matter'.
 
-The values of `denote-rename-confirmations' and
-`denote-save-buffers' are respected.
+Respect the values of `denote-rename-confirmations' and
+`denote-save-buffers'.
 
 Run `denote-after-rename-file-hook' as a final step."
   (declare (interactive-only t))
@@ -3181,7 +3181,7 @@ SIGNATURE, using the existing one, if any, as the initial value.
 When called from Lisp, FILE is a string pointing to a file system path
 and SIGNATURE is a string.
 
-The value of `denote-rename-confirmations' is respected.
+Respect the value of `denote-rename-confirmations'.
 
 Once the operation is done, reload any Dired buffers and run the
 `denote-after-rename-file-hook'.
@@ -3216,7 +3216,7 @@ In interactive use, prompt for FILE, defaulting either to the current
 buffer's file or the one at point in a Dired buffer.  When called from
 Lisp, FILE is a string pointing to a file system path.
 
-The value of `denote-rename-confirmations' is respected.
+Respect the value of `denote-rename-confirmations'.
 
 Once the operation is done, reload any Dired buffers and run the
 `denote-after-rename-file-hook'.
