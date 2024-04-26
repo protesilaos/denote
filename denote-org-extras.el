@@ -240,12 +240,10 @@ description."
       (_ (error "`%s' is an unknown link type" type)))
     (format "\\[\\[\\(?1:%s:\\)\\(?:\\(?2:.*?\\)\\(?3:::.*\\)?\\]\\|\\]\\)\\(?4:\\[\\(?:.*?\\)\\]\\)?\\]" group-1)))
 
-;;;###autoload
-(defun denote-org-extras-get-path-by-id (id)
-  "Return the path, relative or absolute, as indicated by
-org-link-file-path-type, to the denote file matching id."
-  (if (or (eql org-link-file-path-type 'adaptive)
-          (eql org-link-file-path-type 'relative))
+(defun denote-org-extras--get-path (id)
+  "Return file path to ID according to `org-link-file-path-type'."
+  (if (or (eq org-link-file-path-type 'adaptive)
+          (eq org-link-file-path-type 'relative))
       (denote-get-relative-path-by-id id)
     (denote-get-path-by-id id)))
 
@@ -262,7 +260,7 @@ resolve to a file in the variable `denote-directory'."
           (let* ((id (match-string-no-properties 2))
                  (search (or (match-string-no-properties 3) ""))
                  (desc (or (match-string-no-properties 4) ""))
-                 (file (save-match-data (denote-org-extras-get-path-by-id id))))
+                 (file (save-match-data (denote-org-extras--get-path id))))
             (when id
               (let ((new-text (if desc
                                   (format "[[file:%s%s]%s]" file search desc)
