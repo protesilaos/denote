@@ -1248,18 +1248,19 @@ When renaming =FILE=, the command reads its file type extension (like
 =.org=) and preserves it through the renaming process. Files that have
 no extension are left without one.
 
-As a final step, it asks for confirmation, showing the difference
-between old and new file names. It does not ask for confirmation if
-the user option ~denote-rename-no-confirm~ is set to a non-nil value
-([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+As a final step, ask for confirmation, showing the difference
+between old and new file names.  Do not ask for confirmation if
+the user option ~denote-rename-confirmations~ does not contain
+the symbol ~modify-file-name~ ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-confirmations~ option]]).
 
-If =FILE= has front matter for =TITLE= and =KEYWORDS=,
-~denote-rename-file~ asks to rewrite their values in order to reflect
-the new input, unless ~denote-rename-no-confirm~ is non-nil. When the
-~denote-rename-no-confirm~ is nil (the default), the underlying buffer
-is not saved, giving the user the change to invoking ~diff-buffer-with-file~ to
-double-check the effect. The rewrite of the =TITLE= and =KEYWORDS= in
-the front matter should not affect the rest of the front matter.
+If =FILE= has front matter for =TITLE= and =KEYWORDS=, ask to rewrite
+their values in order to reflect the new input, unless
+~denote-rename-confirmations~ lacks ~rewrite-front-matter~. When the
+~denote-save-buffers~ is nil (the default), do not save the underlying
+buffer, thus giving the user the option to double-check the result,
+such as by invoking the command ~diff-buffer-with-file~. The rewrite
+of the =TITLE= and =KEYWORDS= in the front matter should not affect
+the rest of the front matter.
 
 If the file does not have front matter but is among the supported file
 types (per ~denote-file-type~), the ~denote-rename-file~ adds front
