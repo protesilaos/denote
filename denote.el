@@ -159,6 +159,7 @@ saved automatically.  The assumption is that the user who opts in
 to this feature is familiar with the `denote-rename-file'
 operation (or related) and knows it is reliable."
   :group 'denote
+  :package-version '(denote . "3.0.0")
   :type 'boolean)
 
 ;;;###autoload (put 'denote-known-keywords 'safe-local-variable #'listp)
