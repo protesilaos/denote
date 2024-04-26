@@ -4184,7 +4184,7 @@ concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
 Use FILE to detect a suitable title with which to name the buffer.  Else
 use the ID."
   (if-let ((type (denote-filetype-heuristics file))
-           (title (denote-retrieve-title-value file type)))
+           (title (denote-retrieve-front-matter-title-value file type)))
       (format "*Denote FILE backlinks for %S*" title)
     (format "*Denote FILE backlinks for %s*" id)))
 
