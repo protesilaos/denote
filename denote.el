@@ -466,37 +466,7 @@ current note."
   :package-version '(denote . "1.2.0")
   :type 'boolean)
 
-(defcustom denote-rename-no-confirm nil
-  "Make renaming commands not prompt for confirmation and save buffers outright.
-
-This affects the behaviour of the commands `denote-rename-file',
-`denote-dired-rename-files', `denote-rename-file-using-front-matter',
-`denote-dired-rename-marked-files-with-keywords',
-`denote-dired-rename-marked-files-using-front-matter',
-`denote-keywords-add', `denote-keywords-remove', and any other
-command that builds on top of them.
-
-The default behaviour of the `denote-rename-file' command (and
-others like it) is to ask for an affirmative answer as a final
-step before changing the file name and, where relevant, inserting
-or updating the corresponding front matter.  It also does not
-save the affected file's buffer to let the user inspect and
-confirm the changes (such as by invoking the command
-`diff-buffer-with-file').
-
-With this user option bound to a non-nil value, buffers are saved
-as well.  The assumption is that the user who opts in to this
-feature is familiar with the `denote-rename-file' operation (or
-related) and knows it is reliable.
-
-Specialised commands that build on top of `denote-rename-file' (or related)
-may internally bind this user option to a non-nil value in order
-to perform their operation (e.g. `denote-dired-rename-files' goes
-through each marked Dired file, prompting for the information to
-use, but carries out the renaming without asking for confirmation)."
-  :group 'denote
-  :package-version '(denote . "2.3.0")
-  :type 'boolean)
+(make-obsolete 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
 
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
@@ -3040,13 +3010,6 @@ Specifically, do the following:
   such that it includes the new keywords.
 
 Run the `denote-after-rename-file-hook' after renaming is done.
-
-[ Note that the affected buffers are not saved, unless the user
-  option `denote-rename-no-confirm' is non-nil.  Users can thus
-  check them to confirm that the new front matter does not cause
-  any problems (e.g. with the `diff-buffer-with-file' command).
-  Multiple buffers can be saved in one go with the command
-  `save-some-buffers' (read its doc string).  ]
 
 Also see the specialized commands to only add or remove keywords:
 
