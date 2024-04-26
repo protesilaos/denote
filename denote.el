@@ -140,8 +140,10 @@ the function `denote-directory' instead."
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
-(defcustom denote-save-buffer-after-creation nil
-  "Control whether commands that creeate new notes save their buffer outright.
+(define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
+
+(defcustom denote-save-buffers nil
+  "Control whether commands that handle new notes save their buffer outright.
 
 The default behaviour of commands such as `denote' (or related)
 is to not save the buffer they create.  This gives the user the
@@ -149,10 +151,14 @@ chance to review the text before writing it to a file.  The user
 may choose to delete the unsaved buffer, thus not creating a new
 note.
 
+This option also applies to notes affected by the renaming
+commands (`denote-rename-file' and related).
+
 If this user option is set to a non-nil value, such buffers are
-saved automatically."
+saved automatically.  The assumption is that the user who opts in
+to this feature is familiar with the `denote-rename-file'
+operation (or related) and knows it is reliable."
   :group 'denote
-  :package-version '(denote . "2.3.0")
   :type 'boolean)
 
 ;;;###autoload (put 'denote-known-keywords 'safe-local-variable #'listp)
@@ -490,6 +496,39 @@ use, but carries out the renaming without asking for confirmation)."
   :group 'denote
   :package-version '(denote . "2.3.0")
   :type 'boolean)
+
+(defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
+  "Make renaming commands prompt for confirmations.
+
+This affects the behaviour of renaming commands.
+
+If the symbol `rewrite-front-matter' is present, renaming
+commands will ask for confirmation before the front matter is
+rewritten.
+
+If the symbol `add-front-matter' is present, renaming commands
+will ask for confirmation before a new front matter is added to a
+file.
+
+If the symbol `modify-file-name' is present, renaming commands
+will ask for confirmation before the file name is modified.
+
+The default behaviour of the `denote-rename-file' command (and
+others like it) is to ask for an affirmative answer as a final
+step before changing the file name and, where relevant, inserting
+or updating the corresponding front matter.
+
+Specialized commands that build on top of `denote-rename-file' (or related)
+may internally bind this user option to a non-nil value in order
+to perform their operation (e.g. `denote-dired-rename-files' goes
+through each marked Dired file, prompting for the information to
+use, but carries out the renaming without asking for confirmation)."
+  :group 'denote
+  :type '(radio (const :tag "Disable all confirmations" nil)
+                (set :tag "Available confirmations" :greedy t
+                     (const :tag "Add front matter" add-front-matter)
+                     (const :tag "Rewrite front matter" rewrite-front-matter)
+                     (const :tag "Modify file name" modify-file-name))))
 
 (defcustom denote-excluded-directories-regexp nil
   "Regular expression of directories to exclude from all operations.
@@ -2059,8 +2098,7 @@ in a title prompt.  Else, the value of
 `denote-ignore-region-in-denote-command' is respected.
 
 With non-nil FORCE-SAVE, the file is saved at the end of the note
-creation.  Else, the value of `denote-save-buffer-after-creation'
-is respected.
+creation.  Else, the value of `denote-save-buffers' is respected.
 
 With non-nil IN-BACKGROUND, the note creation happens in the
 background, i.e. the note's buffer will not be displayed after
@@ -2070,8 +2108,8 @@ Note that if all parameters except COMMAND are nil, this is
 equivalent to `(call-interactively command)'.
 
 The path of the newly created file is returned."
-  (let ((denote-save-buffer-after-creation
-         (or force-save denote-save-buffer-after-creation))
+  (let ((denote-save-buffers
+         (or force-save denote-save-buffers))
         (denote-ignore-region-in-denote-command
          (or force-ignore-region denote-ignore-region-in-denote-command))
         (denote-title-prompt-current-default
@@ -2154,7 +2192,7 @@ When called from Lisp, all arguments are optional.
                      (or (alist-get template denote-templates) "")))
          (signature (or signature ""))
          (note-path (denote--prepare-note title kws date id directory file-type template signature)))
-    (when denote-save-buffer-after-creation (save-buffer))
+    (when denote-save-buffers (save-buffer))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
     note-path))
@@ -2544,7 +2582,7 @@ variable `denote-directory'."
      ;; saved, but our convention is to not save the buffer after
      ;; changing front matter unless we absolutely have to (allows
      ;; users to do `diff-buffer-with-file', for example).
-     ((and denote-save-buffer-after-creation (not (buffer-modified-p)) (vc-backend old-name))
+     ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
       (vc-rename-file old-name new-name))
      (t
       (rename-file old-name new-name nil)))
@@ -2552,19 +2590,16 @@ variable `denote-directory'."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords id file-type &optional save-buffer)
+(defun denote--add-front-matter (file title keywords id file-type)
   "Prepend front matter to FILE if `denote-file-is-note-p'.
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
-block if appropriate.
-
-With optional SAVE-BUFFER, save the buffer corresponding to FILE."
+block if appropriate."
   (when-let ((date (denote--date (date-to-time id) file-type))
              (new-front-matter (denote--format-front-matter title date keywords id file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
-      (insert new-front-matter)
-      (when save-buffer (save-buffer)))))
+      (insert new-front-matter))))
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
@@ -2610,25 +2645,21 @@ related."
   'denote-rewrite-keywords
   "2.0.0")
 
-(defun denote-rewrite-front-matter (file title keywords file-type &optional no-confirm)
+(defun denote-rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are given by the
 renaming command and are used to construct new front matter
 values if appropriate.
 
-With optional NO-CONFIRM, do not prompt to confirm the rewriting
-of the front matter.  Otherwise produce a `y-or-n-p' prompt to
-that effect.
-
-With optional NO-CONFIRM, save the buffer after performing the
-rewrite.  Otherwise leave it unsaved for furthter review by the
-user."
+If `denote-rename-confirmations' contains `rewrite-front-matter',
+prompt to confirm the rewriting of the front matter.  Otherwise
+produce a `y-or-n-p' prompt to that effect."
   (when-let ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
              (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
              (new-title-line (denote--get-title-line-from-front-matter title file-type))
              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
     (with-current-buffer (find-file-noselect file)
-      (when (or no-confirm
+      (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
                 (y-or-n-p (format
                            "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
                            (propertize old-title-line 'face 'denote-faces-prompt-old-name)
@@ -2647,8 +2678,7 @@ user."
             (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
             (goto-char (line-beginning-position))
             (insert new-keywords-line)
-            (delete-region (point) (line-end-position))
-            (when no-confirm (save-buffer))))))))
+            (delete-region (point) (line-end-position))))))))
 
 (define-obsolete-function-alias
   'denote--rewrite-front-matter
@@ -2672,12 +2702,28 @@ Throw error if FILE is not regular, else return FILE."
           selected-file))))
 
 (defun denote-rename-file-prompt (old-name new-name)
-  "Prompt to rename file named OLD-NAME to NEW-NAME."
-  (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (y-or-n-p
-     (format "Rename %s to %s?"
-             (propertize (file-name-nondirectory old-name) 'face 'denote-faces-prompt-old-name)
-             (propertize (file-name-nondirectory new-name) 'face 'denote-faces-prompt-new-name)))))
+  "Prompt to rename file named OLD-NAME to NEW-NAME.
+Return non-nil if the file should be renamed.
+
+If `denote-rename-confirmations' does not contain
+`modify-file-name', return t without prompting."
+  (or (not (memq 'modify-file-name denote-rename-confirmations))
+      (unless (string= (expand-file-name old-name) (expand-file-name new-name))
+        (y-or-n-p
+         (format "Rename %s to %s?"
+                 (propertize (file-name-nondirectory old-name) 'face 'denote-faces-prompt-old-name)
+                 (propertize (file-name-nondirectory new-name) 'face 'denote-faces-prompt-new-name))))))
+
+(defun denote-add-front-matter-prompt (file)
+  "Prompt to add a front-matter to FILE.
+Return non-nil if a new front matter should be added.
+
+If `denote-rename-confirmations' does not contain
+`add-front-matter', return t without prompting."
+  (or (not (memq 'add-front-matter denote-rename-confirmations))
+      (y-or-n-p
+       (format "Add new front matter to %s?"
+               (propertize (file-name-nondirectory file) 'face 'denote-faces-prompt-new-name)))))
 
 ;; NOTE 2023-10-20: We do not need a user option for this, though it
 ;; can be useful to have it as a variable.
@@ -2760,15 +2806,15 @@ extension are left without one.
 
 As a final step, ask for confirmation, showing the difference
 between old and new file names.  Do not ask for confirmation if
-the user option `denote-rename-no-confirm' is set to a non-nil
-value.
+the user option `denote-rename-confirmations' does not contain
+the symbol `modify-file-name'.
 
 If FILE has front matter for TITLE and KEYWORDS, ask to rewrite
 their values in order to reflect the new input, unless
-`denote-rename-no-confirm' is non-nil.  When the
-`denote-rename-no-confirm' is nil (the default), do not save the
+`denote-rename-confirmations' lacks `rewrite-front-matter'.  When
+the `denote-save-buffers' is nil (the default), do not save the
 underlying buffer, thus giving the user the option to
-double-check the result, such as by invokling the command
+double-check the result, such as by invoking the command
 `diff-buffer-with-file'.  The rewrite of the TITLE and KEYWORDS
 in the front matter should not affect the rest of the front
 matter.
@@ -2776,7 +2822,7 @@ matter.
 If the file does not have front matter but is among the supported
 file types (per `denote-file-type'), add front matter to the top
 of it and leave the buffer unsaved for further inspection.  Save
-the buffer if `denote-rename-no-confirm' is non-nil.
+the buffer if `denote-save-buffers' is non-nil.
 
 For the front matter of each file type, refer to the variables:
 
@@ -2832,13 +2878,17 @@ one-by-one, use `denote-dired-rename-files'."
          (file-type (denote-filetype-heuristics file))
          (new-name (denote-format-file-name dir id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
+    (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
       (when (denote-file-is-writable-and-supported-p new-name)
         (if (denote--edit-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords file-type denote-rename-no-confirm)
-          (denote--add-front-matter new-name title keywords id file-type denote-rename-no-confirm)))
+            (denote-rewrite-front-matter new-name title keywords file-type)
+          (when (denote-add-front-matter-prompt new-name)
+            (denote--add-front-matter new-name title keywords id file-type))))
+      (when denote-save-buffers
+        (with-current-buffer (find-file-noselect new-name)
+          (save-buffer)))
       (run-hooks 'denote-after-rename-file-hook))
     new-name))
 
@@ -2848,7 +2898,7 @@ one-by-one, use `denote-dired-rename-files'."
 Rename each file in sequence, making all the relevant prompts.
 Unlike `denote-rename-file', do not prompt for confirmation of
 the changes made to the file: perform them outright (same as
-setting `denote-rename-no-confirm' to a non-nil value)."
+setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
   (if-let ((marks (dired-get-marked-files)))
@@ -2885,8 +2935,12 @@ setting `denote-rename-no-confirm' to a non-nil value)."
               (denote-rename-file-and-buffer file new-name)
               (when (denote-file-is-writable-and-supported-p new-name)
                 (if (denote--edit-front-matter-p new-name file-type)
-                    (denote-rewrite-front-matter new-name title keywords file-type :no-confirm)
-                  (denote--add-front-matter new-name title keywords id file-type :save-buffer)))
+                    (denote-rewrite-front-matter new-name title keywords file-type)
+                  (when (denote-add-front-matter-prompt new-name)
+                    (denote--add-front-matter new-name title keywords id file-type))))
+              (when denote-save-buffers
+                (with-current-buffer (find-file-noselect new-name)
+                  (save-buffer)))
               (run-hooks 'denote-after-rename-file-hook)
               (when used-ids
                 (puthash id t used-ids)))))
@@ -2942,12 +2996,17 @@ This function is an internal implementation function."
                                          "_" :omit-nulls "_"))
                  (new-keywords (denote-keywords-sort
                                 (denote-keywords--combine combination-type user-input-keywords keywords)))
-                 (new-name (denote-format-file-name dir id new-keywords title extension signature)))
+                 (new-name (denote-format-file-name dir id new-keywords title extension signature))
+                 (denote-rename-confirmations '()))
             (denote-rename-file-and-buffer file new-name)
             (when (denote-file-is-writable-and-supported-p new-name)
               (if (denote--edit-front-matter-p new-name file-type)
-                  (denote-rewrite-keywords new-name new-keywords file-type denote-rename-no-confirm)
-                (denote--add-front-matter new-name title new-keywords id file-type denote-rename-no-confirm)))
+                  (denote-rewrite-keywords new-name new-keywords file-type)
+                (when (denote-add-front-matter-prompt new-name)
+                  (denote--add-front-matter new-name title new-keywords id file-type))))
+            (when denote-save-buffers
+              (with-current-buffer (find-file-noselect new-name)
+                (save-buffer)))
             (run-hooks 'denote-after-rename-file-hook)
             (when used-ids
               (puthash id t used-ids))))
@@ -3014,45 +3073,26 @@ Also see the specialized commands to only add or remove keywords:
    :remove "Remove KEYWORDS from marked files"))
 
 ;;;###autoload
-(defun denote-rename-file-using-front-matter (file &optional no-confirm save-buffer)
+(defun denote-rename-file-using-front-matter (file)
   "Rename FILE using its front matter as input.
 When called interactively, FILE is the return value of the
 function `buffer-file-name' which is subsequently inspected for
 the requisite front matter.  It is thus implied that the FILE has
 a file type that is supported by Denote, per `denote-file-type'.
 
-Unless NO-CONFIRM is non-nil (such as with a prefix argument),
-ask for confirmation, showing the difference between the old and
-the new file names.
-
 Never modify the identifier of the FILE, if any, even if it is
 edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like.
 
-If NO-CONFIRM is non-nil (such as with a prefix argument) do not
-prompt for confirmation while renaming the file.  Do it outright.
-
-If optional SAVE-BUFFER is non-nil (such as with a double prefix
-argument), save the corresponding buffer.
-
-If the user option `denote-rename-no-confirm' is non-nil,
-interpret it the same way as a combination of NO-CONFIRM and
-SAVE-BUFFER.
+The values of `denote-nename-confirmations' and
+`denote-save-buffers' are respected.
 
 The identifier of the file, if any, is never modified even if it
 is edited in the front matter: Denote considers the file name to
 be the source of truth in this case, to avoid potential breakage
 with typos and the like."
-  (interactive
-   (let (no-confirm save-buffer)
-     (cond
-      ((and current-prefix-arg (> (prefix-numeric-value current-prefix-arg) 4))
-       (setq no-confirm t
-             save-buffer t))
-      (current-prefix-arg
-       (setq no-confirm t)))
-     (list buffer-file-name no-confirm save-buffer)))
+  (interactive (list buffer-file-name))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
@@ -3063,13 +3103,12 @@ with typos and the like."
              (extension (denote-get-file-extension file))
              (dir (file-name-directory file))
              (new-name (denote-format-file-name dir id keywords title extension signature)))
-        (when (or denote-rename-no-confirm
-                  no-confirm
-                  (denote-rename-file-prompt file new-name))
+        (when (denote-rename-file-prompt file new-name)
           (denote-rename-file-and-buffer file new-name)
           (denote-update-dired-buffers)
-          (when (or denote-rename-no-confirm save-buffer)
-            (save-buffer))
+          (when denote-save-buffers
+            (with-current-buffer (find-file-noselect new-name)
+              (save-buffer)))
           (run-hooks 'denote-after-rename-file-hook)))
     (user-error "No identifier or front matter for title")))
 
@@ -3091,30 +3130,25 @@ cannot know if they have front matter and what that may be."
                    (dired-get-marked-files))))
       (progn
         (dolist (file marks)
-          (denote-rename-file-using-front-matter file :no-confirm denote-rename-no-confirm))
+          (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))
     (user-error "No marked Denote files; aborting")))
 
 ;;;;;; Interactively modify keywords and rename accordingly
 
 ;;;###autoload
-(defun denote-keywords-add (keywords &optional save-buffer)
+(defun denote-keywords-add (keywords)
   "Prompt for KEYWORDS to add to the current note's front matter.
 When called from Lisp, KEYWORDS is a list of strings.
 
 Rename the file without further prompt so that its name reflects
 the new front matter, per `denote-rename-file-using-front-matter'.
 
-With an optional SAVE-BUFFER (such as a prefix argument when
-called interactively), save the buffer outright.  Otherwise leave
-the buffer unsaved for further review.
-
-If the user option `denote-rename-no-confirm' is non-nil,
-interpret it the same way as SAVE-BUFFER, making SAVE-BUFFER
-reduntant.
+The values of `denote-rename-confirmations' and
+`denote-save-buffers' are respected.
 
 Run `denote-after-rename-file-hook' as a final step."
-  (interactive (list (denote-keywords-prompt "Add KEYWORDS") current-prefix-arg))
+  (interactive (list (denote-keywords-prompt "Add KEYWORDS")))
   ;; A combination of if-let and let, as we need to take into account
   ;; the scenario in which there are no keywords yet.
   (if-let ((file (buffer-file-name))
@@ -3124,7 +3158,7 @@ Run `denote-after-rename-file-hook' as a final step."
              (new-keywords (denote-keywords-sort
                             (seq-uniq (append keywords cur-keywords)))))
         (denote-rewrite-keywords file new-keywords file-type)
-        (denote-rename-file-using-front-matter file :no-confirm (or denote-rename-no-confirm save-buffer))
+        (denote-rename-file-using-front-matter file)
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
@@ -3142,24 +3176,19 @@ output is sorted with `string-collate-lessp'."
       choice)))
 
 ;;;###autoload
-(defun denote-keywords-remove (&optional save-buffer)
+(defun denote-keywords-remove ()
   "Prompt for keywords in current note and remove them.
 Keywords are retrieved from the file's front matter.
 
 Rename the file without further prompt so that its name reflects
 the new front matter, per `denote-rename-file-using-front-matter'.
 
-With an optional SAVE-BUFFER as a prefix argument, save the
-buffer outright.  Otherwise leave the buffer unsaved for further
-review.
-
-If the user option `denote-rename-no-confirm' is non-nil,
-interpret it the same way as SAVE-BUFFER, making SAVE-BUFFER
-reduntant.
+The values of `denote-rename-confirmations' and
+`denote-save-buffers' are respected.
 
 Run `denote-after-rename-file-hook' as a final step."
   (declare (interactive-only t))
-  (interactive "P")
+  (interactive)
   (if-let ((file (buffer-file-name))
            ((denote-file-is-note-p file))
            (file-type (denote-filetype-heuristics file)))
@@ -3169,7 +3198,7 @@ Run `denote-after-rename-file-hook' as a final step."
          file
          (seq-difference cur-keywords del-keyword)
          file-type)
-        (denote-rename-file-using-front-matter file :no-confirm (or denote-rename-no-confirm save-buffer))
+        (denote-rename-file-using-front-matter file)
         (run-hooks 'denote-after-rename-file-hook))
     (user-error "Buffer not visiting a Denote file")))
 
@@ -3188,9 +3217,7 @@ SIGNATURE, using the existing one, if any, as the initial value.
 When called from Lisp, FILE is a string pointing to a file system path
 and SIGNATURE is a string.
 
-Ask for confirmation before renaming the file to include the new
-signature.  Do it unless the user option `denote-rename-no-confirm' is
-set to a non-nil value.
+The value of `denote-rename-confirmations' is respected.
 
 Once the operation is done, reload any Dired buffers and run the
 `denote-after-rename-file-hook'.
@@ -3213,7 +3240,7 @@ Also see `denote-rename-remove-signature'."
                  (denote-create-unique-file-identifier file (denote--get-all-used-ids))))
          (extension (denote-get-file-extension file))
          (new-name (denote-format-file-name dir id keywords title extension signature)))
-    (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
+    (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
       (run-hooks 'denote-after-rename-file-hook))))
@@ -3225,9 +3252,7 @@ In interactive use, prompt for FILE, defaulting either to the current
 buffer's file or the one at point in a Dired buffer.  When called from
 Lisp, FILE is a string pointing to a file system path.
 
-Ask for confirmation before renaming the file to remove its signature.
-Do it unless the user option `denote-rename-no-confirm' is set to a
-non-nil value.
+The value of `denote-rename-confirmations' is respected.
 
 Once the operation is done, reload any Dired buffers and run the
 `denote-after-rename-file-hook'.
@@ -3244,7 +3269,7 @@ Also see `denote-rename-add-signature'."
                    (denote-create-unique-file-identifier file (denote--get-all-used-ids))))
            (extension (denote-get-file-extension file))
            (new-name (denote-format-file-name dir id keywords title extension nil)))
-      (when (or denote-rename-no-confirm (denote-rename-file-prompt file new-name))
+      (when (denote-rename-file-prompt file new-name)
         (denote-rename-file-and-buffer file new-name)
         (denote-update-dired-buffers)
         (run-hooks 'denote-after-rename-file-hook)))))
@@ -3335,16 +3360,18 @@ of the file.  This needs to be done manually."
          (title (denote-retrieve-title-or-filename file old-file-type))
          (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
-         (old-extension (denote-get-file-extension file))
          (new-extension (denote--file-extension new-file-type))
          (new-name (denote-format-file-name dir id keywords title new-extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    (when (and (not (eq old-extension new-extension))
-               (denote-rename-file-prompt file new-name))
+    (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name)
       (denote-update-dired-buffers)
-      (when (denote-file-is-writable-and-supported-p new-name)
-        (denote--add-front-matter new-name title keywords id new-file-type)))))
+      (when (and (denote-file-is-writable-and-supported-p new-name)
+                 (denote-add-front-matter-prompt new-name))
+        (denote--add-front-matter new-name title keywords id new-file-type)
+        (when denote-save-buffers
+          (with-current-buffer (find-file-noselect new-name)
+            (save-buffer)))))))
 
 ;;;; The Denote faces
 
