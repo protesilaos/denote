@@ -711,13 +711,13 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-id-format'.")
 
-(defconst denote-signature-regexp "==\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-signature-regexp "==\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the SIGNATURE field in a file name.")
 
-(defconst denote-title-regexp "--\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-title-regexp "--\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the TITLE field in a file name.")
 
-(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(--.*\\|__.*\\|\\..*\\)*$"
+(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|\\..*\\)*$"
   "Regular expression to match the KEYWORDS field in a file name.")
 
 (defconst denote-excluded-punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
