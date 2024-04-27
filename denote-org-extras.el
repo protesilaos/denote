@@ -288,7 +288,7 @@ point to a file with a Denote file name."
               (let ((new-text (if desc
                                   (format "[[denote:%s%s]%s]" id search desc)
                                 (format "[[denote:%s%s]]" id search))))
-              (replace-match new-text :fixed-case :literal)))))
+                (replace-match new-text :fixed-case :literal)))))
         ;; TODO 2024-02-28: notify how many changed.
         (message "Converted as `file:' links to `denote:' links"))
     (user-error "The current file is not using Org mode")))

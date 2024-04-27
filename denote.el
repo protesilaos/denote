@@ -124,9 +124,9 @@
 ;; About the autoload: (info "(elisp) File Local Variables")
 
 (define-obsolete-variable-alias
- 'denote-user-enforced-denote-directory
- 'denote-directory
- "2.3.0")
+  'denote-user-enforced-denote-directory
+  'denote-directory
+  "2.3.0")
 
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
@@ -1017,7 +1017,7 @@ are not backups."
     (lambda (file)
       (and (denote-file-has-identifier-p file)
            (not (backup-file-name-p file))))
-      (denote--directory-all-files-recursively))))
+    (denote--directory-all-files-recursively))))
 
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only)
   "Return list of absolute file paths in variable `denote-directory'.
@@ -1684,9 +1684,9 @@ The conditions are as follows:
 To only return an existing identifier, refer to the function
 `denote-retrieve-filename-identifier'."
   (let ((id (cond
-              (date (denote-get-identifier date))
-              ((denote--file-attributes-time file))
-              (t (denote-get-identifier)))))
+             (date (denote-get-identifier date))
+             ((denote--file-attributes-time file))
+             (t (denote-get-identifier)))))
     (denote--find-first-unused-id id)))
 
 (define-obsolete-function-alias
@@ -1769,16 +1769,16 @@ The return value is a list of strings."
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
- "Alias for `denote-retrieve-front-matter-title-value'.")
+  "Alias for `denote-retrieve-front-matter-title-value'.")
 
 (defalias 'denote-retrieve-title-line 'denote-retrieve-front-matter-title-line
- "Alias for `denote-retrieve-front-matter-title-line'.")
+  "Alias for `denote-retrieve-front-matter-title-line'.")
 
 (defalias 'denote-retrieve-keywords-value 'denote-retrieve-front-matter-keywords-value
- "Alias for `denote-retrieve-front-matter-keywords-value'.")
+  "Alias for `denote-retrieve-front-matter-keywords-value'.")
 
 (defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
- "Alias for `denote-retrieve-front-matter-keywords-line'.")
+  "Alias for `denote-retrieve-front-matter-keywords-line'.")
 
 (define-obsolete-function-alias
   'denote--retrieve-title-or-filename
@@ -3767,7 +3767,7 @@ treats the active region specially, is up to it."
           (file-type (denote-filetype-heuristics buffer-file-name))
           (description (when (file-exists-p file)
                          (denote--link-get-description file))))
-       (list file file-type description current-prefix-arg)))
+     (list file file-type description current-prefix-arg)))
   (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
@@ -4477,7 +4477,7 @@ This command is meant to be used from a Dired buffer."
   "Resolve LINK to target file, with or without additioanl query terms.
 With optional FULL-DATA return a list in the form of (path id query)."
   (let* ((query (and (string-match "::\\(.*\\)\\'" link)
-                      (match-string 1 link)))
+                     (match-string 1 link)))
          (id (if (and query (not (string-empty-p query)))
                  (substring link 0 (match-beginning 0))
                link))
@@ -4644,35 +4644,35 @@ Consult the manual for template samples."
     (dolist (prompt denote-prompts)
       (pcase prompt
         ('title (setq title (denote-title-prompt
-                              (when (use-region-p)
-                                (buffer-substring-no-properties
-                                 (region-beginning)
-                                 (region-end))))))
+                             (when (use-region-p)
+                               (buffer-substring-no-properties
+                                (region-beginning)
+                                (region-end))))))
         ('keywords (setq keywords (denote-keywords-prompt)))
         ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
         ('date (setq date (denote-date-prompt)))
         ('template (setq template (denote-template-prompt)))
         ('signature (setq signature (denote-signature-prompt)))))
-  (let* ((title (or title ""))
-         (date (if (or (null date) (string-empty-p date))
-                   (current-time)
-                 (denote-valid-date-p date)))
-         (id (denote--find-first-unused-id (denote-get-identifier date)))
-         (keywords (denote-keywords-sort keywords))
-         (directory (if (denote--dir-in-denote-directory-p subdirectory)
-                        (file-name-as-directory subdirectory)
-                      (denote-directory)))
-         (template (if (stringp template)
-                       template
-                     (or (alist-get template denote-templates) "")))
-         (signature (or signature ""))
-         (front-matter (denote--format-front-matter
-                        title (denote--date nil 'org) keywords
-                        (denote-get-identifier) 'org)))
-    (setq denote-last-path
-          (denote-format-file-name directory id keywords title ".org" signature))
-    (denote--keywords-add-to-history keywords)
-    (concat front-matter template denote-org-capture-specifiers))))
+    (let* ((title (or title ""))
+           (date (if (or (null date) (string-empty-p date))
+                     (current-time)
+                   (denote-valid-date-p date)))
+           (id (denote--find-first-unused-id (denote-get-identifier date)))
+           (keywords (denote-keywords-sort keywords))
+           (directory (if (denote--dir-in-denote-directory-p subdirectory)
+                          (file-name-as-directory subdirectory)
+                        (denote-directory)))
+           (template (if (stringp template)
+                         template
+                       (or (alist-get template denote-templates) "")))
+           (signature (or signature ""))
+           (front-matter (denote--format-front-matter
+                          title (denote--date nil 'org) keywords
+                          (denote-get-identifier) 'org)))
+      (setq denote-last-path
+            (denote-format-file-name directory id keywords title ".org" signature))
+      (denote--keywords-add-to-history keywords)
+      (concat front-matter template denote-org-capture-specifiers))))
 
 ;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
 ;; by passing a single PROMPTS that is the same value as `denote-prompts'?
