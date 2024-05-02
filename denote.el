@@ -2352,8 +2352,16 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 (defalias 'denote-create-note 'denote
   "Alias for `denote' command.")
 
-(defun denote--add-prompts (additional-prompts)
-  "Add all the elements in the ADDITIONAL-PROMPTS list to `denote-prompts'."
+(define-obsolete-function-alias
+  'denote--add-prompts
+  'denote-add-prompts
+  "3.0.0")
+
+(defun denote-add-prompts (additional-prompts)
+  "Add list of ADDITIONAL-PROMPTS to `denote-prompts'.
+This is best done inside of a `let' to create a wrapper function around
+`denote', `denote-rename-file', and generally any command that consults
+the value of `denote-prompts'."
   (seq-union additional-prompts denote-prompts))
 
 ;;;###autoload
@@ -2364,7 +2372,7 @@ This is the equivalent of calling `denote' when `denote-prompts'
 has the `file-type' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts (denote--add-prompts '(file-type))))
+  (let ((denote-prompts (denote-add-prompts '(file-type))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-type 'denote-type
@@ -2383,7 +2391,7 @@ This is the equivalent of calling `denote' when `denote-prompts'
 has the `date' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts (denote--add-prompts '(date))))
+  (let ((denote-prompts (denote-add-prompts '(date))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-date 'denote-date
@@ -2400,7 +2408,7 @@ This is the equivalent of calling `denote' when `denote-prompts'
 has the `subdirectory' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts (denote--add-prompts '(subdirectory))))
+  (let ((denote-prompts (denote-add-prompts '(subdirectory))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-in-subdirectory 'denote-subdirectory
@@ -2418,7 +2426,7 @@ This is the equivalent of calling `denote' when `denote-prompts'
 has the `template' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts (denote--add-prompts '(template))))
+  (let ((denote-prompts (denote-add-prompts '(template))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-with-template 'denote-template
@@ -2432,7 +2440,7 @@ This is the equivalent of calling `denote' when `denote-prompts'
 has the `signature' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts (denote--add-prompts '(signature))))
+  (let ((denote-prompts (denote-add-prompts '(signature))))
     (call-interactively #'denote)))
 
 (defalias 'denote-create-note-using-signature 'denote-signature

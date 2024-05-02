@@ -4403,6 +4403,13 @@ might change them without further notice.
 + Function ~denote-retrieve-front-matter-keywords-line~ :: Return keywords line
   from =FILE= front matter per =FILE-TYPE=.
 
+#+findex: denote-add-prompts
++ Function ~denote-add-prompts~ :: Add list of =ADDITIONAL-PROMPTS= to
+  ~denote-prompts~. This is best done inside of a ~let~ to create a
+  wrapper function around ~denote~, ~denote-rename-file~, and
+  generally any command that consults the value of ~denote-prompts~.
+  [ Made public as part of {{{development-version}}}. ]
+
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
   With optional =INITIAL-SIGNATURE= use it as the initial minibuffer
