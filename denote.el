@@ -1196,13 +1196,17 @@ With optional PROMPT-TEXT, use it instead of the default call to
            (_ (when included-cpd
                 (setq substrings (cons "./" substrings))))
            (new-collection (denote--completion-table 'file substrings))
-           (relname (completing-read prompt new-collection nil nil nil 'denote-file-history))
-           (absname (expand-file-name relname common-parent-directory)))
-      ;; NOTE 2024-02-29: This delete and add feels awkward.  I wish
-      ;; we could tell `completing-read' to just leave this up to us.
-      (setq denote-file-history (delete relname denote-file-history))
-      (add-to-history 'denote-file-history absname)
-      absname)))
+           ;; We populate the history ourselves because we process the input.
+           (input (completing-read prompt new-collection))
+           ;; FIXME 2024-05-08: Is there some elegant way to do this?
+           (filename (with-temp-buffer
+                       (insert input)
+                       (completion-in-region (point-min) (point-max) new-collection)
+                       (buffer-string))))
+      (when filename
+        (setq denote-file-history (delete input denote-file-history))
+        (add-to-history 'denote-file-history filename))
+      filename)))
 
 ;;;; Keywords
 
