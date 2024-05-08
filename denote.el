@@ -2857,11 +2857,10 @@ the file name into a comma-separated string and prefill the
 minibuffer with it (the KEYWORDS prompt accepts more than one
 keywords, each separated by a comma, else the `crm-separator').
 
-If FILE-TYPE is non-nil and different from the current file type,
-change the extension of the file.  Important note: No attempt is
-made to modify the content of the file and we only add a new
-front matter at the beginning of the file (rather than modify an
-existing one).
+If FILE-TYPE is non-nil and different from the current file type, change
+the extension of the file.  (Important note: No attempt is made to
+modify the content of the file and we only add a new front matter at the
+beginning of the file (rather than modify an existing one).
 
 If DIRECTORY is non-nil, move the new file in this directory.
 
