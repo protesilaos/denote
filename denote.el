@@ -2736,12 +2736,11 @@ If `denote-rename-confirmations' does not contain
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
-(defun denote--rename-file (file title keywords signature date file-type directory)
+(defun denote--rename-file (file title keywords signature date)
   "Rename FILE according to the other parameters.
-Parameters TITLE, KEYWORDS, SIGNATURE, DATE, FILE-TYPE and
-DIRECTORY are as described in `denote-rename-file' and are
-assumed to be valid (TITLE and SIGNATURE are strings, KEYWORDS is
-a list, etc.).
+Parameters TITLE, KEYWORDS, SIGNATURE and DATE are as described
+in `denote-rename-file' and are assumed to be valid (TITLE and
+SIGNATURE are strings, KEYWORDS is a list, etc.).
 
 This function only does the work necessary to rename a file
 according to its parameters.  In particular, it does not prompt
@@ -2750,8 +2749,11 @@ for anything.  It is meant to be combined with
 a renaming command.
 
 Respect `denote-rename-confirmations' and `denote-save-buffers'."
-  (let* ((current-file-type (denote-filetype-heuristics file))
+  (let* ((file-type (denote-filetype-heuristics file))
+         (current-title (or (denote-retrieve-front-matter-title-value file file-type) ""))
+         (current-keywords (denote-extract-keywords-from-path file))
          (keywords (denote-keywords-sort keywords))
+         (directory (file-name-directory file))
          (extension (denote--file-extension file-type))
          ;; TODO: For now, we cannot change the identifier. We retrieve
          ;; the current one or generate a new one with DATE, if non-nil.
@@ -2764,14 +2766,15 @@ Respect `denote-rename-confirmations' and `denote-save-buffers'."
       (denote-rename-file-and-buffer file new-name)
       ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
       (when (and (denote-file-has-supported-extension-p file)
-                 (denote-file-is-writable-and-supported-p new-name))
-        (if (and (denote--edit-front-matter-p new-name file-type)
-                 (eq current-file-type file-type))
+                 (denote-file-is-writable-and-supported-p new-name)
+                 (or (not (string= title current-title))
+                     (not (equal keywords current-keywords))))
+        (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
             (denote--add-front-matter new-name title keywords id file-type))))
-      ;; TODO: Offer to regenerate link descriptions in other files on
-      ;; rename. Maybe this should be a distinct command.
+      ;; NOTE: Maybe offer to regenerate link descriptions in other
+      ;; files on rename. This could be a distinct command.
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (when denote-save-buffers
@@ -2788,7 +2791,6 @@ renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
          (date (denote-retrieve-filename-identifier file))
-         (directory (file-name-directory file))
          (title (denote-retrieve-title-or-filename file file-type))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
@@ -2806,10 +2808,6 @@ renaming commands."
           (setq signature (denote-signature-prompt
                            signature
                            (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
-         ('file-type
-          (setq file-type (denote--valid-file-type (denote-file-type-prompt))))
-         ('subdirectory
-          (setq directory (file-name-as-directory (denote-subdirectory-prompt))))
          ('date
           ;; TODO: We currently prompt only if the current file has no
           ;; identifier. Eventually, we may want to allow modifying the
@@ -2818,16 +2816,18 @@ renaming commands."
           ;; condition).
           (unless (denote-file-has-identifier-p file)
             (setq date (denote-date-prompt))))))
-     (list title keywords signature date file-type directory)))
+     (list title keywords signature date)))
 
 ;;;###autoload
-(defun denote-rename-file (file &optional title keywords signature date file-type directory)
+(defun denote-rename-file (file &optional title keywords signature date)
   "Rename file and update existing front matter if appropriate.
 
-If in Dired, consider FILE to be the one at point, else rename
-the file of the current buffer, else prompt with minibuffer
-completion for one.  When called from Lisp, FILE is a file system
-path represented as a string.
+Always rename the file where it is located in the file system:
+never move it to another directory.
+
+If in Dired, consider FILE to be the one at point, else prompt
+with minibuffer completion for one.  When called from Lisp, FILE
+is a file system path represented as a string.
 
 If FILE has a Denote-compliant identifier, retain it while
 updating components of the file name referenced by the user
@@ -2869,13 +2869,6 @@ Same principle for the KEYWORDS prompt: convert the keywords in
 the file name into a comma-separated string and prefill the
 minibuffer with it (the KEYWORDS prompt accepts more than one
 keywords, each separated by a comma, else the `crm-separator').
-
-If FILE-TYPE is non-nil and different from the current file type, change
-the extension of the file.  (Important note: No attempt is made to
-modify the content of the file and we only add a new front matter at the
-beginning of the file (rather than modify an existing one).
-
-If DIRECTORY is non-nil, move the new file in this directory.
 
 For all prompts, interpret an empty input as an instruction to
 remove that file name component.  For example, if a TITLE prompt
@@ -2934,7 +2927,7 @@ one-by-one, use `denote-dired-rename-files'."
   (interactive
    (let* ((file (denote--rename-dired-file-or-prompt)))
      (append (list file) (denote--rename-get-file-info-from-prompts-or-existing file))))
-  (let ((new-name (denote--rename-file file title keywords signature date file-type directory)))
+  (let ((new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
 
@@ -2970,17 +2963,6 @@ Like `denote-rename-file', but prompts only for the signature."
 (define-obsolete-function-alias 'denote-add-signature 'denote-rename-file-signature "3.0.0")
 (define-obsolete-function-alias 'denote-remove-signature 'denote-rename-file-signature "3.0.0")
 
-(defun denote-rename-file-type ()
-  "Convenience command to change the file type of a file.
-Like `denote-rename-file', but prompts only for the file type."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts '(file-type)))
-    (call-interactively #'denote-rename-file)))
-
-(define-obsolete-function-alias 'denote-change-file-type-and-front-matter 'denote-rename-file-type "3.0.0")
-(define-obsolete-function-alias 'denote-change-file-type 'denote-change-file-type-and-front-matter "2.1.0")
-
 ;;;###autoload
 (defun denote-dired-rename-files ()
   "Rename Dired marked files same way as `denote-rename-file'.
@@ -2997,9 +2979,9 @@ setting `denote-rename-confirmations' to a nil value)."
           (unless (seq-every-p #'denote-file-has-identifier-p marks)
             (setq denote--used-ids (denote--get-all-used-ids)))
           (dolist (file marks)
-            (pcase-let ((`(,title ,keywords ,signature ,date ,file-type ,directory)
+            (pcase-let ((`(,title ,keywords ,signature ,date)
                          (denote--rename-get-file-info-from-prompts-or-existing file)))
-              (denote--rename-file file title keywords signature date file-type directory)))
+              (denote--rename-file file title keywords signature date)))
           (denote-update-dired-buffers))
       (user-error "No marked files; aborting"))))
 
@@ -3043,10 +3025,10 @@ This function is an internal implementation function."
             (denote--used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
                                 (denote--get-all-used-ids))))
         (dolist (file marks)
-          (pcase-let* ((`(,title ,keywords ,signature ,date ,file-type ,directory)
+          (pcase-let* ((`(,title ,keywords ,signature ,date)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
                        (new-keywords (denote-keywords-sort (denote-keywords--combine combination-type user-input-keywords keywords))))
-            (denote--rename-file file title new-keywords signature date file-type directory)))
+            (denote--rename-file file title new-keywords signature date)))
         (denote-update-dired-buffers))
     (user-error "No marked files; aborting")))
 
@@ -3130,9 +3112,9 @@ with typos and the like."
            (id (denote-retrieve-filename-identifier file)))
       (pcase-let* ((denote-prompts '())
                    (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-                   (`(_title _keywords ,signature ,date ,file-type ,directory)
+                   (`(_title _keywords ,signature ,date)
                     (denote--rename-get-file-info-from-prompts-or-existing file)))
-        (denote--rename-file file front-matter-title front-matter-keywords signature date file-type directory)
+        (denote--rename-file file front-matter-title front-matter-keywords signature date)
         (denote-update-dired-buffers))
     (user-error "No identifier or front matter for title")))
 
@@ -3208,6 +3190,54 @@ relevant front matter.
              (id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file)))
     (denote--add-front-matter file title keywords id file-type)))
+
+(define-obsolete-function-alias
+  'denote-change-file-type
+  'denote-change-file-type-and-front-matter
+  "2.1.0")
+
+;;;###autoload
+(defun denote-change-file-type-and-front-matter (file new-file-type)
+  "Change file type of FILE and add an appropriate front matter.
+
+If in Dired, consider FILE to be the one at point, else prompt
+with minibuffer completion for one.
+
+Add a front matter in the format of the NEW-FILE-TYPE at the
+beginning of the file.
+
+Retrieve the title of FILE from a line starting with a title
+field in its front matter, depending on the previous file
+type (e.g.  #+title for Org).  The same process applies for
+keywords.
+
+As a final step, ask for confirmation, showing the difference
+between old and new file names.
+
+Important note: No attempt is made to modify any other elements
+of the file.  This needs to be done manually."
+  (interactive
+   (list
+    (denote--rename-dired-file-or-prompt)
+    (denote--valid-file-type (or (denote-file-type-prompt) denote-file-type))))
+  (let* ((dir (file-name-directory file))
+         (old-file-type (denote-filetype-heuristics file))
+         (id (or (denote-retrieve-filename-identifier file) ""))
+         (title (denote-retrieve-title-or-filename file old-file-type))
+         (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
+         (signature (or (denote-retrieve-filename-signature file) ""))
+         (new-extension (denote--file-extension new-file-type))
+         (new-name (denote-format-file-name dir id keywords title new-extension signature))
+         (max-mini-window-height denote-rename-max-mini-window-height))
+    (when (denote-rename-file-prompt file new-name)
+      (denote-rename-file-and-buffer file new-name)
+      (denote-update-dired-buffers)
+      (when (and (denote-file-is-writable-and-supported-p new-name)
+                 (denote-add-front-matter-prompt new-name))
+        (denote--add-front-matter new-name title keywords id new-file-type)
+        (when denote-save-buffers
+          (with-current-buffer (find-file-noselect new-name)
+            (save-buffer)))))))
 
 ;;;; The Denote faces
 
