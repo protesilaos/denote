@@ -1203,7 +1203,6 @@ select a file."
            (new-collection (denote--completion-table 'file substrings))
            ;; We populate the history ourselves because we process the input.
            (input (completing-read prompt new-collection))
-           ;; FIXME 2024-05-08: Is there some elegant way to do this?
            (filename (with-temp-buffer
                        (insert input)
                        (completion-in-region (point-min) (point-max) new-collection)
