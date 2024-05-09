@@ -1169,6 +1169,11 @@ file in the returned list."
 (defalias 'denote--file-history 'denote-file-history
   "Compatibility alias for `denote-file-history'.")
 
+(defvar denote-file-prompt-latest-input nil
+  "Latest input passed to `denote-file-prompt'.
+This is used for retrieving a value that is used to set a new default at
+the title prompt of `denote-open-or-create' and related commands.")
+
 ;; NOTE 2024-02-29: Based on `project--read-file-cpd-relative' from
 ;; the built-in project.el
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text)
@@ -1203,10 +1208,15 @@ With optional PROMPT-TEXT, use it instead of the default call to
                        (insert input)
                        (completion-in-region (point-min) (point-max) new-collection)
                        (buffer-string))))
-      (when filename
-        (setq denote-file-history (delete input denote-file-history))
-        (add-to-history 'denote-file-history filename))
-      filename)))
+      (setq denote-file-prompt-latest-input input)
+      ;; We want to return the user's input verbatim if it does not
+      ;; match a file uniquely.
+      (if (denote-file-has-identifier-p (expand-file-name filename (denote-directory)))
+          (progn
+            (setq denote-file-history (delete input denote-file-history))
+            (add-to-history 'denote-file-history filename)
+            filename)
+        input))))
 
 ;;;; Keywords
 
@@ -2105,8 +2115,7 @@ The path of the newly created file is returned."
          (or force-ignore-region denote-ignore-region-in-denote-command))
         (denote-title-prompt-current-default
          (if force-use-file-prompt-as-default-title
-             (when denote-file-history
-               (file-name-nondirectory (pop denote-file-history)))
+             denote-file-prompt-latest-input
            denote-title-prompt-current-default))
         (path))
     (if in-background
