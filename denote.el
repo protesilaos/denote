@@ -2741,6 +2741,8 @@ a renaming command.
 
 Respect `denote-rename-confirmations' and `denote-save-buffers'."
   (let* ((file-type (denote-filetype-heuristics file))
+         (current-title (or (denote-retrieve-front-matter-title-value file file-type) ""))
+         (current-keywords (denote-extract-keywords-from-path file))
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (denote--file-extension file-type))
@@ -2755,7 +2757,9 @@ Respect `denote-rename-confirmations' and `denote-save-buffers'."
       (denote-rename-file-and-buffer file new-name)
       ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
       (when (and (denote-file-has-supported-extension-p file)
-                 (denote-file-is-writable-and-supported-p new-name))
+                 (denote-file-is-writable-and-supported-p new-name)
+                 (or (not (string= title current-title))
+                     (not (equal keywords current-keywords))))
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
