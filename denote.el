@@ -1182,7 +1182,7 @@ With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression.
 
 With optional PROMPT-TEXT, use it instead of the default call to
-\"Select NOTE\"."
+select a file."
   (when-let ((all-files (denote-directory-files files-matching-regexp :omit-current)))
     (let* ((common-parent-directory
             (let ((common-prefix (try-completion "" all-files)))

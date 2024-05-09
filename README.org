@@ -4424,7 +4424,7 @@ might change them without further notice.
 + Function ~denote-file-prompt~ :: Prompt for file with identifier in
   variable ~denote-directory~. With optional =FILES-MATCHING-REGEXP=,
   filter the candidates per the given regular expression. With
-  optional =PROMPT-TEXT=, use it instead of the default "Select NOTE".
+  optional =PROMPT-TEXT=, use it instead of the default select a file.
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
