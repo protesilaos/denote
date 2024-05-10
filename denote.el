@@ -1174,48 +1174,24 @@ file in the returned list."
 This is used for retrieving a value that is used to set a new default at
 the title prompt of `denote-open-or-create' and related commands.")
 
-;; NOTE 2024-02-29: Based on `project--read-file-cpd-relative' from
-;; the built-in project.el
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text)
-  "Prompt for file with identifier in variable `denote-directory'.
+  "Prompt for file in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression.
 
 With optional PROMPT-TEXT, use it instead of the default call to
-select a file."
-  (when-let ((all-files (denote-directory-files files-matching-regexp :omit-current)))
-    (let* ((common-parent-directory
-            (let ((common-prefix (try-completion "" all-files)))
-              (if (> (length common-prefix) 0)
-                  (file-name-directory common-prefix))))
-           (cpd-length (length common-parent-directory))
-           (prompt-prefix (or prompt-text "Select FILE"))
-           (prompt (if (zerop cpd-length)
-                       (format "%s: " prompt-prefix)
-                     (format "%s in %s: " prompt-prefix common-parent-directory)))
-           (included-cpd (when (member common-parent-directory all-files)
-                           (setq all-files
-                                 (delete common-parent-directory all-files))
-                           t))
-           (substrings (mapcar (lambda (s) (substring s cpd-length)) all-files))
-           (_ (when included-cpd
-                (setq substrings (cons "./" substrings))))
-           (new-collection (denote--completion-table 'file substrings))
-           ;; We populate the history ourselves because we process the input.
-           (input (completing-read prompt new-collection))
-           (filename (with-temp-buffer
-                       (insert input)
-                       (completion-in-region (point-min) (point-max) new-collection)
-                       (buffer-string))))
-      (setq denote-file-prompt-latest-input input)
-      ;; We want to return the user's input verbatim if it does not
-      ;; match a file uniquely.
-      (if (denote-file-has-identifier-p (expand-file-name filename (denote-directory)))
-          (progn
-            (setq denote-file-history (delete input denote-file-history))
-            (add-to-history 'denote-file-history filename)
-            filename)
-        input))))
+select a file.
+
+The returned path is in absolute form."
+  (let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
+                                 (denote-directory-files files-matching-regexp :omit-current)))
+         (prompt (format "%s in %s: " (or prompt-text "Select FILE") (denote-directory)))
+         (input (completing-read
+                 prompt
+                 (denote--completion-table 'file relative-files)
+                 nil nil nil 'denote-file-history)))
+    (setq denote-file-prompt-latest-input input)
+    (concat (denote-directory) input)))
 
 ;;;; Keywords
 
