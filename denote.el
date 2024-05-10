@@ -2729,7 +2729,7 @@ Respect `denote-rename-confirmations' and `denote-save-buffers'."
          (current-keywords (denote-extract-keywords-from-path file))
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
-         (extension (denote--file-extension file-type))
+         (extension (file-name-extension file :include-period))
          ;; TODO: For now, we cannot change the identifier. We retrieve
          ;; the current one or generate a new one with DATE, if non-nil.
          (id (or (denote-retrieve-filename-identifier file)
