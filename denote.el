@@ -3828,12 +3828,14 @@ argument.
 Also see `denote-id-only-link-in-context-regexp'.")
 
 (defvar denote-org-link-in-context-regexp
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\[.*?]]")
+  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\["
+          "\\(?2:" ".*?" "\\)" "]]")
   "Regexp to match an Org link in its context.
 The format of such links is `denote-org-link-format'.")
 
 (defvar denote-md-link-in-context-regexp
-  (concat "\\[.*?]" "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")")
+  (concat "\\[" "\\(?2:" ".*?" "\\)" "]"
+          "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")")
   "Regexp to match a Markdown link in its context.
 The format of such links is `denote-md-link-format'.")
 
@@ -3948,9 +3950,7 @@ Also see `denote-link-with-signature'."
     (user-error "The linked file does not exist"))
   (let ((beg (point)))
     (denote--delete-active-region-content)
-    (insert (denote-format-link file description file-type id-only))
-    (unless (derived-mode-p 'org-mode)
-      (make-button beg (point) 'type 'denote-link-button))))
+    (insert (denote-format-link file description file-type id-only))))
 
 (define-obsolete-function-alias
   'denote-link-insert-link
@@ -4243,6 +4243,90 @@ To be assigned to `markdown-follow-link-functions'."
 (eval-after-load 'markdown-mode
   '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
 
+;;;;; Link fontification
+(defvar denote-link-keymap
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mouse-2] #'denote-link-open-at-mouse)
+    (define-key map [mouse-3] #'denote-link-open-at-mouse)
+    (define-key map [follow-link] #'mouse-face)
+    map)
+  "Keymap used in fontified denote links")
+
+(defun denote-link-open-at-mouse (ev)
+  "Open denote link after mouse click."
+  (interactive "e")
+  (mouse-set-point ev)
+  (when-let ((id (get-text-property (point) 'denote-link-id)))
+    (funcall denote-link-button-action (denote-get-path-by-id id))))
+
+(defun denote-fontify-links (&optional limit)
+  "Fontify denote links.
+
+Implementation based on `org-activate-links'"
+  (catch :exit
+    (when-let (type (denote-filetype-heuristics (buffer-file-name)))
+      (while (re-search-forward
+              (denote--link-in-context-regexp type)
+              limit t)
+        (save-match-data  ;; to return the matches to font-lock
+          (let* ((start (match-beginning 0))
+	         (end (match-end 0))
+	         (visible-start (match-beginning 2))
+	         (visible-end (match-end 2))
+                 (id (match-string-no-properties 1))
+                 (link (concat "file:" (denote-get-path-by-id id))))
+	    (unless (let ((face (get-text-property
+			         (max (1- start) (point-min)) 'face)))
+		      (if (consp face)
+                          (memq 'font-lock-comment-face face)
+		        (eq 'font-lock-comment-face face)))
+              (let* ((properties `(mouse-face highlight
+			                      keymap ,denote-link-keymap
+                                              denote-link-id ,id
+                                              help-echo ,(concat "denote:" id)
+			                      htmlize-link (:uri ,link)
+			                      font-lock-multiline t))
+                     (non-sticky-props
+                      '(rear-nonsticky (mouse-face highlight keymap invisible
+                                                   intangible help-echo
+                                                   htmlize-link)))
+                     (face-property 'link)
+                     (hidden (append '(invisible t) properties)))
+                (remove-text-properties start end '(invisible nil))
+                (add-text-properties start visible-start hidden)
+                (add-face-text-property start end face-property)
+		(add-text-properties visible-start visible-end properties)
+		(add-text-properties visible-end end hidden)
+                (dolist (pos (list end visible-start visible-end))
+                  (add-text-properties (1- pos) pos non-sticky-props)))
+              (throw :exit t))))))		;signal success
+    nil))
+
+(defun denote--get-link-url-at-point ()
+  "Return the denote link under point.
+To be used as a `thing-at' provider."
+  (when-let (id (get-text-property (point) 'denote-link-id))
+    (concat "file:" (denote-get-path-by-id id))))
+
+(define-minor-mode denote-fontify-links-mode
+  "A minor mode to fontify and fold denote links."
+  :init-value nil
+  :group 'denote
+  (if denote-fontify-links-mode
+      (progn (font-lock-add-keywords nil '(denote-fontify-links))
+             (with-eval-after-load 'thingatpt
+               (make-local-variable 'thing-at-point-provider-alist)
+               (add-to-list 'thing-at-point-provider-alist
+                            '(url . denote--get-link-url-at-point))))
+    (font-lock-remove-keywords nil '(denote-fontify-links))
+    (with-eval-after-load 'thingatpt
+      (set 'thing-at-point-provider-alist
+           (cl-remove
+            '(url . denote--get-link-url-at-point)
+            (symbol-value 'thing-at-point-provider-alist)
+            :test 'equal))))
+  (font-lock-update))
+
 ;;;;; Backlinks' buffer
 
 (define-button-type 'denote-link-backlink-button
@@ -4472,9 +4556,7 @@ inserts links with just the identifier."
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
     (if-let ((files (denote-directory-files regexp :omit-current))
              (beg (point)))
-        (progn
-          (denote-link--insert-links files file-type id-only)
-          (denote-link-buttonize-buffer beg (point)))
+        (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
 (defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
@@ -4549,8 +4631,7 @@ This command is meant to be used from a Dired buffer."
       (insert (denote-link--prepare-links
                files
                (denote-filetype-heuristics (buffer-file-name))
-               id-only))
-      (denote-link-buttonize-buffer))))
+               id-only)))))
 
 ;;;;; Define menu
 
