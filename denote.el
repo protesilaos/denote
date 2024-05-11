@@ -1036,19 +1036,17 @@ current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
 text files that satisfy `denote-file-is-note-p'."
-  (if-let ((files (denote--directory-get-files)))
-      (progn
-        (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
-          (setq files (delete buffer-file-name files)))
-        (when files-matching-regexp
-          (setq files (seq-filter
-                       (lambda (f)
-                         (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
-                       files)))
-        (when text-only
-          (setq files (seq-filter #'denote-file-is-note-p files)))
-        files)
-    (user-error "The `denote-directory' has no files")))
+  (let ((files (denote--directory-get-files)))
+    (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
+      (setq files (delete buffer-file-name files)))
+    (when files-matching-regexp
+      (setq files (seq-filter
+                   (lambda (f)
+                     (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
+                   files)))
+    (when text-only
+      (setq files (seq-filter #'denote-file-is-note-p files)))
+    files))
 
 ;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
 ;; obsolete, though we keep it around for the foreseeable future.  It
