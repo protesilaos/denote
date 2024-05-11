@@ -4015,8 +4015,11 @@ matching identifiers."
   (unless denote-backlinks-show-context
     (font-lock-add-keywords nil denote-faces-file-name-keywords t)))
 
-(defun denote-link--prepare-backlinks (query &optional buffer-name display-buffer-action)
+(defun denote-link--prepare-backlinks (query &optional files-matching-regexp buffer-name display-buffer-action)
   "Create backlinks' buffer called BUFFER-NAME for the current file matching QUERY.
+
+With optional FILES-MATCHING-REGEXP, limit the list of files
+accordingly (per `denote-directory-files').
 
 Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
 concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
@@ -4028,7 +4031,10 @@ concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
          ;; automatically in relative form, but eventually notes may
          ;; not be all under a common directory (or project).
          (xref-file-name-display 'abs)
-         (xref-alist (xref--analyze (xref-matches-in-files query (denote-directory-files nil :omit-current :text-only))))
+         (xref-alist (xref--analyze
+                      (xref-matches-in-files
+                       query
+                       (denote-directory-files files-matching-regexp :omit-current :text-only))))
          (dir (denote-directory)))
     (unless xref-alist
       (error "No backlinks for query `%s'" query))
@@ -4083,7 +4089,7 @@ Place the buffer below the current window or wherever the user option
   (interactive)
   (if-let ((file buffer-file-name))
       (when-let ((id (denote-retrieve-filename-identifier-with-error file)))
-        (denote-link--prepare-backlinks id (denote--backlinks-get-buffer-name file id)))
+        (denote-link--prepare-backlinks id nil (denote--backlinks-get-buffer-name file id)))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
 (define-obsolete-function-alias
