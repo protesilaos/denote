@@ -144,7 +144,7 @@ Also see `denote-org-extras-link-to-heading'."
   (interactive)
   (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id buffer-file-name))
              (heading-text (substring-no-properties (denote-link-ol-get-heading))))
-    (denote-link--prepare-backlinks heading-id (denote-org-extras--get-backlinks-buffer-name heading-text))))
+    (denote-link--prepare-backlinks heading-id ".*\\.org" (denote-org-extras--get-backlinks-buffer-name heading-text))))
 
 ;;;; Extract subtree into its own note
 
