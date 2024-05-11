@@ -3697,7 +3697,7 @@ function."
 (defalias 'denote-link--find-file-history 'denote-link-find-file-history
   "Compatibility alias for `denote-link-find-file-history'.")
 
-(defun denote-link--find-file-prompt (files)
+(defun denote-select-linked-file-prompt (files)
   "Prompt for linked file among FILES."
   (let ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory
                             files)))
@@ -3705,6 +3705,11 @@ function."
      "Find linked file: "
      (denote--completion-table 'file file-names)
      nil t nil 'denote-link-find-file-history)))
+
+(define-obsolete-function-alias
+  'denote-link--find-file-prompt
+  'denote-select-linked-file-prompt
+  "3.0.0")
 
 (defun denote-link-return-links (&optional file)
   "Return list of links in current or optional FILE.
@@ -3733,7 +3738,7 @@ Also see `denote-link-return-backlinks'."
   (find-file
    (concat
     (denote-directory)
-    (denote-link--find-file-prompt
+    (denote-select-linked-file-prompt
      (or (denote-link-return-links)
          (user-error "No links found"))))))
 
@@ -3759,7 +3764,7 @@ Like `denote-find-link', but select backlink to follow."
   (find-file
    (denote-get-path-by-id
     (denote-extract-id-from-string
-     (denote-link--find-file-prompt
+     (denote-select-linked-file-prompt
       (or (denote-link-return-backlinks)
           (user-error "No backlinks found")))))))
 

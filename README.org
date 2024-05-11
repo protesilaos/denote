@@ -4701,6 +4701,11 @@ might change them without further notice.
   matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
   strings.  Consult the ~denote-file-types~ for how this is used.
 
+#+findex: denote-select-linked-file-prompt
++ Function ~denote-select-linked-file-prompt~ :: Prompt for linked
+  file among =FILES=. [ Made publicly available as part of
+  {{{development-version}}}. ]
+
 #+findex: denote-link-return-links
 + Function ~denote-link-return-links~ :: Return list of links in
   current or optional =FILE=.  Also see ~denote-link-return-backlinks~.
