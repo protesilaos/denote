@@ -3569,7 +3569,7 @@ See the `:link' property of `denote-file-types'."
 
 - If the region is active, use it as the description.
 
-- If FILE as a signature, then format the description as a sequence of
+- If FILE has a signature, then format the description as a sequence of
   the signature text and the title with two spaces between them.
 
 - If FILE does not have a signature, then use its title as the
