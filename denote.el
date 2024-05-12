@@ -3580,7 +3580,9 @@ This is useful as the value of the user option
     (cond
      (region-text region-text)
      ((and signature title) (format "%s  %s" signature title))
-     (t title))))
+     (title (format "%s" title))
+     (signature (format "%s" signature))
+     (t ""))))
 
 (defun denote--get-active-region-content ()
   "Return the text of the active region, else nil."
