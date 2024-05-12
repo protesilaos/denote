@@ -1796,17 +1796,13 @@ The return value is a list of strings."
 
 (defun denote-retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE.
-Try to find the value of the title in the front matter of FILE,
-otherwise use its file name.
-
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
 `denote-retrieve-filename-title'."
   (if-let (((denote-file-is-note-p file))
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
-    (or (denote-retrieve-filename-title file)
-        (file-name-base file))))
+    (denote-retrieve-filename-title file)))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
