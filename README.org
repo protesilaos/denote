@@ -4421,10 +4421,25 @@ might change them without further notice.
   is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
 
 #+findex: denote-file-prompt
-+ Function ~denote-file-prompt~ :: Prompt for file with identifier in
-  variable ~denote-directory~. With optional =FILES-MATCHING-REGEXP=,
-  filter the candidates per the given regular expression. With
-  optional =PROMPT-TEXT=, use it instead of the default select a file.
++ Function ~denote-file-prompt~ :: Prompt for file in variable
+  ~denote-directory~. With optional =FILES-MATCHING-REGEXP=, filter
+  the candidates per the given regular expression. With optional
+  =PROMPT-TEXT=, use it instead of the default call to select a file.
+  With optional =NO-REQUIRE-MATCH= accept the given input as-is. If it
+  does not match a file, return nil. See ~denote-file-or-action-prompt~
+  for how this is intended to be used. Unless =NO-REQUIRE-MATCH= is
+  non-nil, return the absolute path to the matching file. [ Revised as
+  part of {{{development-version}}} to include the new =NO-REQUIRE-MATCH=
+  parameter. This is to simplify how we use the various "... or
+  create" commands internally. ]
+
+#+findex: denote-file-or-action-prompt
++ Function ~denote-file-or-action-prompt~ :: Like ~denote-file-prompt~
+  but accept the user input as-is. If the input does not match a file
+  completely, return the input. Otherwise, return the file. The
+  optional =FILES-MATCHING-REGEXP= and =PROMPT-TEXT= have the same
+  meaning as ~denote-file-prompt~ and are passed to it. [ Part of
+  {{{development-version}}}. ]
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
