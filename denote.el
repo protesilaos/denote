@@ -1169,6 +1169,11 @@ file in the returned list."
 (defalias 'denote--file-history 'denote-file-history
   "Compatibility alias for `denote-file-history'.")
 
+(defvar denote-file-prompt-latest-input nil
+  "Latest input passed to `denote-file-prompt'.
+This is used for retrieving a value that is used to set a new default at
+the title prompt of `denote-open-or-create' and related commands.")
+
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match)
   "Prompt for file in variable `denote-directory'.
 With optional FILES-MATCHING-REGEXP, filter the candidates per
@@ -1177,12 +1182,9 @@ the given regular expression.
 With optional PROMPT-TEXT, use it instead of the default call to
 select a file.
 
-With optional NO-REQUIRE-MATCH accept the given input as-is.  If it does
-not match a file, return nil.  See `denote-file-or-action-prompt' for
-how this is intended to be used.
+With optional NO-REQUIRE-MATCH, accept the given input as-is.
 
-Unless NO-REQUIRE-MATCH is non-nil, return the absolute path to the
-matching file."
+Return the absolute path to the matching file."
   (let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
                                  (denote-directory-files files-matching-regexp :omit-current)))
          (prompt (format "%s in %s: " (or prompt-text "Select FILE") (denote-directory)))
@@ -1190,28 +1192,17 @@ matching file."
                  prompt
                  (denote--completion-table 'file relative-files)
                  nil (unless no-require-match :require-match)
-                 nil (unless no-require-match 'denote-file-history)))
-         (file (unless no-require-match (expand-file-name input (denote-directory)))))
-    (or file input)))
-
-(defvar denote-file-or-action-prompt-latest-input nil
-  "Latest input passed to `denote-file-prompt'.
-This is used for retrieving a value that is used to set a new default at
-the title prompt of `denote-open-or-create' and related commands.")
-
-(defun denote-file-or-action-prompt (&optional files-matching-regexp prompt-text)
-  "Like `denote-file-prompt' but accept the user input as-is.
-
-If the input does not match a file completely, return the input.
-Otherwise, return the file.
-
-The optional FILES-MATCHING-REGEXP and PROMPT-TEXT have the same meaning
-as `denote-file-prompt' and are passed to it."
-  (let ((input (denote-file-prompt files-matching-regexp prompt-text :no-require-match)))
-    (if-let ((file (expand-file-name input (denote-directory)))
-             ((file-exists-p file)))
-        file
-      (setq denote-file-or-action-prompt-latest-input input))))
+                 nil 'denote-file-history))
+         (absolute-file (concat (denote-directory) input)))
+    ;; NOTE: This block is executed when no-require-match is t. It is useful
+    ;; for commands such as `denote-open-or-create` or similar.
+    (unless (file-exists-p absolute-file)
+      (setq denote-file-prompt-latest-input input)
+      (setq denote-file-history (delete input denote-file-history)))
+    ;; NOTE: We must always return an absolute path, even if it does not
+    ;; exist, because callers expect one.  They handle a non-existent file
+    ;; appropriately.
+    absolute-file))
 
 ;;;; Keywords
 
@@ -2106,7 +2097,7 @@ The path of the newly created file is returned."
          (or force-ignore-region denote-ignore-region-in-denote-command))
         (denote-title-prompt-current-default
          (if force-use-file-prompt-as-default-title
-             denote-file-or-action-prompt-latest-input
+             denote-file-prompt-latest-input
            denote-title-prompt-current-default))
         (path))
     (if in-background
@@ -2475,7 +2466,7 @@ has the `signature' prompt appended to its existing prompts."
 If file does not exist, invoke `denote' to create a file.  In that case,
 use the last input at the file prompt as the default value of the title
 prompt."
-  (interactive (list (denote-file-or-action-prompt)))
+  (interactive (list (denote-file-prompt nil nil :no-require-match)))
   (if (and target (file-exists-p target))
       (find-file target)
     (denote--command-with-features #'denote :use-last-input-as-def-title nil nil nil)))
@@ -2485,7 +2476,7 @@ prompt."
   "Like `denote-open-or-create' but use one of the `denote-commands-for-new-notes'."
   (declare (interactive-only t))
   (interactive)
-  (let ((target (denote-file-or-action-prompt)))
+  (let ((target (denote-file-prompt nil nil :no-require-match)))
     (if (and target (file-exists-p target))
         (find-file target)
       (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
@@ -3839,7 +3830,7 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
-   (let* ((target (denote-file-or-action-prompt)))
+   (let* ((target (denote-file-prompt nil nil :no-require-match)))
      (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
