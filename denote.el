@@ -1033,7 +1033,7 @@ With optional OMIT-CURRENT as a non-nil value, do not include the
 current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
-text files that satisfy `denote-file-is-note-p'."
+text files that satisfy `denote-filename-is-note-p'."
   (let ((files (denote--directory-get-files)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
@@ -1043,7 +1043,7 @@ text files that satisfy `denote-file-is-note-p'."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-file-is-note-p files)))
+      (setq files (seq-filter #'denote-filename-is-note-p files)))
     files))
 
 ;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
@@ -1054,7 +1054,7 @@ text files that satisfy `denote-file-is-note-p'."
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
-Filter `denote-directory-files' using `denote-file-is-note-p'."
+Filter `denote-directory-files' using `denote-filename-is-note-p'."
   (denote-directory-files nil nil :text-only))
 
 (defun denote-directory-subdirectories ()
@@ -1128,7 +1128,7 @@ something like .org even if the actual file extension is
       (seq-find
        (lambda (file)
          (let ((file-extension (denote-get-file-extension file)))
-           (and (denote-file-is-note-p file)
+           (and (denote-filename-is-note-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
                     (string= ".org" file-extension)
@@ -1791,7 +1791,7 @@ The return value is a list of strings."
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
 `denote-retrieve-filename-title'."
-  (if-let (((denote-file-is-note-p file))
+  (if-let (((denote-filename-is-note-p file))
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
