@@ -1015,7 +1015,8 @@ are not backups."
    #'expand-file-name
    (seq-filter
     (lambda (file)
-      (and (denote-file-has-identifier-p file)
+      (and (file-regular-p file)
+           (denote-file-has-identifier-p file)
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
 
