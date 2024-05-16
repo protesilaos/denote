@@ -4145,11 +4145,8 @@ might change them without further notice.
 
 #+findex: denote-file-is-note-p
 + Function ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an
-  actual Denote note.  For our purposes, a note must not be a
-  directory, must satisfy ~file-regular-p~, its path must be part of
-  the variable ~denote-directory~, it must have a Denote identifier in
-  its name, and use one of the extensions implied by
-  ~denote-file-type~.
+  actual Denote note. For our purposes, a note must satisfy
+  ~file-regular-p~ and ~denote-filename-is-note-p~.
 
 #+findex: denote-file-has-identifier-p
 + Function ~denote-file-has-identifier-p~ :: Return non-nil if =FILE=

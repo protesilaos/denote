@@ -939,11 +939,9 @@ and use one of the extensions implied by `denote-file-type'."
 
 (defun denote-file-is-note-p (file)
   "Return non-nil if FILE is an actual Denote note.
-For our purposes, a note must not be a directory, must satisfy
-`file-regular-p' and `denote-filename-is-note-p'."
-  (and (not (file-directory-p file))
-       (file-regular-p file)
-       (denote-filename-is-note-p file)))
+For our purposes, a note must satisfy `file-regular-p' and
+`denote-filename-is-note-p'."
+  (and (file-regular-p file) (denote-filename-is-note-p file)))
 
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
