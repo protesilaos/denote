@@ -1617,7 +1617,7 @@ contain the newline."
     (with-temp-buffer
       (insert front-matter)
       (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
+      (when (re-search-forward key-regexp nil :no-error 1)
         (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 (defun denote--get-keywords-line-from-front-matter (keywords file-type)
@@ -1629,7 +1629,7 @@ contain the newline."
     (with-temp-buffer
       (insert front-matter)
       (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
+      (when (re-search-forward key-regexp nil :no-error 1)
         (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 ;;;; Front matter or content retrieval functions
@@ -1741,7 +1741,7 @@ Subroutine of `denote--file-with-temp-buffer'."
   "Return title value from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (and file-type
-               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
+               (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1))
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
@@ -1749,7 +1749,7 @@ Subroutine of `denote--file-with-temp-buffer'."
   "Return title line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (and file-type
-               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
+               (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote-retrieve-front-matter-keywords-value (file file-type)
@@ -1757,7 +1757,7 @@ Subroutine of `denote--file-with-temp-buffer'."
 The return value is a list of strings."
   (denote--file-with-temp-buffer file
     (when (and file-type
-               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
+               (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1))
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
@@ -1765,7 +1765,7 @@ The return value is a list of strings."
   "Return keywords line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
     (when (and file-type
-               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
+               (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
@@ -2230,7 +2230,7 @@ Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
 here for clarity."
   (completing-read
-   "Select file TYPE: " (denote--file-type-keys) nil t
+   "Select file TYPE: " (denote--file-type-keys) nil :require-match
    nil 'denote-file-type-history))
 
 (defvar denote-date-history nil
@@ -2278,7 +2278,7 @@ Use Org's more advanced date selection utility if the user option
          (prompt (if def
                      (format "Select SUBDIRECTORY [%s]: " def)
                    "Select SUBDIRECTORY: ")))
-    (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
+    (completing-read prompt table nil :require-match nil 'denote-subdirectory-history def)))
 
 (defun denote-subdirectory-prompt ()
   "Prompt for subdirectory of the variable `denote-directory'.
@@ -2302,7 +2302,7 @@ packages such as `marginalia' and `embark')."
      (intern
       (completing-read
        "Select TEMPLATE key: " (mapcar #'car templates)
-       nil t nil 'denote-template-history))
+       nil :require-match nil 'denote-template-history))
      templates)))
 
 (defvar denote-signature-history nil
@@ -2575,7 +2575,7 @@ block if appropriate."
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
   (denote--file-with-temp-buffer file
-    (re-search-forward regexp nil t 1)))
+    (re-search-forward regexp nil :no-error 1)))
 
 (defun denote--edit-front-matter-p (file file-type)
   "Test if FILE should be subject to front matter rewrite.
@@ -2605,7 +2605,7 @@ related."
       (save-restriction
         (widen)
         (goto-char (point-min))
-        (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (when (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1)
           (goto-char (line-beginning-position))
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (line-end-position))
@@ -2641,12 +2641,12 @@ produce a `y-or-n-p' prompt to that effect."
           (save-restriction
             (widen)
             (goto-char (point-min))
-            (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+            (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1)
             (goto-char (line-beginning-position))
             (insert new-title-line)
             (delete-region (point) (line-end-position))
             (goto-char (point-min))
-            (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+            (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1)
             (goto-char (line-beginning-position))
             (insert new-keywords-line)
             (delete-region (point) (line-end-position))))))))
@@ -3668,8 +3668,8 @@ function."
   (let (matches)
     (save-excursion
       (goto-char (point-min))
-      (while (or (re-search-forward regexp nil t)
-                 (re-search-forward denote-id-only-link-in-context-regexp nil t))
+      (while (or (re-search-forward regexp nil :no-error)
+                 (re-search-forward denote-id-only-link-in-context-regexp nil :no-error))
         (push (match-string-no-properties 1) matches)))
     matches))
 
@@ -3696,7 +3696,7 @@ function."
     (completing-read
      "Find linked file: "
      (denote--completion-table 'file file-names)
-     nil t nil 'denote-link-find-file-history)))
+     nil :require-match nil 'denote-link-find-file-history)))
 
 (define-obsolete-function-alias
   'denote-link--find-file-prompt
@@ -3909,7 +3909,7 @@ positions, limit the process to the region in-between."
              (denote-file-has-identifier-p buffer-file-name))
     (save-excursion
       (goto-char (or beg (point-min)))
-      (while (re-search-forward denote-id-regexp end t)
+      (while (re-search-forward denote-id-regexp end :no-error)
         (when-let ((string (denote-link--link-at-point-string))
                    (beg (match-beginning 0))
                    (end (match-end 0)))
@@ -4179,7 +4179,7 @@ inserts links with just the identifier."
     (completing-read
      "Select note buffer: "
      (denote--completion-table 'buffer buffer-file-names)
-     nil t)))
+     nil :require-match)))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-is-note-p' from Dired marked items."
