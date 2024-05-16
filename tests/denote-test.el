@@ -375,11 +375,10 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote-filetype-heuristics ()
   "Test that `denote-filetype-heuristics' gets the correct file type."
-  (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") (caar denote-file-types))
+  (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") nil)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org") 'org)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.gpg") 'org)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org.age") 'org)
-               (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") 'org)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt") 'text)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt.gpg") 'text)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.txt.age") 'text)

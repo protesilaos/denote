@@ -4298,8 +4298,7 @@ might change them without further notice.
   the first file type for which the :title-key-regexp in
   ~denote-file-types~ matches in the file.
 
-  If no file type in ~denote-file-types~ has the file extension, the
-  file type is assumed to be the first one in ~denote-file-types~.
+  Return nil if the file type is not recognized.
 
 #+findex: denote-format-file-name
 + Function ~denote-format-file-name~ :: Format file name. =DIR-PATH=,
