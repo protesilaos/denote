@@ -1026,9 +1026,6 @@ are not backups."
 Files only need to have an identifier.  The return value may thus
 include file types that are not implied by `denote-file-type'.
 
-Remember that the variable `denote-directory' accepts a dir-local
-value, as explained in its doc string.
-
 With optional FILES-MATCHING-REGEXP, restrict files to those
 matching the given regular expression.
 
