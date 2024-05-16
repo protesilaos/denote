@@ -1745,28 +1745,32 @@ Subroutine of `denote--file-with-temp-buffer'."
 (defun denote-retrieve-front-matter-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote-retrieve-front-matter-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote-retrieve-front-matter-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
 The return value is a list of strings."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote-retrieve-front-matter-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
