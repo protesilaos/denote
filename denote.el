@@ -1015,7 +1015,8 @@ are not backups."
    #'expand-file-name
    (seq-filter
     (lambda (file)
-      (and (denote-file-has-identifier-p file)
+      (and (file-regular-p file)
+           (denote-file-has-identifier-p file)
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
 
@@ -1025,9 +1026,6 @@ are not backups."
 Files only need to have an identifier.  The return value may thus
 include file types that are not implied by `denote-file-type'.
 
-Remember that the variable `denote-directory' accepts a dir-local
-value, as explained in its doc string.
-
 With optional FILES-MATCHING-REGEXP, restrict files to those
 matching the given regular expression.
 
@@ -1035,7 +1033,7 @@ With optional OMIT-CURRENT as a non-nil value, do not include the
 current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
-text files that satisfy `denote-file-is-note-p'."
+text files that satisfy `denote-filename-is-note-p'."
   (let ((files (denote--directory-get-files)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
@@ -1045,7 +1043,7 @@ text files that satisfy `denote-file-is-note-p'."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-file-is-note-p files)))
+      (setq files (seq-filter #'denote-filename-is-note-p files)))
     files))
 
 ;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
@@ -1056,7 +1054,7 @@ text files that satisfy `denote-file-is-note-p'."
 
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
-Filter `denote-directory-files' using `denote-file-is-note-p'."
+Filter `denote-directory-files' using `denote-filename-is-note-p'."
   (denote-directory-files nil nil :text-only))
 
 (defun denote-directory-subdirectories ()
@@ -1130,7 +1128,7 @@ something like .org even if the actual file extension is
       (seq-find
        (lambda (file)
          (let ((file-extension (denote-get-file-extension file)))
-           (and (denote-file-is-note-p file)
+           (and (denote-filename-is-note-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
                     (string= ".org" file-extension)
@@ -1744,28 +1742,32 @@ Subroutine of `denote--file-with-temp-buffer'."
 (defun denote-retrieve-front-matter-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
       (funcall (denote--title-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote-retrieve-front-matter-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--title-key-regexp file-type) nil t 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defun denote-retrieve-front-matter-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
 The return value is a list of strings."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
       (funcall (denote--keywords-value-reverse-function file-type)
                (buffer-substring-no-properties (point) (line-end-position))))))
 
 (defun denote-retrieve-front-matter-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
   (denote--file-with-temp-buffer file
-    (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+    (when (and file-type
+               (re-search-forward (denote--keywords-key-regexp file-type) nil t 1))
       (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
@@ -1789,7 +1791,7 @@ The return value is a list of strings."
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
 `denote-retrieve-filename-title'."
-  (if-let (((denote-file-is-note-p file))
+  (if-let (((denote-filename-is-note-p file))
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
@@ -2508,23 +2510,19 @@ If more than one file type correspond to this file extension, use the
 first file type for which the :title-key-regexp in `denote-file-types'
 matches in the file.
 
-If no file type in `denote-file-types' has the file extension,
-the file type is assumed to be the first one in `denote-file-types'."
+Return nil if the file type is not recognized."
   (cond
    ((denote--file-type-org-extra-p) 'org)
    (file
-    (let* ((extension (denote-get-file-extension-sans-encryption file))
-           (types (denote--file-types-with-extension extension)))
-      (cond ((null types)
-             (caar denote-file-types))
-            ((= (length types) 1)
-             (caar types))
-            (t
-             (or (car (seq-find
-                       (lambda (type)
-                         (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
-                       types))
-                 (caar types))))))))
+    (when-let ((extension (denote-get-file-extension-sans-encryption file))
+               (types (denote--file-types-with-extension extension)))
+      (if (= (length types) 1)
+          (caar types)
+        (or (car (seq-find
+                  (lambda (type)
+                    (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                  types))
+            (caar types)))))))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
@@ -2566,7 +2564,7 @@ variable `denote-directory'."
         (set-visited-file-name new-name nil t)))))
 
 (defun denote--add-front-matter (file title keywords id file-type)
-  "Prepend front matter to FILE if `denote-file-is-note-p'.
+  "Prepend front matter to FILE.
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
@@ -2760,7 +2758,7 @@ renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
          (date (denote-retrieve-filename-identifier file))
-         (title (denote-retrieve-title-or-filename file file-type))
+         (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
      (dolist (prompt denote-prompts)
@@ -3192,7 +3190,7 @@ of the file.  This needs to be done manually."
   (let* ((dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file) ""))
-         (title (denote-retrieve-title-or-filename file old-file-type))
+         (title (or (denote-retrieve-title-or-filename file old-file-type) ""))
          (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
          (new-extension (denote--file-extension new-file-type))

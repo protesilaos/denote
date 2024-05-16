@@ -4234,15 +4234,13 @@ might change them without further notice.
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
   paths in variable ~denote-directory~. Files only need to have an
-  identifier. The return value may thus include file types that are
-  not implied by ~denote-file-type~. Remember that the variable
-  ~denote-directory~ accepts a dir-local value, as explained in its
-  doc string ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]). With optional
-  =FILES-MATCHING-REGEXP=, restrict files to those matching the given
-  regular expression. With optional =OMIT-CURRENT= as a non-nil value,
-  do not include the current Denote file in the returned list. With
-  optional =TEXT-ONLY= as a non-nil value, limit the results to text
-  files that satisfy ~denote-file-is-note-p~.
+  identifier. The return value may thus include file types that are not
+  implied by ~denote-file-type~. With optional =FILES-MATCHING-REGEXP=,
+  restrict files to those matching the given regular expression. With
+  optional =OMIT-CURRENT= as a non-nil value, do not include the current
+  Denote file in the returned list. With optional =TEXT-ONLY= as a
+  non-nil value, limit the results to text files that satisfy
+  ~denote-file-is-note-p~.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -4298,8 +4296,7 @@ might change them without further notice.
   the first file type for which the :title-key-regexp in
   ~denote-file-types~ matches in the file.
 
-  If no file type in ~denote-file-types~ has the file extension, the
-  file type is assumed to be the first one in ~denote-file-types~.
+  Return nil if the file type is not recognized.
 
 #+findex: denote-format-file-name
 + Function ~denote-format-file-name~ :: Format file name. =DIR-PATH=,
