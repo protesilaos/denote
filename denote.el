@@ -2564,7 +2564,7 @@ variable `denote-directory'."
         (set-visited-file-name new-name nil t)))))
 
 (defun denote--add-front-matter (file title keywords id file-type)
-  "Prepend front matter to FILE if `denote-file-is-note-p'.
+  "Prepend front matter to FILE.
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
