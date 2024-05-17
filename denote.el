@@ -956,7 +956,9 @@ For our purposes, a note must satisfy `file-regular-p' and
 
 (defun denote-file-is-writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
-  (and (denote--file-regular-writable-p file)
+  ;; We do not want to test that the file is regular (exists) because we want
+  ;; this function to return t on files that are still unsaved.
+  (and (file-writable-p file)
        (denote-file-has-supported-extension-p file)))
 
 (defun denote-get-file-name-relative-to-denote-directory (file)
@@ -1617,7 +1619,7 @@ contain the newline."
     (with-temp-buffer
       (insert front-matter)
       (goto-char (point-min))
-      (when (re-search-forward key-regexp nil :no-error 1)
+      (when (re-search-forward key-regexp nil t 1)
         (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 (defun denote--get-keywords-line-from-front-matter (keywords file-type)
@@ -1629,7 +1631,7 @@ contain the newline."
     (with-temp-buffer
       (insert front-matter)
       (goto-char (point-min))
-      (when (re-search-forward key-regexp nil :no-error 1)
+      (when (re-search-forward key-regexp nil t 1)
         (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 ;;;; Front matter or content retrieval functions
@@ -1739,34 +1741,34 @@ Subroutine of `denote--file-with-temp-buffer'."
 
 (defun denote-retrieve-front-matter-title-value (file file-type)
   "Return title value from FILE front matter per FILE-TYPE."
-  (denote--file-with-temp-buffer file
-    (when (and file-type
-               (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1))
-      (funcall (denote--title-value-reverse-function file-type)
-               (buffer-substring-no-properties (point) (line-end-position))))))
+  (when file-type
+    (denote--file-with-temp-buffer file
+      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+        (funcall (denote--title-value-reverse-function file-type)
+                 (buffer-substring-no-properties (point) (line-end-position)))))))
 
 (defun denote-retrieve-front-matter-title-line (file file-type)
   "Return title line from FILE front matter per FILE-TYPE."
-  (denote--file-with-temp-buffer file
-    (when (and file-type
-               (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1))
-      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+  (when file-type
+    (denote--file-with-temp-buffer file
+      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 (defun denote-retrieve-front-matter-keywords-value (file file-type)
   "Return keywords value from FILE front matter per FILE-TYPE.
 The return value is a list of strings."
-  (denote--file-with-temp-buffer file
-    (when (and file-type
-               (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1))
-      (funcall (denote--keywords-value-reverse-function file-type)
-               (buffer-substring-no-properties (point) (line-end-position))))))
+  (when file-type
+    (denote--file-with-temp-buffer file
+      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (funcall (denote--keywords-value-reverse-function file-type)
+                 (buffer-substring-no-properties (point) (line-end-position)))))))
 
 (defun denote-retrieve-front-matter-keywords-line (file file-type)
   "Return keywords line from FILE front matter per FILE-TYPE."
-  (denote--file-with-temp-buffer file
-    (when (and file-type
-               (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1))
-      (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+  (when file-type
+    (denote--file-with-temp-buffer file
+      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
   "Alias for `denote-retrieve-front-matter-title-value'.")
@@ -1918,6 +1920,8 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
                   title (denote--date date file-type) keywords
                   id
                   file-type)))
+    (when (file-regular-p buffer)
+      (user-error "A file named `%s' already exists" buffer))
     (with-current-buffer buffer
       (insert header)
       (insert template))
@@ -2230,7 +2234,7 @@ Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
 here for clarity."
   (completing-read
-   "Select file TYPE: " (denote--file-type-keys) nil :require-match
+   "Select file TYPE: " (denote--file-type-keys) nil t
    nil 'denote-file-type-history))
 
 (defvar denote-date-history nil
@@ -2278,7 +2282,7 @@ Use Org's more advanced date selection utility if the user option
          (prompt (if def
                      (format "Select SUBDIRECTORY [%s]: " def)
                    "Select SUBDIRECTORY: ")))
-    (completing-read prompt table nil :require-match nil 'denote-subdirectory-history def)))
+    (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
 
 (defun denote-subdirectory-prompt ()
   "Prompt for subdirectory of the variable `denote-directory'.
@@ -2302,7 +2306,7 @@ packages such as `marginalia' and `embark')."
      (intern
       (completing-read
        "Select TEMPLATE key: " (mapcar #'car templates)
-       nil :require-match nil 'denote-template-history))
+       nil t nil 'denote-template-history))
      templates)))
 
 (defvar denote-signature-history nil
@@ -2546,17 +2550,19 @@ variable `denote-directory'."
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (cond
-     ((derived-mode-p 'dired-mode)
-      (dired-rename-file old-name new-name nil))
-     ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
-     ;; saved, but our convention is to not save the buffer after
-     ;; changing front matter unless we absolutely have to (allows
-     ;; users to do `diff-buffer-with-file', for example).
-     ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
-      (vc-rename-file old-name new-name))
-     (t
-      (rename-file old-name new-name nil)))
+    (when (and (denote--file-regular-writable-p old-name)
+               (file-writable-p new-name))
+      (cond
+       ((derived-mode-p 'dired-mode)
+        (dired-rename-file old-name new-name nil))
+       ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
+       ;; saved, but our convention is to not save the buffer after
+       ;; changing front matter unless we absolutely have to (allows
+       ;; users to do `diff-buffer-with-file', for example).
+       ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
+        (vc-rename-file old-name new-name))
+       (t
+        (rename-file old-name new-name nil))))
     (when-let ((buffer (find-buffer-visiting old-name)))
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
@@ -2575,7 +2581,7 @@ block if appropriate."
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
   (denote--file-with-temp-buffer file
-    (re-search-forward regexp nil :no-error 1)))
+    (re-search-forward regexp nil t 1)))
 
 (defun denote--edit-front-matter-p (file file-type)
   "Test if FILE should be subject to front matter rewrite.
@@ -2605,7 +2611,7 @@ related."
       (save-restriction
         (widen)
         (goto-char (point-min))
-        (when (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1)
+        (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
           (goto-char (line-beginning-position))
           (insert (denote--get-keywords-line-from-front-matter keywords file-type))
           (delete-region (point) (line-end-position))
@@ -2641,12 +2647,12 @@ produce a `y-or-n-p' prompt to that effect."
           (save-restriction
             (widen)
             (goto-char (point-min))
-            (re-search-forward (denote--title-key-regexp file-type) nil :no-error 1)
+            (re-search-forward (denote--title-key-regexp file-type) nil t 1)
             (goto-char (line-beginning-position))
             (insert new-title-line)
             (delete-region (point) (line-end-position))
             (goto-char (point-min))
-            (re-search-forward (denote--keywords-key-regexp file-type) nil :no-error 1)
+            (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
             (goto-char (line-beginning-position))
             (insert new-keywords-line)
             (delete-region (point) (line-end-position))))))))
@@ -2727,6 +2733,8 @@ Respect `denote-rename-confirmations' and `denote-save-buffers'."
                  (denote-create-unique-file-identifier file date)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
+    (when (file-regular-p new-name)
+      (user-error "The destination file `%s' already exists" new-name))
     (when (denote-rename-file-prompt file new-name)
       ;; Modify file name, buffer name, or both
       (denote-rename-file-and-buffer file new-name)
@@ -3098,7 +3106,8 @@ cannot know if they have front matter and what that may be."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
                    (lambda (m)
-                     (and (denote-file-is-writable-and-supported-p m)
+                     (and (file-regular-p m)
+                          (denote-file-is-writable-and-supported-p m)
                           (denote-file-has-identifier-p m)))
                    (dired-get-marked-files))))
       (progn
@@ -3670,8 +3679,8 @@ function."
   (let (matches)
     (save-excursion
       (goto-char (point-min))
-      (while (or (re-search-forward regexp nil :no-error)
-                 (re-search-forward denote-id-only-link-in-context-regexp nil :no-error))
+      (while (or (re-search-forward regexp nil t)
+                 (re-search-forward denote-id-only-link-in-context-regexp nil t))
         (push (match-string-no-properties 1) matches)))
     matches))
 
@@ -3698,7 +3707,7 @@ function."
     (completing-read
      "Find linked file: "
      (denote--completion-table 'file file-names)
-     nil :require-match nil 'denote-link-find-file-history)))
+     nil t nil 'denote-link-find-file-history)))
 
 (define-obsolete-function-alias
   'denote-link--find-file-prompt
@@ -3911,7 +3920,7 @@ positions, limit the process to the region in-between."
              (denote-file-has-identifier-p buffer-file-name))
     (save-excursion
       (goto-char (or beg (point-min)))
-      (while (re-search-forward denote-id-regexp end :no-error)
+      (while (re-search-forward denote-id-regexp end t)
         (when-let ((string (denote-link--link-at-point-string))
                    (beg (match-beginning 0))
                    (end (match-end 0)))
@@ -4181,7 +4190,7 @@ inserts links with just the identifier."
     (completing-read
      "Select note buffer: "
      (denote--completion-table 'buffer buffer-file-names)
-     nil :require-match)))
+     nil t)))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-is-note-p' from Dired marked items."
@@ -4534,6 +4543,8 @@ Consult the manual for template samples."
                           (denote-get-identifier) 'org)))
       (setq denote-last-path
             (denote-format-file-name directory id keywords title ".org" signature))
+      (when (file-regular-p denote-last-path)
+        (user-error "A file named `%s' already exists" denote-last-path))
       (denote--keywords-add-to-history keywords)
       (concat front-matter template denote-org-capture-specifiers))))
 
