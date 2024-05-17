@@ -3074,7 +3074,7 @@ edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like.
 
-The values of `denote-nename-confirmations' and
+The values of `denote-rename-confirmations' and
 `denote-save-buffers' are respected.
 
 The identifier of the file, if any, is never modified even if it
