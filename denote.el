@@ -1795,7 +1795,9 @@ This is a wrapper for `denote-retrieve-front-matter-title-value' and
            (title (denote-retrieve-front-matter-title-value file type))
            ((not (string-blank-p title))))
       title
-    (denote-retrieve-filename-title file)))
+    (or (denote-retrieve-filename-title file)
+        (and (not (denote-file-has-identifier-p file))
+             (file-name-base file)))))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
