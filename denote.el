@@ -2658,10 +2658,11 @@ produce a `y-or-n-p' prompt to that effect."
 
 ;;;;; The renaming commands and their prompts
 
-(defun denote--rename-dired-file-or-prompt ()
-  "Return Dired file at point, else prompt for one.
+(defun denote--rename-dired-file-or-current-file-or-prompt ()
+  "Return Dired file at point or the current file, else prompt for one.
 Throw error if FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
+      buffer-file-name
       (let* ((file (buffer-file-name))
              (format (if file
                          (format "Rename FILE Denote-style [%s]: " file)
@@ -2790,9 +2791,10 @@ renaming commands."
 Always rename the file where it is located in the file system:
 never move it to another directory.
 
-If in Dired, consider FILE to be the one at point, else prompt
-with minibuffer completion for one.  When called from Lisp, FILE
-is a file system path represented as a string.
+If in Dired, consider FILE to be the one at point, else the
+current file, else prompt with minibuffer completion for one.
+When called from Lisp, FILE is a file system path represented as
+a string.
 
 If FILE has a Denote-compliant identifier, retain it while
 updating components of the file name referenced by the user
@@ -2890,7 +2892,7 @@ file-naming scheme.
 For a version of this command that works with multiple files
 one-by-one, use `denote-dired-rename-files'."
   (interactive
-   (let* ((file (denote--rename-dired-file-or-prompt)))
+   (let* ((file (denote--rename-dired-file-or-current-file-or-prompt)))
      (append (list file) (denote--rename-get-file-info-from-prompts-or-existing file))))
   (let ((new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
@@ -3165,8 +3167,8 @@ relevant front matter.
 (defun denote-change-file-type-and-front-matter (file new-file-type)
   "Change file type of FILE and add an appropriate front matter.
 
-If in Dired, consider FILE to be the one at point, else prompt
-with minibuffer completion for one.
+If in Dired, consider FILE to be the one at point, else the
+current file, else prompt with minibuffer completion for one.
 
 Add a front matter in the format of the NEW-FILE-TYPE at the
 beginning of the file.
@@ -3183,7 +3185,7 @@ Important note: No attempt is made to modify any other elements
 of the file.  This needs to be done manually."
   (interactive
    (list
-    (denote--rename-dired-file-or-prompt)
+    (denote--rename-dired-file-or-current-file-or-prompt)
     (denote--valid-file-type (or (denote-file-type-prompt) denote-file-type))))
   (let* ((dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
