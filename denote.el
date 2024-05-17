@@ -956,7 +956,9 @@ For our purposes, a note must satisfy `file-regular-p' and
 
 (defun denote-file-is-writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
-  (and (denote--file-regular-writable-p file)
+  ;; We do not want to test that the file is regular (exists) because we want
+  ;; this function to return t on files that are still unsaved.
+  (and (file-writable-p file)
        (denote-file-has-supported-extension-p file)))
 
 (defun denote-get-file-name-relative-to-denote-directory (file)
@@ -3096,7 +3098,8 @@ cannot know if they have front matter and what that may be."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
                    (lambda (m)
-                     (and (denote-file-is-writable-and-supported-p m)
+                     (and (file-regular-p m)
+                          (denote-file-is-writable-and-supported-p m)
                           (denote-file-has-identifier-p m)))
                    (dired-get-marked-files))))
       (progn
