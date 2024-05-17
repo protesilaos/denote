@@ -1920,6 +1920,8 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
                   title (denote--date date file-type) keywords
                   id
                   file-type)))
+    (when (file-regular-p buffer)
+      (user-error "A file named `%s' already exists" buffer))
     (with-current-buffer buffer
       (insert header)
       (insert template))
@@ -2730,6 +2732,8 @@ Respect `denote-rename-confirmations' and `denote-save-buffers'."
                  (denote-create-unique-file-identifier file date)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
+    (when (file-regular-p new-name)
+      (user-error "The destination file `%s' already exists" new-name))
     (when (denote-rename-file-prompt file new-name)
       ;; Modify file name, buffer name, or both
       (denote-rename-file-and-buffer file new-name)
@@ -4537,6 +4541,8 @@ Consult the manual for template samples."
                           (denote-get-identifier) 'org)))
       (setq denote-last-path
             (denote-format-file-name directory id keywords title ".org" signature))
+      (when (file-regular-p denote-last-path)
+        (user-error "A file named `%s' already exists" denote-last-path))
       (denote--keywords-add-to-history keywords)
       (concat front-matter template denote-org-capture-specifiers))))
 
