@@ -2548,17 +2548,19 @@ variable `denote-directory'."
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (cond
-     ((derived-mode-p 'dired-mode)
-      (dired-rename-file old-name new-name nil))
-     ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
-     ;; saved, but our convention is to not save the buffer after
-     ;; changing front matter unless we absolutely have to (allows
-     ;; users to do `diff-buffer-with-file', for example).
-     ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
-      (vc-rename-file old-name new-name))
-     (t
-      (rename-file old-name new-name nil)))
+    (when (and (denote--file-regular-writable-p old-name)
+               (file-writable-p new-name))
+      (cond
+       ((derived-mode-p 'dired-mode)
+        (dired-rename-file old-name new-name nil))
+       ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
+       ;; saved, but our convention is to not save the buffer after
+       ;; changing front matter unless we absolutely have to (allows
+       ;; users to do `diff-buffer-with-file', for example).
+       ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
+        (vc-rename-file old-name new-name))
+       (t
+        (rename-file old-name new-name nil))))
     (when-let ((buffer (find-buffer-visiting old-name)))
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
