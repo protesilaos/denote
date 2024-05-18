@@ -833,20 +833,17 @@ The removal is done only if necessary according to COMPONENT."
 
 (defun denote--replace-consecutive-token-characters (str component)
   "Replace consecutive characters with a single one in STR.
-Hyphens, underscores and equal signs are replaced with a single
-one in str, if necessary according to COMPONENT."
-  ;; -- are allowed in titles
-  (if (eq component 'title)
+Hyphens, underscores, equal signs and at signs are replaced with
+a single one in str, if necessary according to COMPONENT."
+  (let ((str (replace-regexp-in-string
+              "_\\{2,\\}" "_"
+              (replace-regexp-in-string
+               "=\\{2,\\}" "=" str))))
+    ;; -- are allowed in titles
+    (if (eq component 'title)
+        str
       (replace-regexp-in-string
-       "_\\{2,\\}" "_"
-       (replace-regexp-in-string
-        "=\\{2,\\}" "=" str))
-    (replace-regexp-in-string
-     "-\\{2,\\}" "-"
-     (replace-regexp-in-string
-      "_\\{2,\\}" "_"
-      (replace-regexp-in-string
-       "=\\{2,\\}" "=" str)))))
+       "-\\{2,\\}" "-" str))))
 
 (defun denote-sluggify (component str)
   "Make STR an appropriate slug for file name COMPONENT.
