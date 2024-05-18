@@ -1739,36 +1739,28 @@ Subroutine of `denote--file-with-temp-buffer'."
        (goto-char (point-min))
        ,@body)))
 
-(defun denote-retrieve-front-matter-title-value (file file-type)
-  "Return title value from FILE front matter per FILE-TYPE."
-  (when file-type
-    (denote--file-with-temp-buffer file
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (funcall (denote--title-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (line-end-position)))))))
+(defmacro denote--define-retrieve-front-matter (component scope)
+  "Define a function to retrieve front matter for COMPONENT given SCOPE.
+The COMPONENT is one of the file name components that has a
+corresponding front matter entry.  SCOPE is a symbol of either `value'
+or `line', referring to what to match and retrieve."
+  (declare (indent 1))
+  `(defun ,(intern (format "denote-retrieve-front-matter-%s-%s" component scope)) (file file-type)
+     (when file-type
+       (denote--file-with-temp-buffer file
+         (when (re-search-forward (,(intern (format "denote--%s-key-regexp" component)) file-type) nil t 1)
+           ,(cond
+             ((eq scope 'value)
+              `(funcall (,(intern (format "denote--%s-value-reverse-function" component)) file-type)
+                        (buffer-substring-no-properties (point) (line-end-position))))
+             ((eq scope 'line)
+              '(buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+             (t (error "`%s' is not a known scope" scope))))))))
 
-(defun denote-retrieve-front-matter-title-line (file file-type)
-  "Return title line from FILE front matter per FILE-TYPE."
-  (when file-type
-    (denote--file-with-temp-buffer file
-      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
-
-(defun denote-retrieve-front-matter-keywords-value (file file-type)
-  "Return keywords value from FILE front matter per FILE-TYPE.
-The return value is a list of strings."
-  (when file-type
-    (denote--file-with-temp-buffer file
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (funcall (denote--keywords-value-reverse-function file-type)
-                 (buffer-substring-no-properties (point) (line-end-position)))))))
-
-(defun denote-retrieve-front-matter-keywords-line (file file-type)
-  "Return keywords line from FILE front matter per FILE-TYPE."
-  (when file-type
-    (denote--file-with-temp-buffer file
-      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
+(denote--define-retrieve-front-matter title value)
+(denote--define-retrieve-front-matter title line)
+(denote--define-retrieve-front-matter keywords value)
+(denote--define-retrieve-front-matter keywords line)
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
   "Alias for `denote-retrieve-front-matter-title-value'.")
