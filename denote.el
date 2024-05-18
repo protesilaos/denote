@@ -1922,8 +1922,8 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
                   title (denote--date date file-type) keywords
                   id
                   file-type)))
-    (when (file-regular-p buffer)
-      (user-error "A file named `%s' already exists" buffer))
+    (when (file-regular-p path)
+      (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
       (insert header)
       (insert template))
