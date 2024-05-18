@@ -1743,7 +1743,7 @@ Subroutine of `denote--file-with-temp-buffer'."
   "Define a function to retrieve front matter for COMPONENT given SCOPE.
 The COMPONENT is one of the file name components that has a
 corresponding front matter entry.  SCOPE is a symbol of either `value'
-or `line', referring to what to match and retrieve."
+or `line', referring to what the function should retrieve."
   (declare (indent 1))
   `(defun ,(intern (format "denote-retrieve-front-matter-%s-%s" component scope)) (file file-type)
      (when file-type
