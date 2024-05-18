@@ -72,10 +72,9 @@ the current file."
   "Return heading text and CUSTOM_ID from the given LINE in FILE."
   (with-current-buffer (find-file-noselect file)
     (save-excursion
-      (save-restriction
-        (goto-char (point-min))
-        (forward-line (1- line))
-        (cons (denote-link-ol-get-heading) (denote-link-ol-get-id))))))
+      (goto-char (point-min))
+      (forward-line (1- line))
+      (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
 
 (defun denote-org-extras-format-link-with-heading (file heading-id description)
   "Prepare link to FILE with HEADING-ID using DESCRIPTION."
