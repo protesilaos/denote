@@ -911,7 +911,7 @@ a single one in str, if necessary according to COMPONENT."
                "=\\{2,\\}" "="
                (replace-regexp-in-string
                 "@\\{2,\\}" "@" str)))))
-    ;; -- are allowed in titles
+    ;; -- are allowed in titles when the default sluggification is disabled
     (if (eq component 'title)
         str
       (replace-regexp-in-string
