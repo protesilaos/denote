@@ -2192,8 +2192,50 @@ The path of the newly created file is returned."
       (setq path (buffer-file-name)))
     path))
 
+(defun denote--creation-get-note-data-from-prompts ()
+  "This functions retrieves the data necessary for note creation.
+
+The data elements are: title, keywords, file-type, directory,
+date, template and signature.
+
+It is retrieved from prompts according to `denote-prompts'."
+  (let (title keywords file-type directory date template signature)
+    (dolist (prompt denote-prompts)
+      (pcase prompt
+        ('title (setq title (denote-title-prompt
+                             (when (and (not denote-ignore-region-in-denote-command)
+                                        (use-region-p))
+                               (buffer-substring-no-properties
+                                (region-beginning)
+                                (region-end))))))
+        ('keywords (setq keywords (denote-keywords-prompt)))
+        ('file-type (setq file-type (denote-file-type-prompt)))
+        ('subdirectory (setq directory (denote-subdirectory-prompt)))
+        ('date (setq date (denote-date-prompt)))
+        ('template (setq template (denote-template-prompt)))
+        ('signature (setq signature (denote-signature-prompt)))))
+    (list title keywords file-type directory date template signature)))
+
+(defun denote--creation-prepare-note-data (title keywords file-type directory date template signature)
+  "Return parameters in a valid form for file creation.
+
+The data is: TITLE, KEYWORDS, FILE-TYPE, DIRECTORY, DATE,
+TEMPLATE and SIGNATURE."
+  (let* ((title (or title ""))
+         (file-type (denote--valid-file-type (or file-type denote-file-type)))
+         (keywords (denote-keywords-sort keywords))
+         (date (denote-parse-date date))
+         (directory (if (denote--dir-in-denote-directory-p directory)
+                        (file-name-as-directory directory)
+                      (denote-directory)))
+         (template (if (stringp template)
+                       template
+                     (or (alist-get template denote-templates) "")))
+         (signature (or signature "")))
+    (list title keywords file-type directory date template signature)))
+
 ;;;###autoload
-(defun denote (&optional title keywords file-type subdirectory date template signature)
+(defun denote (&optional title keywords file-type directory date template signature)
   "Create a new note with the appropriate metadata and file name.
 
 Run the `denote-after-new-note-hook' after creating the new note
@@ -2211,10 +2253,10 @@ When called from Lisp, all arguments are optional.
 
 - FILE-TYPE is a symbol among those described in `denote-file-type'.
 
-- SUBDIRECTORY is a string representing the path to either the
+- DIRECTORY is a string representing the path to either the
   value of the variable `denote-directory' or a subdirectory
   thereof.  The subdirectory must exist: Denote will not create
-  it.  If SUBDIRECTORY does not resolve to a valid path, the
+  it.  If DIRECTORY does not resolve to a valid path, the
   variable `denote-directory' is used instead.
 
 - DATE is a string representing a date like 2022-06-30 or a date
@@ -2226,36 +2268,11 @@ When called from Lisp, all arguments are optional.
   inserted to the newly created buffer after the front matter.
 
 - SIGNATURE is a string or a function returning a string."
-  (interactive
-   (let ((args (make-vector 7 nil)))
-     (dolist (prompt denote-prompts)
-       (pcase prompt
-         ('title (aset args 0 (denote-title-prompt
-                               (when (and (not denote-ignore-region-in-denote-command)
-                                          (use-region-p))
-                                 (buffer-substring-no-properties
-                                  (region-beginning)
-                                  (region-end))))))
-         ('keywords (aset args 1 (denote-keywords-prompt)))
-         ('file-type (aset args 2 (denote-file-type-prompt)))
-         ('subdirectory (aset args 3 (denote-subdirectory-prompt)))
-         ('date (aset args 4 (denote-date-prompt)))
-         ('template (aset args 5 (denote-template-prompt)))
-         ('signature (aset args 6 (denote-signature-prompt)))))
-     (append args nil)))
-  (let* ((title (or title ""))
-         (file-type (denote--valid-file-type (or file-type denote-file-type)))
-         (kws (denote-keywords-sort keywords))
-         (date (denote-parse-date date))
-         (id (denote--find-first-unused-id (denote-get-identifier date)))
-         (directory (if (denote--dir-in-denote-directory-p subdirectory)
-                        (file-name-as-directory subdirectory)
-                      (denote-directory)))
-         (template (if (stringp template)
-                       template
-                     (or (alist-get template denote-templates) "")))
-         (signature (or signature ""))
-         (note-path (denote--prepare-note title kws date id directory file-type template signature)))
+  (interactive (denote--creation-get-note-data-from-prompts))
+  (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,template ,signature)
+                (denote--creation-prepare-note-data title keywords file-type directory date template signature))
+               (id (denote--find-first-unused-id (denote-get-identifier date)))
+               (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (when denote-save-buffers (save-buffer))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
@@ -4686,39 +4703,21 @@ especially for the desired output of the
 text).
 
 Consult the manual for template samples."
-  (let (title keywords subdirectory date template signature)
-    (dolist (prompt denote-prompts)
-      (pcase prompt
-        ('title (setq title (denote-title-prompt
-                             (when (use-region-p)
-                               (buffer-substring-no-properties
-                                (region-beginning)
-                                (region-end))))))
-        ('keywords (setq keywords (denote-keywords-prompt)))
-        ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
-        ('date (setq date (denote-date-prompt)))
-        ('template (setq template (denote-template-prompt)))
-        ('signature (setq signature (denote-signature-prompt)))))
-    (let* ((title (or title ""))
-           (date (denote-parse-date date))
-           (id (denote--find-first-unused-id (denote-get-identifier date)))
-           (keywords (denote-keywords-sort keywords))
-           (directory (if (denote--dir-in-denote-directory-p subdirectory)
-                          (file-name-as-directory subdirectory)
-                        (denote-directory)))
-           (template (if (stringp template)
-                         template
-                       (or (alist-get template denote-templates) "")))
-           (signature (or signature ""))
-           (front-matter (denote--format-front-matter
-                          title (denote--date nil 'org) keywords
-                          (denote-get-identifier) 'org)))
-      (setq denote-last-path
-            (denote-format-file-name directory id keywords title ".org" signature))
-      (when (file-regular-p denote-last-path)
-        (user-error "A file named `%s' already exists" denote-last-path))
-      (denote--keywords-add-to-history keywords)
-      (concat front-matter template denote-org-capture-specifiers))))
+  (pcase-let* ((denote-prompts (remove 'file-type denote-prompts)) ; Do not prompt for file-type. We use org.
+               (`(,title ,keywords _ ,directory ,date ,template ,signature)
+                (denote--creation-get-note-data-from-prompts))
+               (`(,title ,keywords _ ,directory ,date ,template ,signature)
+                (denote--creation-prepare-note-data title keywords 'org directory date template signature))
+               (id (denote--find-first-unused-id (denote-get-identifier date)))
+               (front-matter (denote--format-front-matter
+                              title (denote--date nil 'org) keywords
+                              (denote-get-identifier) 'org)))
+    (setq denote-last-path
+          (denote-format-file-name directory id keywords title ".org" signature))
+    (when (file-regular-p denote-last-path)
+      (user-error "A file named `%s' already exists" denote-last-path))
+    (denote--keywords-add-to-history keywords)
+    (concat front-matter template denote-org-capture-specifiers)))
 
 ;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
 ;; by passing a single PROMPTS that is the same value as `denote-prompts'?
