@@ -2048,16 +2048,22 @@ A valid DATE is a value that can be parsed by either
 `decode-time' or `date-to-time'.  Those functions signal an error
 if DATE is a value they do not recognise.
 
-If DATE is nil, return nil."
-  (if (and (or (numberp date) (listp date))
-           (decode-time date))
-      date
-    (date-to-time (denote--date-add-current-time date))))
+If DATE is nil or an empty string, return nil."
+  (cond ((null date)
+         nil)
+        ((and (stringp date) (string-empty-p date))
+         nil)
+        ((and (or (numberp date) (listp date))
+              (decode-time date))
+         date)
+        (t
+         (date-to-time (denote--date-add-current-time date)))))
 
 (defun denote-parse-date (date)
   "Return DATE as an appropriate value for the `denote' command.
 Pass DATE through `denote-valid-date-p' and use its return value.
-If either that or DATE is nil, return `current-time'."
+If either that or DATE is nil or an empty string, return
+`current-time'."
   (or (denote-valid-date-p date) (current-time)))
 
 (defun denote--buffer-file-names ()
