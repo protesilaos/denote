@@ -1658,13 +1658,56 @@ following file name permutations:
 : DATE==SIGNATURE--TITLE__KEYWORDS.EXT
 : DATE==SIGNATURE__KEYWORDS.EXT
 
-When in doubt, stick to the default design.
+When in doubt, stick to the default design, which is carefully
+considered and works well ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
 While Denote is an Emacs package, notes should work long-term and not
 depend on the functionality of a specific program.  The file-naming
 scheme we apply guarantees that a listing is readable in a variety of
 contexts.  The Denote file-naming scheme is, in essence, an effective,
 low-tech invention.
+
+** Change the order of file name components
+:PROPERTIES:
+:CUSTOM_ID: h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-file-name-components-order
+Our standard file-naming scheme prescribes a specific order for the
+file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). Though we provide the
+user option ~denote-file-name-components-order~ to let the user
+reorder them as they see fit.
+
+The value of this user option is a list of the following symbols:
+
+- ~identifier~: This is the combination of the date and time. When it
+  is the first on the list, it looks like =20240519T073456= and does
+  not have a component separator of its own due its unambiguous
+  format. When it is placed anywhere else in the file name, it is
+  prefixed with =@@=, so it looks like =@@20240519T073456=.
+
+- ~signature~: This is an arbitrary string that can be used to qualify
+  the file in some way, according to the user's methodology (e.g. to
+  add a sequence to notes). The string is always prefixed with the
+  ~==~ to remain unambiguous.
+
+- ~title~: This is an arbitrary string which describes the file. It is
+  always prefixed with =--= to be unambiguous.
+
+- ~keywords~: This is a series of one or more words that succinctly
+  group the file. Multiple keywords are separated by an underscore
+  prefixed to each of them. The file name component is always prefixed
+  with =__=.
+
+All four symbols must appear exactly once. Duplicates are ignored. Any
+missing symbol is added automatically.
+
+Before deciding on this, please consider the longer-term implications
+of file names with varying patterns. Consistency makes things
+predictable and thus easier to find. So pick one order and never touch
+it again. When in doubt, leave the default file-naming scheme as-is.
 
 ** Sluggification of file name components
 :PROPERTIES:

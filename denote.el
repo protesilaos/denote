@@ -289,7 +289,10 @@ Finally, this user option only affects the interactive use of the
 Lisp).  In Lisp usage, the behaviour is always what the caller
 specifies, based on the supplied arguments.
 
-Also see `denote-history-completion-in-prompts'."
+Also see `denote-history-completion-in-prompts'.
+
+To change the order of the file name components, refer to
+`denote-file-name-components-order'."
   :group 'denote
   :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) The denote-prompts option")
@@ -304,30 +307,38 @@ Also see `denote-history-completion-in-prompts'."
                      (const :tag "Signature" signature))))
 
 (defcustom denote-file-name-components-order '(identifier signature title keywords)
-  "Specify the order of the file name components of new notes.
+  "Specify the order of the file name components.
 
 The value is a list of the following symbols:
 
-- `identifier': An identifier in a file name looks like
-  \"20240101T111111\" if it appears as the first component.
-  Else, it is prepended with \"@@\" if it appears anywhere else
-  in the file name.
+- `identifier': This is the combination of the date and time.  When it
+  is the first on the list, it looks like \"20240519T073456\" and does
+  not have a component separator of its own due its unambiguous format.
+  When it is placed anywhere else in the file name, it is prefixed with
+  \"@@\", so it looks like \"@@20240519T073456\".
 
-- `signature': A signature in a file name is an arbitrary string
-  that combines \"==\" with the signature of
-  `denote-signature-prompt'.
+- `signature': This is an arbitrary string that can be used to qualify
+  the file in some way, according to the user's methodology (e.g. to add
+  a sequence to notes).  The string is always prefixed with the \"==\"
+  to remain unambiguous.
 
-- `title': A title in a file name is an arbitrary string that
-  combines \"--\" with the title of `denote-title-prompt'.
+- `title': This is an arbitrary string which describes the file.  It is
+  always prefixed with \"--\" to be unambiguous.
 
-- `keywords': Keywords in a file name are represented as a string
-  that combines \"__\" with the keywords of
-  `denote-keywords-prompt' separated with an underscore.
+- `keywords': This is a series of one or more words that succinctly
+  group the file.  Multiple keywords are separated by an underscore
+  prefixed to each of them.  The file name component is always prefixed
+  with \"__\".
 
-All the symbols above must appear exactly once.  Any symbol
-missing will be added automatically.
+All four symbols must appear exactly once.  Duplicates are ignored.  Any
+missing symbol is added automatically.
 
-See also `denote-prompts'."
+Also see `denote-prompts'.
+
+Before deciding on this, please consider the longer-term implications
+of file names with varying patterns. Consistency makes things
+predictable and thus easier to find. So pick one order and never touch
+it again. When in doubt, leave the default file-naming scheme as-is."
   :group 'denote
   :package-version '(denote . "3.0.0")
   ;; FIXME 2024-05-19: This technically works to display the user
