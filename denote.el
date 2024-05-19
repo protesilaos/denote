@@ -303,7 +303,7 @@ Also see `denote-history-completion-in-prompts'."
                      (const :tag "Template" template)
                      (const :tag "Signature" signature))))
 
-(defvar denote-file-name-components-order '(identifier signature title keywords)
+(defcustom denote-file-name-components-order '(identifier signature title keywords)
   "Specify the order of the file name components of new notes.
 
 The value is a list of the following symbols:
@@ -327,7 +327,22 @@ The value is a list of the following symbols:
 All the symbols above must appear exactly once.  Any symbol
 missing will be added automatically.
 
-See also `denote-prompts'.")
+See also `denote-prompts'."
+  :group 'denote
+  :package-version '(denote . "3.0.0")
+  ;; FIXME 2024-05-19: This technically works to display the user
+  ;; option in the Custom buffer and to show its current value, though
+  ;; it does not allow the user to modify it graphically: they have to
+  ;; switch to the Lisp expression.  Find a way to present an
+  ;; interface that lets the user reorder those elements.
+  ;;
+  ;; Still, making this a defcustom helps with discoverability, as
+  ;; well as with the use of `setopt' and related.
+  :type '(list
+          (const :tag "Identifier component (date and time)" identifier)
+          (const :tag "File signature (text to qualify a file)" signature)
+          (const :tag "The title of the file" title)
+          (const :tag "Keywords of the file" keywords)))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
