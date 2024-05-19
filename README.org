@@ -1704,6 +1704,25 @@ The value of this user option is a list of the following symbols:
 All four symbols must appear exactly once. Duplicates are ignored. Any
 missing symbol is added automatically.
 
+Some examples:
+
+#+begin_src emacs-lisp
+(setq denote-file-name-components-order '(identifier signature title keywords))
+;; => 20240519T07345==hello--this-is-the-title__denote_testing.org
+
+(setq denote-file-name-components-order '(signature identifier title keywords))
+;; => ==hello@@20240519T07345--this-is-the-title__denote_testing.org
+
+(setq denote-file-name-components-order '(title signature identifier keywords))
+;; => --this-is-the-title==hello@@20240519T07345__denote_testing.org
+
+(setq denote-file-name-components-order '(keywords title signature identifier))
+;; => __denote_testing--this-is-the-title==hello@@20240519T07345.org
+#+end_src
+
+Also see how to configure the Denote prompts, which affect which
+components are actually used in the order specified herein ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
+
 Before deciding on this, please consider the longer-term implications
 of file names with varying patterns. Consistency makes things
 predictable and thus easier to find. So pick one order and never touch
@@ -5463,12 +5482,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Jack Baty, Jay Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy
   Friesen, Jonathan Sahar, Johan Bolmsjö, Jousimies, Juanjo Presa,
   Julian Hoch, Kai von Fintel, Kaushal Modi, Kolmas, M. Hadi Timachi,
-  Mark Olson, Mirko Hernandez, Niall Dooley, Paul van Gelder, Peter
-  Prevos, Peter Smith, Suhail Singh, Shreyas Ragavan, Stefan Thesing,
-  Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
-  Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, babusri, doolio,
-  duli, drcxd, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
-  rbenit68, relict007, sienic, sundar bp.
+  Maikol Solis, Mark Olson, Mirko Hernandez, Niall Dooley, Paul van
+  Gelder, Peter Prevos, Peter Smith, Suhail Singh, Shreyas Ragavan,
+  Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus,
+  Vick (VicZz), Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj,
+  babusri, doolio, duli, drcxd, fingerknight, hpgisler,
+  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

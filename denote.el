@@ -332,7 +332,26 @@ The value is a list of the following symbols:
 All four symbols must appear exactly once.  Duplicates are ignored.  Any
 missing symbol is added automatically.
 
-Also see `denote-prompts'.
+Some examples:
+
+    (setq denote-file-name-components-order
+       \\='(identifier signature title keywords))
+    => 20240519T07345==hello--this-is-the-title__denote_testing.org
+
+    (setq denote-file-name-components-order
+       \\='(signature identifier title keywords))
+    => ==hello@@20240519T07345--this-is-the-title__denote_testing.org
+
+    (setq denote-file-name-components-order
+       \\='(title signature identifier keywords))
+    => --this-is-the-title==hello@@20240519T07345__denote_testing.org
+
+    (setq denote-file-name-components-order
+       \\='(keywords title signature identifier))
+    => __denote_testing--this-is-the-title==hello@@20240519T07345.org
+
+Also see the user option `denote-prompts', which affects which
+components are actually used in the order specified herein.
 
 Before deciding on this, please consider the longer-term implications
 of file names with varying patterns. Consistency makes things
