@@ -3734,9 +3734,16 @@ The format of such links is `denote-id-only-link-format'."  )
 FILE-TYPE and ID-ONLY are used to get the format of the link.
 See the `:link' property of `denote-file-types'."
   (format
-   (if (or id-only (null description) (string-empty-p description))
-       denote-id-only-link-format
-     (denote--link-format file-type))
+   (cond
+    ((or id-only (null description) (string-empty-p description))
+     denote-id-only-link-format)
+    ;; NOTE 2024-05-20: If there is no file type, we want to use the
+    ;; Org format because it is still a usable link with the help of
+    ;; the command `org-open-at-point-global'.
+    ((null file-type)
+     (denote--link-format 'org))
+    (t
+     (denote--link-format file-type)))
    (denote-retrieve-filename-identifier file)
    description))
 
