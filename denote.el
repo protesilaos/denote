@@ -3798,34 +3798,27 @@ This is useful as the value of the user option
 (defun denote-link (file file-type description &optional id-only)
   "Create link to FILE note in variable `denote-directory' with DESCRIPTION.
 
-When called interactively, prompt for FILE using completion.  In
-this case, derive FILE-TYPE from the current buffer.
+When called interactively, prompt for FILE using completion.  In this
+case, derive FILE-TYPE from the current buffer.  FILE-TYPE is used to
+determine the format of the link.
 
-The DESCRIPTION is returned by the function specified in variable
-`denote-link-description-function'.  If the region is active, its
-content is deleted and can be used as the description of the
-link.  The default value of `denote-link-description-function'
-returns the content of the active region, if any, else the title
-of the linked file is used as the description.  The title comes
-either from the front matter or the file name.  Note that if you
-change the default value of `denote-link-description-function',
-make sure to use the `region-text' parameter.  Regardless of the
-value of this user option, `denote-link' will always replace the
-content of the active region.
+Return the DESCRIPTION of the link in the format specified by
+`denote-link-description-function'.  The default value of that variable,
+`denote-link-description-with-signature-and-title', uses the active
+region as the DESCRIPTION, or the FILE signature in addition to its
+title, or the FILE title.
 
-With optional ID-ONLY as a non-nil argument, such as with a
-universal prefix (\\[universal-argument]), insert links with just
-the identifier and no further description.  In this case, the
-link format is always [[denote:IDENTIFIER]].  If the DESCRIPTION
-is empty, the link is also as if ID-ONLY were non-nil.  The
-default value of `denote-link-description-function' returns an
-empty string when the region is empty.  Thus, the link will have
-no description in this case.
+With optional ID-ONLY as a non-nil argument, such as with a universal
+prefix (\\[universal-argument]), insert links with just the identifier
+and no further description.  In this case, the link format is always
+[[denote:IDENTIFIER]].
 
-When called from Lisp, FILE is a string representing a full file
-system path.  FILE-TYPE is a symbol as described in
-`denote-file-type'.  DESCRIPTION is a string.  Whether the caller
-treats the active region specially, is up to it."
+If the DESCRIPTION is empty, format the link the same as with ID-ONLY.
+
+When called from Lisp, FILE is a string representing a full file system
+path.  FILE-TYPE is a symbol as described in `denote-file-type'.
+DESCRIPTION is a string.  Whether the caller treats the active region
+specially, is up to it."
   (interactive
    (let* ((file (denote-file-prompt nil "Link to FILE"))
           (file-type (denote-filetype-heuristics buffer-file-name))

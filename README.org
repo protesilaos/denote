@@ -2113,30 +2113,38 @@ The following sections delve into the details.
 
 #+findex: denote-link
 The ~denote-link~ command inserts a link at point to a file specified
-at the minibuffer prompt ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
-Links are formatted depending on the file type of the current note. In
-Org and plain text buffers, links are formatted thus:
-=[[denote:IDENTIFIER][DESCRIPTION]]=. While in Markdown they are expressed
-as =[DESCRIPTION](denote:IDENTIFIER)=.
+at the minibuffer prompt. Links are formatted depending on the file
+type of the current note. In Org and plain text buffers, links are
+formatted thus: =[[denote:IDENTIFIER][DESCRIPTION]]=. While in
+Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
+
+[ We optionally support links to Org headings ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
+  Other file types do not have the features of Org, so we cannot
+  generalise this. ]
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
-default), it formats links like =[[denote:IDENTIFIER]]=.  The user
-might prefer its simplicity.
+default), it formats links like =[[denote:IDENTIFIER]]=, regardless of
+file type. The user might prefer its simplicity.
 
-By default, the description of the link is taken from the signature of
-the file, if present, and the target file's front matter's title or, if
-that is not available, from the file name.  If the region is active, its
-text is used as the link's description instead.  If the active region
-has no text, the inserted link uses just the identifier, as with the
-=C-u= prefix mentioned above.
+By default, the description of the link is determined thus:
+
+- If the region is active, its text becomes the description of the
+  link. In other words, the region text becomes the link.
+- If the region is active but has no text, the description is empty
+  and so the link is formatted the same way as if using the =C-u=
+  prefix argument.
+- If there is no region active, the description consists of the target
+  file's signature and title. The title is retrieved either from the
+  front matter or the file name.
+- If the target file has no signature, the title is used.
 
 Inserted links are automatically buttonized and remain active for as
-long as the buffer is available.  In Org this is handled by the major
+long as the buffer is available. In Org this is handled by the major
 mode: the =denote:= hyperlink type works exactly like the standard
-=file:=.  In Markdown and plain text, Denote performs the buttonization
-of those links.  To buttonize links in existing files while visiting
-them, the user must add this snippet to their setup (it already excludes
-Org):
+=file:= type. In Markdown and plain text, Denote performs the
+buttonization of those links. To buttonize links in existing files
+while visiting them, the user must add this snippet to their setup (it
+already excludes Org):
 
 #+findex: denote-link-buttonize-buffer
 #+begin_src emacs-lisp
