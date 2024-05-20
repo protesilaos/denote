@@ -2148,6 +2148,45 @@ Set the value of this variable within the lexical scope of a
 command that needs to supply a default title before calling
 `denote-title-prompt'.")
 
+;; NOTE: The following variables are not defcustom because they are not
+;; meant for customization.  They are meant to be used from Lisp to
+;; create custom Denote commands and related.
+
+(defvar denote-use-title nil
+  "The title to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-keywords nil
+  "The keywords to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-signature nil
+  "The signature to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-file-type nil
+  "The title to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-directory nil
+  "The directory to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-date nil
+  "The date to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-template nil
+  "The template to be used in a note creation command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
 (defun denote--command-with-features (command force-use-file-prompt-as-default-title force-ignore-region force-save in-background)
   "Execute file-creating COMMAND with specified features.
 
@@ -2193,35 +2232,58 @@ The path of the newly created file is returned."
     path))
 
 (defun denote--creation-get-note-data-from-prompts ()
-  "This functions retrieves the data necessary for note creation.
+  "Retrieve the data necessary for note creation.
 
 The data elements are: title, keywords, file-type, directory,
 date, template and signature.
 
-It is retrieved from prompts according to `denote-prompts'."
+It is retrieved from prompts according to `denote-prompts' and
+from `denote-use-*' variables.  For example, if
+`denote-use-title' is set to a title, then no prompts happen for
+the title and the value of `denote-use-title' will be used
+instead."
   (let (title keywords file-type directory date template signature)
     (dolist (prompt denote-prompts)
       (pcase prompt
-        ('title (setq title (denote-title-prompt
-                             (when (and (not denote-ignore-region-in-denote-command)
-                                        (use-region-p))
-                               (buffer-substring-no-properties
-                                (region-beginning)
-                                (region-end))))))
-        ('keywords (setq keywords (denote-keywords-prompt)))
-        ('file-type (setq file-type (denote-file-type-prompt)))
-        ('subdirectory (setq directory (denote-subdirectory-prompt)))
-        ('date (setq date (denote-date-prompt)))
-        ('template (setq template (denote-template-prompt)))
-        ('signature (setq signature (denote-signature-prompt)))))
+        ('title (unless denote-use-title
+                  (setq title (denote-title-prompt
+                               (when (and (not denote-ignore-region-in-denote-command)
+                                          (use-region-p))
+                                 (buffer-substring-no-properties
+                                  (region-beginning)
+                                  (region-end)))))))
+        ('keywords (unless denote-use-keywords
+                     (setq keywords (denote-keywords-prompt))))
+        ('file-type (unless denote-use-file-type
+                      (setq file-type (denote-file-type-prompt))))
+        ('subdirectory (unless denote-use-directory
+                         (setq directory (denote-subdirectory-prompt))))
+        ('date (unless denote-use-date
+                 (setq date (denote-date-prompt))))
+        ('template (unless denote-use-template
+                     (setq template (denote-template-prompt))))
+        ('signature (unless denote-use-signature
+                      (setq signature (denote-signature-prompt))))))
     (list title keywords file-type directory date template signature)))
 
 (defun denote--creation-prepare-note-data (title keywords file-type directory date template signature)
   "Return parameters in a valid form for file creation.
 
 The data is: TITLE, KEYWORDS, FILE-TYPE, DIRECTORY, DATE,
-TEMPLATE and SIGNATURE."
-  (let* ((title (or title ""))
+TEMPLATE and SIGNATURE.
+
+If a `denote-use-*' variable is set for a data, its value is used
+instead of that of the parameter."
+  (let* (;; Handle the `denote-use-*' variables
+         (title (or denote-use-title title))
+         (keywords (or denote-use-keywords keywords))
+         (file-type (or denote-use-file-type file-type))
+         (directory (or denote-use-directory directory))
+         (date (or denote-use-date date))
+         (template (or denote-use-template template))
+         (signature (or denote-use-signature signature))
+         ;; Make the data valid
+         (title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
          (date (denote-parse-date date))
