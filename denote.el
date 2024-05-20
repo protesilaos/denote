@@ -3830,7 +3830,7 @@ specially, is up to it."
     (user-error "The current file type is not recognized by Denote"))
   (unless (file-exists-p file)
     (user-error "The linked file does not exist"))
-  (let* ((beg (point)))
+  (let ((beg (point)))
     (denote--delete-active-region-content)
     (insert (denote-format-link file description file-type id-only))
     (unless (derived-mode-p 'org-mode)
