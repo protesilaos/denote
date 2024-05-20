@@ -2134,8 +2134,8 @@ By default, the description of the link is determined thus:
   and so the link is formatted the same way as if using the =C-u=
   prefix argument.
 - If there is no region active, the description consists of the target
-  file's signature and title. The title is retrieved either from the
-  front matter or the file name.
+  file's signature and title ([[#h:066e5221-9844-474b-8858-398398646f86][Insert link to file with signature]]). The
+  title is retrieved either from the front matter or the file name.
 - If the target file has no signature, the title is used.
 
 Inserted links are automatically buttonized and remain active for as
@@ -2347,7 +2347,7 @@ the file's title, if any.  For example, a link to the following file:
 will get this link: =[[denote:20230925T144303][abc My first signature note]]=.
 
 For more advanced uses, refer to the doc string of the ~denote-link~
-function.
+function ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
 
 ** Insert links from marked files in Dired
 :PROPERTIES:
