@@ -2148,45 +2148,6 @@ Set the value of this variable within the lexical scope of a
 command that needs to supply a default title before calling
 `denote-title-prompt'.")
 
-;; NOTE: The following variables are not defcustom because they are not
-;; meant for customization.  They are meant to be used from Lisp to
-;; create custom Denote commands and related.
-
-(defvar denote-use-title nil
-  "The title to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-keywords nil
-  "The keywords to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-signature nil
-  "The signature to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-file-type nil
-  "The title to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-directory nil
-  "The directory to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-date nil
-  "The date to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
-(defvar denote-use-template nil
-  "The template to be used in a note creation command.
-See the documentation of `denote' for acceptable values.
-This variable is ignored if nil.")
-
 (defun denote--command-with-features (command force-use-file-prompt-as-default-title force-ignore-region force-save in-background)
   "Execute file-creating COMMAND with specified features.
 
@@ -2230,6 +2191,62 @@ The path of the newly created file is returned."
       (call-interactively command)
       (setq path (buffer-file-name)))
     path))
+
+(defvar denote-use-title nil
+  "The title to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the title will always be the same
+and the title prompt will be skipped.")
+
+(defvar denote-use-keywords nil
+  "The keywords to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the keywords will always be the same
+and the keywords prompt will be skipped.")
+
+(defvar denote-use-signature nil
+  "The signature to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the signaturew will always be the same
+and the signature prompt will be skipped.")
+
+(defvar denote-use-file-type nil
+  "The title to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the file type will always be the
+same.")
+
+(defvar denote-use-directory nil
+  "The directory to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the directory will always be the
+same.")
+
+(defvar denote-use-date nil
+  "The date to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the date will always be the same
+and the date prompt will be skipped.")
+
+(defvar denote-use-template nil
+  "The template to be used in a note creation command.
+See the documentation of `denote' for acceptable values.  This variable
+is ignored if nil.
+
+Only ever `let' bind this, otherwise the template will always be the same
+and the template prompt will be skipped.")
 
 (defun denote--creation-get-note-data-from-prompts ()
   "Retrieve the data necessary for note creation.
