@@ -3818,7 +3818,9 @@ If the DESCRIPTION is empty, format the link the same as with ID-ONLY.
 When called from Lisp, FILE is a string representing a full file system
 path.  FILE-TYPE is a symbol as described in `denote-file-type'.
 DESCRIPTION is a string.  Whether the caller treats the active region
-specially, is up to it."
+specially, is up to it.
+
+Also see `denote-link-with-signature'."
   (interactive
    (let* ((file (denote-file-prompt nil "Link to FILE"))
           (file-type (denote-filetype-heuristics buffer-file-name))
