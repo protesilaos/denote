@@ -3506,9 +3506,17 @@ and seconds."
 (defun denote-faces-dired-file-name-matcher (limit)
   "Find the file name in a Dired line, not looking beyond LIMIT."
   (let ((initial-match-data (match-data))
-        (initial-point (point)))
-    (if (and (re-search-forward "^.+$" limit t) ; A non-empty line
-             (dired-move-to-filename))          ; ... with a file name
+        (initial-point (point))
+        (line-found nil))
+    ;; Find the next non empty line that contains a Dired file name
+    (while (and (not line-found)
+                (re-search-forward "^.+$" limit t))
+      ;; dired-move-to-filename moves the point even if it returns nil
+      (let ((saved-point (point)))
+        (if (dired-move-to-filename)
+            (setq line-found t)
+          (goto-char saved-point))))
+    (if line-found
         (let ((beginning-point (point)))
           (goto-char (match-end 0))
           (set-match-data (list beginning-point (match-end 0)))
