@@ -3552,6 +3552,20 @@ and seconds."
       (set-match-data initial-match-data)
       nil)))
 
+(defun denote-faces-identifier-matcher (limit)
+  "Match a general identifier in a Dired line, not looking beyond LIMIT."
+  (let ((initial-match-data (match-data))
+        (initial-point (point)))
+    (if (or (re-search-forward "@@\\(?1:[^/]*?\\)\\(@@\\|--\\|__\\|==\\|\\.\\)[^/]*$" limit t)
+            (re-search-forward "@@\\(?1:[^/]*\\)$" limit t))
+        (progn
+          (goto-char (match-end 1))
+          (set-match-data (list (match-beginning 1) (match-end 1)))
+          (point))
+      (goto-char initial-point)
+      (set-match-data initial-match-data)
+      nil)))
+
 (defun denote-faces-title-matcher (limit)
   "Match the title in a Dired line, not looking beyond LIMIT."
   (let ((initial-match-data (match-data))
@@ -3585,7 +3599,7 @@ and seconds."
      (goto-char (match-beginning 0))
      (goto-char (match-end 0))
      (0 'denote-faces-subdirectory nil t))
-    ;; Identifier anywhere in the file name.
+    ;; Identifier with format 00000000T000000
     ("\\(?1:[0-9]\\{4\\}\\)\\(?2:[0-9]\\{2\\}\\)\\(?3:[0-9]\\{2\\}\\)\\(?7:T\\)\\(?4:[0-9]\\{2\\}\\)\\(?5:[0-9]\\{2\\}\\)\\(?6:[0-9]\\{2\\}\\)"
      (goto-char (match-beginning 0)) ; pre-form, executed before looking for the first identifier
      (goto-char (match-end 0))       ; post-form, executed after all matches (identifiers here) are found
@@ -3596,6 +3610,11 @@ and seconds."
      (5 'denote-faces-minute nil t)
      (6 'denote-faces-second nil t)
      (7 'denote-faces-delimiter nil t))
+    ;; Identifier with general format (not yet possible)
+    (denote-faces-identifier-matcher
+     (goto-char (match-beginning 0))
+     (goto-char (match-end 0))
+     (0 'denote-faces-date nil t))
     ;; Title
     (denote-faces-title-matcher
      (goto-char (match-beginning 0))
