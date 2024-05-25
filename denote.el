@@ -1940,8 +1940,9 @@ which case it is not added to the base file name."
             ((and (eq component 'signature) signature (not (string-empty-p signature)))
              (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))))
     (setq file-name (concat file-name extension))
-    ;; Do not prepend identifier with @@ if it is the first component.
-    (when (string-prefix-p "@@" file-name)
+    ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
+    (when (and (string-prefix-p "@@" file-name)
+               (string-match-p (concat "\\`" denote-id-regexp "\\'") id)) ; This is always true for now.
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
