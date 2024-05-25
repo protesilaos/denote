@@ -4799,8 +4799,7 @@ Consult the manual for template samples."
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (front-matter (denote--format-front-matter
-                              title (denote--date nil 'org) keywords
-                              (denote-get-identifier) 'org)))
+                              title (denote--date nil 'org) keywords id 'org)))
     (setq denote-last-path
           (denote-format-file-name directory id keywords title ".org" signature))
     (when (file-regular-p denote-last-path)
