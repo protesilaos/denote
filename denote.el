@@ -2102,8 +2102,13 @@ It checks files in variable `denote-directory' and active buffer files."
 If ID is already used, increment it 1 second at a time until an
 available id is found."
   (let ((used-ids (or denote--used-ids (denote--get-all-used-ids)))
-        (current-id id))
+        (current-id id)
+        (iteration 0))
     (while (gethash current-id used-ids)
+      ;; Prevent infinite loop if `denote-id-format' is misconfigured
+      (setq iteration (1+ iteration))
+      (when (>= iteration 10000)
+        (user-error "A unique identifier could not be found"))
       (setq current-id (denote-get-identifier (time-add (date-to-time current-id) 1))))
     current-id))
 
