@@ -1940,8 +1940,9 @@ which case it is not added to the base file name."
             ((and (eq component 'signature) signature (not (string-empty-p signature)))
              (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))))
     (setq file-name (concat file-name extension))
-    ;; Do not prepend identifier with @@ if it is the first component.
-    (when (string-prefix-p "@@" file-name)
+    ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
+    (when (and (string-prefix-p "@@" file-name)
+               (string-match-p (concat "\\`" denote-id-regexp "\\'") id)) ; This is always true for now.
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
@@ -2102,8 +2103,13 @@ It checks files in variable `denote-directory' and active buffer files."
 If ID is already used, increment it 1 second at a time until an
 available id is found."
   (let ((used-ids (or denote--used-ids (denote--get-all-used-ids)))
-        (current-id id))
+        (current-id id)
+        (iteration 0))
     (while (gethash current-id used-ids)
+      ;; Prevent infinite loop if `denote-id-format' is misconfigured
+      (setq iteration (1+ iteration))
+      (when (>= iteration 10000)
+        (user-error "A unique identifier could not be found"))
       (setq current-id (denote-get-identifier (time-add (date-to-time current-id) 1))))
     current-id))
 
@@ -3506,9 +3512,17 @@ and seconds."
 (defun denote-faces-dired-file-name-matcher (limit)
   "Find the file name in a Dired line, not looking beyond LIMIT."
   (let ((initial-match-data (match-data))
-        (initial-point (point)))
-    (if (and (re-search-forward "^.+$" limit t) ; A non-empty line
-             (dired-move-to-filename))          ; ... with a file name
+        (initial-point (point))
+        (line-found nil))
+    ;; Find the next non empty line that contains a Dired file name
+    (while (and (not line-found)
+                (re-search-forward "^.+$" limit t))
+      ;; dired-move-to-filename moves the point even if it returns nil
+      (let ((saved-point (point)))
+        (if (dired-move-to-filename)
+            (setq line-found t)
+          (goto-char saved-point))))
+    (if line-found
         (let ((beginning-point (point)))
           (goto-char (match-end 0))
           (set-match-data (list beginning-point (match-end 0)))
@@ -3536,6 +3550,20 @@ and seconds."
         (initial-point (point)))
     (if (or (re-search-forward "==\\(?1:[^/]*?\\)\\(@@\\|--\\|__\\|==\\|\\.\\)[^/]*$" limit t)
             (re-search-forward "==\\(?1:[^/]*\\)$" limit t))
+        (progn
+          (goto-char (match-end 1))
+          (set-match-data (list (match-beginning 1) (match-end 1)))
+          (point))
+      (goto-char initial-point)
+      (set-match-data initial-match-data)
+      nil)))
+
+(defun denote-faces-identifier-matcher (limit)
+  "Match a general identifier in a Dired line, not looking beyond LIMIT."
+  (let ((initial-match-data (match-data))
+        (initial-point (point)))
+    (if (or (re-search-forward "@@\\(?1:[^/]*?\\)\\(@@\\|--\\|__\\|==\\|\\.\\)[^/]*$" limit t)
+            (re-search-forward "@@\\(?1:[^/]*\\)$" limit t))
         (progn
           (goto-char (match-end 1))
           (set-match-data (list (match-beginning 1) (match-end 1)))
@@ -3577,7 +3605,7 @@ and seconds."
      (goto-char (match-beginning 0))
      (goto-char (match-end 0))
      (0 'denote-faces-subdirectory nil t))
-    ;; Identifier anywhere in the file name.
+    ;; Identifier with format 00000000T000000
     ("\\(?1:[0-9]\\{4\\}\\)\\(?2:[0-9]\\{2\\}\\)\\(?3:[0-9]\\{2\\}\\)\\(?7:T\\)\\(?4:[0-9]\\{2\\}\\)\\(?5:[0-9]\\{2\\}\\)\\(?6:[0-9]\\{2\\}\\)"
      (goto-char (match-beginning 0)) ; pre-form, executed before looking for the first identifier
      (goto-char (match-end 0))       ; post-form, executed after all matches (identifiers here) are found
@@ -3588,6 +3616,11 @@ and seconds."
      (5 'denote-faces-minute nil t)
      (6 'denote-faces-second nil t)
      (7 'denote-faces-delimiter nil t))
+    ;; Identifier with general format (not yet possible)
+    (denote-faces-identifier-matcher
+     (goto-char (match-beginning 0))
+     (goto-char (match-end 0))
+     (0 'denote-faces-date nil t))
     ;; Title
     (denote-faces-title-matcher
      (goto-char (match-beginning 0))
@@ -4791,8 +4824,7 @@ Consult the manual for template samples."
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (front-matter (denote--format-front-matter
-                              title (denote--date nil 'org) keywords
-                              (denote-get-identifier) 'org)))
+                              title (denote--date nil 'org) keywords id 'org)))
     (setq denote-last-path
           (denote-format-file-name directory id keywords title ".org" signature))
     (when (file-regular-p denote-last-path)
