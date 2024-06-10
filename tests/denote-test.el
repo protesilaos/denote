@@ -413,6 +413,21 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (denote-retrieve-filename-identifier "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "20240610T194654"))))
 
+(ert-deftest denote-test--denote-retrieve-filename-title ()
+  "Test that `denote-retrieve-filename-title' returns only the title."
+  (should (and (equal
+                (denote-retrieve-filename-title "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
+                "this-is-a-test-reordered")
+               (equal
+                (denote-retrieve-filename-title "/path/to/testing/__denote_testing--this-is-a-test-reordered@@20240610T194654.org")
+                "this-is-a-test-reordered")
+               (equal
+                (denote-retrieve-filename-title "/path/to/testing/__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "this-is-a-test-reordered")
+               (equal
+                (denote-retrieve-filename-title "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "this-is-a-test-reordered"))))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)
