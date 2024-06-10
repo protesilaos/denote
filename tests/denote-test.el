@@ -400,7 +400,15 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote-retrieve-filename-identifier ()
   "Test that `denote-retrieve-filename-identifier' returns only the identifier."
-  (should (and (equal
+  (should (and (null
+                (denote-retrieve-filename-identifier "/path/to/testing/--this-is-a-test-reordered__denote_testing.org"))
+               (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/20240610T194654--this-is-a-test-reordered__denote_testing.org")
+                "20240610T194654")
+               (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/20240610T194654==signature--this-is-a-test-reordered__denote_testing.org")
+                "20240610T194654")
+               (equal
                 (denote-retrieve-filename-identifier "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
                 "20240610T194654")
                (equal
@@ -415,7 +423,15 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote-retrieve-filename-title ()
   "Test that `denote-retrieve-filename-title' returns only the title."
-  (should (and (equal
+  (should (and (null
+                (denote-retrieve-filename-title "/path/to/testing/20240610T194654__denote_testing.org"))
+               (equal
+                (denote-retrieve-filename-title "/path/to/testing/20240610T194654--this-is-a-test-reordered__denote_testing.org")
+                "this-is-a-test-reordered")
+               (equal
+                (denote-retrieve-filename-title "/path/to/testing/20240610T194654==signature--this-is-a-test-reordered__denote_testing.org")
+                "this-is-a-test-reordered")
+               (equal
                 (denote-retrieve-filename-title "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
                 "this-is-a-test-reordered")
                (equal
@@ -430,7 +446,15 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote-retrieve-filename-keywords ()
   "Test that `denote-retrieve-filename-keywords' returns only the keywords."
-  (should (and (equal
+  (should (and (null
+                (denote-retrieve-filename-keywords "/path/to/testing/20240610T194654--this-is-a-test-reordered.org"))
+               (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/20240610T194654--this-is-a-test-reordered__denote_testing.org")
+                "denote_testing")
+               (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/20240610T194654==signature--this-is-a-test-reordered__denote_testing.org")
+                "denote_testing")
+               (equal
                 (denote-retrieve-filename-keywords "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
                 "denote_testing")
                (equal
@@ -445,7 +469,12 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote-retrieve-filename-signature ()
   "Test that `denote-retrieve-filename-signature' returns only the signature."
-  (should (and (equal
+  (should (and (null
+                (denote-retrieve-filename-signature "/path/to/testing/20240610T194654--this-is-a-test-reordered__denote_testing.org"))
+               (equal
+                (denote-retrieve-filename-signature "/path/to/testing/20240610T194654==signature--this-is-a-test-reordered__denote_testing.org")
+                "signature")
+               (equal
                 (denote-retrieve-filename-signature "/path/to/testing/--this-is-a-test-reordered==signature__denote_testing@@20240610T194654.org")
                 "signature")
                (equal
