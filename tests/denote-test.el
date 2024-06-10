@@ -398,6 +398,21 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                (equal (denote-get-identifier '(26026 4251)) "20240119T080307")))
   (should-error (denote-get-identifier "Invalid date")))
 
+(ert-deftest denote-test--denote-retrieve-filename-identifier ()
+  "Test that `denote-retrieve-filename-identifier' returns only the identifier."
+  (should (and (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
+                "20240610T194654")
+               (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/__denote_testing--this-is-a-test-reordered@@20240610T194654.org")
+                "20240610T194654")
+               (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "20240610T194654")
+               (equal
+                (denote-retrieve-filename-identifier "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "20240610T194654"))))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)
