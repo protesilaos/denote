@@ -443,6 +443,21 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (denote-retrieve-filename-keywords "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "denote_testing"))))
 
+(ert-deftest denote-test--denote-retrieve-filename-signature ()
+  "Test that `denote-retrieve-filename-signature' returns only the signature."
+  (should (and (equal
+                (denote-retrieve-filename-signature "/path/to/testing/--this-is-a-test-reordered==signature__denote_testing@@20240610T194654.org")
+                "signature")
+               (equal
+                (denote-retrieve-filename-signature "/path/to/testing/__denote_testing--this-is-a-test-reordered==signature@@20240610T194654.org")
+                "signature")
+               (equal
+                (denote-retrieve-filename-signature "/path/to/testing/__denote_testing@@20240610T194654--this-is-a-test-reordered==signature.org")
+                "signature")
+               (equal
+                (denote-retrieve-filename-signature "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "signature"))))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)
