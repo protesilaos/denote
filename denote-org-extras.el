@@ -374,6 +374,7 @@ Also see `denote-org-extras-dblock--files'."
   '(progn
      (org-dynamic-block-define "denote-links" 'denote-org-extras-dblock-insert-links)))
 
+;;;###autoload
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
@@ -409,6 +410,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   '(progn
      (org-dynamic-block-define "denote-missing-links" 'denote-org-extras-dblock-insert-links)))
 
+;;;###autoload
 (defun org-dblock-write:denote-missing-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
@@ -452,6 +454,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   '(progn
      (org-dynamic-block-define "denote-backlinks" 'denote-org-extras-dblock-insert-backlinks)))
 
+;;;###autoload
 (defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
@@ -560,6 +563,7 @@ among `denote-sort-components'."
   '(progn
      (org-dynamic-block-define "denote-files" 'denote-org-extras-dblock-insert-files)))
 
+;;;###autoload
 (defun org-dblock-write:denote-files (params)
   "Function to update `denote-files' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
