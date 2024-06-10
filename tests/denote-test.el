@@ -428,6 +428,21 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (denote-retrieve-filename-title "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "this-is-a-test-reordered"))))
 
+(ert-deftest denote-test--denote-retrieve-filename-keywords ()
+  "Test that `denote-retrieve-filename-keywords' returns only the keywords."
+  (should (and (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/--this-is-a-test-reordered__denote_testing@@20240610T194654.org")
+                "denote_testing")
+               (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/__denote_testing--this-is-a-test-reordered@@20240610T194654.org")
+                "denote_testing")
+               (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "denote_testing")
+               (equal
+                (denote-retrieve-filename-keywords "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
+                "denote_testing"))))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)
