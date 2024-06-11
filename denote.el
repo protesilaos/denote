@@ -4664,7 +4664,7 @@ With optional FULL-DATA return a list in the form of (path id query)."
       (list path id query))
      ((and query (not (string-empty-p query)))
       (concat path "::" query))
-     (path))))
+     (t path))))
 
 ;;;###autoload
 (defun denote-link-ol-follow (link)
