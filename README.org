@@ -1074,6 +1074,65 @@ minibuffer completion for a directory among ~denote-silo-extras-directories~.
 Once the user selects a silo, a second prompt asks for a Denote
 note-creation command to call from inside that silo ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
+*** Make Org export work with silos
+:PROPERTIES:
+:CUSTOM_ID: h:fed09992-7c43-4237-b48f-f654bc29d1d8
+:END:
+
+The Org export infrastructure is designed to ignore directory-local
+variables. This means that Denote silos, which depend on setting the
+local value of the variable ~denote-directory~, do not work as
+intended ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]). More
+specifically, the Denote links do not resolve to the right file,
+because their path is changed during the export process.
+
+I brought this to the attention of the Org maintainer. The guidance
+from their side is to use the =#+bind= keyword to specify a local
+value for the ~denote-directory~: <https://lists.gnu.org/archive/html/emacs-orgmode/2024-06/msg00206.html>.
+The prerequisite is to set ~org-export-allow-bind-keywords~ to a
+non-nil value:
+
+#+begin_src emacs-lisp
+(setq org-export-allow-bind-keywords t)
+#+end_src
+
+I do not think this is an elegant solution, but here are two possible
+ways to go about it, anyway:
+
+1. Manually add the =#+bind= keyword to each file you want to export.
+   It has to be like this:
+
+   #+begin_src emacs-lisp
+   ,#+bind: denote-directory "/path/to/silo/"
+   #+end_src
+
+2. Alternatively, you can make the Org front matter that Denote uses
+   for new files automatically include the =#+bind= keyword with its
+   desired value. Here is a complete =.dir-locals.el= which (i)
+   defines the silo and (ii) modifies the ~denote-org-front-matter~
+   accordingly:
+
+   #+begin_src emacs-lisp
+   ;;; Directory Local Variables.  For more information evaluate:
+   ;;;
+   ;;;     (info "(emacs) Directory Variables")
+
+   ((nil . ((denote-directory . "/path/to/silo/")
+            (denote-org-front-matter . 
+             "#+title:      %s
+,#+date:       %s
+,#+filetags:   %s
+,#+identifier: %s
+,#+bind:       denote-directory \"/path/to/silo/\"
+\n"))))
+   #+end_src
+
+   [ Note that if you are reading the Org source of this manual, you
+     need to use the command ~org-edit-special~ on the above code
+     blocks before copying the code. This is because Org automatically
+     prepends a comma to disambiguate those entries from actual
+     keywords of the current file. ]
+
 ** Exclude certain directories from all operations
 :PROPERTIES:
 :CUSTOM_ID: h:8458f716-f9c2-4888-824b-2bf01cc5850a
@@ -5515,9 +5574,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Mirko Hernandez, Niall Dooley, Paul van Gelder, Peter Prevos, Peter
   Smith, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
   Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Wade
-  Mealing, Yi Liu, Ypot, atanasj, babusri, doolio, duli, drcxd,
-  fingerknight, hpgisler, mentalisttraceur, pRot0ta1p, rbenit68,
-  relict007, sienic, sundar bp.
+  Mealing, Yi Liu, Ypot, atanasj, azegas, babusri, doolio, duli,
+  drcxd, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
+  rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
