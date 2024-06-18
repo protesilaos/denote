@@ -3519,7 +3519,9 @@ and seconds."
                 (re-search-forward "^.+$" limit t))
       ;; dired-move-to-filename moves the point even if it returns nil
       (let ((saved-point (point)))
-        (if (dired-move-to-filename)
+        (if (and (dired-move-to-filename)
+                 (save-match-data
+                   (denote-file-has-identifier-p (buffer-substring (point) (line-end-position)))))
             (setq line-found t)
           (goto-char saved-point))))
     (if line-found
