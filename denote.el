@@ -4284,7 +4284,7 @@ To be used as a `thing-at' provider."
       (font-lock-remove-keywords nil '(denote-fontify-links))
       (setq-local thing-at-point-provider-alist
                   (delete
-                   '((url . denote--get-link-file-path-at-point))
+                   '(url . denote--get-link-file-path-at-point)
                    thing-at-point-provider-alist)))
     (font-lock-update)))
 
