@@ -4207,10 +4207,15 @@ file's title.  This has the same meaning as in `denote-link'."
  'denote-fontify-links-mode
  "Use the `denote-fontify-links-mode', as it works better than buttonization. Since 3.0.0")
 
-(make-obsolete
- 'denote-link-markdown-follow
- 'denote-fontify-links-mode
- "Use the `denote-fontify-links-mode', as it works better than buttonization. Since 3.0.0")
+(defun denote-link-markdown-follow (link)
+  "Function to open Denote file present in LINK.
+To be assigned to `markdown-follow-link-functions'."
+  (when (ignore-errors (string-match denote-id-regexp link))
+    (funcall denote-link-button-action
+             (denote-get-path-by-id (match-string 0 link)))))
+
+(eval-after-load 'markdown-mode
+  '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
 
 ;;;;; Link fontification
 (defvar denote-link-mouse-map
