@@ -2950,29 +2950,29 @@ renaming commands."
          (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
-     (dolist (prompt denote-prompts)
-       (pcase prompt
-         ('title
-          (setq title (denote-title-prompt
-                       title
-                       (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
-         ('keywords
-          (setq keywords (denote-keywords-prompt
-                          (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
-                          (string-join keywords ","))))
-         ('signature
-          (setq signature (denote-signature-prompt
-                           signature
-                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
-         ('date
-          ;; TODO: We currently prompt only if the current file has no
-          ;; identifier. Eventually, we may want to allow modifying the
-          ;; date/id. Then, it will be better to prompt according to
-          ;; `denote-prompts`, like other components (ie remove this
-          ;; condition).
-          (unless (denote-file-has-identifier-p file)
-            (setq date (denote-date-prompt))))))
-     (list title keywords signature date)))
+    (dolist (prompt denote-prompts)
+      (pcase prompt
+        ('title
+         (setq title (denote-title-prompt
+                      title
+                      (format "Rename `%s' with TITLE (empty to remove)" file-in-prompt))))
+        ('keywords
+         (setq keywords (denote-keywords-prompt
+                         (format "Rename `%s' with KEYWORDS (empty to remove)" file-in-prompt)
+                         (string-join keywords ","))))
+        ('signature
+         (setq signature (denote-signature-prompt
+                          signature
+                          (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
+        ('date
+         ;; TODO: We currently prompt only if the current file has no
+         ;; identifier. Eventually, we may want to allow modifying the
+         ;; date/id. Then, it will be better to prompt according to
+         ;; `denote-prompts`, like other components (ie remove this
+         ;; condition).
+         (unless (denote-file-has-identifier-p file)
+           (setq date (denote-date-prompt))))))
+    (list title keywords signature date)))
 
 ;;;###autoload
 (defun denote-rename-file (file &optional title keywords signature date)
