@@ -5547,17 +5547,17 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Author/maintainer :: Protesilaos Stavrou.
 
-+ Contributions to code or the manual :: Abin Simon, Adam Růžička,
-  Alan Schmitt, Alexandre Rousseau, Ashton Wiersdorf, Benjamin
-  Kästner, Bruno Boal, Charanjit Singh, Clemens Radermacher, Colin
-  McLear, Damien Cassou, Eduardo Grajeda, Elias Storms, Eshel Yaron,
-  Florian, Glenna D., Graham Marlow, Hilde Rhyne, Ivan Sokolov, Jack
-  Baty, Jean-Charles Bagneris, Jean-Philippe Gagné Guay, Jianwei Hou,
-  Joseph Turner, Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kostas
-  Andreadis, Kristoffer Balintona, Kyle Meyer, Marc Fargas, Matthew
-  Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter Prevos, Philip
-  Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier,
-  Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
++ Contributions to code or the manual :: Abdul-Lateef Haji-Ali, Abin
+  Simon, Adam Růžička, Alan Schmitt, Alexandre Rousseau, Ashton
+  Wiersdorf, Benjamin Kästner, Bruno Boal, Charanjit Singh, Clemens
+  Radermacher, Colin McLear, Damien Cassou, Eduardo Grajeda, Elias
+  Storms, Eshel Yaron, Florian, Glenna D., Graham Marlow, Hilde Rhyne,
+  Ivan Sokolov, Jack Baty, Jean-Charles Bagneris, Jean-Philippe Gagné
+  Guay, Jianwei Hou, Joseph Turner, Jürgen Hötzel, Kaushal Modi, Kai
+  von Fintel, Kostas Andreadis, Kristoffer Balintona, Kyle Meyer, Marc
+  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Peter
+  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
+  Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
   Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101, ezchi, jarofromel,
   leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
   mentalisttraceur, pmenair, relict007.
