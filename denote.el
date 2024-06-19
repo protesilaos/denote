@@ -4202,45 +4202,15 @@ file's title.  This has the same meaning as in `denote-link'."
          (file (denote-get-path-by-id id)))
     (funcall denote-link-button-action file)))
 
-;;;###autoload
-(defun denote-link-buttonize-buffer (&optional beg end)
-  "Make denote: links actionable buttons in the current buffer.
+(make-obsolete
+ 'denote-link-buttonize-buffer
+ 'denote-fontify-links-mode
+ "Use the `denote-fontify-links-mode', as it works better than buttonization. Since 3.0.0")
 
-Buttonization applies to the plain text and Markdown file types,
-per the user option `denote-file-types'.  It will not do anything
-in `org-mode' buffers, as buttons already work there.  If you do
-not use Markdown or plain text, then you do not need this.
-
-Links work when they point to a file inside the variable
-`denote-directory'.
-
-To buttonize links automatically add this function to the
-`find-file-hook'.  Or call it interactively for on-demand
-buttonization.
-
-When called from Lisp, with optional BEG and END as buffer
-positions, limit the process to the region in-between."
-  (interactive)
-  (when (and (not (derived-mode-p 'org-mode))
-             buffer-file-name
-             (denote-file-has-identifier-p buffer-file-name))
-    (save-excursion
-      (goto-char (or beg (point-min)))
-      (while (re-search-forward denote-id-regexp end t)
-        (when-let ((string (denote-link--link-at-point-string))
-                   (beg (match-beginning 0))
-                   (end (match-end 0)))
-          (make-button beg end 'type 'denote-link-button))))))
-
-(defun denote-link-markdown-follow (link)
-  "Function to open Denote file present in LINK.
-To be assigned to `markdown-follow-link-functions'."
-  (when (ignore-errors (string-match denote-id-regexp link))
-    (funcall denote-link-button-action
-             (denote-get-path-by-id (match-string 0 link)))))
-
-(eval-after-load 'markdown-mode
-  '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
+(make-obsolete
+ 'denote-link-markdown-follow
+ 'denote-fontify-links-mode
+ "Use the `denote-fontify-links-mode', as it works better than buttonization. Since 3.0.0")
 
 ;;;;; Link fontification
 (defvar denote-link-mouse-map
