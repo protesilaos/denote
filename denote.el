@@ -4283,23 +4283,26 @@ To be used as a `thing-at' provider."
   (when-let (id (get-text-property (point) 'denote-link-id))
     (concat "file:" (denote-get-path-by-id id))))
 
+(defvar thing-at-point-provider-alist)
+
 (define-minor-mode denote-fontify-links-mode
-  "A minor mode to fontify and fold denote links."
+  "A minor mode to fontify and fold Denote links."
   :init-value nil
+  :global nil
   :group 'denote
+  (require 'thingatpt)
   (if denote-fontify-links-mode
-      (progn (font-lock-add-keywords nil '(denote-fontify-links))
-             (with-eval-after-load 'thingatpt
-               (make-local-variable 'thing-at-point-provider-alist)
-               (add-to-list 'thing-at-point-provider-alist
+      (progn
+        (font-lock-add-keywords nil '(denote-fontify-links))
+        (make-local-variable 'thing-at-point-provider-alist)
+        (add-to-list 'thing-at-point-provider-alist
                      '(url . denote--get-link-file-path-at-point)))
     (font-lock-remove-keywords nil '(denote-fontify-links))
-    (with-eval-after-load 'thingatpt
-      (set 'thing-at-point-provider-alist
-           (cl-remove
-            '(url . denote--get-link-url-at-point)
-            (symbol-value 'thing-at-point-provider-alist)
-            :test 'equal))))
+    (set 'thing-at-point-provider-alist
+         (cl-remove
+          '(url . denote--get-link-file-path-at-point)
+          (symbol-value 'thing-at-point-provider-alist)
+          :test 'equal)))
   (font-lock-update))
 
 ;;;;; Backlinks' buffer
