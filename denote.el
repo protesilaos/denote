@@ -4222,11 +4222,13 @@ file's title.  This has the same meaning as in `denote-link'."
   "Keymap for mouse actions over fontified Denote links.")
 
 (defun denote-link-open-at-mouse (ev)
-  "Open denote link after mouse click."
+  "Open Denote link for mouse EV click."
   (interactive "e")
   (mouse-set-point ev)
-  (when-let ((id (get-text-property (point) 'denote-link-id)))
-    (funcall denote-link-button-action (denote-get-path-by-id id))))
+  (if-let ((id (get-text-property (point) 'denote-link-id))
+           (path (denote-get-path-by-id id)))
+      (funcall denote-link-button-action path)
+    (error "Cannot resolve the link at point")))
 
 (defun denote-fontify-links (&optional limit)
   "Fontify denote links.
