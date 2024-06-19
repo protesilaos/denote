@@ -4243,13 +4243,13 @@ To be assigned to `markdown-follow-link-functions'."
   '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
 
 ;;;;; Link fontification
-(defvar denote-link-keymap
+(defvar denote-link-mouse-map
   (let ((map (make-sparse-keymap)))
     (define-key map [mouse-2] #'denote-link-open-at-mouse)
     (define-key map [mouse-3] #'denote-link-open-at-mouse)
-    (define-key map [follow-link] #'mouse-face)
+    (define-key map [follow-link] 'mouse-face)
     map)
-  "Keymap used in fontified denote links")
+  "Keymap for mouse actions over fontified Denote links.")
 
 (defun denote-link-open-at-mouse (ev)
   "Open denote link after mouse click."
@@ -4280,7 +4280,7 @@ Implementation based on `org-activate-links'"
                           (memq 'font-lock-comment-face face)
 		        (eq 'font-lock-comment-face face)))
               (let* ((properties `(mouse-face highlight
-			                      keymap ,denote-link-keymap
+                                              keymap ,denote-link-mouse-map
                                               denote-link-id ,id
                                               help-echo ,(concat "denote:" id)
 			                      htmlize-link (:uri ,link)
