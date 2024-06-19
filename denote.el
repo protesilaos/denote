@@ -4191,6 +4191,10 @@ To be assigned to `markdown-follow-link-functions'."
   '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
 
 ;;;;; Link fontification
+
+;; TODO 2024-06-19: We need to bind RET and maybe even C-c C-o to a
+;; command that opens the link at point.  Then we may also rename this
+;; keymap.
 (defvar denote-link-mouse-map
   (let ((map (make-sparse-keymap)))
     (define-key map [mouse-2] #'denote-link-open-at-mouse)
@@ -4261,6 +4265,9 @@ To be used as a `thing-at' provider."
 
 (defvar thing-at-point-provider-alist)
 
+;; FIXME 2024-06-19: We are missing a function that clean up all those
+;; properties when the mode is disabled.  Otherwise, we are left with
+;; invisible text, which looks broken.
 (define-minor-mode denote-fontify-links-mode
   "A minor mode to fontify and fold Denote links."
   :init-value nil
