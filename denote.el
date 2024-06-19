@@ -4160,33 +4160,6 @@ file's title.  This has the same meaning as in `denote-link'."
 
 ;;;;; Link buttons
 
-;; Evaluate: (info "(elisp) Button Properties")
-;;
-;; Button can provide a help-echo function as well, but I think we might
-;; not need it.
-(define-button-type 'denote-link-button
-  'follow-link t
-  'face 'denote-faces-link
-  'action #'denote-link--find-file-at-button)
-
-(autoload 'thing-at-point-looking-at "thingatpt")
-
-(defun denote-link--link-at-point-string ()
-  "Return identifier at point."
-  (when (or (thing-at-point-looking-at denote-id-only-link-in-context-regexp)
-            (thing-at-point-looking-at denote-md-link-in-context-regexp)
-            (thing-at-point-looking-at denote-org-link-in-context-regexp)
-            ;; Meant to handle the case where a link is broken by
-            ;; `fill-paragraph' into two lines, in which case it
-            ;; buttonizes only the "denote:ID" part.  Example:
-            ;;
-            ;; [[denote:20220619T175212][This is a
-            ;; test]]
-            ;;
-            ;; Maybe there is a better way?
-            (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
-    (match-string-no-properties 0)))
-
 ;; NOTE 2022-06-15: I add this as a variable for advanced users who may
 ;; prefer something else.  If there is demand for it, we can make it a
 ;; defcustom, but I think it would be premature at this stage.
