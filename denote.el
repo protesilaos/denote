@@ -4231,9 +4231,9 @@ file's title.  This has the same meaning as in `denote-link'."
     (error "Cannot resolve the link at point")))
 
 (defun denote-fontify-links (&optional limit)
-  "Fontify denote links.
+  "Fontify Denote links up until optional LIMIT.
 
-Implementation based on `org-activate-links'"
+Implementation based on the function `org-activate-links'."
   (catch :exit
     (when-let (type (denote-filetype-heuristics (buffer-file-name)))
       (while (re-search-forward
