@@ -2183,7 +2183,8 @@ Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=, regardless of
-file type. The user might prefer its simplicity.
+file type ([[#h:156c5ea3-147b-4f9d-a404-86a00558c60a][Fontify links in non-Org buffers]]). The user might prefer
+its simplicity.
 
 By default, the description of the link is determined thus:
 
@@ -2196,22 +2197,6 @@ By default, the description of the link is determined thus:
   file's signature and title ([[#h:066e5221-9844-474b-8858-398398646f86][Insert link to file with signature]]). The
   title is retrieved either from the front matter or the file name.
 - If the target file has no signature, the title is used.
-
-Inserted links are automatically buttonized and remain active for as
-long as the buffer is available. In Org this is handled by the major
-mode: the =denote:= hyperlink type works exactly like the standard
-=file:= type. In Markdown and plain text, Denote performs the
-buttonization of those links. To buttonize links in existing files
-while visiting them, the user must add this snippet to their setup (it
-already excludes Org):
-
-#+findex: denote-link-buttonize-buffer
-#+begin_src emacs-lisp
-(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
-#+end_src
-
-The ~denote-link-buttonize-buffer~ is also an interactive function in
-case the user needs it.
 
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Users who need to link to Denote files from
@@ -2242,14 +2227,6 @@ Links are styled with the ~denote-faces-link~ face, which looks exactly
 like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
-
-#+findex: denote-link-markdown-follow
-In files whose major mode is ~markdown-mode~, the default key binding
-=C-c C-o= (which calls the command ~markdown-follow-thing-at-point~)
-correctly resolves =denote:= links. This method works in addition to
-the =RET= key, which is made available by the aforementioned
-buttonization. Interested users can refer to the function
-~denote-link-markdown-follow~ for the implementation details.
 
 ** The ~denote-org-store-link-to-heading~ user option
 :PROPERTIES:
@@ -2709,6 +2686,45 @@ that are relevant for this use-case:
 + Convert =file:= links to =denote:= links :: The command ~denote-org-extras-convert-links-to-denote-type~
   behaves like the one above. The difference is that it finds the file
   system path and converts it into its identifier.
+
+** Fontify links in non-Org buffers
+:PROPERTIES:
+:CUSTOM_ID: h:156c5ea3-147b-4f9d-a404-86a00558c60a
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+findex: denote-fontify-links-mode
+Denote links are automatically fontified in Org buffers ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
+This means that Org recognises the link and applies the relevant
+properties to it to make it clickable/actionable. Other major modes,
+such as ~markdown-mode~ (for =.md= files) or ~text-mode~ (for =.txt=
+files) do not have this feature built into them. Users can still get
+the same behaviour as with Org by activating the ~denote-fontify-links-mode~.
+
+The ~denote-fontify-links-mode~ is a buffer-local minor mode. Users
+can enable it automatically in all plain text files with something
+like this:
+
+#+begin_src emacs-lisp
+(add-hook 'text-mode-hook #'denote-fontify-links-mode)
+#+end_src
+
+The ~text-mode-hook~ applies to all modes derived from ~text-mode~,
+including ~markdown-mode~. Though a more explicit setup does no harm:
+
+#+begin_src emacs-lisp
+(add-hook 'markdown-mode-hook #'denote-fontify-links-mode)
+#+end_src
+
+Because Org already recognises =denote:= links, the minor mode
+~denote-fontify-links-mode~ will do nothing in Org buffers.
+
+#+findex: denote-link-markdown-follow
+In files whose major mode is ~markdown-mode~, the default key binding
+=C-c C-o= (which calls the command ~markdown-follow-thing-at-point~)
+correctly resolves =denote:= links. Interested users can refer to the
+function ~denote-link-markdown-follow~ for the implementation details.
 
 ** Miscellaneous information about links
 :PROPERTIES:
@@ -4170,7 +4186,7 @@ Everything is in place to set up the package.
 
 ;; If you use Markdown or plain text files (Org renders links as buttons
 ;; right away)
-(add-hook 'find-file-hook #'denote-link-buttonize-buffer)
+(add-hook 'text-mode-hook #'denote-fontify-links-mode)
 
 ;; We use different ways to specify a path for demo purposes.
 (setq denote-dired-directories
