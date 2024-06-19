@@ -4298,15 +4298,14 @@ To be used as a `thing-at' provider."
     (if denote-fontify-links-mode
         (progn
           (font-lock-add-keywords nil '(denote-fontify-links))
-          (make-local-variable 'thing-at-point-provider-alist)
-          (add-to-list 'thing-at-point-provider-alist
-                       '(url . denote--get-link-file-path-at-point)))
+          (setq-local thing-at-point-provider-alist
+                      (append thing-at-point-provider-alist
+                              '((url . denote--get-link-file-path-at-point)))))
       (font-lock-remove-keywords nil '(denote-fontify-links))
-      (set 'thing-at-point-provider-alist
-           (cl-remove
-            '(url . denote--get-link-file-path-at-point)
-            (symbol-value 'thing-at-point-provider-alist)
-            :test 'equal)))
+      (setq-local thing-at-point-provider-alist
+                  (delete
+                   '((url . denote--get-link-file-path-at-point))
+                   thing-at-point-provider-alist)))
     (font-lock-update)))
 
 ;;;;; Backlinks' buffer
