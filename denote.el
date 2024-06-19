@@ -4277,8 +4277,8 @@ Implementation based on the function `org-activate-links'."
               (throw :exit t))))))      ; signal success
     nil))
 
-(defun denote--get-link-url-at-point ()
-  "Return the denote link under point.
+(defun denote--get-link-file-path-at-point ()
+  "Return link to the Denote file path at point.
 To be used as a `thing-at' provider."
   (when-let (id (get-text-property (point) 'denote-link-id))
     (concat "file:" (denote-get-path-by-id id))))
@@ -4292,7 +4292,7 @@ To be used as a `thing-at' provider."
              (with-eval-after-load 'thingatpt
                (make-local-variable 'thing-at-point-provider-alist)
                (add-to-list 'thing-at-point-provider-alist
-                            '(url . denote--get-link-url-at-point))))
+                     '(url . denote--get-link-file-path-at-point)))
     (font-lock-remove-keywords nil '(denote-fontify-links))
     (with-eval-after-load 'thingatpt
       (set 'thing-at-point-provider-alist
