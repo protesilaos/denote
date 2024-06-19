@@ -4240,7 +4240,7 @@ To be assigned to `markdown-follow-link-functions'."
 
 Implementation based on the function `org-activate-links'."
   (catch :exit
-    (when-let (type (denote-filetype-heuristics (buffer-file-name)))
+    (when-let ((type (denote-filetype-heuristics (buffer-file-name))))
       (while (re-search-forward (denote--link-in-context-regexp type) limit t)
         (save-match-data  ; to return the matches to font-lock
           (let* ((start (match-beginning 0))
@@ -4267,10 +4267,8 @@ Implementation based on the function `org-activate-links'."
                                               htmlize-link (:uri ,file-link)
                                               font-lock-multiline t))
                      (non-sticky-props
-                      '(rear-nonsticky (mouse-face highlight keymap invisible
-                                                   intangible help-echo
-                                                   htmlize-link)))
-                     (face-property 'file-link)
+                      '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
+                     (face-property 'link)
                      (hidden (append '(invisible t) properties)))
                 (remove-text-properties start end '(invisible nil))
                 (add-text-properties start visible-start hidden)
