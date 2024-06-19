@@ -4236,41 +4236,45 @@ file's title.  This has the same meaning as in `denote-link'."
 Implementation based on the function `org-activate-links'."
   (catch :exit
     (when-let (type (denote-filetype-heuristics (buffer-file-name)))
-      (while (re-search-forward
-              (denote--link-in-context-regexp type)
-              limit t)
-        (save-match-data  ;; to return the matches to font-lock
+      (while (re-search-forward (denote--link-in-context-regexp type) limit t)
+        (save-match-data  ; to return the matches to font-lock
           (let* ((start (match-beginning 0))
-	         (end (match-end 0))
-	         (visible-start (match-beginning 2))
-	         (visible-end (match-end 2))
+                 (end (match-end 0))
+                 (visible-start (match-beginning 2))
+                 (visible-end (match-end 2))
                  (id (match-string-no-properties 1))
-                 (link (concat "file:" (denote-get-path-by-id id))))
-	    (unless (let ((face (get-text-property
-			         (max (1- start) (point-min)) 'face)))
-		      (if (consp face)
+                 (path (denote-get-path-by-id id))
+                 (file-link (concat "file:" path)))
+            ;; FIXME 2024-06-19: Rewrite this (unless...let...if...)
+            ;; because it is hard to reason about. But it works, so no
+            ;; pressure.
+            (unless (let ((face (get-text-property
+                                 (max (1- start) (point-min)) 'face)))
+                      (if (consp face)
                           (memq 'font-lock-comment-face face)
-		        (eq 'font-lock-comment-face face)))
-              (let* ((properties `(mouse-face highlight
+                        (eq 'font-lock-comment-face face)))
+              (let* ((properties `(face denote-faces-link
+                                   mouse-face highlight
                                               keymap ,denote-link-mouse-map
                                               denote-link-id ,id
-                                              help-echo ,(concat "denote:" id)
-			                      htmlize-link (:uri ,link)
-			                      font-lock-multiline t))
+                                              help-echo ,(or (denote-retrieve-title-or-filename path type)
+                                                             (concat "denote:" id))
+                                              htmlize-link (:uri ,file-link)
+                                              font-lock-multiline t))
                      (non-sticky-props
                       '(rear-nonsticky (mouse-face highlight keymap invisible
                                                    intangible help-echo
                                                    htmlize-link)))
-                     (face-property 'link)
+                     (face-property 'file-link)
                      (hidden (append '(invisible t) properties)))
                 (remove-text-properties start end '(invisible nil))
                 (add-text-properties start visible-start hidden)
                 (add-face-text-property start end face-property)
-		(add-text-properties visible-start visible-end properties)
-		(add-text-properties visible-end end hidden)
+                (add-text-properties visible-start visible-end properties)
+                (add-text-properties visible-end end hidden)
                 (dolist (pos (list end visible-start visible-end))
                   (add-text-properties (1- pos) pos non-sticky-props)))
-              (throw :exit t))))))		;signal success
+              (throw :exit t))))))      ; signal success
     nil))
 
 (defun denote--get-link-url-at-point ()
