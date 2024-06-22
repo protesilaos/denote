@@ -1148,6 +1148,45 @@ ways to go about it, anyway:
      prepends a comma to disambiguate those entries from actual
      keywords of the current file. ]
 
+*** Make any Denote command work in a silo from anywhere
+:PROPERTIES:
+:CUSTOM_ID: h:547e1aac-4b48-403c-8063-ddb74b55e135
+:END:
+
+Denote silos are instantiated with a directory-local value for the
+~denote-directory~ ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]). This
+means that all Denote commands will operate on the silo when the user
+is inside of that directory ([[#h:e0d60749-194d-4677-b943-5e98fbf9ad1d][How to switch a silo]]). Sometimes though,
+the user may not want to switch to the silo, then call a Denote
+command, and finally switch away from the silo: this context change
+can be done only for the duration of a command.
+
+Here we show how easy it is to transiently bind the value of the
+~denote-directory~ to the path of a silo (well, any path for that
+matter).
+
+#+begin_src emacs-lisp
+(defun my-denote-journal-extras-new-or-existing-entry ()
+  "Like `denote-journal-extras-new-or-existing-entry' for my silo."
+  (interactive)
+  (let ((denote-directory "/path/to/silo/"))
+    (call-interactively 'denote-journal-extras-new-or-existing-entry)))
+#+end_src
+
+All the user needs to do here is change the exact command that is
+passed to the ~call-interactively~. We use an example from the
+journaling conveniences that we provide ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]).
+
+With this in place, the user can now call their own command, such as
+the ~my-denote-journal-extras-new-or-existing-entry~ shown above, when
+they need to write a note there without manually switching to the
+silo. Of course, these commands can be assigned to key bindings for
+greater convenience. For example:
+
+#+begin_src emacs-lisp
+(define-key global-map (kbd "C-c n j") #'my-denote-journal-extras-new-or-existing-entry)
+#+end_src
+
 ** Exclude certain directories from all operations
 :PROPERTIES:
 :CUSTOM_ID: h:8458f716-f9c2-4888-824b-2bf01cc5850a
@@ -5606,7 +5645,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Smith, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
   Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Wade
   Mealing, Yi Liu, Ypot, atanasj, azegas, babusri, doolio, duli,
-  drcxd, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
+  drcxd, elge70, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
   rbenit68, relict007, sienic, sundar bp.
 
 Special thanks to Peter Povinec who helped refine the file-naming
