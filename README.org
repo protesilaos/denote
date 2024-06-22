@@ -879,12 +879,12 @@ file, with the following contents:
 ((nil . ((denote-directory . "/path/to/silo/"))))
 #+end_src
 
-When inside the directory that contains this =.dir-locals.el= file, all
-Denote commands/functions for note creation, linking, the inference of
-available keywords, et cetera will use the silo as their point of
-reference.  They will not read the global value of ~denote-directory~.
-The global value of ~denote-directory~ is read everywhere else except
-the silos.
+When inside the directory that contains this =.dir-locals.el= file,
+all Denote commands/functions for note creation, linking, the
+inference of available keywords, et cetera will use the silo as their
+point of reference ([[#h:e0d60749-194d-4677-b943-5e98fbf9ad1d][How to switch a silo]]). They will not read the
+global value of ~denote-directory~. The global value of
+~denote-directory~ is read everywhere else except the silos.
 
 [[#h:0f72e6ea-97f0-42e1-8fd4-0684af0422e0][Use custom commands to select a silo]].
 
@@ -967,6 +967,21 @@ to experiment with the best setup for their workflow.
 
 Feel welcome to ask for help if the information provided herein is not
 sufficient.  The manual shall be expanded accordingly.
+
+*** How to switch a silo
+:PROPERTIES:
+:CUSTOM_ID: h:e0d60749-194d-4677-b943-5e98fbf9ad1d
+:END:
+
+Switching to a silo directory will make all Denote commands use the
+silo's path as the ~denote-directory~, instead of the global value of
+that variable ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]). There are
+three ways to switch to a silo:
+
+1. Visit a file inside of that directory.
+2. Use the ~dired~ command to open the directory in a buffer.
+3. Use the command ~cd~ to select the directory without moving away
+   from the current buffer.
 
 *** Use custom commands to select a silo
 :PROPERTIES:
