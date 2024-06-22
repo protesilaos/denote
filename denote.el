@@ -4246,7 +4246,7 @@ Implementation based on the function `org-activate-links'."
                      (non-sticky-props
                       '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
                      (face-property 'link)
-                     (hidden (append '(invisible t) properties)))
+                     (hidden (append '(invisible 'denote-link) properties)))
                 (remove-text-properties start end '(invisible nil))
                 (add-text-properties start visible-start hidden)
                 (add-face-text-property start end face-property)
@@ -4265,9 +4265,6 @@ To be used as a `thing-at' provider."
 
 (defvar thing-at-point-provider-alist)
 
-;; FIXME 2024-06-19: We are missing a function that clean up all those
-;; properties when the mode is disabled.  Otherwise, we are left with
-;; invisible text, which looks broken.
 (define-minor-mode denote-fontify-links-mode
   "A minor mode to fontify and fold Denote links."
   :init-value nil
@@ -4277,10 +4274,12 @@ To be used as a `thing-at' provider."
     (require 'thingatpt)
     (if denote-fontify-links-mode
         (progn
+          (add-to-invisibility-spec 'denote-link)
           (font-lock-add-keywords nil '(denote-fontify-links))
           (setq-local thing-at-point-provider-alist
                       (append thing-at-point-provider-alist
                               '((url . denote--get-link-file-path-at-point)))))
+      (remove-from-invisibility-spec 'denote-link)
       (font-lock-remove-keywords nil '(denote-fontify-links))
       (setq-local thing-at-point-provider-alist
                   (delete
