@@ -4158,27 +4158,39 @@ To be used as a `thing-at' provider."
 
 (defvar thing-at-point-provider-alist)
 
+(defun denote-fontify-links-mode-maybe ()
+  "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
+  (when (and (buffer-file-name)
+             (denote-file-is-note-p (buffer-file-name))
+             (not (derived-mode-p 'org-mode)))
+    (denote-fontify-links-mode)))
+
 (define-minor-mode denote-fontify-links-mode
-  "A minor mode to fontify and fold Denote links."
+  "A minor mode to fontify and fold Denote links.
+
+It is recommended that this mode is enabled only when the current
+buffer is from a denote note and the current buffer is not an
+`org-mode' one; as `org-mode' implemented its own fontification
+of links. You may use `denote-fontify-links-mode-maybe' for this
+purpose."
   :init-value nil
   :global nil
   :group 'denote
-  (unless (derived-mode-p 'org-mode)
-    (require 'thingatpt)
-    (if denote-fontify-links-mode
-        (progn
-          (add-to-invisibility-spec 'denote-link)
-          (font-lock-add-keywords nil '(denote-fontify-links))
-          (setq-local thing-at-point-provider-alist
-                      (append thing-at-point-provider-alist
-                              '((url . denote--get-link-file-path-at-point)))))
-      (remove-from-invisibility-spec 'denote-link)
-      (font-lock-remove-keywords nil '(denote-fontify-links))
-      (setq-local thing-at-point-provider-alist
-                  (delete
-                   '(url . denote--get-link-file-path-at-point)
-                   thing-at-point-provider-alist)))
-    (font-lock-update)))
+  (require 'thingatpt)
+  (if denote-fontify-links-mode
+      (progn
+        (add-to-invisibility-spec 'denote-link)
+        (font-lock-add-keywords nil '(denote-fontify-links))
+        (setq-local thing-at-point-provider-alist
+                    (append thing-at-point-provider-alist
+                            '((url . denote--get-link-file-path-at-point)))))
+    (remove-from-invisibility-spec 'denote-link)
+    (font-lock-remove-keywords nil '(denote-fontify-links))
+    (setq-local thing-at-point-provider-alist
+                (delete
+                 '(url . denote--get-link-file-path-at-point)
+                 thing-at-point-provider-alist)))
+  (font-lock-update))
 
 ;;;;; Backlinks' buffer
 

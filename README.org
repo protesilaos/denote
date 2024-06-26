@@ -1133,7 +1133,7 @@ ways to go about it, anyway:
    ;;;     (info "(emacs) Directory Variables")
 
    ((nil . ((denote-directory . "/path/to/silo/")
-            (denote-org-front-matter . 
+            (denote-org-front-matter .
              "#+title:      %s
 ,#+date:       %s
 ,#+filetags:   %s
@@ -2756,23 +2756,24 @@ such as ~markdown-mode~ (for =.md= files) or ~text-mode~ (for =.txt=
 files) do not have this feature built into them. Users can still get
 the same behaviour as with Org by activating the ~denote-fontify-links-mode~.
 
-The ~denote-fontify-links-mode~ is a buffer-local minor mode. Users
-can enable it automatically in all plain text files with something
-like this:
+The ~denote-fontify-links-mode~ is a buffer-local minor mode. Users can enable
+it automatically in plain text files that correspond to denote notes with
+something like this:
 
 #+begin_src emacs-lisp
-(add-hook 'text-mode-hook #'denote-fontify-links-mode)
+(add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
 #+end_src
 
-The ~text-mode-hook~ applies to all modes derived from ~text-mode~,
-including ~markdown-mode~. Though a more explicit setup does no harm:
+The ~text-mode-hook~ applies to all modes derived from ~text-mode~, including
+~markdown-mode~. Though a more explicit setup does no harm:
 
 #+begin_src emacs-lisp
-(add-hook 'markdown-mode-hook #'denote-fontify-links-mode)
+(add-hook 'markdown-mode-hook #'denote-fontify-links-mode-maybe)
 #+end_src
 
-Because Org already recognises =denote:= links, the minor mode
-~denote-fontify-links-mode~ will do nothing in Org buffers.
+Because Org already recognises =denote:= links, the function
+~denote-fontify-links-mode-maybe~ will not enable the mode
+~denote-fontify-links-mode~ in Org buffers.
 
 #+findex: denote-link-markdown-follow
 In files whose major mode is ~markdown-mode~, the default key binding
