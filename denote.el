@@ -3048,7 +3048,16 @@ how a completion User Interface may accept an empty input."
 
 (defun denote-rename-file-keywords ()
   "Convenience command to change the keywords of a file.
-Like `denote-rename-file', but prompts only for keywords."
+Like `denote-rename-file', but prompts only for keywords.
+
+Add or remove keywords in one go.  Do this by prepopulating the
+minibuffer prompt with the existing keywords.  The user can then insert
+the `crm-separator' (normally a comma), to write new keywords or edit
+what is in the prompt to rewrite them accordingly.  An empty input means
+to remove all keywords.
+
+Please check the documentation of `denote-rename-file' with regard to
+how a completion User Interface may accept an empty input."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(keywords)))
