@@ -1647,6 +1647,39 @@ difference between old and new file names.
 This command constructs the file name in accordance with the user option
 ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
+** Rename a file by adding or removing a title interactively
+:PROPERTIES:
+:CUSTOM_ID: h:a26e28c7-8222-4377-92e9-3b0a709010a5
+:END:
+
+#+findex: denote-rename-file-title
+The command ~denote-rename-file-title~ streamlines the process of
+interactively adding or removing a title to/from a file, while
+changing its file name accordingly. It asks for a title using the
+familiar minibuffer prompt ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). It then renames
+the file. The command respect the values of
+~denote-rename-confirmations~ and ~denote-save-buffers~:
+
+- [[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-confirmations~ option]].
+- [[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]].
+
+Technically, ~denote-rename-file-title~ is a wrapper for
+~denote-rename-file~, doing all the things that does ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).
+
+Concretely, this command can add or remove a title in one go. It
+does it by prepopulating the minibuffer prompt with the existing
+title. Users can then modify it. An empty input means to remove
+the title altogether ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+
+[ NOTE: Please check with your minibuffer user interface how to
+  provide an empty input. The Emacs default setup accepts the empty
+  minibuffer contents as they are, though popular packages like
+  ~vertico~ use the first available completion candidate instead. For
+  ~vertico~, the user must either move one up to select the prompt and
+  then type =RET= there with empty contents, or use the command
+  ~vertico-exit-input~ with empty contents. That Vertico command is
+  bound to =M-RET= as of this writing on 2024-06-30 10:37 +0300. ]
+
 ** Rename a file by adding or removing keywords interactively
 :PROPERTIES:
 :CUSTOM_ID: h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4
