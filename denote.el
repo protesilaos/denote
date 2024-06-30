@@ -4181,9 +4181,8 @@ To be used as a `thing-at' provider."
 
 (defun denote-fontify-links-mode-maybe ()
   "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
-  (when (and (buffer-file-name)
-             (denote-file-is-note-p (buffer-file-name))
-             (not (derived-mode-p 'org-mode)))
+  (when (and (not (derived-mode-p 'org-mode))
+             (denote-file-is-note-p buffer-file-name))
     (denote-fontify-links-mode)))
 
 (define-minor-mode denote-fontify-links-mode
