@@ -3033,7 +3033,14 @@ one-by-one, use `denote-dired-rename-files'."
 
 (defun denote-rename-file-title ()
   "Convenience command to change the title of a file.
-Like `denote-rename-file', but prompts only for the title."
+Like `denote-rename-file', but prompts only for the title.
+
+Add or remove a title in one go.  Do this by prepopulating the
+minibuffer prompt with the existing title.  The user can then modify it
+accordingly.  An empty input means to remove the title altogether.
+
+Please check the documentation of `denote-rename-file' with regard to
+how a completion User Interface may accept an empty input."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(title)))
