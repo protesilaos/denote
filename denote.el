@@ -3012,6 +3012,9 @@ For the front matter of each file type, refer to the variables:
 - `denote-toml-front-matter'
 - `denote-yaml-front-matter'
 
+Construct the file name in accordance with the user option
+`denote-file-name-components-order'.
+
 Run the `denote-after-rename-file-hook' after renaming FILE.
 
 This command is intended to (i) rename Denote files, (ii) convert
@@ -3149,6 +3152,9 @@ Specifically, do the following:
   it is recognized as a Denote note (per `denote-file-type'),
   such that it includes the new keywords.
 
+Construct the file name in accordance with the user option
+`denote-file-name-components-order'.
+
 Run the `denote-after-rename-file-hook' after renaming is done.
 
 Also see the specialized commands to only add or remove keywords:
@@ -3195,7 +3201,10 @@ The values of `denote-rename-confirmations' and
 The identifier of the file, if any, is never modified even if it
 is edited in the front matter: Denote considers the file name to
 be the source of truth in this case, to avoid potential breakage
-with typos and the like."
+with typos and the like.
+
+Construct the file name in accordance with the user option
+`denote-file-name-components-order'."
   (interactive (list buffer-file-name))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
@@ -3303,7 +3312,10 @@ As a final step, ask for confirmation, showing the difference
 between old and new file names.
 
 Important note: No attempt is made to modify any other elements
-of the file.  This needs to be done manually."
+of the file.  This needs to be done manually.
+
+Construct the file name in accordance with the user option
+`denote-file-name-components-order'."
   (interactive
    (list
     (denote--rename-dired-file-or-current-file-or-prompt)

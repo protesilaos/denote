@@ -159,6 +159,9 @@ subsequent sections.  Other more specialised commands exist as well,
 which one shall learn about as they read through this manual.  We do
 not want to overwhelm the user with options at this stage.
 
+All these commands constructs the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
+
 ** Standard note creation
 :PROPERTIES:
 :CUSTOM_ID: h:6a92a8b5-d766-42cc-8e5b-8dc255466a23
@@ -1298,7 +1301,8 @@ mechanisms to facilitate the task of renaming them.
 
 #+vindex: denote-after-rename-file-hook
 All renaming commands run the ~denote-after-rename-file-hook~ after a
-succesful operation.
+succesful operation. They also construct the file name in accordance
+with the user option ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
 Apart from renaming files, Denote can also rename only the buffer.
 The idea is that the underlying file name is correct but it can be
@@ -1405,6 +1409,11 @@ If the file does not have front matter but is among the supported file
 types (per ~denote-file-type~), add front matter to the top of it and
 leave the buffer unsaved for further inspection ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]). Save
 the buffer if ~denote-save-buffers~ is non-nil ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]]).
+
+Construct the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
+
+Run the ~denote-after-rename-file-hook~ after renaming =FILE=.
 
 This command is intended to (i) rename Denote files, (ii) convert
 existing supported file types to Denote notes, and (ii) rename
@@ -1515,6 +1524,9 @@ edited in the front matter: Denote considers the file name to be the
 source of truth in this case, to avoid potential breakage with typos and
 the like.
 
+This command constructs the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
+
 ** Rename multiple files interactively
 :PROPERTIES:
 :CUSTOM_ID: h:1b6b2c78-42f0-45b8-9ef0-6de21a8b2cde
@@ -1575,6 +1587,10 @@ so by writing keywords to them. Specifically, it does the following:
   string). ]
 
 [ The following two commands are part of {{{development-version}}}. ]
+Construct the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
+
+Run the ~denote-after-rename-file-hook~ after the renaming is done.
 
 #+findex: denote-dired-rename-marked-files-add-keywords
 #+findex: denote-dired-rename-marked-files-remove-keywords
@@ -1627,6 +1643,9 @@ field in the file's front matter, depending on the previous file type
 
 As a final step, the command asks for confirmation, showing the
 difference between old and new file names.
+
+This command constructs the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
 ** Rename a file by adding or removing keywords interactively
 :PROPERTIES:
