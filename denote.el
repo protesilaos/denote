@@ -531,7 +531,7 @@ current note."
   :package-version '(denote . "1.2.0")
   :type 'boolean)
 
-(make-obsolete 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
+(make-obsolete-variable 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
 
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
