@@ -595,6 +595,16 @@ The match is performed with `string-match-p'."
   :package-version '(denote . "1.2.0")
   :type 'string)
 
+(defcustom denote-excluded-files-regexp nil
+  "Regular expression of files that are excluded from Denote file prompts.
+Files are provided for completion when using commands like `denote-link'
+and `denote-open-or-create'.
+
+The match is performed with `string-match-p' on the full file path."
+  :group 'denote
+  :package-version '(denote . "3.0.0")
+  :type 'string)
+
 (defcustom denote-after-new-note-hook nil
   "Normal hook that runs after the `denote' command.
 This also covers all convenience functions that call `denote'
@@ -1064,6 +1074,11 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
    #'denote--directory-files-recursively-predicate
    :follow-symlinks))
 
+(defun denote--file-excluded-p (file)
+  "Return non-file if FILE matches `denote-excluded-files-regexp'."
+  (and denote-excluded-files-regexp
+       (string-match-p denote-excluded-files-regexp file)))
+
 (defun denote--directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-identifier-p' and
@@ -1074,11 +1089,14 @@ are not backups."
     (lambda (file)
       (and (file-regular-p file)
            (denote-file-has-identifier-p file)
+           (not (denote--file-excluded-p file))
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
 
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only)
   "Return list of absolute file paths in variable `denote-directory'.
+Files that match `denote-excluded-files-regexp' are excluded from the
+list.
 
 Files only need to have an identifier.  The return value may thus
 include file types that are not implied by `denote-file-type'.
@@ -1189,6 +1207,9 @@ the title prompt of `denote-open-or-create' and related commands.")
 
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match)
   "Prompt for file in variable `denote-directory'.
+Files that match `denote-excluded-files-regexp' are excluded from the
+list.
+
 With optional FILES-MATCHING-REGEXP, filter the candidates per
 the given regular expression.
 
