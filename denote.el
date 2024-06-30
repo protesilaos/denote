@@ -5,7 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
-;; Version: 3.0.0
+;; Version: 3.0.1
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -4217,7 +4217,8 @@ To be used as a `thing-at' provider."
 
 (defun denote-fontify-links-mode-maybe ()
   "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
-  (when (and (not (derived-mode-p 'org-mode))
+  (when (and buffer-file-name
+             (not (derived-mode-p 'org-mode))
              (denote-file-is-note-p buffer-file-name))
     (denote-fontify-links-mode)))
 
