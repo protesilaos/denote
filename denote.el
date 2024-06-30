@@ -4189,11 +4189,9 @@ To be used as a `thing-at' provider."
 (define-minor-mode denote-fontify-links-mode
   "A minor mode to fontify and fold Denote links.
 
-It is recommended that this mode is enabled only when the current
-buffer is from a denote note and the current buffer is not an
-`org-mode' one; as `org-mode' implemented its own fontification
-of links. You may use `denote-fontify-links-mode-maybe' for this
-purpose."
+Enabled this mode only when the current buffer is a Denote note and the
+major mode is not `org-mode' (or derived therefrom).  Consider using
+`denote-fontify-links-mode-maybe' for this purpose."
   :init-value nil
   :global nil
   :group 'denote
