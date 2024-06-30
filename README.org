@@ -1652,44 +1652,40 @@ This command constructs the file name in accordance with the user option
 :CUSTOM_ID: h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4
 :END:
 
-[ Revised as part of {{{development-version}}} to respect the user
-  options ~denote-rename-confirmations~ and ~denote-save-buffers~. ]
-
-#+findex: denote-keywords-add
-#+findex: denote-keywords-remove
-The commands ~denote-keywords-add~ and ~denote-keywords-remove~
-streamline the process of interactively updating a file's keywords in
-the front matter and renaming it accordingly.
-
-The ~denote-keywords-add~ asks for keywords using the familiar
-minibuffer prompt ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  It then renames the file
-([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).
-
-Similarly, the ~denote-keywords-remove~ removes one or more keywords
-from the list of existing keywords and then renames the file
-accordingly.
-
-Both commands respect the values of ~denote-rename-confirmations~ and
+#+findex: denote-rename-file-keywords
+The command ~denote-rename-file-keywords~ streamlines the process of
+interactively adding or removing keywords to a file, while changing
+its file name and front matter accordingly. It asks for keywords using
+the familiar minibuffer prompt ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). It then
+renames the file ([[#h:3ab08ff4-81fa-4d24-99cb-79f97c13a373][Rename a single file based on its front matter]]).
+The command respect the values of ~denote-rename-confirmations~ and
 ~denote-save-buffers~:
 
 - [[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-confirmations~ option]].
 - [[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]].
 
-Furthermore, both commands call the ~denote-after-rename-file-hook~ as
-a final step after carrying out their task.
+Technically, ~denote-rename-file-keywords~ is a wrapper for
+~denote-rename-file~, doing all the things that does ([[#h:7cc9e000-806a-48da-945c-711bbc7426b0][Rename a single file]]).
 
-#+findex: denote-rename-add-keywords
-#+findex: denote-rename-remove-keywords
-Aliases for these commands are: ~denote-rename-add-keywords~ and
-~denote-rename-remove-keywords~.
+Concretely, this command can add or remove keywords in one go. It does
+it by prepopulating the minibuffer prompt with the existing keywords.
+Users can then use the ~crm-separator~ (normally a comma), to write
+new keywords or edit what is in the prompt to rewrite them
+accordingly. An empty input means to remove all keywords.
+
+[ NOTE: Please check with your minibuffer user interface how to
+  provide an empty input. The Emacs default setup accepts the empty
+  minibuffer contents as they are, though popular packages like
+  ~vertico~ use the first available completion candidate instead. For
+  ~vertico~, the user must either move one up to select the prompt and
+  then type =RET= there with empty contents, or use the command
+  ~vertico-exit-input~ with empty contents. That Vertico command is
+  bound to =M-RET= as of this writing on 2024-06-30 10:37 +0300. ]
 
 ** Rename a file by adding or removing a signature interactively
 :PROPERTIES:
 :CUSTOM_ID: h:b08a350f-b269-47ed-8c2a-b8ecf1b63c7f
 :END:
-
-[ Revised as part of {{{development-version}}} to respect the user
-  option ~denote-rename-confirmations~. ]
 
 #+findex: denote-rename-add-signature
 #+findex: denote-rename-remove-signature
