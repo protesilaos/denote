@@ -3070,7 +3070,15 @@ how a completion User Interface may accept an empty input."
 
 (defun denote-rename-file-signature ()
   "Convenience command to change the signature of a file.
-Like `denote-rename-file', but prompts only for the signature."
+Like `denote-rename-file', but prompts only for the signature.
+
+Add or remove a signature in one go.  Do this by prepopulating the
+minibuffer prompt with the existing signature.  The user can then modify
+it accordingly.  An empty input means to remove the signature
+altogether.
+
+Please check the documentation of `denote-rename-file' with regard to
+how a completion User Interface may accept an empty input."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(signature)))
