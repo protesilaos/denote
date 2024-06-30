@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 2.3.0
-#+macro: release-date 2024-03-24
-#+macro: development-version 3.0.0-dev
+#+macro: stable-version 3.0.0
+#+macro: release-date 2024-06-30
+#+macro: development-version 3.1.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -544,9 +544,6 @@ to the list of commands available at the ~denote-command-prompt~
 :PROPERTIES:
 :CUSTOM_ID: h:bf80f4cd-6f56-4f7c-a991-8573161e4511
 :END:
-
-[ As part of {{{development-version}}}, the user option
-  ~denote-save-buffer-after-creation~ is renamed to ~denote-save-buffers~. ]
 
 #+vindex: denote-save-buffers
 The user option ~denote-save-buffer-after-creation~ controls whether
@@ -1195,8 +1192,6 @@ greater convenience. For example:
 :CUSTOM_ID: h:53db09de-2cec-4670-b163-5cb791f997b4
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+vindex: denote-excluded-files-regexp
 The user option ~denote-excluded-files-regexp~ is a regular expression
 that matches files names which should be excluded from all Denote file
@@ -1316,9 +1311,6 @@ line or switching between then with commands like ~switch-to-buffer~.
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
 :END:
 
-[ Revised as part of {{{development-version}}} to respect the user
-  options ~denote-rename-confirmations~ and ~denote-save-buffers~. ]
-
 #+findex: denote-rename-file
 The ~denote-rename-file~ command renames a file and updates existing
 front matter if appropriate. It is possible to do the same with
@@ -1427,9 +1419,6 @@ one-by-one, use ~denote-dired-rename-files~ ([[#h:1b6b2c78-42f0-45b8-9ef0-6de21a
 :PROPERTIES:
 :CUSTOM_ID: h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7
 :END:
-
-[ As part of {{{development-version}}} the ~denote-rename-no-confirm~
-  is deprecated and superseded by the more flexible ~denote-rename-confirmations~. ]
 
 #+vindex: denote-rename-confirmations
 The user option ~denote-rename-confirmations~ controls what kind of
@@ -1586,7 +1575,6 @@ so by writing keywords to them. Specifically, it does the following:
   saved in one go with the command ~save-some-buffers~ (read its doc
   string). ]
 
-[ The following two commands are part of {{{development-version}}}. ]
 Construct the file name in accordance with the user option
 ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
@@ -1704,7 +1692,7 @@ Concretely, this command can add or remove keywords in one go. It does
 it by prepopulating the minibuffer prompt with the existing keywords.
 Users can then use the ~crm-separator~ (normally a comma), to write
 new keywords or edit what is in the prompt to rewrite them
-accordingly. An empty input means to remove all keywords.
+accordingly. An empty input means to remove all keywords ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 [ NOTE: Please check with your minibuffer user interface how to
   provide an empty input. The Emacs default setup accepts the empty
@@ -1861,8 +1849,6 @@ low-tech invention.
 :PROPERTIES:
 :CUSTOM_ID: h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+vindex: denote-file-name-components-order
 Our standard file-naming scheme prescribes a specific order for the
@@ -2434,7 +2420,7 @@ fit. By contrast, the command ~denote-org-extras-link-to-heading~
 prompts for a file, then a heading, and inserts the link at point.
 
 Just as with files, it is possible to show backlinks for the given
-heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). [ Part of {{{development-version}}}. ]
+heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]).
 
 ** Insert links matching a regexp
 :PROPERTIES:
@@ -2690,11 +2676,6 @@ Backlinks to the current file can also be visited by using the
 minibuffer completion interface with the ~denote-find-backlink~
 command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
-[ As part of {{{development-version}}} the value of the user option
-  ~denote-link-backlinks-display-buffer-action~ is slightly modified to
-  (i) make the buffer dedicated to its window and (ii) try to preserve
-  its size during automatic recombinations of the frame's layout. ]
-
 #+vindex: denote-link-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
 ~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
@@ -2719,8 +2700,6 @@ Reproducing it here for the sake of convenience:
 :PROPERTIES:
 :CUSTOM_ID: h:604bf92a-908a-485c-98b8-37ccae559afd
 :END:
-
-[ This is part of {{{development-version}}}. ]
 
 The optional =denote-org-extras.el= can produce Denote links to
 individual headings ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
@@ -2822,8 +2801,6 @@ that are relevant for this use-case:
 :PROPERTIES:
 :CUSTOM_ID: h:156c5ea3-147b-4f9d-a404-86a00558c60a
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+findex: denote-fontify-links-mode
 Denote links are automatically fontified in Org buffers ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
@@ -4537,9 +4514,7 @@ might change them without further notice.
   regular expression. With optional =OMIT-CURRENT= as a non-nil value,
   do not include the current Denote file in the returned list. With
   optional =TEXT-ONLY= as a non-nil value, limit the results to text
-  files that satisfy ~denote-file-is-note-p~. [ Updated as part of
-  {{{development-version}}} to exclude files that match the
-  ~denote-excluded-files-regexp~ ([[#h:53db09de-2cec-4670-b163-5cb791f997b4][Exclude certain files from file prompts]]). ]
+  files that satisfy ~denote-file-is-note-p~.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -4571,7 +4546,7 @@ might change them without further notice.
   replaced by a single occurence of the character, if necessary
   according to =COMPONENT=. If =COMPONENT= is ~keyword~, remove
   underscores from =STR= as they are used as the keywords separator in
-  file names. [ Revised as part of {{{development-version}}}. ]
+  file names.
 
 #+findex: denote-sluggify-keyword
 + Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
@@ -4707,9 +4682,7 @@ might change them without further notice.
 + Function ~denote-retrieve-title-or-filename~ :: Return appropriate
   title for =FILE= given its =TYPE=. This is a wrapper for
   ~denote-retrieve-front-matter-title-value~ and
-  =denote-retrieve-filename-title=. [ Simplified as part of
-  {{{development-version}}} to only be a wrapper as its doc string
-  suggests. ]
+  =denote-retrieve-filename-title=.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
@@ -4756,7 +4729,6 @@ might change them without further notice.
   ~denote-prompts~. This is best done inside of a ~let~ to create a
   wrapper function around ~denote~, ~denote-rename-file~, and
   generally any command that consults the value of ~denote-prompts~.
-  [ Made public as part of {{{development-version}}}. ]
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
@@ -4773,11 +4745,7 @@ might change them without further notice.
   filter the candidates per the given regular expression. With
   optional =PROMPT-TEXT=, use it instead of the default call to select
   a file. With optional =NO-REQUIRE-MATCH= accept the given input
-  as-is. Return the absolute path to the matching file. [ Revised as
-  part of {{{development-version}}} to include the new
-  =NO-REQUIRE-MATCH= parameter. This is to simplify how we use the
-  various "... or create" commands internally. Also, the prompt
-  respects the user option ~denote-excluded-files-regexp~ ([[#h:53db09de-2cec-4670-b163-5cb791f997b4][Exclude certain files from file prompts]]).]
+  as-is. Return the absolute path to the matching file.
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
@@ -4850,9 +4818,7 @@ might change them without further notice.
 #+findex: denote-rename-file-prompt
 - Function ~denote-rename-file-prompt~ :: Prompt to rename file named
   =OLD-NAME= to =NEW-NAME=. If ~denote-rename-confirmations~ does not
-  contain ~modify-file-name~, return t without prompting. [ Revised as
-  part of {{{development-version}}} to conform with the user option
-  ~denote-rename-confirmations~. ]
+  contain ~modify-file-name~, return t without prompting.
 
 #+findex: denote-rename-file-and-buffer
 + Function ~denote-rename-file-and-buffer~ :: Rename file named
@@ -4865,16 +4831,13 @@ might change them without further notice.
   command and are used to construct new front matter values if
   appropriate. If ~denote-rename-confirmations~ contains
   ~rewrite-front-matter~, prompt to confirm the rewriting of the front
-  matter. Otherwise produce a ~y-or-n-p~ prompt to that effect. [
-  Revised as part of {{{development-version}}} to conform with the
-  user option ~denote-rename-confirmations~. ]
+  matter. Otherwise produce a ~y-or-n-p~ prompt to that effect.
 
 #+findex: denote-add-front-matter-prompt
 + Function ~denote-add-front-matter-prompt~ :: Prompt to add a
   front-matter to =FILE=. Return non-nil if a new front matter should
   be added. If ~denote-rename-confirmations~ does not contain
-  ~add-front-matter~, return t without prompting. [ Part of
-  {{{development-version}}}. ]
+  ~add-front-matter~, return t without prompting.
 
 #+findex: denote-rewrite-keywords
 + Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
@@ -5056,8 +5019,7 @@ might change them without further notice.
 
 #+findex: denote-select-linked-file-prompt
 + Function ~denote-select-linked-file-prompt~ :: Prompt for linked
-  file among =FILES=. [ Made publicly available as part of
-  {{{development-version}}}. ]
+  file among =FILES=.
 
 #+findex: denote-link-return-links
 + Function ~denote-link-return-links~ :: Return list of links in
