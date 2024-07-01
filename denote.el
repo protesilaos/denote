@@ -4404,10 +4404,7 @@ Place the buffer below the current window or wherever the user option
 (defvar denote-link--prepare-links-format "- %s\n"
   "Format specifiers for `denote-link-add-links'.")
 
-;; NOTE 2022-06-16: There is no need to overwhelm the user with options,
-;; though I expect someone to want to change the sort order.
-(defvar denote-link-add-links-sort nil
-  "When t, add REVERSE to `sort-lines' of `denote-link-add-links'.")
+(make-obsolete-variable 'denote-link-add-links-sort nil "3.1.0")
 
 (defun denote-link--prepare-links (files current-file-type id-only &optional no-sort)
   "Prepare links to FILES from CURRENT-FILE-TYPE.
@@ -4415,18 +4412,15 @@ When ID-ONLY is non-nil, use a generic link format.
 
 With optional NO-SORT do not try to sort the inserted lines.
 Otherwise sort lines while accounting for `denote-link-add-links-sort'."
-  (with-temp-buffer
-    (mapc
-     (lambda (file)
-       (let ((description (denote--link-get-description file)))
-         (insert
-          (format
-           denote-link--prepare-links-format
-           (denote-format-link file description current-file-type id-only)))))
-     files)
-    (unless no-sort
-      (sort-lines denote-link-add-links-sort (point-min) (point-max)))
-    (buffer-string)))
+  (let ((links))
+    (dolist (file files)
+      (let* ((description (denote--link-get-description file))
+             (link (denote-format-link file description current-file-type id-only))
+             (link-as-list-item (format denote-link--prepare-links-format link)))
+         (push link-as-list-item links)))
+    (if no-sort
+        (nreverse links)
+      (sort links #'string-collate-lessp))))
 
 (defun denote-link--insert-links (files current-file-type &optional id-only no-sort)
   "Insert at point a typographic list of links matching FILES.
@@ -4440,7 +4434,9 @@ With ID-ONLY as a non-nil value, produce links that consist only
 of the identifier, thus deviating from CURRENT-FILE-TYPE.
 
 Optional NO-SORT is passed to `denote-link--prepare-links'."
-  (insert (denote-link--prepare-links files current-file-type id-only no-sort)))
+  (when-let ((links (denote-link--prepare-links files current-file-type id-only no-sort)))
+    (dolist (link links)
+      (insert link))))
 
 ;;;###autoload
 (defun denote-add-links (regexp &optional id-only)
@@ -4459,8 +4455,7 @@ inserts links with just the identifier."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
-    (if-let ((files (denote-directory-files regexp :omit-current))
-             (beg (point)))
+    (if-let ((files (denote-directory-files regexp :omit-current)))
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
