@@ -61,8 +61,8 @@ as the variable `denote-directory'."
   (let ((default (car denote-silo-extras-directory-history)))
     (completing-read
      (format-prompt "Select a silo" default)
-     denote-silo-extras-directories nil :require-match
-     nil 'denote-silo-extras-directory-history)))
+     (denote--completion-table 'file denote-silo-extras-directories)
+     nil :require-match nil 'denote-silo-extras-directory-history)))
 
 ;;;###autoload
 (defun denote-silo-extras-create-note (silo)
