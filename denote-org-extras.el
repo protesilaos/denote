@@ -58,7 +58,12 @@
           (nreverse candidates)
         (user-error "No outline")))))
 
-(defun denote-org-extras--outline-prompt (&optional file)
+(define-obsolete-function-alias
+  'denote-org-extras--outline-prompt
+  'denote-org-extras-outline-prompt
+  "3.1.0")
+
+(defun denote-org-extras-outline-prompt (&optional file)
   "Prompt for outline among headings retrieved by `denote-org-extras--get-outline'.
 With optional FILE use the outline of it, otherwise use that of
 the current file."
@@ -114,7 +119,7 @@ Also see `denote-org-extras-backlinks-for-heading'."
     (user-error "Links to headings only work between Org files"))
   (when-let ((file (denote-file-prompt ".*\\.org"))
              (file-text (denote--link-get-description file))
-             (heading (denote-org-extras--outline-prompt file))
+             (heading (denote-org-extras-outline-prompt file))
              (line (string-to-number (car (split-string heading "\t"))))
              (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
              (heading-text (car heading-data))
