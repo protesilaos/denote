@@ -67,11 +67,12 @@
   "Prompt for outline among headings retrieved by `denote-org-extras--get-outline'.
 With optional FILE use the outline of it, otherwise use that of
 the current file."
-  (completing-read
-   (format "Select heading inside `%s': "
-           (propertize (file-name-nondirectory file) 'face 'denote-faces-prompt-current-name))
-   (denote--completion-table-no-sort 'imenu (denote-org-extras--get-outline (or file buffer-file-name)))
-   nil :require-match))
+  (let ((current-file (or file buffer-file-name)))
+    (completing-read
+     (format "Select heading inside `%s': "
+             (propertize (file-name-nondirectory current-file) 'face 'denote-faces-prompt-current-name))
+     (denote--completion-table-no-sort 'imenu (denote-org-extras--get-outline current-file))
+     nil :require-match)))
 
 (defun denote-org-extras--get-heading-and-id-from-line (line file)
   "Return heading text and CUSTOM_ID from the given LINE in FILE."
