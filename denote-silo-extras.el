@@ -51,12 +51,17 @@ as the variable `denote-directory'."
   :type '(repeat directory))
 
 (defvar denote-silo-extras-directory-history nil
-  "Minibuffer history for `denote-silo-extras--directory-prompt'.")
+  "Minibuffer history for `denote-silo-extras-directory-prompt'.")
 
 (defalias 'denote-silo-extras--directory-history 'denote-silo-extras-directory-history
   "Compatibility alias for `denote-silo-extras-directory-history'.")
 
-(defun denote-silo-extras--directory-prompt ()
+(define-obsolete-function-alias
+  'denote-silo-extras--directory-prompt
+  'denote-silo-extras-directory-prompt
+  "3.1.0")
+
+(defun denote-silo-extras-directory-prompt ()
   "Prompt for directory among `denote-silo-extras-directories'."
   (let ((default (car denote-silo-extras-directory-history)))
     (completing-read
@@ -70,7 +75,7 @@ as the variable `denote-directory'."
 SILO is a file path from `denote-silo-extras-directories'.
 
 When called from Lisp, SILO is a file system path to a directory."
-  (interactive (list (denote-silo-extras--directory-prompt)))
+  (interactive (list (denote-silo-extras-directory-prompt)))
   (let ((denote-directory silo))
     (call-interactively #'denote)))
 
@@ -80,7 +85,7 @@ When called from Lisp, SILO is a file system path to a directory."
 SILO is a file path from `denote-silo-extras-directories'.
 
 When called from Lisp, SILO is a file system path to a directory."
-  (interactive (list (denote-silo-extras--directory-prompt)))
+  (interactive (list (denote-silo-extras-directory-prompt)))
   (let ((denote-directory silo))
     (call-interactively #'denote-open-or-create)))
 
@@ -93,7 +98,7 @@ COMMAND is one among `denote-silo-extras-commands'.
 When called from Lisp, SILO is a file system path to a directory."
   (interactive
    (list
-    (denote-silo-extras--directory-prompt)
+    (denote-silo-extras-directory-prompt)
     (denote-command-prompt)))
   (let ((denote-directory silo))
     (call-interactively command)))
