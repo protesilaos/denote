@@ -3819,10 +3819,37 @@ mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
 to manage bibliographic notes and access those notes with ease.  The
 package's documentation covers the details: <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>.
 
+** Use the ~consult-notes~ package for enhanced minibuffer interactions
+:PROPERTIES:
+:CUSTOM_ID: h:113a13e1-35da-46f1-9414-81e9be2facc1
+:END:
+
+The ~consult-denote~ package by me (Protesilaos) integrates Denote
+with Daniel Mendler's ~consult~ package: <https://github.com/protesilaos/consult-denote>.
+
+The idea is to preserve the familiar patterns of interaction with the
+various Denote commands but add to them an extra layer of
+functionality, such as the preview mechanism that Consult provides
+(e.g. preview the file you are about to link to).
+
+Additionally, ~consult-denote~ defines new "sources" for the
+~consult-buffer~ command. This command provides a single point of
+entry for buffers, recently opened files, and bookmarks. With
+~consult-denote~, it has a dedicated place for Denote-specific
+buffers, silos, and more (all of which are configurable).
+
+Unlike the ~consult-notes~ package by Colin McLear, ~consult-denote~
+uses the same presentation of data in the minibuffer to stay in sync
+with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
+It also only works with Denote.
+
 ** Use the ~consult-notes~ package
 :PROPERTIES:
 :CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
 :END:
+
+[ Also check the ~consult-denote~ package by me (Protesilaos):
+  [[#h:113a13e1-35da-46f1-9414-81e9be2facc1][Use the ~consult-notes~ package for enhanced minibuffer interactions]]. ]
 
 If you are using Daniel Mendler's ~consult~ (which is a brilliant
 package), you will most probably like its ~consult-notes~ extension,
