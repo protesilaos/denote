@@ -5,7 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
-;; Version: 3.0.4
+;; Version: 3.0.5
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -3236,7 +3236,7 @@ Construct the file name in accordance with the user option
   (if-let ((file-type (denote-filetype-heuristics file))
            (front-matter-title (denote-retrieve-front-matter-title-value file file-type))
            (id (denote-retrieve-filename-identifier file))
-           (denote-rename-confirmations '(modify-file-name)))
+           (denote-rename-confirmations (delete 'modify-file-name denote-rename-confirmations)))
       (pcase-let* ((denote-prompts '())
                    (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
                    (`(_title _keywords ,signature ,date)
