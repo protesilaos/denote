@@ -3219,8 +3219,9 @@ edited in the front matter.  Denote considers the file name to be
 the source of truth in this case to avoid potential breakage with
 typos and the like.
 
-The values of `denote-rename-confirmations' and
-`denote-save-buffers' are respected.
+The values of `denote-rename-confirmations' and `denote-save-buffers'
+are respected.  Though there is no prompt to confirm the rewrite of the
+front matter, since this is already done by the user.
 
 The identifier of the file, if any, is never modified even if it
 is edited in the front matter: Denote considers the file name to
@@ -3234,7 +3235,8 @@ Construct the file name in accordance with the user option
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
            (front-matter-title (denote-retrieve-front-matter-title-value file file-type))
-           (id (denote-retrieve-filename-identifier file)))
+           (id (denote-retrieve-filename-identifier file))
+           (denote-rename-confirmations '(modify-file-name)))
       (pcase-let* ((denote-prompts '())
                    (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
                    (`(_title _keywords ,signature ,date)
