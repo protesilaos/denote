@@ -1492,21 +1492,9 @@ the file name to:
 
 : 20220805T131044--my-modified-sample-note-file__testing_denote_emacs.org
 
-The renaming is subject to a "yes or no" prompt that shows the old and
-new names, just so the user is certain about the change.
-
-If called interactively with a prefix argument (=C-u= by default) or
-from Lisp with a non-nil =NO-CONFIRM= argument, this "yes or no"
-prompt is skipped and the renaming is done outright.
-
-If called interactively with a double prefix argument (=C-u C-u= by
-default) or from Lisp with a non-nil =SAVE-BUFFER= argument, the
-buffer is saved after the front matter is updated and the file is
-renamed.
-
-If the user option ~denote-rename-no-confirm~ is non-nil, it is
-interpreted the same way as a combination of =NO-CONFIRM= and
-=SAVE-BUFFER= ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-no-confirm~ option]]).
+By default, the renaming is subject to a "yes or no" prompt that shows
+the old and new names, just so the user is certain about the change.
+Though this can be modified ([[#h:a2ae9090-c49e-4b32-bcf5-eb8944241fd7][The ~denote-rename-confirmations~ option]]).
 
 The identifier of the file, if any, is never modified even if it is
 edited in the front matter: Denote considers the file name to be the
