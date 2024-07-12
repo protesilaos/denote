@@ -2268,7 +2268,7 @@ have our file-naming scheme. Files need to be inside the
 ~denote-directory~ or one of its subdirectories. No other file is
 recognised.
 
-The following sections delve into the details.
+The following sections delve into the details ([[#h:4f354db1-aa78-47fd-ac60-c3d1e0f0b0a4][Why are some Org links opening outside Emacs?]]).
 
 ** Adding a single link
 :PROPERTIES:
@@ -5643,6 +5643,43 @@ In short: let Denote (or equivalent) create notes and link between them,
 the file manager organise and provide access to files, search programs
 deal with searching and narrowing, and version control software handle
 the tracking of changes.
+
+** Why are some Org links opening outside Emacs?
+:PROPERTIES:
+:CUSTOM_ID: h:4f354db1-aa78-47fd-ac60-c3d1e0f0b0a4
+:END:
+
+Org has its own mechanism to determine how best to open a link. This
+affects the =file:= link type, but also the =denote:= one (which is
+designed to be as close to =file:= as possible).
+
+When following a link, Org usually displays the data in an Emacs
+buffer, though it might launch an external application instead. The
+idea is to use a specialised program when that is relevant, such as to
+display a video. Though there can be scenaria the user does not like,
+such as when Org decides to load =.md= or =.html= files with an
+external app. To compound the problem, users can name any file type
+using the Denote file-naming scheme, including images, PDFs, videos,
+and more ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
+
+To instruct Org to stay in Emacs for such cases, the user needs to
+modify the variable ~org-file-apps~, which is not specific to Denote.
+As one use-case, ~org-file-apps~ associates a regular expression to
+match file names with a method on how to display them (do =M-x
+describe-variable= and then search for ~org-file-apps~ to read its
+documentation). Thus, the user can use something like the following
+in their Org or Denote configuration:
+
+#+begin_src emacs-lisp
+;; Tell Org to use Emacs when opening files that end in .md
+(add-to-list 'org-file-apps '("\\.md\\'" . emacs))
+
+;; Do the same for .html
+(add-to-list 'org-file-apps '("\\.html\\'" . emacs))
+#+end_src
+
+Each of these adds a new entry to the existing value of that user
+option. Replace =md= or =html= with the desired file type extension.
 
 ** Speed up backlinks' buffer creation?
 :PROPERTIES:

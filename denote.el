@@ -4653,8 +4653,6 @@ Read Info node `(org) Query Options'.
 
 Uses the function `denote-directory' to establish the path to the
 file."
-  ;; FIXME 2024-06-20: Maybe use `find-file'? Why would Org open an
-  ;; HTML file in the browser instead of Emacs?
   (org-link-open-as-file
    (denote-link--ol-resolve-link-to-target link)
    nil))
