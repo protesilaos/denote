@@ -164,10 +164,13 @@ is internally processed by `denote-parse-date'."
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
 DATE has the same format as that returned by `denote-parse-date'."
-  (denote-directory-files
-   (format "%sT[0-9]\\{6\\}.*_%s"
-           (format-time-string "%Y%m%d" date)
-           denote-journal-extras-keyword)))
+  (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date)))
+         (files (denote-directory-files identifier))
+         (keyword (concat "_" (regexp-quote denote-journal-extras-keyword))))
+    (seq-filter
+     (lambda (file)
+       (string-match-p keyword file))
+     files)))
 
 ;;;###autoload
 (defun denote-journal-extras-new-or-existing-entry (&optional date)
