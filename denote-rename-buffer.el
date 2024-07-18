@@ -38,7 +38,7 @@
   :link '(info-link "(denote) Top")
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-(defcustom denote-buffer-has-backlinks-string "→ "
+(defcustom denote-buffer-has-backlinks-string "-> "
   "A string used to indicate that a buffer has backlinks pointing to it."
   :type 'string
   :package-version '(denote . "3.1.0")
