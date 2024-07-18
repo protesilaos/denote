@@ -3009,6 +3009,7 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
+- The =%b= is an indicator of whether or not the file has backlinks pointing to it.
 - The =%%= is a literal percent sign.
 
 In addition, the following flags are available for each of the specifiers:
@@ -3029,8 +3030,11 @@ include some text that makes Denote buffers stand out, such as
 a =[D]= prefix.  Examples:
 
 #+begin_src emacs-lisp
-;; Use the title (default)
-(setq denote-rename-buffer-format "%t")
+;; Use the title prefixed with the backlink indicator (default)
+(setq denote-rename-buffer-format "%b%t")
+
+;; Customize what the backlink indicator looks like
+(setq denote-buffer-has-backlinks-string "!! ")
 
 ;; Use the title and keywords with some emoji in between
 (setq denote-rename-buffer-format "%t 🤨 %k")
