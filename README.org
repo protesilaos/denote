@@ -3004,12 +3004,15 @@ buffer-to-be-renamed.
 The value of this user option is a string. The following specifiers
 are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]):
 
+#+vindex: denote-buffer-has-backlinks-string
 - The =%t= is the Denote =TITLE= of the file.
 - The =%i= is the Denote =IDENTIFIER= of the file.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
-- The =%b= is an indicator of whether or not the file has backlinks pointing to it.
+- The =%b= is an indicator of whether or not the file has backlinks
+  pointing to it. The indicator string is defined in the user option
+  ~denote-buffer-has-backlinks-string~ [ Part of {{{development-version}}} ].
 - The =%%= is a literal percent sign.
 
 In addition, the following flags are available for each of the specifiers:
