@@ -4016,7 +4016,7 @@ Also see `denote-link-return-links'."
     (delete current-file (denote--retrieve-files-in-xrefs id))))
 
 (defun denote--file-has-backlinks-p (file)
-  "Return whether or not there exists a file with a link to IDENTIFIER."
+  "Return non-nil if FILE has backlinks."
   (not (zerop (length (denote-link-return-backlinks file)))))
 
 ;;;###autoload
