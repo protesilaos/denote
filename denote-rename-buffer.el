@@ -98,14 +98,16 @@ buffer will be used, if available."
   "Parse the BUFFER through the `denote-rename-buffer-format'."
   (when-let ((file (buffer-file-name buffer))
              (type (denote-filetype-heuristics file)))
-    (let ((has-backlinks (not (zerop (length (denote-link-return-backlinks file))))))
+    (let ((should-show-backlink-indicator (and ; only do search if format contains "%b"
+                                           (string-match-p "%b" denote-rename-buffer-format)
+                                           (denote--file-has-backlinks-p file))))
       (string-trim
        (format-spec denote-rename-buffer-format
                     (list (cons ?t (cond
                                     ((denote-retrieve-front-matter-title-value file type))
                                     ((denote-retrieve-filename-title file))
                                     (t  "")))
-                          (cons ?b (if has-backlinks denote-buffer-has-backlinks-string ""))
+                          (cons ?b (if should-show-backlink-indicator denote-buffer-has-backlinks-string ""))
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))

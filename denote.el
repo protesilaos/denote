@@ -4015,6 +4015,10 @@ Also see `denote-link-return-links'."
              (id (denote-retrieve-filename-identifier-with-error current-file)))
     (delete current-file (denote--retrieve-files-in-xrefs id))))
 
+(defun denote--file-has-backlinks-p (file)
+  "Return whether or not there exists a file with a link to IDENTIFIER."
+  (not (zerop (length (denote-link-return-backlinks file)))))
+
 ;;;###autoload
 (defun denote-find-backlink ()
   "Use minibuffer completion to visit backlink to current file.
