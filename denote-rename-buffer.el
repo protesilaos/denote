@@ -41,7 +41,7 @@
 (defcustom denote-buffer-has-backlinks-string "→ "
   "A string used to indicate that a buffer has backlinks pointing to it."
   :type 'string
-  :package-version '(denote . "2.1.0")
+  :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
 (defcustom denote-rename-buffer-format "%b%t"
@@ -74,7 +74,7 @@ Any other string it taken as-is.  Users may want, for example, to
 include some text that makes Denote buffers stand out, such as
 a [D] prefix."
   :type 'string
-  :package-version '(denote . "2.1.0")
+  :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
 (defcustom denote-rename-buffer-function #'denote-rename-buffer
