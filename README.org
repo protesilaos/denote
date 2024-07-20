@@ -333,19 +333,29 @@ minibuffer completion, due to the specifics of their data.
 :CUSTOM_ID: h:f635a490-d29e-4608-9372-7bd13b34d56c
 :END:
 
+[ Updated as part of {{{development-version}}} to accept a function
+  that returns a string. This is in addition to accepting a string. ]
+
 #+vindex: denote-templates
 The user option ~denote-templates~ is an alist of content templates for
 new notes.  A template is arbitrary text that Denote will add to a newly
 created note right below the front matter.
 
-Templates are expressed as a =(KEY . STRING)= association.
+Templates are expressed as a =(KEY . VALUE)= association.
 
 - The =KEY= is the name which identifies the template.  It is an
   arbitrary symbol, such as =report=, =memo=, =statement=.
 
-- The =STRING= is ordinary text that Denote will insert as-is.  It can
-  contain newline characters to add spacing.  Below we show some
-  concrete examples.
+- The =VALUE= is either a string or the symbol of a function.
+
+  - If it is a string, it is ordinary text that Denote will insert
+    as-is.  It can contain newline characters to add spacing.  The
+    manual of Denote contains examples on how to use the ~concat~
+    function, beside writing a generic string.
+
+  - If it is a function, it is called without arguments and is expected
+    to return a string.  Denote will call the function and insert the
+    result in the buffer.
 
 The user can choose a template either by invoking the command
 ~denote-template~ or by changing the user option ~denote-prompts~ to
@@ -388,6 +398,23 @@ backtick to quote the alist (NOT the straight quote) and then prepend a
 comma to the expression that should be evaluated.  The ~concat~ form
 here is not sensitive to indentation, so it is easier to adjust for
 legibility.
+
+For when the =VALUE= is a function, we have this:
+
+#+begin_src emacs-lisp
+(setq denote-templates
+      `((report . "* Some heading\n\n* Another heading")
+        (blog . my-denote-template-function-for-blog) ; a function to return a string
+        (memo . ,(concat "* Some heading"
+                         "\n\n"
+                         "* Another heading"
+                         "\n\n"))))
+#+end_src
+
+[ This is part of {{{development-version}}}. ]
+
+In this example, ~my-denote-template-function-for-blog~ is a function
+that returns a string. Denote will take care to insert it in the buffer.
 
 DEV NOTE: We do not provide more examples at this point, though feel
 welcome to ask for help if the information provided herein is not
@@ -5784,7 +5811,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Benjamin, Tomasz Hołubowicz, Vedang Manerikar, Wesley Harvey, Zhenxu
   Xu, arsaber101, ezchi, jarofromel, leinfink (Henrik), l-o-l-h
   (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
-  relict007.
+  relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,

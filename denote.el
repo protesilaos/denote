@@ -504,18 +504,23 @@ Templates are expressed as a (KEY . VALUE) association.
 - The KEY is the name which identifies the template.  It is an
   arbitrary symbol, such as `report', `memo', `statement'.
 
-- The VALUE is ordinary text that Denote will insert as-is. It can
-  contain newline characters to add spacing. The manual of Denote
-  contains examples on how to use the `concat' function, beside writing
-  a generic string. It can also be a function of no arguments that
-  returns a string that Denote will call and insert the result from.
+- The VALUE is either a string or the symbol of a function.
+
+  - If it is a string, it is ordinary text that Denote will insert
+    as-is.  It can contain newline characters to add spacing.  The
+    manual of Denote contains examples on how to use the `concat'
+    function, beside writing a generic string.
+
+  - If it is a function, it is called without arguments and is expected
+    to return a string.  Denote will call the function and insert the
+    result in the buffer.
 
 The user can choose a template either by invoking the command
 `denote-template' or by changing the user option `denote-prompts'
 to always prompt for a template when calling the `denote'
 command."
   :type '(alist :key-type symbol :value-type (choice string function))
-  :package-version '(denote . "0.5.0")
+  :package-version '(denote . "3.1.0")
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
