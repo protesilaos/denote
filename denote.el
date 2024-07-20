@@ -499,21 +499,22 @@ it, use the command `org-insert-link'.  Note that `org-capture' uses
 A template is arbitrary text that Denote will add to a newly
 created note right below the front matter.
 
-Templates are expressed as a (KEY . STRING) association.
+Templates are expressed as a (KEY . VALUE) association.
 
 - The KEY is the name which identifies the template.  It is an
   arbitrary symbol, such as `report', `memo', `statement'.
 
-- The STRING is ordinary text that Denote will insert as-is.  It
-  can contain newline characters to add spacing.  The manual of
-  Denote contains examples on how to use the `concat' function,
-  beside writing a generic string.
+- The VALUE is ordinary text that Denote will insert as-is. It can
+  contain newline characters to add spacing. The manual of Denote
+  contains examples on how to use the `concat' function, beside writing
+  a generic string. It can also be a function of no arguments that
+  returns a string that Denote will call and insert the result from.
 
 The user can choose a template either by invoking the command
 `denote-template' or by changing the user option `denote-prompts'
 to always prompt for a template when calling the `denote'
 command."
-  :type '(alist :key-type symbol :value-type string)
+  :type '(alist :key-type symbol :value-type (choice string function))
   :package-version '(denote . "0.5.0")
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
@@ -1951,7 +1952,10 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
       (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
       (insert header)
-      (insert template))
+      (insert (cond
+               ((stringp template) template)
+               ((functionp template) (funcall template))
+               (t (user-error "Invalid template")))))
     path))
 
 (defun denote--dir-in-denote-directory-p (directory)
@@ -2263,7 +2267,7 @@ instead of that of the parameter."
          (directory (if (denote--dir-in-denote-directory-p directory)
                         (file-name-as-directory directory)
                       (denote-directory)))
-         (template (if (stringp template)
+         (template (if (or (stringp template) (functionp template))
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
