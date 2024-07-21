@@ -4815,13 +4815,16 @@ Consult the manual for template samples."
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (front-matter (denote--format-front-matter
-                              title (denote--date nil 'org) keywords id 'org)))
+                              title (denote--date nil 'org) keywords id 'org))
+               (template-string (cond ((stringp template) template)
+                                      ((functionp template) (funcall template))
+                                      (t (user-error "Invalid template")))))
     (setq denote-last-path
           (denote-format-file-name directory id keywords title ".org" signature))
     (when (file-regular-p denote-last-path)
       (user-error "A file named `%s' already exists" denote-last-path))
     (denote--keywords-add-to-history keywords)
-    (concat front-matter template denote-org-capture-specifiers)))
+    (concat front-matter template-string denote-org-capture-specifiers)))
 
 ;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
 ;; by passing a single PROMPTS that is the same value as `denote-prompts'?
