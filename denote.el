@@ -4383,7 +4383,7 @@ concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file))
-                      (denote-link--prepare-backlinks query)))))
+                      (denote-link--prepare-backlinks query files-matching-regexp buffer-name display-buffer-action)))))
     (denote-link--display-buffer buffer-name display-buffer-action)))
 
 (defun denote--backlinks-get-buffer-name (file id)
