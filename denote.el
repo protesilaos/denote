@@ -4334,8 +4334,8 @@ matching identifiers."
   "Keymap for `denote-backlinks-mode'.")
 
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
-  :interactive nil
   "Major mode for backlinks buffers."
+  :interactive nil
   (unless denote-backlinks-show-context
     (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
 
