@@ -4371,7 +4371,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (if (or show-context denote-backlinks-show-context)
+      (if denote-backlinks-show-context
           (xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
                 (insert (car x))
