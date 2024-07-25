@@ -559,7 +559,7 @@ omitted (or be empty).
 Sample configuration to display the buffer in a side window on
 the left of the Emacs frame:
 
-    (setq denote-link-backlinks-display-buffer-action
+    (setq denote-backlinks-display-buffer-action
           (quote ((display-buffer-reuse-window display-buffer-in-side-window)
                   (side . left)
                   (slot . 99)
@@ -4274,10 +4274,10 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
 (defun denote-link--display-buffer (buf &optional action)
   "Run `display-buffer' on BUF using optional ACTION alist.
 ACTION is an alist of the form described in the user option
-`denote-link-backlinks-display-buffer-action'."
+`denote-backlinks-display-buffer-action'."
   (display-buffer
    buf
-   `(,@(or action denote-link-backlinks-display-buffer-action))))
+   `(,@(or action denote-backlinks-display-buffer-action))))
 
 (define-obsolete-function-alias
   'denote-backlinks-next
@@ -4344,7 +4344,7 @@ With optional FILES-MATCHING-REGEXP, limit the list of files
 accordingly (per `denote-directory-files').
 
 Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
-concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
+concomitant alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          ;; We retrieve results in absolute form and change the
@@ -4402,7 +4402,7 @@ context of each link if the user option `denote-backlinks-show-context'
 is non-nil.
 
 Place the buffer below the current window or wherever the user option
-`denote-link-backlinks-display-buffer-action' specifies."
+`denote-backlinks-display-buffer-action' specifies."
   (interactive)
   (if-let ((file buffer-file-name))
       (when-let ((id (denote-retrieve-filename-identifier-with-error file)))
