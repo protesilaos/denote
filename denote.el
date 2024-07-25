@@ -4393,9 +4393,11 @@ non-nil value."
           xref-alist)
     (with-current-buffer (get-buffer-create backlinks-buffer)
       (erase-buffer)
+      (denote-backlinks-mode)
+      ;; Set the `denote-directory' after enabling the major mode,
+      ;; otherwise its value gets overwritten.
       (setq-local denote-directory dir)
       (setq overlay-arrow-position nil)
-      (denote-backlinks-mode)
       (goto-char (point-min))
       (if (or show-context denote-backlinks-show-context)
           (xref--insert-xrefs xref-alist)
