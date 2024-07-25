@@ -2691,17 +2691,17 @@ Backlinks to the current file can also be visited by using the
 minibuffer completion interface with the ~denote-find-backlink~
 command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
-#+vindex: denote-link-backlinks-display-buffer-action
+#+vindex: denote-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
-~denote-link-backlinks-display-buffer-action~.  Due to the nature of the
+~denote-backlinks-display-buffer-action~. Due to the nature of the
 underlying ~display-buffer~ mechanism, this inevitably is a relatively
-advanced feature.  By default, the backlinks' buffer is displayed below
-the current window.  The doc string of our user option includes a sample
-configuration that places the buffer in a left side window instead.
-Reproducing it here for the sake of convenience:
+advanced feature. By default, the backlinks' buffer is displayed below
+the current window. The doc string of our user option includes a
+sample configuration that places the buffer in a left side window
+instead. Reproducing it here for the sake of convenience:
 
 #+begin_src emacs-lisp
-(setq denote-link-backlinks-display-buffer-action
+(setq denote-backlinks-display-buffer-action
       '((display-buffer-reuse-window
          display-buffer-in-side-window)
         (side . left)
@@ -2710,6 +2710,10 @@ Reproducing it here for the sake of convenience:
         (dedicated . t)
         (preserve-size . (t . t))))
 #+end_src
+
+[ As part of {{{development-version}}}, the user option
+  ~denote-link-backlinks-display-buffer-action~ is now called
+  ~denote-backlinks-display-buffer-action~. ]
 
 *** Backlinks for Org headings
 :PROPERTIES:
@@ -4339,7 +4343,7 @@ Everything is in place to set up the package.
 ;; file names.  This provides a more informative view.
 (setq denote-backlinks-show-context t)
 
-;; Also see `denote-link-backlinks-display-buffer-action' which is a bit
+;; Also see `denote-backlinks-display-buffer-action' which is a bit
 ;; advanced.
 
 ;; If you use Markdown or plain text files (Org renders links as buttons

@@ -539,7 +539,12 @@ current note."
 
 (make-obsolete-variable 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
 
-(defcustom denote-link-backlinks-display-buffer-action
+(define-obsolete-variable-alias
+  'denote-link-backlinks-display-buffer-action
+  'denote-backlinks-display-buffer-action
+  "3.1.0")
+
+(defcustom denote-backlinks-display-buffer-action
   '((display-buffer-reuse-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer)
     (dedicated . t)
@@ -567,7 +572,7 @@ and/or the documentation string of `display-buffer'."
   :type '(cons (choice (function :tag "Display Function")
                        (repeat :tag "Display Functions" function))
                alist)
-  :package-version '(denote . "3.0.0")
+  :package-version '(denote . "3.1.0")
   :group 'denote)
 
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
