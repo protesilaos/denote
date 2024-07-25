@@ -4333,9 +4333,7 @@ matching identifiers."
 
 (define-derived-mode denote-backlinks-mode xref--xref-buffer-mode "Backlinks"
   "Major mode for backlinks buffers."
-  :interactive nil
-  (unless denote-backlinks-show-context
-    (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t)))
+  :interactive nil)
 
 (defun denote-link--prepare-backlinks (query &optional files-matching-regexp buffer-name display-buffer-action)
   "Create backlinks' buffer called BUFFER-NAME for the current file matching QUERY.
@@ -4377,7 +4375,8 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
                 (insert (car x))
                 (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
                 (newline))
-              xref-alist))
+              xref-alist)
+        (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
       (goto-char (point-min))
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
