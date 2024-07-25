@@ -4339,12 +4339,17 @@ option.
 
 When called inside of a backlinks buffer, also revert the buffer."
   (interactive)
-  (if denote-backlinks-show-context
-      (setq denote-backlinks-show-context nil)
-    (setq denote-backlinks-show-context t))
-  (when (derived-mode-p 'denote-backlinks-mode)
-    (revert-buffer)
-    (fit-window-to-buffer)))
+  (let ((state))
+    (if denote-backlinks-show-context
+        (setq denote-backlinks-show-context nil
+              state "compact")
+      (setq denote-backlinks-show-context t
+            state "detailed"))
+    (message "Toggled the %s view for the backlinks"
+             (propertize state 'face 'error))
+    (when (derived-mode-p 'denote-backlinks-mode)
+      (revert-buffer)
+      (fit-window-to-buffer))))
 
 (defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
