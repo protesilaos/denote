@@ -4343,7 +4343,8 @@ When called inside of a backlinks buffer, also revert the buffer."
       (setq denote-backlinks-show-context nil)
     (setq denote-backlinks-show-context t))
   (when (derived-mode-p 'denote-backlinks-mode)
-    (revert-buffer)))
+    (revert-buffer)
+    (fit-window-to-buffer)))
 
 (defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
