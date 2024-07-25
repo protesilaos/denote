@@ -1824,9 +1824,8 @@ This is a wrapper for `denote-retrieve-front-matter-title-value' and
   "Return list of xrefs for IDENTIFIER with their respective location.
 Limit the search to text files, per `denote-directory-files' with
 non-nil `text-only' parameter."
-  (mapcar #'xref-match-item-location
-          (xref-matches-in-files identifier
-                                 (denote-directory-files nil nil :text-only))))
+  (when-let ((files (denote-directory-files nil nil :text-only)))
+    (mapcar #'xref-match-item-location (xref-matches-in-files identifier files))))
 
 (defun denote--retrieve-group-in-xrefs (identifier)
   "Access location of xrefs for IDENTIFIER and group them per file.
