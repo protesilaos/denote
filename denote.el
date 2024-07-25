@@ -4392,12 +4392,8 @@ non-nil value."
             (setf (car x) (denote-get-file-name-relative-to-denote-directory (car x))))
           xref-alist)
     (with-current-buffer (get-buffer-create backlinks-buffer)
-      ;; FIXME 2024-07-25: This does not do what we expect inside of a
-      ;; silo.  We should be able to (i) have the `denote-directory'
-      ;; to its directory-local value and (ii) revert the buffer while
-      ;; preserving this state.
-      (setq-local default-directory dir)
       (erase-buffer)
+      (setq-local denote-directory dir)
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
