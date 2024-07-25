@@ -4347,6 +4347,7 @@ Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
 concomitant alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
+         (backlinks-buffer (or buffer-name (format "Backlinks for '%s'" query)))
          ;; We retrieve results in absolute form and change the
          ;; absolute path to a relative path a few lines below. We
          ;; could add a suitable function and the results would be
@@ -4364,13 +4365,13 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
     (mapc (lambda (x)
             (setf (car x) (denote-get-file-name-relative-to-denote-directory (car x))))
           xref-alist)
-    (with-current-buffer (get-buffer-create buffer-name)
+    (with-current-buffer (get-buffer-create backlinks-buffer)
       (setq-local default-directory dir)
       (erase-buffer)
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (if denote-backlinks-show-context
+      (if (or show-context denote-backlinks-show-context)
           (xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
                 (insert (car x))
@@ -4382,7 +4383,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file))
                       (denote-link--prepare-backlinks query files-matching-regexp buffer-name display-buffer-action)))))
-    (denote-link--display-buffer buffer-name display-buffer-action)))
+    (denote-link--display-buffer backlinks-buffer display-buffer-action)))
 
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
