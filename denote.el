@@ -3743,10 +3743,6 @@ also enable it in all subdirectories."
 
 ;;;; The linking facility
 
-(defgroup denote-link ()
-  "Link facility for Denote."
-  :group 'denote)
-
 ;;;;; User options
 
 (defcustom denote-link-backlinks-display-buffer-action
