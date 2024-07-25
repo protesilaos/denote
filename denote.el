@@ -539,6 +539,37 @@ current note."
 
 (make-obsolete-variable 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
 
+(defcustom denote-link-backlinks-display-buffer-action
+  '((display-buffer-reuse-window display-buffer-below-selected)
+    (window-height . fit-window-to-buffer)
+    (dedicated . t)
+    (preserve-size . (t . t)))
+  "The action used to display the current file's backlinks buffer.
+
+The value has the form (FUNCTION . ALIST), where FUNCTION is
+either an \"action function\", a list thereof, or possibly an
+empty list.  ALIST is a list of \"action alist\" which may be
+omitted (or be empty).
+
+Sample configuration to display the buffer in a side window on
+the left of the Emacs frame:
+
+    (setq denote-link-backlinks-display-buffer-action
+          (quote ((display-buffer-reuse-window display-buffer-in-side-window)
+                  (side . left)
+                  (slot . 99)
+                  (window-width . 0.3)
+                  (dedicated . t)
+                  (preserve-size . (t . t)))))
+
+See Info node `(elisp) Displaying Buffers' for more details
+and/or the documentation string of `display-buffer'."
+  :type '(cons (choice (function :tag "Display Function")
+                       (repeat :tag "Display Functions" function))
+               alist)
+  :package-version '(denote . "3.0.0")
+  :group 'denote)
+
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
 
@@ -3742,39 +3773,6 @@ also enable it in all subdirectories."
     (denote-dired-mode 1)))
 
 ;;;; The linking facility
-
-;;;;; User options
-
-(defcustom denote-link-backlinks-display-buffer-action
-  '((display-buffer-reuse-window display-buffer-below-selected)
-    (window-height . fit-window-to-buffer)
-    (dedicated . t)
-    (preserve-size . (t . t)))
-  "The action used to display the current file's backlinks buffer.
-
-The value has the form (FUNCTION . ALIST), where FUNCTION is
-either an \"action function\", a list thereof, or possibly an
-empty list.  ALIST is a list of \"action alist\" which may be
-omitted (or be empty).
-
-Sample configuration to display the buffer in a side window on
-the left of the Emacs frame:
-
-    (setq denote-link-backlinks-display-buffer-action
-          (quote ((display-buffer-reuse-window display-buffer-in-side-window)
-                  (side . left)
-                  (slot . 99)
-                  (window-width . 0.3)
-                  (dedicated . t)
-                  (preserve-size . (t . t)))))
-
-See Info node `(elisp) Displaying Buffers' for more details
-and/or the documentation string of `display-buffer'."
-  :type '(cons (choice (function :tag "Display Function")
-                       (repeat :tag "Display Functions" function))
-               alist)
-  :package-version '(denote . "3.0.0")
-  :group 'denote-link)
 
 ;;;;; Link to note
 
