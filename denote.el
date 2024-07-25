@@ -4345,7 +4345,7 @@ When called inside of a backlinks buffer, also revert the buffer."
               state "compact")
       (setq denote-backlinks-show-context t
             state "detailed"))
-    (message "Toggled the %s view for the backlinks"
+    (message "Toggled the %s view for the backlinks buffer"
              (propertize state 'face 'error))
     (when (derived-mode-p 'denote-backlinks-mode)
       (revert-buffer)
