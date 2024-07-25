@@ -4323,10 +4323,34 @@ matching identifiers."
       (xref-prev-line)
     (backward-button n)))
 
+;; NOTE 2024-07-25: This can be a minor mode, though I do not like
+;; that global minor modes have to be autoloaded.  We do not need to
+;; autoload a secondary piece of functionality.
+;;
+;; NOTE 2024-07-25: We do not need the user option if we turn this
+;; into a minor mode.
+;;
+;; NOTE 2024-07-25: I would prefer to have a buffer-local toggle which
+;; does not affect the global user preference.  The trick is to make
+;; this work with `revert-buffer'.
+(defun denote-backlinks-toggle-context ()
+  "Show or hide the context of links in backlinks buffers.
+This is the same as toggling the `denote-backlinks-show-context' user
+option.
+
+When called inside of a backlinks buffer, also revert the buffer."
+  (interactive)
+  (if denote-backlinks-show-context
+      (setq denote-backlinks-show-context nil)
+    (setq denote-backlinks-show-context t))
+  (when (derived-mode-p 'denote-backlinks-mode)
+    (revert-buffer)))
+
 (defvar denote-backlinks-mode-map
   (let ((m (make-sparse-keymap)))
     (define-key m "n" #'denote-backlinks-mode-next)
     (define-key m "p" #'denote-backlinks-mode-previous)
+    (define-key m "c" #'denote-backlinks-toggle-context)
     (define-key m "g" #'revert-buffer)
     m)
   "Keymap for `denote-backlinks-mode'.")
