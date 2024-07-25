@@ -4335,14 +4335,18 @@ matching identifiers."
   "Major mode for backlinks buffers."
   :interactive nil)
 
-(defun denote-link--prepare-backlinks (query &optional files-matching-regexp buffer-name display-buffer-action)
+(defun denote-link--prepare-backlinks (query &optional files-matching-regexp buffer-name display-buffer-action show-context)
   "Create backlinks' buffer called BUFFER-NAME for the current file matching QUERY.
 
 With optional FILES-MATCHING-REGEXP, limit the list of files
 accordingly (per `denote-directory-files').
 
 Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
-concomitant alist, such as `denote-backlinks-display-buffer-action'."
+concomitant alist, such as `denote-backlinks-display-buffer-action'.
+
+Optional SHOW-CONTEXT displays the lines where matches for QUERY
+occur.  This is the same as setting `denote-backlinks-show-context' to a
+non-nil value."
   (let* ((inhibit-read-only t)
          (file (buffer-file-name))
          (backlinks-buffer (or buffer-name (format "Backlinks for '%s'" query)))
@@ -4369,7 +4373,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
       (setq overlay-arrow-position nil)
       (denote-backlinks-mode)
       (goto-char (point-min))
-      (if denote-backlinks-show-context
+      (if (or show-context denote-backlinks-show-context)
           (xref--insert-xrefs xref-alist)
         (mapc (lambda (x)
                 (insert (car x))
@@ -4381,7 +4385,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let ((buffer-file-name file))
-                      (denote-link--prepare-backlinks query files-matching-regexp buffer-name display-buffer-action)))))
+                      (denote-link--prepare-backlinks query files-matching-regexp buffer-name display-buffer-action show-context)))))
     (denote-link--display-buffer backlinks-buffer display-buffer-action)))
 
 (defun denote--backlinks-get-buffer-name (file id)
