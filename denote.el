@@ -547,8 +547,7 @@ current note."
 (defcustom denote-backlinks-display-buffer-action
   '((display-buffer-reuse-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer)
-    (dedicated . t)
-    (preserve-size . (t . t)))
+    (dedicated . t))
   "The action used to display the current file's backlinks buffer.
 
 The value has the form (FUNCTION . ALIST), where FUNCTION is
