@@ -143,7 +143,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
   "Compatibility alias for `denote-sort-component-history'.")
 
 (defun denote-sort-component-prompt ()
-  "Prompt `denote-sort-files' for sorting key among `denote-sort-components'."
+  "Prompt for sorting key among `denote-sort-components'."
   (let ((default (car denote-sort-component-history)))
     (intern
      (completing-read
