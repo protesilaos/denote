@@ -837,6 +837,70 @@ the following will prompt for a structure template as soon as
 Remember that ~denote-region-after-new-note-functions~ are not called
 if ~denote-region~ is used without an active region.
 
+*** A custom ~denote-region~ that references the source
+:PROPERTIES:
+:CUSTOM_ID: h:eb72086e-05be-4ae3-af51-7616999fc7c9
+:END:
+
+The ~denote-region~ command simply creates a new note and includes the
+highlighted region's contents as the initial text of the note ([[#h:2f8090f1-50af-4965-9771-d5a91a0a87bd][Create a note with the region's contents]]).
+However, users may want a more streamlined workflow where the command
+is always used to capture quotes from other sources. In this example,
+we consider "other sources" to come from Emacs EWW buffers (with ~M-x
+eww~) or regular files outside the ~denote-directory~.
+
+[ This is a proof-of-concept that does not cover all cases. If anyone
+  wants to use a variation of this, just let me know. ]
+
+#+begin_src emacs-lisp
+;; Variant of `my-denote-region' to reference the source
+
+(defun my-denote-region-get-source-reference ()
+  "Get a reference to the source for use with `my-denote-region'.
+The reference is a URL or an Org-formatted link to a file."
+  ;; We use a `cond' here because we can extend it to cover move
+  ;; cases.
+  (cond
+   ((derived-mode-p 'eww-mode)
+    (plist-get eww-data :url))
+   ;; Here we are just assuming an Org format.  We can make this more
+   ;; involved, if needed.
+   (buffer-file-name
+    (format "[[file:%s][%s]]" buffer-file-name (buffer-name)))))
+
+(defun my-denote-region ()
+  "Like `denote-region', but add the context afterwards.
+For how the context is retrieved, see `my-denote-region-get-source-reference'."
+  (interactive)
+  (let ((context (my-denote-region-get-source-reference)))
+    (call-interactively 'denote-region)
+    (when context
+      (goto-char (point-max))
+      (insert "\n")
+      (insert context))))
+
+;; Add quotes around snippets of text captured with `denote-region' or `my-denote-region'.
+
+(defun my-denote-region-org-structure-template (beg end)
+  "Automatically quote (with Org syntax) the contents of `denote-region'."
+  (when (derived-mode-p 'org-mode)
+    (goto-char end)
+    (insert "#+end_quote\n")
+    (goto-char beg)
+    (insert "#+begin_quote\n")))
+
+(add-hook 'denote-region-after-new-note-functions #'my-denote-region-org-structure-template)
+#+end_src
+
+With the above in place, calling the ~my-denote-region~ command does
+the following:
+
+- It creates a new note as usual, prompting for the relevant data.
+- Inserts the contents of the region below the front matter of the new
+  note.
+- Adds Org-style quotation block markers around the inserted region.
+- Adds a link to the URL or file from where ~my-denote-region~ was called.
+
 ** Open an existing note or create it if missing
 :PROPERTIES:
 :CUSTOM_ID: h:ad91ca39-cf10-4e16-b224-fdf78f093883
