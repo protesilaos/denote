@@ -23,7 +23,7 @@
 
 ;;; Commentary:
 ;;
-;; WORK-IN-PROGRESS
+;; Optional extensions to Denote that work specifically with Org mode.
 
 ;;; Code:
 
