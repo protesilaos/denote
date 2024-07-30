@@ -966,13 +966,12 @@ a single one in str, if necessary according to COMPONENT."
 (defun denote-sluggify (component str)
   "Make STR an appropriate slug for file name COMPONENT.
 
-Apply the function specified in `denote-file-name-slug-function'
-to COMPONENT which is one of `title', `signature', `keyword'.  If
-the resulting string still contains consecutive -,_,= or @, they
-are replaced by a single occurence of the character, if necessary
-according to COMPONENT.  If COMPONENT is `keyword', remove
-underscores from STR as they are used as the keywords separator
-in file names."
+Apply the function specified in `denote-file-name-slug-function' to
+COMPONENT which is one of `title', `signature', `keyword'.  If the
+resulting string still contains consecutive -, _, =, or @, they are
+replaced by a single occurence of the character, if necessary according
+to COMPONENT.  If COMPONENT is `keyword', remove underscores from STR as
+they are used as the keywords separator in file names."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
          (str-slug (cond ((eq component 'title)
                           (funcall (or slug-function #'denote-sluggify-title) str))
