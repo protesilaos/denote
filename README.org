@@ -3225,6 +3225,22 @@ line to update the block.
   meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
 
+- The =:excluded-dirs-regexp= is a string that contains a word or
+  regular expression that matches against directory files names
+  to-be-excluded from the results. This has the same meaning as
+  setting the ~denote-excluded-punctuation-regexp~ user option
+  ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
+  has a global effect, which is overridden locally in the dynamic
+  block. When the value of =:excluded-dirs-regexp= is nil (the
+  default), the value of ~denote-excluded-punctuation-regexp~ is used
+  (which is also nil by default, meaning that all directories are
+  included). When the value of =excluded-dirs-regexp= is ~t~ or some
+  other symbol, then the ~denote-excluded-punctuation-regexp~ is
+  ignored altogether. This is useful in the scenario where the user
+  option is set to exclude some directories but the dynamic blocks
+  wants to lift that restriction. [ The =excluded-dirs-regexp=
+  parameter is part of {{{development-version}}}. ]
+
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
   unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
@@ -3319,6 +3335,22 @@ parameters, which are described further below:
   Note that you do not need to write an actual regular expression to
   get meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:excluded-dirs-regexp= is a string that contains a word or
+  regular expression that matches against directory files names
+  to-be-excluded from the results. This has the same meaning as
+  setting the ~denote-excluded-punctuation-regexp~ user option
+  ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
+  has a global effect, which is overridden locally in the dynamic
+  block. When the value of =:excluded-dirs-regexp= is nil (the
+  default), the value of ~denote-excluded-punctuation-regexp~ is used
+  (which is also nil by default, meaning that all directories are
+  included). When the value of =excluded-dirs-regexp= is ~t~ or some
+  other symbol, then the ~denote-excluded-punctuation-regexp~ is
+  ignored altogether. This is useful in the scenario where the user
+  option is set to exclude some directories but the dynamic blocks
+  wants to lift that restriction. [ The =excluded-dirs-regexp=
+  parameter is part of {{{development-version}}}. ]
 
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
@@ -5883,20 +5915,20 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,
-  Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Claudiu
-  Tănăselia, Colin McLear, Damien Cassou, Elias Storms, Federico
-  Stilman, Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
-  Hanspeter Gisler Harold Ollivier, Jack Baty, Jay Rajput,
-  Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen, Jonathan Sahar,
-  Johan Bolmsjö, Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel,
-  Kaushal Modi, Kolmas, M. Hadi Timachi, Maikol Solis, Mark Olson,
-  Mirko Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter
-  Prevos, Peter Smith, Samuel W. Flint, Suhail Singh, Shreyas Ragavan,
-  Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus,
-  Vick (VicZz), Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj,
-  azegas, babusri, doolio, duli, drcxd, elge70, fingerknight,
-  hpgisler, mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic,
-  skissue, sundar bp, yetanotherfossman, zadca123
+  Alfredo Borrás, Ashton Wiersdorf, Benjamin Kästner, Claudio
+  Migliorelli, Claudiu Tănăselia, Colin McLear, Damien Cassou, Elias
+  Storms, Federico Stilman, Florian, Frédéric Willem Frank Ehmsen,
+  Glenna D., Guo Yong, Hanspeter Gisler Harold Ollivier, Jack Baty,
+  Jay Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen,
+  Jonathan Sahar, Johan Bolmsjö, Jousimies, Juanjo Presa, Julian Hoch,
+  Kai von Fintel, Kaushal Modi, Kolmas, M. Hadi Timachi, Maikol Solis,
+  Mark Olson, Mirko Hernandez, Niall Dooley, Nick Bell, Paul van
+  Gelder, Peter Prevos, Peter Smith, Samuel W. Flint, Suhail Singh,
+  Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
+  Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Wade Mealing, Yi
+  Liu, Ypot, atanasj, azegas, babusri, doolio, duli, drcxd, elge70,
+  fingerknight, hpgisler, mentalisttraceur, pRot0ta1p, rbenit68,
+  relict007, sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

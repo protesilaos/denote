@@ -607,7 +607,7 @@ but carries out the renaming without asking for confirmation)."
                      (const :tag "Rewrite front matter" rewrite-front-matter)
                      (const :tag "Modify file name" modify-file-name))))
 
-(defcustom denote-excluded-directories-regexp nil
+ (defcustom denote-excluded-directories-regexp nil
   "Regular expression of directories to exclude from all operations.
 Omit matching directories from file prompts and also exclude them
 from all functions that check the contents of the variable
@@ -1090,7 +1090,7 @@ FILE must be an absolute path."
 
 (defun denote--exclude-directory-regexp-p (file)
   "Return non-nil if FILE matches `denote-excluded-directories-regexp'."
-  (and denote-excluded-directories-regexp
+  (and (stringp denote-excluded-directories-regexp)
        (string-match-p denote-excluded-directories-regexp file)))
 
 (defun denote--directory-files-recursively-predicate (file)
