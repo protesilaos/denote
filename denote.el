@@ -4220,8 +4220,11 @@ Implementation based on the function `org-activate-links'."
 
 (defun denote--get-link-file-path-at-point ()
   "Return link to the Denote file path at point.
+(defun denote--get-link-file-path-at-point (&optional point)
+  "Return link to the Denote file path at point or optional POINT.
 To be used as a `thing-at' provider."
-  (when-let (id (get-text-property (point) 'denote-link-id))
+  (when-let ((position (or point (point)))
+             (id (get-text-property position 'denote-link-id)))
     (concat "file:" (denote-get-path-by-id id))))
 
 (defvar thing-at-point-provider-alist)
