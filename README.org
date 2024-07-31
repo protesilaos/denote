@@ -4686,10 +4686,6 @@ might change them without further notice.
 + Function ~denote-get-identifier-at-point~ :: Return the identifier
   at point or =POINT=. [ Part of {{{development-version}}}. ]
 
-#+findex: denote-barf-duplicate-id
-+ Function ~denote-barf-duplicate-id~ :: Throw a ~user-error~ if
-  =IDENTIFIER= already exists.
-
 #+findex: denote-sluggify
 + Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
   file name =COMPONENT= ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
