@@ -4221,7 +4221,9 @@ Implementation based on the function `org-activate-links'."
 (defun denote-get-identifier-at-point (&optional point)
   "Return the Denote identifier at point or optional POINT."
   (when-let ((position (or point (point)))
-             (_ (eq (get-text-property position 'face) 'denote-faces-link)))
+             (face-at-point (get-text-property position 'face))
+             (_ (or (eq face-at-point 'denote-faces-link)
+                    (member 'denote-faces-link face-at-point))))
     (or (get-text-property position 'denote-link-id)
         (let ((property (get-text-property position 'help-echo)))
           (string-match denote-id-regexp property)
