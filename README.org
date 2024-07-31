@@ -4682,6 +4682,10 @@ might change them without further notice.
 + Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
   string in ~denote-directory-files~.
 
+#+findex: denote-get-identifier-at-point
++ Function ~denote-get-identifier-at-point~ :: Return the identifier
+  at point or =POINT=. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-barf-duplicate-id
 + Function ~denote-barf-duplicate-id~ :: Throw a ~user-error~ if
   =IDENTIFIER= already exists.

@@ -4218,8 +4218,15 @@ Implementation based on the function `org-activate-links'."
               (throw :exit t))))))      ; signal success
     nil))
 
-(defun denote--get-link-file-path-at-point ()
-  "Return link to the Denote file path at point.
+(defun denote-get-identifier-at-point (&optional point)
+  "Return the Denote identifier at point or optional POINT."
+  (when-let ((position (or point (point)))
+             (_ (eq (get-text-property position 'face) 'denote-faces-link)))
+    (or (get-text-property position 'denote-link-id)
+        (let ((property (get-text-property position 'help-echo)))
+          (string-match denote-id-regexp property)
+          (match-string-no-properties 0 property)))))
+
 (defun denote--get-link-file-path-at-point (&optional point)
   "Return link to the Denote file path at point or optional POINT.
 To be used as a `thing-at' provider."
