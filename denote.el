@@ -3251,15 +3251,10 @@ Also see the specialized commands to only add or remove keywords:
 ;;;###autoload
 (defun denote-rename-file-using-front-matter (file)
   "Rename FILE using its front matter as input.
-When called interactively, FILE is the return value of the
-function `buffer-file-name' which is subsequently inspected for
-the requisite front matter.  It is thus implied that the FILE has
-a file type that is supported by Denote, per `denote-file-type'.
-
-Never modify the identifier of the FILE, if any, even if it is
-edited in the front matter.  Denote considers the file name to be
-the source of truth in this case to avoid potential breakage with
-typos and the like.
+When called interactively, FILE is the variable `buffer-file-name' or
+the Dired file at point, which is subsequently inspected for the
+requisite front matter.  It is thus implied that the FILE has a file
+type that is supported by Denote, per `denote-file-type'.
 
 The values of `denote-rename-confirmations' and `denote-save-buffers'
 are respected.  Though there is no prompt to confirm the rewrite of the
@@ -3272,7 +3267,7 @@ with typos and the like.
 
 Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
-  (interactive (list buffer-file-name))
+  (interactive (list (or (dired-get-filename nil t) buffer-file-name)))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (if-let ((file-type (denote-filetype-heuristics file))
