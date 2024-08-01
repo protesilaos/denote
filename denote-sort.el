@@ -66,6 +66,47 @@ the first argument is smaller than the second one."
   :package-version '(denote . "3.1.0")
   :group 'denote-sort)
 
+(defcustom denote-sort-dired-extra-prompts '(sort-by-component reverse-sort)
+  "Determine what `denote-sort-dired' prompts for beside a search query.
+This concerns the additional prompts issued by `denote-sort-dired' about
+whether to sort by a given file name component and to then reverse the
+sort.
+
+The value is a list of symbols, which can include the symbols
+`sort-by-component' and `reverse-sort'.  The order is significant, with
+the leftmost symbol coming first.
+
+If the value is nil, skip all prompts.  In this scenario, the sorting is
+done according to `denote-sort-dired-default-sort-component' and
+`denote-sort-dired-default-reverse-sort'."
+  :type '(radio (const :tag "Do not prompt for anything" nil)
+                (set :tag "Available prompts" :greedy t
+                     (const :tag "Sort by file name component" sort-by-component)
+                     (const :tag "Reverse the sort" reverse-sort)))
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
+(defcustom denote-sort-dired-default-sort-component 'identifier
+  "Set the default file name component to sort by.
+This is used only if `denote-sort-dired-extra-prompts' omits the
+minibuffer prompt for which file name component to sort by."
+  :type '(radio
+          (const :tag "Sort by identifier (default)" identifier)
+          (const :tag "Sort by title" title)
+          (const :tag "Sort by keywords" keywords)
+          (const :tag "Sort by signature" signature))
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
+(defcustom denote-sort-dired-default-reverse-sort nil
+  "If non-nil, reverse the sorting order by default.
+This is used only if `denote-sort-dired-extra-prompts' omits the
+minibuffer prompt that asks for a reverse sort or not."
+  :type 'boolean
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
+
 ;; NOTE 2023-12-04: We can have compound sorting algorithms such as
 ;; title+signature, but I want to keep this simple for the time being.
 ;; Let us first hear from users to understand if there is a real need
@@ -178,48 +219,67 @@ With optional REVERSE as a non-nil value, reverse the sort order."
 (defvar-local denote-sort--dired-buffer nil
   "Buffer object of current `denote-sort-dired'.")
 
+(defun denote-sort-dired--prompts ()
+  "Return list of prompts per `denote-sort-dired-extra-prompts'."
+  (let (sort-by-component reverse-sort)
+    (dolist (prompt denote-sort-dired-extra-prompts)
+      (pcase prompt
+        ('sort-by-component (setq sort-by-component (denote-sort-component-prompt)))
+        ('reverse-sort (setq reverse-sort (y-or-n-p "Reverse sort? ")))))
+    (list sort-by-component reverse-sort)))
+
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse)
-  "Produce Dired dired-buffer with sorted files from variable `denote-directory'.
-When called interactively, prompt for FILES-MATCHING-REGEXP,
-SORT-BY-COMPONENT, and REVERSE.
+  "Produce Dired buffer with sorted files from variable `denote-directory'.
+When called interactively, prompt for FILES-MATCHING-REGEXP and,
+depending on the value of the user option `denote-sort-dired-extra-prompts',
+also prompt for SORT-BY-COMPONENT and REVERSE.
 
 1. FILES-MATCHING-REGEXP limits the list of Denote files to
    those matching the provided regular expression.
 
-2. SORT-BY-COMPONENT sorts the files by their file name
-   component (one among `denote-sort-components').
+2. SORT-BY-COMPONENT sorts the files by their file name component (one
+   among `denote-sort-components').  If it is nil, sorting is performed
+   according to the user option `denote-sort-dired-default-sort-component',
+   falling back to the identifier.
 
 3. REVERSE is a boolean to reverse the order when it is a non-nil value.
+   If `denote-sort-dired-extra-prompts' is configured to skip this
+   prompt, then the sorting is done according to the user option
+   `denote-sort-dired-default-reverse-sort', falling back to
+   nil (i.e. no reverse sort).
 
-When called from Lisp, the arguments are a string, a keyword, and
-a non-nil value, respectively."
+When called from Lisp, the arguments are a string, a symbol among
+`denote-sort-components', and a non-nil value, respectively."
   (interactive
-   (list
-    (denote-files-matching-regexp-prompt)
-    (denote-sort-component-prompt)
-    (y-or-n-p "Reverse sort? ")))
-  (if-let ((default-directory (denote-directory))
-           (files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse))
-           ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-           ;; buffer-name produces an error if the regexp contains a
-           ;; wildcard for a directory. I can reproduce this in emacs
-           ;; -Q and am not sure if it is a bug. Anyway, I will report
-           ;; it upstream, but even if it is fixed we cannot use it
-           ;; for now (whatever fix will be available for Emacs 30+).
-           (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp sort-by-component))
-           (buffer-name (format "Denote sort by `%s' at %s" sort-by-component (format-time-string "%T"))))
-      (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
-        (setq denote-sort--dired-buffer dired-buffer)
-        (with-current-buffer dired-buffer
-          (setq-local revert-buffer-function
-                      (lambda (&rest _)
-                        (kill-buffer dired-buffer)
-                        (denote-sort-dired files-matching-regexp sort-by-component reverse))))
-        ;; Because of the above NOTE, I am printing a message.  Not
-        ;; what I want, but it is better than nothing...
-        (message denote-sort-dired-buffer-name))
-    (message "No matching files for: %s" files-matching-regexp)))
+   (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
+  (let ((component (or sort-by-component
+                       denote-sort-dired-default-sort-component
+                       'identifier))
+        (reverse-sort (or reverse
+                          denote-sort-dired-default-reverse-sort
+                          nil)))
+    (if-let ((default-directory (denote-directory))
+             (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+             ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+             ;; buffer-name produces an error if the regexp contains a
+             ;; wildcard for a directory. I can reproduce this in emacs
+             ;; -Q and am not sure if it is a bug. Anyway, I will report
+             ;; it upstream, but even if it is fixed we cannot use it
+             ;; for now (whatever fix will be available for Emacs 30+).
+             (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
+             (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+          (setq denote-sort--dired-buffer dired-buffer)
+          (with-current-buffer dired-buffer
+            (setq-local revert-buffer-function
+                        (lambda (&rest _)
+                          (kill-buffer dired-buffer)
+                          (denote-sort-dired files-matching-regexp component reverse-sort))))
+          ;; Because of the above NOTE, I am printing a message.  Not
+          ;; what I want, but it is better than nothing...
+          (message denote-sort-dired-buffer-name))
+      (message "No matching files for: %s" files-matching-regexp))))
 
 (provide 'denote-sort)
 ;;; denote-sort.el ends here

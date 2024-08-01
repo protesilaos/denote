@@ -3431,6 +3431,52 @@ The resulting Dired listing is a regular Dired buffer, unlike that of
 The dynamic Org blocks that Denote defines to insert file contents
 also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
 
+** Configure what extra prompts ~denote-sort-dired~ issues
+:PROPERTIES:
+:CUSTOM_ID: h:a34228cb-484f-48fe-9cbc-8e41f313127b
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-sort-dired-extra-prompts
+By default, the ~denote-sort-dired~ command prompts for (i) a query to
+match file names, (ii) a file name component to sort by, and (iii)
+whether to reverse the sorting. Users can configure the latter two by
+modifying the user option ~denote-sort-dired-extra-prompts~.
+
+It accepts either a nil value or a list of symbols among ~sort-by-component~
+and ~reverse-sort~. The order those symbols appear in the list is
+significant, with the leftmost coming first.
+
+#+vindex: denote-sort-dired-default-sort-component
+#+vindex: denote-sort-dired-default-reverse-sort
+In case of a nil value, those extra prompts will not happen, meaning
+that ~denote-sort-dired~ will fall back to using
+~denote-sort-dired-default-sort-component~ and
+~denote-sort-dired-default-reverse-sort~.
+
+Here are some examples:
+
+#+begin_src emacs-lisp
+;; The default extra prompts...
+(setq denote-sort-dired-extra-prompts '(sort-by-component reverse-sort))
+
+;; When using `denote-sort-dired', ask whether to reverse the sort and
+;; then which file name component to sort by.  These are always done
+;; after the prompt to search for files matching a regexp.
+(setq denote-sort-dired-extra-prompts '(reverse-sort sort-by-component))
+
+;; Do not prompt for a reverse sort.  Just use the value of
+;; `denote-sort-dired-default-reverse-sort' (which is nil out-of-the-box).
+(setq denote-sort-dired-extra-prompts '(sort-by-component))
+
+;; Do not issue any extra prompts.  Always sort by the `title' file
+;; name component and never do a reverse sort.
+(setq denote-sort-dired-extra-prompts nil)
+(setq denote-sort-dired-default-sort-component 'title)
+(setq denote-sort-dired-default-reverse-sort nil)
+#+end_src
+
 ** Define a sorting function per component
 :PROPERTIES:
 :CUSTOM_ID: h:c958e087-1d23-4a25-afdd-db7bf5606b4c
