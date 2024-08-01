@@ -3410,8 +3410,9 @@ given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-n
 
 #+findex: denote-sort-dired
 The command ~denote-sort-dired~ produces a Dired file listing with a
-flat, filtered, and sorted set of files from the ~denote-directory~.
-It does so by means of three minibuffer prompts:
+flat, filtered, and sorted set of files from the ~denote-directory~
+([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It does so by means of
+three minibuffer prompts:
 
 1. It first asks for a regular expression with which to match Denote
    files. Remember that due to Denote's efficient file-naming scheme,
@@ -3429,6 +3430,32 @@ The resulting Dired listing is a regular Dired buffer, unlike that of
 
 The dynamic Org blocks that Denote defines to insert file contents
 also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
+
+** Define a sorting function per component
+:PROPERTIES:
+:CUSTOM_ID: h:c958e087-1d23-4a25-afdd-db7bf5606b4c
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+When sorting by =title=, =keywords=, or =signature= with the
+~denote-sort-dired~ command, Denote will internally apply a sorting
+function that is specific to each component. These are subject to user
+configuration:
+
+#+vindex: denote-sort-title-comparison-function
+- ~denote-sort-title-comparison-function~
+
+#+vindex: denote-sort-keywords-comparison-function
+- ~denote-sort-keywords-comparison-function~
+
+#+vindex: denote-sort-signature-comparison-function
+- ~denote-sort-signature-comparison-function~
+
+By default, all these user options use the same sorting function,
+namely ~string-collate-lessp~. Users who have specific needs for any
+of those file name components can write their own sorting algorithms
+([[#h:95345870-4ccd-484f-9adf-de4747ad5760][Sort signatures that include Luhmann-style sequences]]).
 
 * Keep a journal or diary
 :PROPERTIES:

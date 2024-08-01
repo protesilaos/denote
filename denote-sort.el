@@ -42,6 +42,30 @@
 (defvar denote-sort-components '(title keywords signature identifier)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
+(defcustom denote-sort-title-comparison-function denote-sort-comparison-function
+  "Function to sort the TITLE component in file names.
+The function accepts two arguments and must return a non-nil value if
+the first argument is smaller than the second one."
+  :type 'function
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
+(defcustom denote-sort-keywords-comparison-function denote-sort-comparison-function
+  "Function to sort the KEYWORDS component in file names.
+The function accepts two arguments and must return a non-nil value if
+the first argument is smaller than the second one."
+  :type 'function
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
+(defcustom denote-sort-signature-comparison-function denote-sort-comparison-function
+  "Function to sort the SIGNATURE component in file names.
+The function accepts two arguments and must return a non-nil value if
+the first argument is smaller than the second one."
+  :type 'function
+  :package-version '(denote . "3.1.0")
+  :group 'denote-sort)
+
 ;; NOTE 2023-12-04: We can have compound sorting algorithms such as
 ;; title+signature, but I want to keep this simple for the time being.
 ;; Let us first hear from users to understand if there is a real need
@@ -62,7 +86,7 @@ two title values."
          (cond
           (one-empty-p nil)
           ((and (not one-empty-p) two-empty-p) one)
-          (t (funcall denote-sort-comparison-function one two)))))))
+          (t (funcall ,(intern (format "denote-sort-%s-comparison-function" component)) one two)))))))
 
 ;; TODO 2023-12-04: Subject to the above NOTE, we can also sort by
 ;; directory and by file length.
