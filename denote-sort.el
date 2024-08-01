@@ -36,13 +36,13 @@
   :link '(info-link "(denote) Top")
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-(defvar denote-sort-comparison-function #'string-collate-lessp
+(defconst denote-sort-comparison-fallback-function #'string-collate-lessp
   "String comparison function used by `denote-sort-files' subroutines.")
 
 (defvar denote-sort-components '(title keywords signature identifier)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
-(defcustom denote-sort-title-comparison-function denote-sort-comparison-function
+(defcustom denote-sort-title-comparison-function denote-sort-comparison-fallback-function
   "Function to sort the TITLE component in file names.
 The function accepts two arguments and must return a non-nil value if
 the first argument is smaller than the second one."
@@ -50,7 +50,7 @@ the first argument is smaller than the second one."
   :package-version '(denote . "3.1.0")
   :group 'denote-sort)
 
-(defcustom denote-sort-keywords-comparison-function denote-sort-comparison-function
+(defcustom denote-sort-keywords-comparison-function denote-sort-comparison-fallback-function
   "Function to sort the KEYWORDS component in file names.
 The function accepts two arguments and must return a non-nil value if
 the first argument is smaller than the second one."
@@ -58,7 +58,7 @@ the first argument is smaller than the second one."
   :package-version '(denote . "3.1.0")
   :group 'denote-sort)
 
-(defcustom denote-sort-signature-comparison-function denote-sort-comparison-function
+(defcustom denote-sort-signature-comparison-function denote-sort-comparison-fallback-function
   "Function to sort the SIGNATURE component in file names.
 The function accepts two arguments and must return a non-nil value if
 the first argument is smaller than the second one."
@@ -72,13 +72,13 @@ the first argument is smaller than the second one."
 ;; for such a feature.
 (defmacro denote-sort--define-lessp (component)
   "Define function to sort by COMPONENT."
-  (let ((retrieve-fn (intern (format "denote-retrieve-filename-%s" component))))
+  (let ((retrieve-fn (intern (format "denote-retrieve-filename-%s" component)))
+        (comparison-fn (intern (format "denote-sort-%s-comparison-function" component))))
     `(defun ,(intern (format "denote-sort-%s-lessp" component)) (file1 file2)
        ,(format
-         "Return smallest between FILE1 and FILE2 based on their %s.
-The comparison is done with `denote-sort-comparison-function' between the
-two title values."
-         component)
+         "Return smallest among FILE1, FILE2 based on their %s.
+The `%s' performs the comparison."
+         component comparison-fn)
        (let* ((one (,retrieve-fn file1))
               (two (,retrieve-fn file2))
               (one-empty-p (or (null one) (string-empty-p one)))
@@ -86,7 +86,7 @@ two title values."
          (cond
           (one-empty-p nil)
           ((and (not one-empty-p) two-empty-p) one)
-          (t (funcall ,(intern (format "denote-sort-%s-comparison-function" component)) one two)))))))
+          (t (funcall (or ,comparison-fn denote-sort-comparison-fallback-function) one two)))))))
 
 ;; TODO 2023-12-04: Subject to the above NOTE, we can also sort by
 ;; directory and by file length.
