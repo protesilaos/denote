@@ -3457,6 +3457,59 @@ namely ~string-collate-lessp~. Users who have specific needs for any
 of those file name components can write their own sorting algorithms
 ([[#h:95345870-4ccd-484f-9adf-de4747ad5760][Sort signatures that include Luhmann-style sequences]]).
 
+*** Sort signatures that include Luhmann-style sequences
+:PROPERTIES:
+:CUSTOM_ID: h:95345870-4ccd-484f-9adf-de4747ad5760
+:END:
+
+Niklas Luhmann would edit notes to form sequences of thoughts with
+branching paths, such as =1.1=, =1.1a=, =1.2=, =1.2a=, =1.2b=, etc.
+With the Denote file-naming scheme, we make the word separator in each
+file name component use the same character as the entire field, so
+words in a title have a dash between them and signatures have the
+equals sign ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). Thus, our Luhmann-style
+signature will be slightly different in their looks: ~1=1~, ~1=1a~,
+~1=2~, ~1=2a~, ~1=2b~.
+
+When using the ~denote-sort-dired~ command with default settings, our
+signatures will not sort in an intuitive way. This is because they
+combine numbers and letters, which require a different approach than
+what the default sorting function is using ([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]).
+In the following code block, we show a sorting algorithm that should
+do the right thing while dealing with Luhmann-style signatures.
+
+#+begin_src emacs-lisp
+(defun my-denote--split-luhman-sig (signature)
+  "Split numbers and letters in Luhmann-style SIGNATURE string."
+  (replace-regexp-in-string
+   "\\([a-zA-Z]+?\\)\\([0-9]\\)" "\\1=\\2"
+   (replace-regexp-in-string
+    "\\([0-9]+?\\)\\([a-zA-Z]\\)" "\\1=\\2"
+    signature)))
+
+(defun my-denote--pad-sig (signature)
+  "Create a new signature with padded spaces for all components"
+  (combine-and-quote-strings
+   (mapcar
+    (lambda (x)
+      (string-pad x 5 32 t))
+    (split-string (my-denote--split-luhman-sig signature) "=" t))
+   "="))
+
+(defun my-denote-sort-for-signatures (sig1 sig2)
+  "Return non-nil if SIG1 is smaller that SIG2.
+Perform the comparison with `string<'."
+  (string< (my-denote--pad-sig sig1) (my-denote--pad-sig sig2)))
+
+;; Change the sorting function only when we sort by signature.
+(setq denote-sort-signature-comparison-function #'my-denote-sort-for-signatures)
+#+end_src
+
+DEVELOPMENT NOTE 2024-08-01 08:27 +0300: If you need to sort in a
+certain way but do not know how to write the relevant Elisp, please
+let me know. I am happy to help and we can then include our findings
+in the manual for the benefit of the community.
+
 * Keep a journal or diary
 :PROPERTIES:
 :CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
