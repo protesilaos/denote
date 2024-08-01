@@ -39,7 +39,7 @@
 (defconst denote-sort-comparison-fallback-function #'string-collate-lessp
   "String comparison function used by `denote-sort-files' subroutines.")
 
-(defvar denote-sort-components '(title keywords signature identifier)
+(defconst denote-sort-components '(title keywords signature identifier)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
 (defcustom denote-sort-title-comparison-function denote-sort-comparison-fallback-function
