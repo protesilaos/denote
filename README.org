@@ -3430,16 +3430,6 @@ The resulting Dired listing is a regular Dired buffer, unlike that of
 The dynamic Org blocks that Denote defines to insert file contents
 also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
 
-DEVELOPMENT NOTE as of 2023-11-30 07:24 +0200: The sort mechanism will
-be incorporated in more functions on a case-by-case basis, subject to
-user feedback. For the time being, I am not documenting the functions
-that are only accessed from Lisp. Do not hesitate to contact me
-(Protesilaos) in person or on one of the development sources (mailing
-list or GitHub/GitLab mirror) if you have a use-case where sorting
-seems useful. I am happy to help but do not want to roll this feature
-everywhere before eliciting relevant feedback: once we add it, we are
-not going back.
-
 * Keep a journal or diary
 :PROPERTIES:
 :CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
