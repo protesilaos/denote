@@ -1397,6 +1397,8 @@ line or switching between then with commands like ~switch-to-buffer~.
 
 [[#h:3ca4db16-8f26-4d7d-b748-bac48ae32d69][Automatically rename Denote buffers]].
 
+[[#h:9051f15d-ea7e-4b17-adc2-bc6a749c721b][Find duplicate identifiers and put them in a Dired buffer]].
+
 ** Rename a single file
 :PROPERTIES:
 :CUSTOM_ID: h:7cc9e000-806a-48da-945c-711bbc7426b0
@@ -1814,6 +1816,57 @@ the signature altogether ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-na
   then type =RET= there with empty contents, or use the command
   ~vertico-exit-input~ with empty contents. That Vertico command is
   bound to =M-RET= as of this writing on 2024-06-30 10:37 +0300. ]
+
+** Find duplicate identifiers and put them in a Dired buffer
+:PROPERTIES:
+:CUSTOM_ID: h:9051f15d-ea7e-4b17-adc2-bc6a749c721b
+:END:
+
+Denote takes care to create unique identifiers, though its mechanism
+relies on reading the existing identifiers in the ~denote-directory~
+or the current directory. When we are renaming files across different
+directories, there is a small chance that some files have the same
+attributes and are thus assigned identical identifiers. If those files
+ever make it into a consolidated ~denote-directory~, we will have
+duplicates, which break the linking mechanism.
+
+As this is an edge case, we do not include any code to address it in
+the Denote code base. Though here is a way to find duplicate
+identifiers inside the current directory:
+
+#+begin_src emacs-lisp
+(defun my-denote--get-files-in-dir (directory)
+  "Return file names in DIRECTORY."
+  (directory-files directory :full-paths directory-files-no-dot-files-regexp))
+
+(defun my-denote--same-identifier-p (file1 file2)
+  "Return non-nil if FILE1 and FILE2 have the same identifier."
+  (let ((id1 (denote-retrieve-filename-identifier file1))
+        (id2 (denote-retrieve-filename-identifier file2)))
+    (equal id1 id2)))
+
+(defun my-denote-find-duplicate-identifiers (directory)
+  "Find all files in DIRECTORY that need a new identifier."
+  (let* ((ids (my-denote--get-files-in-dir directory))
+         (unique-ids (seq-uniq ids #'my-denote--same-identifier-p)))
+    (seq-difference ids unique-ids #'equal)))
+
+(defun my-denote-dired-show-duplicate-identifiers (directory)
+  "Put duplicate identifiers from DIRECTORY in a dedicated Dired buffer."
+  (interactive
+   (list
+    (read-directory-name "Select DIRECTORY to check for duplicate identifiers: " default-directory)))
+  (if-let ((duplicates (my-denote-find-duplicate-identifiers directory)))
+      (dired (cons (format "Denote duplicate identifiers" directory) duplicates))
+    (message "No duplicates identifiers in `%s'" directory)))
+#+end_src
+
+Evaluate this code and then call the command ~my-denote-dired-show-duplicate-identifiers~.
+If there are duplicates, it will put them in a dedicated Dired buffer.
+From there, you can view the file contents as usual, and manually edit
+the identifiers as you see fit (e.g. edit them one by one, or change
+to the writable Dired and record a keyboard macro that makes use of a
+counter to increment by 1---contact me if you need any help).
 
 ** Faces used by rename commands
 :PROPERTIES:
