@@ -3472,15 +3472,10 @@ you get all the parameters included:
   it.
 
 - The =:add-links= parameter is optional. When it is set to a ~t~
-  value, all files are inserted as a typographic list and are indented
-  accordingly. The first line in each list item is a link to the file
-  whose contents are inserted in the following lines. When the value
-  is =id-only=, then links are inserted without a description text but
-  only with the identifier of the given file. This has the same
-  meaning as with the ~denote-link~ command and related facilities
-  ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Remember that Org can fold the items in a
-  typographic list the same way it does with headings. So even long
-  files can be presented in this format without much trouble.
+  value, all the top-level headings (those that were the =#+title= of
+  each file) are generated as links, pointing to the original file.
+  This has the same meaning as with the ~denote-link~ command and
+  related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
 - An optional =:block-name= parameter can be specified with a string
   value to add a =#+name= to the results. This is useful for further
