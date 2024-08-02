@@ -601,6 +601,115 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
     (when rx (denote-org-extras-dblock-add-files rx separator no-f-m add-links sort reverse excluded-dirs)))
   (join-line)) ; remove trailing empty line
 
+;;;; Insert files as headings
+
+(defun denote-org-extras-dblock--extract-regexp (regexp)
+  "Extract REGEXP from the buffer and trim it of surrounding spaces."
+  (string-trim
+   (save-excursion
+     (re-search-forward regexp nil :no-error)
+     (buffer-substring-no-properties (match-end 0) (line-end-position)))))
+
+(defun denote-org-extras-dblock--get-file-contents-as-heading (file add-links)
+  "Insert the contents of Org FILE, formatting the #+title as a heading.
+With optional ADD-LINKS, make the title link to the original file."
+  (when-let ((_ (denote-file-is-note-p file))
+             (identifier (denote-retrieve-filename-identifier file))
+             (file-type (denote-filetype-heuristics file))
+             (_ (eq file-type 'org)))
+    (with-temp-buffer
+      (let ((beginning-of-contents (point))
+            title
+            tags)
+        (insert-file-contents file)
+        (setq title (denote-org-extras-dblock--extract-regexp (denote--title-key-regexp file-type)))
+        (setq tags (denote-org-extras-dblock--extract-regexp (denote--keywords-key-regexp file-type)))
+        (delete-region (1+ (re-search-forward "^$" nil :no-error 1)) beginning-of-contents)
+        (goto-char beginning-of-contents)
+        (when (and title tags)
+          (if add-links
+              (insert (format "* [[denote:%s][%s]] %s\n\n" identifier title tags))
+            (insert (format "* %s %s\n\n" title tags)))
+          (org-align-tags :all))
+        (while (re-search-forward "^\\(*+?\\) " nil :no-error)
+          (replace-match (format "*%s " "\\1"))))
+      (buffer-string))))
+
+(defun denote-org-extras-dblock-add-files-as-headings (regexp &optional add-links sort-by-component reverse excluded-dirs-regexp)
+  "Insert files matching REGEXP.
+
+If optional ADD-LINKS is non-nil, first insert a link to the file
+and then insert its contents.  In this case, format the contents
+as a typographic list.
+
+If optional SORT-BY-COMPONENT is a symbol among `denote-sort-components',
+sort files matching REGEXP by the corresponding Denote file name
+component.  If the symbol is not among `denote-sort-components',
+fall back to the default identifier-based sorting.
+
+If optional REVERSE is non-nil reverse the sort order.
+
+Optional EXCLUDED-DIRS-REGEXP is the `let' bound value of
+`denote-excluded-directories-regexp'.  When nil, the original value of
+that user option is used."
+  (let* ((denote-excluded-directories-regexp (or excluded-dirs-regexp denote-excluded-directories-regexp))
+         (files (denote-org-extras-dblock--files regexp sort-by-component reverse))
+         (files-contents (mapcar
+                          (lambda (file)
+                            (denote-org-extras-dblock--get-file-contents-as-heading file add-links))
+                          files)))
+    (insert (string-join files-contents))))
+
+;;;###autoload
+(defun denote-org-extras-dblock-insert-files-as-headings (regexp sort-by-component)
+  "Create Org dynamic block to insert Denote Org files matching REGEXP.
+
+Turn the #+title of each file into a top-level heading.  Then increment
+all original headings in the file by one, so that they become
+subheadings of what once was the #+title.
+
+Use the #+filetags of each file as tags for the top-level heading (what
+was the #+title).
+
+Sort the files according to SORT-BY-COMPONENT, which is a symbol
+among `denote-sort-components'.
+
+IMPORTANT NOTE: This dynamic block only works with Org files, because it
+has to assume the Org notation in order to insert each file's contents
+as its own heading."
+  (interactive
+   (list
+    (denote-files-matching-regexp-prompt)
+    (denote-sort-component-prompt))
+   org-mode)
+  (org-create-dblock (list :name "denote-files-as-headings"
+                           :regexp regexp
+                           :excluded-dirs-regexp nil
+                           :sort-by-component sort-by-component
+                           :reverse-sort nil
+                           :add-links nil))
+  (org-update-dblock))
+
+;; NOTE 2024-03-30: This is how the autoload is done in org.el.
+;;;###autoload
+(eval-after-load 'org
+  '(progn
+     (org-dynamic-block-define "denote-files-as-headings" 'denote-org-extras-dblock-insert-files-as-headings)))
+
+;;;###autoload
+(defun org-dblock-write:denote-files-as-headings (params)
+  "Function to update `denote-files' Org Dynamic blocks.
+Used by `org-dblock-update' with PARAMS provided by the dynamic block."
+  (let* ((regexp (plist-get params :regexp))
+         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (sort (plist-get params :sort-by-component))
+         (reverse (plist-get params :reverse-sort))
+         (block-name (plist-get params :block-name))
+         (add-links (plist-get params :add-links))
+         (excluded-dirs (plist-get params :excluded-dirs-regexp)))
+    (when block-name (insert "#+name: " block-name "\n"))
+    (when rx (denote-org-extras-dblock-add-files-as-headings rx add-links sort reverse excluded-dirs)))
+  (join-line)) ; remove trailing empty line
 
 (provide 'denote-org-extras)
 ;;; denote-org-extras.el ends here
