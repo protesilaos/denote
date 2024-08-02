@@ -3228,14 +3228,14 @@ line to update the block.
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
   to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-punctuation-regexp~ user option
+  setting the ~denote-excluded-directories-regexp~ user option
   ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
   has a global effect, which is overridden locally in the dynamic
   block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-punctuation-regexp~ is used
+  default), the value of ~denote-excluded-directories-regexp~ is used
   (which is also nil by default, meaning that all directories are
   included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-punctuation-regexp~ is
+  other symbol, then the ~denote-excluded-directories-regexp~ is
   ignored altogether. This is useful in the scenario where the user
   option is set to exclude some directories but the dynamic blocks
   wants to lift that restriction. [ The =excluded-dirs-regexp=
@@ -3339,14 +3339,14 @@ parameters, which are described further below:
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
   to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-punctuation-regexp~ user option
+  setting the ~denote-excluded-directories-regexp~ user option
   ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
   has a global effect, which is overridden locally in the dynamic
   block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-punctuation-regexp~ is used
+  default), the value of ~denote-excluded-directories-regexp~ is used
   (which is also nil by default, meaning that all directories are
   included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-punctuation-regexp~ is
+  other symbol, then the ~denote-excluded-directories-regexp~ is
   ignored altogether. This is useful in the scenario where the user
   option is set to exclude some directories but the dynamic blocks
   wants to lift that restriction. [ The =excluded-dirs-regexp=
@@ -3447,14 +3447,14 @@ you get all the parameters included:
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
   to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-punctuation-regexp~ user option
+  setting the ~denote-excluded-directories-regexp~ user option
   ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
   has a global effect, which is overridden locally in the dynamic
   block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-punctuation-regexp~ is used
+  default), the value of ~denote-excluded-directories-regexp~ is used
   (which is also nil by default, meaning that all directories are
   included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-punctuation-regexp~ is
+  other symbol, then the ~denote-excluded-directories-regexp~ is
   ignored altogether. This is useful in the scenario where the user
   option is set to exclude some directories but the dynamic blocks
   wants to lift that restriction.
