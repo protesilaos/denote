@@ -4755,7 +4755,9 @@ Also see the user option `denote-org-store-link-to-heading'."
              ((denote-file-is-note-p file))
              (file-id (denote-retrieve-filename-identifier file))
              (description (denote--link-get-description file)))
-    (let ((heading-links (and denote-org-store-link-to-heading (derived-mode-p 'org-mode))))
+    (let ((heading-links (and denote-org-store-link-to-heading
+                              (derived-mode-p 'org-mode)
+                              (denote--org-capture-link-specifiers-p))))
       (org-link-store-props
        :type "denote"
        :description (if heading-links
@@ -4828,6 +4830,11 @@ the standard front matter we define."
   :type 'string
   :package-version '(denote . "0.1.0")
   :group 'denote-org-capture)
+
+(defun denote--org-capture-link-specifiers-p ()
+  "Return non-nil if `denote-org-capture-specifiers' uses link specifiers."
+  (when (stringp denote-org-capture-specifiers)
+    (string-match-p "%^?[aAlL]" denote-org-capture-specifiers)))
 
 (defvar denote-last-path nil "Store last path.")
 
