@@ -2722,9 +2722,15 @@ variable `denote-directory'."
   (mapc #'denote--revert-dired (buffer-list)))
 
 (defun denote-rename-file-and-buffer (old-name new-name)
-  "Rename file named OLD-NAME to NEW-NAME, updating buffer name."
+  "Rename file named OLD-NAME to NEW-NAME, updating buffer name.
+
+If the file exists on the file system, it is renamed.  This
+function may be called when creating a new note and the file does
+not exist yet.
+
+If a buffer is visiting the file, its name is updated."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (when (and (denote--file-regular-writable-p old-name)
+    (when (and (file-regular-p old-name)
                (file-writable-p new-name))
       (cond
        ((derived-mode-p 'dired-mode)
