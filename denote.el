@@ -4280,7 +4280,9 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
-  (funcall denote-link-button-action (buffer-substring (button-start button) (button-end button))))
+  (funcall denote-link-button-action
+           (concat (denote-directory)
+                   (buffer-substring (button-start button) (button-end button)))))
 
 (defun denote-link--display-buffer (buf &optional action)
   "Run `display-buffer' on BUF using optional ACTION alist.
