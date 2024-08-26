@@ -1061,11 +1061,6 @@ For our purposes, a note must satisfy `file-regular-p' and
   "Return non-nil if FILE has a Denote identifier."
   (denote-retrieve-filename-signature file))
 
-(defun denote--file-regular-writable-p (file)
-  "Return non-nil if FILE is regular and writable."
-  (and (file-regular-p file)
-       (file-writable-p file)))
-
 (defun denote-file-is-writable-and-supported-p (file)
   "Return non-nil if FILE is writable and has supported extension."
   ;; We do not want to test that the file is regular (exists) because we want
