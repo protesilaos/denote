@@ -3953,9 +3953,9 @@ function."
         (push (match-string-no-properties 1) matches)))
     matches))
 
-(defun denote-link--expand-identifiers (regexp)
-  "Expend identifiers matching REGEXP into file paths."
-  (let ((files (denote-directory-files))
+(defun denote-link--expand-identifiers (regexp files)
+  "Expand identifiers matching REGEXP in FILES into file paths."
+  (let ((files files)
         found-files)
     (dolist (file files)
       (dolist (i (denote-link--collect-identifiers regexp))
@@ -3989,10 +3989,11 @@ Also see `denote-link-return-backlinks'."
   (when-let ((current-file (or file (buffer-file-name)))
              ((denote-file-has-supported-extension-p current-file))
              (file-type (denote-filetype-heuristics current-file))
-             (regexp (denote--link-in-context-regexp file-type)))
+             (regexp (denote--link-in-context-regexp file-type))
+             (files (denote-directory-files)))
     (with-temp-buffer
       (insert-file-contents current-file)
-      (denote-link--expand-identifiers regexp))))
+      (denote-link--expand-identifiers regexp files))))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias for `denote-link-return-links'.")
