@@ -38,23 +38,26 @@
   :link '(info-link "(denote) Top")
   :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
 
-(defcustom denote-buffer-has-backlinks-string "-> "
+(defvaralias 'denote-buffer-has-backlinks-string 'denote-rename-buffer-backlinks-indicator
+  "Alias for `denote-rename-buffer-backlinks-indicator'.")
+
+(defcustom denote-rename-buffer-backlinks-indicator "<-->"
   "A string used to indicate that a buffer has backlinks pointing to it."
   :type 'string
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-rename-buffer-format "%b%t"
+(defcustom denote-rename-buffer-format "%t %b"
   "The format of the buffer name `denote-rename-buffer' should use.
 Thie value is a string that treats specially the following
 specifiers:
 
-- The %b inserts `denote-buffer-has-backlinks-string'.
 - The %t is the Denote TITLE of the file.
 - The %i is the Denote IDENTIFIER of the file.
 - The %d is the same as %i (DATE mnemonic).
 - The %s is the Denote SIGNATURE of the file.
 - The %k is the Denote KEYWORDS of the file.
+- The %b inserts `denote-rename-buffer-backlinks-indicator'.
 - The %% is a literal percent sign.
 
 In addition, the following flags are available for each of the specifiers:
@@ -107,7 +110,7 @@ buffer will be used, if available."
                                     ((denote-retrieve-front-matter-title-value file type))
                                     ((denote-retrieve-filename-title file))
                                     (t  "")))
-                          (cons ?b (if should-show-backlink-indicator denote-buffer-has-backlinks-string ""))
+                          (cons ?b (if should-show-backlink-indicator denote-rename-buffer-backlinks-indicator ""))
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))

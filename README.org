@@ -3152,7 +3152,7 @@ buffer-to-be-renamed.
 The value of this user option is a string. The following specifiers
 are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]):
 
-#+vindex: denote-buffer-has-backlinks-string
+#+vindex: denote-rename-buffer-backlinks-indicator
 - The =%t= is the Denote =TITLE= of the file.
 - The =%i= is the Denote =IDENTIFIER= of the file.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
@@ -3160,6 +3160,7 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 - The =%k= is the Denote =KEYWORDS= of the file.
 - The =%b= is an indicator of whether or not the file has backlinks
   pointing to it. The indicator string is defined in the user option
+  ~denote-rename-buffer-backlinks-indicator~, alias
   ~denote-buffer-has-backlinks-string~ [ Part of {{{development-version}}} ].
 - The =%%= is a literal percent sign.
 
@@ -3181,16 +3182,21 @@ include some text that makes Denote buffers stand out, such as
 a =[D]= prefix.  Examples:
 
 #+begin_src emacs-lisp
-;; Use the title prefixed with the backlink indicator (default)
-(setq denote-rename-buffer-format "%b%t")
+;; Use the title prefixed with the backlink indicator (default).
+(setq denote-rename-buffer-format "%t %b")
 
-;; Customize what the backlink indicator looks like
-(setq denote-buffer-has-backlinks-string "!! ")
+;; Customize what the backlink indicator looks like.  This two-faced
+;; arrow is the default.
+(setq denote-rename-buffer-backlinks-indicator "<-->")
 
-;; Use the title and keywords with some emoji in between
+;; Use just the title and keywords with some emoji in between, because
+;; why not?
 (setq denote-rename-buffer-format "%t 🤨 %k")
 
-;; Use the title with a literal "[D]" before it
+;; Use the title with a literal "[D]" before it.
+(setq denote-rename-buffer-format "[D] %t")
+
+;; As above, but also add the `denote-rename-buffer-backlinks-indicator' at the end.
 (setq denote-rename-buffer-format "[D] %t")
 #+end_src
 
