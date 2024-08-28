@@ -130,10 +130,11 @@ Also see `denote-org-extras-backlinks-for-heading'."
 
 ;;;; Heading backlinks
 
-(defun denote-org-extras--get-file-id-and-heading-id (file)
-  "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for FILE heading at point."
+(defun denote-org-extras--get-file-id-and-heading-id (&optional file)
+  "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for FILE heading at point.
+If FILE is nil, use the variable `buffer-file-name'."
   (if-let ((heading-id (org-entry-get (point) "CUSTOM_ID")))
-      (concat (denote-retrieve-filename-identifier-with-error file) "::#" heading-id)
+      (concat (denote-retrieve-filename-identifier-with-error (or file buffer-file-name)) "::#" heading-id)
     (error "No CUSTOM_ID for heading at point in file `%s'" file)))
 
 (defun denote-org-extras--get-backlinks-buffer-name (text)
