@@ -2837,12 +2837,13 @@ instead. Reproducing it here for the sake of convenience:
 :CUSTOM_ID: h:604bf92a-908a-485c-98b8-37ccae559afd
 :END:
 
-The optional =denote-org-extras.el= can produce Denote links to
+The optional =denote-org-extras.el= can generate Denote links to
 individual headings ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
 It is then possible to produce a corresponding backlinks buffer with
 the command ~denote-org-extras-backlinks-for-heading~. The resulting
 buffer behaves the same way as the standard backlinks buffer we
-provide ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+provide ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]). An Org dynamic block with backlinks
+to the current heading is also an option ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]).
 
 ** Writing metanotes
 :PROPERTIES:
@@ -3316,6 +3317,15 @@ line to update the block.
   which case links are inserted without a description text but only
   with the identifier of the given file. This has the same meaning as
   with the ~denote-link~ command and related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
+
+- The =:this-heading-only= parameter determines if the backlinks are
+  about the file or the heading under which the dynamic block is
+  ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). When this parameter is omitted or nil
+  (the default), then the backlinks are about the whole file, but if
+  this parameter has a ~t~ value then the backlinks are specifically
+  for the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
+
+  [ The =:this-heading-only= parameter is part of {{{development-version}}}. ]
 
 - An optional =:block-name= parameter can be specified with a string
   value to add a =#+name= to the results. This is useful for further

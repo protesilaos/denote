@@ -141,6 +141,17 @@ If FILE is nil, use the variable `buffer-file-name'."
   "Format a buffer name for `denote-org-extras-backlinks-for-heading' with TEXT."
   (format "*Denote HEADING backlinks for %S*" text))
 
+(defun denote-org-extras--get-backlinks-for-heading (file-and-heading-id)
+  "Get backlinks to FILE-AND-HEADING-ID as a list of strings."
+  (when-let ((xref-alist (xref--analyze
+                          (xref-matches-in-files
+                           file-and-heading-id
+                           (denote-directory-files nil :omit-current :text-only)))))
+    (mapcar
+     (lambda (x)
+       (denote-get-file-name-relative-to-denote-directory (car x)))
+     xref-alist)))
+
 ;;;###autoload
 (defun denote-org-extras-backlinks-for-heading ()
   "Produce backlinks for the current heading.
@@ -459,7 +470,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                            :excluded-dirs-regexp nil
                            :sort-by-component nil
                            :reverse-sort nil
-                           :id-only nil))
+                           :id-only nil
+                           :this-heading-only nil))
   (org-update-dblock))
 
 ;; NOTE 2024-03-30: This is how the autoload is done in org.el.
@@ -472,7 +484,9 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (when-let ((files (denote-link-return-backlinks)))
+  (when-let ((files (if (plist-get params :this-heading-only)
+                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id))
+                      (denote-link-return-backlinks))))
     (let* ((sort (plist-get params :sort-by-component))
            (reverse (plist-get params :reverse-sort))
            (denote-excluded-directories-regexp (or (plist-get params :excluded-dirs-regexp)
