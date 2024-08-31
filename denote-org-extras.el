@@ -384,7 +384,8 @@ Also see `denote-org-extras-dblock--files'."
                            :excluded-dirs-regexp nil
                            :sort-by-component nil
                            :reverse-sort nil
-                           :id-only nil))
+                           :id-only nil
+                           :include-date nil))
   (org-update-dblock))
 
 ;; NOTE 2024-03-30: This is how the autoload is done in org.el.
@@ -401,12 +402,13 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
+         (include-date (plist-get params :include-date))
          (block-name (plist-get params :block-name))
          (denote-excluded-directories-regexp (or (plist-get params :excluded-dirs-regexp)
                                                  denote-excluded-directories-regexp))
          (files (denote-org-extras-dblock--files rx sort reverse)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting)
+    (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting include-date)
     (join-line))) ; remove trailing empty line
 
 ;;;;; Dynamic block to insert missing links
@@ -423,7 +425,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                            :excluded-dirs-regexp nil
                            :sort-by-component nil
                            :reverse-sort nil
-                           :id-only nil))
+                           :id-only nil
+                           :include-date nil))
   (org-update-dblock))
 
 ;; NOTE 2024-03-30: This is how the autoload is done in org.el.
@@ -440,12 +443,13 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
+         (include-date (plist-get params :include-date))
          (block-name (plist-get params :block-name))
          (denote-excluded-directories-regexp (or (plist-get params :excluded-dirs-regexp)
                                                  denote-excluded-directories-regexp))
          (files (denote-org-extras-dblock--files-missing-only rx sort reverse)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting)
+    (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting include-date)
     (join-line))) ; remove trailing empty line
 
 ;;;;; Dynamic block to insert backlinks
@@ -471,7 +475,8 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                            :sort-by-component nil
                            :reverse-sort nil
                            :id-only nil
-                           :this-heading-only nil))
+                           :this-heading-only nil
+                           :include-date nil))
   (org-update-dblock))
 
 ;; NOTE 2024-03-30: This is how the autoload is done in org.el.
@@ -489,10 +494,11 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
                       (denote-link-return-backlinks))))
     (let* ((sort (plist-get params :sort-by-component))
            (reverse (plist-get params :reverse-sort))
+           (include-date (plist-get params :include-date))
            (denote-excluded-directories-regexp (or (plist-get params :excluded-dirs-regexp)
                                                    denote-excluded-directories-regexp))
            (files (denote-org-extras-dblock--maybe-sort-backlinks files sort reverse)))
-      (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting)
+      (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting include-date)
       (join-line)))) ; remove trailing empty line
 
 ;;;;; Dynamic block to insert entire file contents

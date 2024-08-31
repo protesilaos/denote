@@ -6192,12 +6192,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
   Kolmas, M. Hadi Timachi, Maikol Solis, Mark Olson, Mirko Hernandez,
   Niall Dooley, Nick Bell, Paul van Gelder, Peter Prevos, Peter Smith,
-  Samuel W. Flint, Suhail Singh, Shreyas Ragavan, Stefan Thesing,
-  Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
-  Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri,
-  coherentstate, doolio, duli, drcxd, elge70, fingerknight, hpgisler,
-  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, skissue,
-  sundar bp, yetanotherfossman, zadca123
+  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
+  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
+  (VicZz), Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, azegas,
+  babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
+  hpgisler, mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic,
+  skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
