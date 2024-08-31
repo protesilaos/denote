@@ -3989,10 +3989,20 @@ Also see `denote-link-return-backlinks'."
   (when-let ((current-file (or file (buffer-file-name)))
              ((denote-file-has-supported-extension-p current-file))
              (file-type (denote-filetype-heuristics current-file))
-             (regexp (denote--link-in-context-regexp file-type)))
-    (with-temp-buffer
-      (insert-file-contents current-file)
-      (denote-link--expand-identifiers regexp))))
+             (regexp (denote--link-in-context-regexp file-type))
+             (files (denote-directory-files))
+             (file-identifiers
+              (with-temp-buffer
+                (insert-file-contents current-file)
+                (denote-link--collect-identifiers regexp)))
+             (file-identifiers-hash-table (make-hash-table :test 'equal)))
+    (dolist (id file-identifiers)
+      (puthash id t file-identifiers-hash-table))
+    (let ((found-files))
+      (dolist (file files)
+        (when (gethash (denote-retrieve-filename-identifier file) file-identifiers-hash-table)
+          (push file found-files)))
+      found-files)))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias for `denote-link-return-links'.")
