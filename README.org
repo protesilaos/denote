@@ -3244,7 +3244,7 @@ Evaluate:
 (info "(org) Dynamic Blocks")
 #+end_src
 
-** Org dynamic blocks to insert links or backlinks
+** Org dynamic blocks to insert links
 :PROPERTIES:
 :CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
 :END:
@@ -3263,9 +3263,11 @@ The =denote-links= block can be inserted at point with the command
 ~denote-org-extras-dblock-insert-links~ or by manually including the
 following in an Org file:
 
-: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :id-only nil
+: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
 :
 : #+END:
+
+All the parameters except for =:regexp= are optional.
 
 The =denote-links= block is also registered as an option for the
 command ~org-dynamic-block-insert-dblock~.
@@ -3318,43 +3320,77 @@ line to update the block.
   with the identifier of the given file. This has the same meaning as
   with the ~denote-link~ command and related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
-- The =:this-heading-only= parameter determines if the backlinks are
-  about the file or the heading under which the dynamic block is
-  ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). When this parameter is omitted or nil
-  (the default), then the backlinks are about the whole file, but if
-  this parameter has a ~t~ value then the backlinks are specifically
-  for the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
-
-  [ The =:this-heading-only= parameter is part of {{{development-version}}}. ]
+- The =:include-date= parameter controls whether to display the date
+  of the file name after the title. This is done when its value is
+  ~t~. By default (a nil value), no date is shown. [ Part of {{{development-version}}}. ]
 
 - An optional =:block-name= parameter can be specified with a string
   value to add a =#+name= to the results. This is useful for further
   processing using Org facilities (a feature that is outside Denote's
   purview).
 
-#+findex: denote-org-extras-dblock-insert-backlinks
-The same as above except for the =:regexp= parameter are true for the
-=denote-backlinks= block. The block can be inserted at point with the
-command ~denote-org-extras-dblock-insert-backlinks~ or by manually writing
-this in an Org file:
+In some workflows, users may want to have a separate block to see what
+other links they are missing since they last updated the dynamic
+block. We cover that case as well ([[#h:1a81e255-0510-4ee0-bc3a-374de048ef46][The Org dynamic block to insert missing links only]]).
 
-: #+BEGIN: denote-backlinks :sort-by-component nil :reverse-sort nil :id-only nil
-:
-: #+END:
+** The Org dynamic block to insert missing links only
+:PROPERTIES:
+:CUSTOM_ID: h:1a81e255-0510-4ee0-bc3a-374de048ef46
+:END:
 
 #+findex: denote-org-extras-dblock-insert-missing-links
-Finally, the =denote-missing-links= block is available with the
-command ~denote-org-extras-dblock-insert-missing-links~. It is like
-the aforementioned =denote-links= block, except it only lists links to
-files that are not present in the current buffer. The parameters are
-otherwise the same:
+The =denote-missing-links= block is available with the command
+~denote-org-extras-dblock-insert-missing-links~. It is like the
+aforementioned =denote-links= block, except it only lists links to
+files that are not present in the current buffer ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links]]).
+The parameters are otherwise the same and are all optional except for
+=:regexp=:
 
-: #+BEGIN: denote-missing-links :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :id-only nil
+: #+BEGIN: denote-missing-links :regexp "YOUR REGEXP HERE" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
 :
 : #+END:
+
+The =denote-missing-links= block is also registered as an option for the
+command ~org-dynamic-block-insert-dblock~.
 
 Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 =#+BEGIN= line to update the block.
+
+** The Org dynamic block to insert backlinks
+:PROPERTIES:
+:CUSTOM_ID: h:f9a97859-1deb-47dd-bdae-52f8b424ff46
+:END:
+
+#+findex: denote-org-extras-dblock-insert-backlinks
+Apart from links to files matching a regular expression, we can also
+produce a list of backlinks to the current file. The dynamic block can
+be inserted at point with the command ~denote-org-extras-dblock-insert-backlinks~
+or by manually writing this in an Org file:
+
+: #+BEGIN: denote-backlinks :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :this-heading-only nil :include-date nil
+:
+: #+END:
+
+The =denote-backlinks= block is also registered as an option for the
+command ~org-dynamic-block-insert-dblock~.
+
+Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
+=#+BEGIN= line to update the block.
+
+The parameters recognised by this dynamic block are almost the same as
+that for inserting links ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links]]). They
+are all optional in this case and there is no parameter expecting a
+regular expression for matching files to link to.
+
+Additionally, the ~denote-backlinks~ block also recognises the
+=:this-heading-only= parameter. It determines if the backlinks are
+about the file or the heading under which the dynamic block is inserted
+([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). When this parameter is omitted or nil
+(the default), then the backlinks are about the whole file, but if
+this parameter has a ~t~ value then the backlinks are specifically for
+the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]). 
+
+[ The =:this-heading-only= parameter is part of {{{development-version}}}. ]
 
 ** Org dynamic block to insert file contents
 :PROPERTIES:
@@ -3386,16 +3422,21 @@ or manually write the following block in an Org file and then type
  =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line to run it
 (do it again to recalculate the block):
 
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE"
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
 :
 : #+END:
+
+All parameters are optional except for =:regexp=.
+
+The =denote-files= block is also registered as an option for the
+command ~org-dynamic-block-insert-dblock~.
+
+Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
+=#+BEGIN= line to update the block.
 
 To fully control the output, include these additional optional
 parameters, which are described further below:
 
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
-:
-: #+END:
 
 - The =:regexp= parameter is mandatory. Its value is a string,
   representing a regular expression to match Denote file names. Its
@@ -3492,7 +3533,8 @@ subheadings of what once was the =#+title=. Similarly, the
 Because of how it is meant to work, this dynamic block only works with
 Org files.
 
-In its simplest form, this dynamic block looks like this:
+In its simplest form, this dynamic block looks like this, with
+=:regexp= as the only mandatory parameter:
 
 : #+BEGIN: denote-files-as-headings :regexp "YOUR REGEXP HERE"
 :
