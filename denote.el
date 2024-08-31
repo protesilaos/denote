@@ -4418,8 +4418,11 @@ non-nil value."
     (with-current-buffer (get-buffer-create backlinks-buffer)
       (erase-buffer)
       (denote-backlinks-mode)
-      ;; Set the `denote-directory' after enabling the major mode,
-      ;; otherwise its value gets overwritten.
+      ;; In the backlinks buffer, the values of variables set in a
+      ;; `.dir-locals.el` do not apply.  We need to set `denote-directory' in
+      ;; the backlinks buffer because the buttons depend on it.  Moreover, its
+      ;; value is overwritten after enabling the major mode, so it needs to be
+      ;; set after.
       (setq-local denote-directory dir)
       (setq overlay-arrow-position nil)
       (goto-char (point-min))
