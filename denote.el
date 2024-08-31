@@ -3953,9 +3953,9 @@ function."
         (push (match-string-no-properties 1) matches)))
     matches))
 
-(defun denote-link--expand-identifiers (regexp files)
-  "Expand identifiers matching REGEXP in FILES into file paths."
-  (let ((files files)
+(defun denote-link--expand-identifiers (regexp)
+  "Expend identifiers matching REGEXP into file paths."
+  (let ((files (denote-directory-files))
         found-files)
     (dolist (file files)
       (dolist (i (denote-link--collect-identifiers regexp))
@@ -3990,10 +3990,19 @@ Also see `denote-link-return-backlinks'."
              ((denote-file-has-supported-extension-p current-file))
              (file-type (denote-filetype-heuristics current-file))
              (regexp (denote--link-in-context-regexp file-type))
-             (files (denote-directory-files)))
-    (with-temp-buffer
-      (insert-file-contents current-file)
-      (denote-link--expand-identifiers regexp files))))
+             (files (denote-directory-files))
+             (file-identifiers
+              (with-temp-buffer
+                (insert-file-contents current-file)
+                (denote-link--collect-identifiers regexp)))
+             (file-identifiers-hash-table (make-hash-table :test 'equal)))
+    (dolist (id file-identifiers)
+      (puthash id t file-identifiers-hash-table))
+    (let ((found-files))
+      (dolist (file files)
+        (when (gethash (denote-retrieve-filename-identifier file) file-identifiers-hash-table)
+          (push file found-files)))
+      found-files)))
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias for `denote-link-return-links'.")
@@ -4409,8 +4418,11 @@ non-nil value."
     (with-current-buffer (get-buffer-create backlinks-buffer)
       (erase-buffer)
       (denote-backlinks-mode)
-      ;; Set the `denote-directory' after enabling the major mode,
-      ;; otherwise its value gets overwritten.
+      ;; In the backlinks buffer, the values of variables set in a
+      ;; `.dir-locals.el` do not apply.  We need to set `denote-directory' in
+      ;; the backlinks buffer because the buttons depend on it.  Moreover, its
+      ;; value is overwritten after enabling the major mode, so it needs to be
+      ;; set after.
       (setq-local denote-directory dir)
       (setq overlay-arrow-position nil)
       (goto-char (point-min))
