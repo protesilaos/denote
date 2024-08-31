@@ -6195,7 +6195,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Samuel W. Flint, Suhail Singh, Shreyas Ragavan, Stefan Thesing,
   Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
   Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri,
-  doolio, duli, drcxd, elge70, fingerknight, hpgisler,
+  coherentstate, doolio, duli, drcxd, elge70, fingerknight, hpgisler,
   mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, skissue,
   sundar bp, yetanotherfossman, zadca123
 

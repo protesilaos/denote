@@ -2670,7 +2670,8 @@ See the format of `denote-file-types'."
   (and (derived-mode-p 'org-mode)
        (or (and (bound-and-true-p org-capture-mode)
                 (string-match-p "\\`CAPTURE-.*" (buffer-name)))
-           (string-match-p "\\`\\*Org Note\\*" (buffer-name)))))
+           (string-match-p "\\`\\*Org Note\\*" (buffer-name))
+           (null buffer-file-name))))
 
 (defun denote-filetype-heuristics (file)
   "Return likely file type of FILE.
