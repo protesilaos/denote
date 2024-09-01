@@ -505,7 +505,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
   "Make sure that `denote-journal-extras-daily--title-format' yields the desired format."
   (should (and
            ;; These three should prompt, but I am here treating the
-           ;; prompt as if already returned a string.  The test for
+           ;; prompt as if it already returned a string.  The test for
            ;; the `denote-title-prompt' can be separate.
            (stringp
             (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
