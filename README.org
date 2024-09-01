@@ -4878,6 +4878,10 @@ might change them without further notice.
   Once we have a better understanding of what we should be omitting,
   we will update things accordingly.
 
+#+findex: denote-identifier-p
++ Function ~denote-identifier-p~ :: Return non-nil if =IDENTIFIER=
+  string is a Denote identifier. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-file-is-note-p
 + Function ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an
   actual Denote note. For our purposes, a note must satisfy
