@@ -143,10 +143,9 @@ If FILE is nil, use the variable `buffer-file-name'."
 
 (defun denote-org-extras--get-backlinks-for-heading (file-and-heading-id)
   "Get backlinks to FILE-AND-HEADING-ID as a list of strings."
-  (when-let ((xref-alist (xref--analyze
-                          (xref-matches-in-files
-                           file-and-heading-id
-                           (denote-directory-files nil :omit-current :text-only)))))
+  (when-let ((files (denote-directory-files nil :omit-current :text-only))
+             (matches-in-files (xref-matches-in-files file-and-heading-id files))
+             (xref-alist (xref--analyze matches-in-files)))
     (mapcar
      (lambda (x)
        (denote-get-file-name-relative-to-denote-directory (car x)))
