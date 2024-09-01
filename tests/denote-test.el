@@ -487,6 +487,16 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (denote-retrieve-filename-signature "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "signature"))))
 
+(ert-deftest denote-test--denote-identifier-p ()
+  "Test that `denote-identifier-p' works for Denote identifiers."
+  (should (and (denote-identifier-p "20240901T090910")
+               (null (denote-identifier-p "20240901T090910-not-identifier-format")))))
+
+(ert-deftest denote-test--denote--id-to-date ()
+  "Test that `denote--id-to-date' returns the date from an identifier."
+  (should (equal (denote--id-to-date "20240901T090910") "2024-09-01"))
+  (should-error (denote--id-to-date "20240901T090910-not-identifier-format")))
+
 ;;;; denote-journal-extras.el
 
 (require 'denote-journal-extras)
