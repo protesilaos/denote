@@ -1,6 +1,6 @@
 ;;; denote-test.el --- Unit tests for Denote -*- lexical-binding: t -*-
 
-;; Copyright (C) 2023  Free Software Foundation, Inc.
+;; Copyright (C) 2023-2024  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Denote Development <~protesilaos/denote@lists.sr.ht>
