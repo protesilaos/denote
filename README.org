@@ -3212,7 +3212,7 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 [ As part of version 2.3.0, all dynamic blocks are defined in the file
   =denote-org-extras.el=. The file which was once called
   =denote-org-dblock.el= contains aliases for the new function names
-  and dipslays a warning about its deprecation. There is no need to
+  and displays a warning about its deprecation. There is no need to
   ~require~ the ~denote-org-extras~ feature because all of Denote's
   Org dynamic blocks are autoloaded (meaning that they work as soon as
   they are used). For backward compatibility, all dynamic blocks
@@ -3252,7 +3252,7 @@ Evaluate:
 [ As part of version 2.3.0, all dynamic blocks are defined in the file
   =denote-org-extras.el=. The file which was once called
   =denote-org-dblock.el= contains aliases for the new function names
-  and dipslays a warning about its deprecation. There is no need to
+  and displays a warning about its deprecation. There is no need to
   ~require~ the ~denote-org-extras~ feature because all of Denote's
   Org dynamic blocks are autoloaded (meaning that they work as soon as
   they are used). For backward compatibility, all dynamic blocks
@@ -3400,7 +3400,7 @@ the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org fi
 [ As part of version 2.3.0, all dynamic blocks are defined in the file
   =denote-org-extras.el=. The file which was once called
   =denote-org-dblock.el= contains aliases for the new function names
-  and dipslays a warning about its deprecation. There is no need to
+  and displays a warning about its deprecation. There is no need to
   ~require~ the ~denote-org-extras~ feature because all of Denote's
   Org dynamic blocks are autoloaded (meaning that they work as soon as
   they are used). For backward compatibility, all dynamic blocks
