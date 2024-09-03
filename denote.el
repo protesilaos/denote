@@ -928,6 +928,8 @@ to override what this function returns."
       (denote--make-denote-directory)
       denote-directory)))
 
+;;;;; Sluggification functions
+
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
 Concretely, replace with an empty string anything that matches
@@ -1057,6 +1059,8 @@ any leading and trailing signs."
   (mapcar (lambda (keyword)
             (denote-sluggify 'keyword keyword))
           keywords))
+
+;;;;; Common helper functions
 
 (defun denote--file-empty-p (file)
   "Return non-nil if FILE is empty."
