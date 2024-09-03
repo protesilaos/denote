@@ -5104,6 +5104,12 @@ might change them without further notice.
 + Function ~denote-get-identifier-at-point~ :: Return the identifier
   at point or =POINT=. [ Part of {{{development-version}}}. ]
 
+#+findex: denote-slug-keep-only-ascii
++ Function ~denote-slug-keep-only-ascii~ :: Remove all non-ASCII
+  characters from =STR= and replace them with spaces. This is useful
+  as a helper function to construct ~denote-file-name-slug-functions~
+  ([[#h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a][Custom sluggification to remove non-ASCII characters]]).
+
 #+findex: denote-sluggify
 + Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
   file name =COMPONENT= ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
