@@ -48,6 +48,12 @@ Concretely, replace with spaces anything that matches the
   (should (equal (denote--slug-no-punct "This is !@# test")
                  "This is  test")))
 
+(ert-deftest denote-test--denote-slug-keep-only-ascii ()
+  "Test that `denote-slug-keep-only-ascii' removes non-ASCII characters."
+  (should (equal
+           (denote-slug-keep-only-ascii "There are no-ASCII ： characters ｜ here 😀")
+           "There are no-ASCII   characters   here  ")))
+
 (ert-deftest denote-test--denote--slug-hyphenate ()
   "Test that `denote--slug-hyphenate' hyphenates the string.
 Also replace multiple hyphens with a single one and remove any
