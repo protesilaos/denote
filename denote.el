@@ -943,6 +943,9 @@ This is useful as a helper function to construct
          (characters (seq-filter #'characterp ascii-range)))
     (mapconcat #'string characters)))
 
+;; TODO 2024-09-03: After Denote version 3.1.0 I want to make those
+;; public because (i) they are stable and (ii) we want to encourage
+;; people to use them as part of their `denote-file-name-slug-functions'.
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
 Concretely, replace with an empty string anything that matches
@@ -958,6 +961,7 @@ as the aforementioned variables."
       (setq str (replace-regexp-in-string regexp "" str))))
   str)
 
+;; See above TODO.
 (defun denote--slug-no-punct-for-signature (str &optional extra-characters)
   "Remove punctuation (except = signs) from STR.
 
@@ -973,6 +977,7 @@ EXTRA-CHARACTERS is an optional string.  See
       (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" str))))
   str)
 
+;; See above TODO.
 (defun denote--slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
@@ -983,10 +988,12 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
+;; See above TODO.
 (defun denote--remove-dot-characters (str)
   "Remove dot characters from STR."
   (replace-regexp-in-string "\\." "" str))
 
+;; See above TODO.
 (defun denote--trim-right-token-characters (str component)
   "Remove =, -, _ and @ from the end of STR.
 The removal is done only if necessary according to COMPONENT."
@@ -994,6 +1001,7 @@ The removal is done only if necessary according to COMPONENT."
       (string-trim-right str "[=@_]+")
     (string-trim-right str "[=@_-]+")))
 
+;; See above TODO.
 (defun denote--replace-consecutive-token-characters (str component)
   "Replace consecutive characters with a single one in STR.
 Hyphens, underscores, equal signs and at signs are replaced with
