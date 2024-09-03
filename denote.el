@@ -175,7 +175,7 @@ create or modify at the end of their operation.
 If this user option is nil (the default), buffers affected by a
 creation or renaming command are not automatically killed.
 
-If set to `on-creation', new notes are automatically kill.
+If set to `on-creation', new notes are automatically killed.
 
 If set to `on-rename', renamed notes are automatically killed.
 
