@@ -2191,7 +2191,7 @@ Denote. For example, we have this:
         (keyword . denote-sluggify-keyword)))
 #+end_src
 
-Follow this principle for all the sluggification functions.
+Follow this principle for all the sluggification functions ([[#h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a][Custom sluggification to remove non-ASCII characters]]).
 
 To access the source code, use either of the following built-in
 methods:
@@ -2211,6 +2211,72 @@ concomitant restrictions we impose by default are there for a very
 good reason: they are the distillation of years of experience. Here we
 give you what you wish, but bear in mind it may not be what you need.
 You have been warned.
+
+*** Custom sluggification to remove non-ASCII characters
+:PROPERTIES:
+:CUSTOM_ID: h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a
+:END:
+
+[ This relies on the ~denote-slug-keep-only-ascii~ function, which is
+  part of {{{development-version}}}. ]
+
+A common use-case for Denote is to rename files such as videos
+downloaded from the Internet. Sometimes, those files have Unicode
+characters that (i) not all fonts support and (ii) create all sorts of
+problems with pattern matching, such as when searching through file
+names.
+
+By default, Denote does not remove Unicode characters because users
+may actually want them (e.g. Latin characters with accents). Those who
+do, however, wish to keep everything limited to the ASCII range can
+use the following in their Emacs configuration ([[#h:d375c6d2-92c7-425f-9d9d-219ff47ed2a3][User-defined sluggification of file name components]]).
+
+#+begin_src emacs-lisp
+;; These are the same as the default Denote sluggification functions,
+;; except they remove all non-ASCII characters.
+
+(defun prot/denote-sluggify-title (str &optional extra-characters)
+  "Make STR have no punctuation or non-ASCII characters.
+EXTRA-CHARACTERS is an optional string that specifies a regular
+expression like `denote-excluded-punctuation-regexp'.
+
+This can be used in `denote-file-name-slug-functions'."
+  (let ((string (denote-slug-keep-only-ascii str)))
+    (dolist (regexp (list denote-excluded-punctuation-regexp
+                          denote-excluded-punctuation-extra-regexp
+                          extra-characters))
+      (when (stringp regexp)
+        (setq str (replace-regexp-in-string regexp "" string))))
+    string))
+
+(defun prot/denote-sluggify-for-signature (str &optional extra-characters)
+  "Like `prot/denote-sluggify-title' for Denote signatures.
+STR and EXTRA-CHARACTERS have the same meaning as that function.
+
+This can be used in `denote-file-name-slug-functions'."
+  (let ((string (denote-slug-keep-only-ascii str)))
+    (dolist (regexp (list denote-excluded-punctuation-regexp
+                          denote-excluded-punctuation-extra-regexp
+                          extra-characters))
+      (when (stringp regexp)
+        (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" string))))
+    string))
+
+(defun prot/denote-sluggify-keyword (str)
+  "Sluggify STR while joining separate words.
+This is like `prot/denote-sluggify-title' and is intended for use in
+`denote-file-name-slug-functions'."
+  (let ((string (denote-slug-keep-only-ascii str)))
+    (downcase
+     (replace-regexp-in-string
+      "-" ""
+      (denote--slug-hyphenate (denote--slug-no-punct string))))))
+
+(setq denote-file-name-slug-functions
+      '((title . prot/denote-sluggify-title)
+        (signature . prot/denote-sluggify-for-signature)
+        (keyword . prot/denote-sluggify-for-keyword)))
+#+end_src
 
 ** Features of the file-naming scheme for searching or filtering
 :PROPERTIES:
