@@ -158,7 +158,9 @@ If this user option is set to a non-nil value, such buffers are
 saved automatically.  The assumption is that the user who opts in
 to this feature is familiar with the `denote-rename-file'
 operation (or related) and knows it is reliable.  Data loss may
-occur if the file is modified externally."
+occur if the file is modified externally.
+
+Also see `denote-kill-buffers'."
   :group 'denote
   :package-version '(denote . "3.0.0")
   :type 'boolean)
@@ -171,17 +173,19 @@ The default behaviour of creation or renaming commands such as
 create or modify at the end of their operation.
 
 If this user option is nil (the default), buffers affected by a
-creation or renaming command are not automatically killed.  If
-set to `on-creation', new notes are automatically kill.  If set
-to `on-rename', renamed notes are automatically killed.  If set
-to t, new and renamed notes are killed.
+creation or renaming command are not automatically killed.
 
-If a buffer is killed, it is also saved, as if
-`denote-save-buffers' were t. See its documentation.
+If set to `on-creation', new notes are automatically kill.
 
-In all cases, if a note was already visited at the beginning of
-an operation (such as a renaming command), it is NOT
-automatically killed."
+If set to `on-rename', renamed notes are automatically killed.
+
+If set to t, new and renamed notes are killed.
+
+If a buffer is killed, it is also saved, as if `denote-save-buffers'
+were t. See its documentation.
+
+In all cases, if the buffer already existed before the Denote operation
+it is NOT automatically killed."
   :group 'denote
   :package-version '(denote . "3.1.0")
   :type '(choice
