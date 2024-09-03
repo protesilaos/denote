@@ -930,6 +930,19 @@ to override what this function returns."
 
 ;;;;; Sluggification functions
 
+(defun denote-slug-keep-only-ascii (str)
+  "Remove all non-ASCII characters from STR.
+This is useful as a helper function to construct
+`denote-file-name-slug-functions'."
+  (let* ((ascii-range (seq-map
+                       (lambda (character)
+                         (if (and (>= character 33) (<= character 126))
+                             character
+                           32)) ; empty space
+                       str))
+         (characters (seq-filter #'characterp ascii-range)))
+    (mapconcat #'string characters)))
+
 (defun denote--slug-no-punct (str &optional extra-characters)
   "Remove punctuation from STR.
 Concretely, replace with an empty string anything that matches
