@@ -2867,6 +2867,11 @@ Backlinks to "On being honest" (20220614T130812)
 62: indifference.  In [[denote:20220614T130812][On being honest]] I alluded
 #+end_example
 
+#+findex: denote-backlinks-toggle-context
+The command ~denote-backlinks-toggle-context~ will toggle between the
+compact and detailed views inside of the current backlinks buffer. [
+Part of {{{development-version}}}. ]
+
 Note that the width of the lines in the context depends on the
 underlying file.  In the above example, the lines are split at the
 ~fill-column~.  Long lines will show up just fine.  Also note that the
