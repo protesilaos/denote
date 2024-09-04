@@ -41,13 +41,13 @@
 (defvaralias 'denote-buffer-has-backlinks-string 'denote-rename-buffer-backlinks-indicator
   "Alias for `denote-rename-buffer-backlinks-indicator'.")
 
-(defcustom denote-rename-buffer-backlinks-indicator "<-->"
+(defcustom denote-rename-buffer-backlinks-indicator " <-->"
   "A string used to indicate that a buffer has backlinks pointing to it."
   :type 'string
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-rename-buffer-format "[D] %t %b"
+(defcustom denote-rename-buffer-format "[D] %t%b"
   "The format of the buffer name `denote-rename-buffer' should use.
 Thie value is a string that treats specially the following
 specifiers:
