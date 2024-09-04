@@ -47,7 +47,7 @@
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-rename-buffer-format "%t %b"
+(defcustom denote-rename-buffer-format "[D] %t %b"
   "The format of the buffer name `denote-rename-buffer' should use.
 Thie value is a string that treats specially the following
 specifiers:
