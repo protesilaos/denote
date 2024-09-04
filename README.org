@@ -2234,48 +2234,31 @@ use the following in their Emacs configuration ([[#h:d375c6d2-92c7-425f-9d9d-219
 #+begin_src emacs-lisp
 ;; These are the same as the default Denote sluggification functions,
 ;; except they remove all non-ASCII characters.
+(defun my-denote-sluggify-title (str)
+  (downcase
+   (denote--slug-hyphenate
+    (denote--slug-no-punct
+     (denote-slug-keep-only-ascii str)))))
 
-(defun prot/denote-sluggify-title (str &optional extra-characters)
-  "Make STR have no punctuation or non-ASCII characters.
-EXTRA-CHARACTERS is an optional string that specifies a regular
-expression like `denote-excluded-punctuation-regexp'.
+(defun my-denote-sluggify-signature (str)
+  (downcase
+   (denote--slug-put-equals
+    (denote--slug-no-punct-for-signature
+     (denote-slug-keep-only-ascii str)
+     "-+"))))
 
-This can be used in `denote-file-name-slug-functions'."
-  (let ((string (denote-slug-keep-only-ascii str)))
-    (dolist (regexp (list denote-excluded-punctuation-regexp
-                          denote-excluded-punctuation-extra-regexp
-                          extra-characters))
-      (when (stringp regexp)
-        (setq str (replace-regexp-in-string regexp "" string))))
-    string))
+(defun my-denote-sluggify-keyword (str)
+  (downcase
+   (replace-regexp-in-string
+    "-" ""
+    (denote--slug-hyphenate
+     (denote--slug-no-punct
+      (denote-slug-keep-only-ascii str))))))
 
-(defun prot/denote-sluggify-for-signature (str &optional extra-characters)
-  "Like `prot/denote-sluggify-title' for Denote signatures.
-STR and EXTRA-CHARACTERS have the same meaning as that function.
-
-This can be used in `denote-file-name-slug-functions'."
-  (let ((string (denote-slug-keep-only-ascii str)))
-    (dolist (regexp (list denote-excluded-punctuation-regexp
-                          denote-excluded-punctuation-extra-regexp
-                          extra-characters))
-      (when (stringp regexp)
-        (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" string))))
-    string))
-
-(defun prot/denote-sluggify-keyword (str)
-  "Sluggify STR while joining separate words.
-This is like `prot/denote-sluggify-title' and is intended for use in
-`denote-file-name-slug-functions'."
-  (let ((string (denote-slug-keep-only-ascii str)))
-    (downcase
-     (replace-regexp-in-string
-      "-" ""
-      (denote--slug-hyphenate (denote--slug-no-punct string))))))
-
-(setq denote-file-name-slug-functions
-      '((title . prot/denote-sluggify-title)
-        (signature . prot/denote-sluggify-for-signature)
-        (keyword . prot/denote-sluggify-for-keyword)))
+(defcustom denote-file-name-slug-functions
+  '((title . my-denote-sluggify-title)
+    (signature . my-denote-sluggify-signature)
+    (keyword . my-denote-sluggify-keyword)))
 #+end_src
 
 ** Features of the file-naming scheme for searching or filtering
