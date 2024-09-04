@@ -13,6 +13,522 @@ the manual: <https://protesilaos.com/emacs/denote>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 3.1.0 on 2024-09-04
+:PROPERTIES:
+:CUSTOM_ID: h:f089ab11-4ad7-4fd9-9bf3-2deb2e070297
+:END:
+
+Denote is stable and reliable though we keep adding minor refinements
+to it. Remember that many---if not all---of these are intended for
+experienced users who have developed their own workflow and want to
+adapt Denote to its particularities. We may call them "power users".
+
+New users do not need to know about every single feature. A basic
+configuration is enough and is why the original video I did about
+Denote (from even before I published version =0.1.0=) is still relevant.
+For example:
+
+#+begin_src emacs-lisp
+;; Start with something like this.
+(use-package denote
+  :ensure t
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n i" . denote-link) ; "insert" mnemonic
+   ("C-c n b" . denote-backlinks))
+  :config
+  (setq denote-directory (expand-file-name "~/Documents/notes/")))
+#+end_src
+
+And here is the same idea with a little bit more convenience:
+
+#+begin_src emacs-lisp
+;; Another basic setup with a little more to it.
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n l" . denote-link)
+   ("C-c n b" . denote-backlinks))
+  :config
+  (setq denote-directory (expand-file-name "~/Documents/notes/"))
+
+  ;; Automatically rename Denote buffers when opening them so that
+  ;; instead of their long file name they have a literal "[D]"
+  ;; followed by the file's title.  Read the doc string of
+  ;; `denote-rename-buffer-format' for how to modify this.
+  (denote-rename-buffer-mode 1))
+#+end_src
+
+** The ~denote-sort-dired~ command is more configurable
+:PROPERTIES:
+:CUSTOM_ID: h:717765ae-f76f-4b41-96c0-895fe131a83d
+:END:
+
+The ~denote-sort-dired~ command asks for a literal string or regular
+expression and then produces a fully fledged Dired listing of matching
+files in the ~denote-directory~. Combined with the efficient Denote
+file-naming scheme, this is a killer feature to collect your relevant
+files in a consolidated view and have the full power of Dired available.
+
+By default ~denote-sort-dired~ prompts for the file name component to
+sort by and then asks whether to reverse the sorting or not. Users who
+want a more streamlined experience can configure the user option
+~denote-sort-dired-extra-prompts~.
+
+It is possible to skip the prompts altogether and use the default
+values for (i) which component to sort by and (ii) whether to reverse
+the sort. To this end, users can have something like this in their
+configuration:
+
+#+begin_src emacs-lisp
+;; Do not issue any extra prompts.  Always sort by the `title' file
+;; name component and never do a reverse sort.
+(setq denote-sort-dired-extra-prompts nil)
+(setq denote-sort-dired-default-sort-component 'title)
+(setq denote-sort-dired-default-reverse-sort nil)
+#+end_src
+
+For me, Dired is one of the best things about Emacs and I like how it
+combines so nicely with Denote file names (this is the cornerstone of
+Denote, after all).
+
+** The ~denote-sort-dired~ sorting functions are customisable
+:PROPERTIES:
+:CUSTOM_ID: h:7c4824c0-7f9b-46f5-98ea-4ebbab092193
+:END:
+
+Power users may want to control how the sorting works and what it is
+matching on a per file-name-component basis. The user options are
+these:
+
+- ~denote-sort-title-comparison-function~.
+- ~denote-sort-keywords-comparison-function~.
+- ~denote-sort-signature-comparison-function~.
+
+One use-case is to match specific patterns inside of file names, such
+as Luhmann-style signatures. I wrote about this in the manual as well
+as on my blog (with screenshots):
+<https://protesilaos.com/codelog/2024-08-01-emacs-denote-luhmann-signature-sort/>.
+
+Thanks to Riccardo Giannitrapani for discussing this with me and
+helping me understand the use-case better. This was done via a private
+channel and I am sharing it with permission.
+
+** Show the date of each linked file in Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:ad222eb0-06db-4416-820c-c60f31169f66
+:END:
+
+All our Org dynamic blocks that produce links to files now read the
+parameter =:include-date=. When it is set to =t=, the listed files
+will include their corresponding date inside of parentheses after the
+file's title.
+
+Thanks to Sergio Rey for describing this idea to me. This was done via
+a private channel and the information is shared with permission.
+
+** Exclude specific directories from Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:5c0b76fc-2758-4a33-875a-fa9eee705d83
+:END:
+
+The optional Org dynamic blocks we define let users collect links to
+other files (and more) in a quick and effective way. Each block
+accepts parameters which control its output, such as how to sort
+files.
+
+All our dynamic blocks now accept the =:excluded-dirs-regexp=. This is
+a regular expression which is matched against directory file system
+paths. Matching directories and their files are not included in the
+data handled by the dynamic block.
+
+Note that we have the user option ~denote-excluded-punctuation-regexp~
+which defines a global preference along the same lines.
+
+I did a video about this feature:
+<https://protesilaos.com/codelog/2024-07-30-emacs-denote-exclude-dirs-org-blocks/>.
+
+Thanks to Claudio Migliorelli for discussing this idea with me. It was
+done via a private channel and this information is shared with permission.
+
+** New dynamic block to insert files as headings
+:PROPERTIES:
+:CUSTOM_ID: h:0cae3fdb-ba83-46f0-9006-13d0073ae092
+:END:
+
+We already had an Org dynamic block that would insert file contents.
+Though that one inserts files as they are, optionally without their
+front matter. However, users may have a workflow where they want to
+eventually copy some of the block's output into the main file they are
+editing, at which point it is easier for the entire inserted file to
+appear as a series of headings. The =#+title= of the inserted file
+becomes a top-level heading and every other heading is pushed deeper
+one level.
+
+To this end, we provide the Org dynamic block known as ~denote-files-as-headings~.
+Insert it with the command ~denote-org-extras-dblock-insert-files-as-headings~
+or select it with the minibuffer after calling Org's own command
+~org-dynamic-block-insert-dblock~.
+
+The top-level headings (those that were the =#+title=) can optionally
+link back to the original file. Though please read the manual for all
+the parameters this dynamic block takes.
+
+** The dynamic block for backlinks can be about the current heading only
+:PROPERTIES:
+:CUSTOM_ID: h:6e6deff6-c02d-4157-85c0-fc405f64ad34
+:END:
+
+The Org dynamic block for backlinks can now read the optional
+=:this-heading-only= parameter. When it is set to =t=, the block will
+only include links that point to the specific heading inside of the
+current file. Otherwise, backlinks are about the whole file.
+
+To insert such a dynamic block, use the command
+~denote-org-extras-dblock-insert-backlinks~.
+
+** Toggle the detailed view in backlinks buffers
+:PROPERTIES:
+:CUSTOM_ID: h:01b4dfb0-3883-4cc8-ac41-8a7b55e42fe8
+:END:
+
+By default, the buffer produced by the command ~denote-backlinks~ has
+a compact view of showing the file names linking to the current file.
+With the user option ~denote-backlinks-show-context~ set to a non-nil
+value, the backlinks buffer produces a detailed listing of matching
+results, where the links are shown in their original context.
+
+Users can now choose to have this on-demand by calling the command
+~denote-backlinks-toggle-context~ which switches between the detailed
+and compact views.
+
+This blog post I wrote about it include screenshots:
+<https://protesilaos.com/codelog/2024-07-25-emacs-denote-backlinks-context-toggle/>.
+
+** Templates can have a function that returns a string
+:PROPERTIES:
+:CUSTOM_ID: h:8d0ac1eb-d057-4fce-bf60-98d5de932a0d
+:END:
+
+The ~denote-templates~ variable allows the user to specify one or more
+named templates which can then be inserted during the creation of a
+new note. One way to be prompted for a template among those specified
+is to modify the ~denote-prompts~ user option and then use the regular
+~denote~ command. Another way is to use the command ~denote-template~
+(alias ~denote-create-note-with-template~), which will prompt for the
+template to use.
+
+Templates ordinarily have a string as their value, though now their
+value can also be the symbol of a function. This function takes no
+arguments and is expected to return a string. Denote takes care to
+insert that below the front matter of the new note.
+
+So it can look like this:
+
+#+begin_src emacs-lisp
+(setq denote-templates
+      `((report . "* Some heading\n\n* Another heading") ; A string with newline characters
+        (blog . my-denote-template-function-for-blog) ; the symbol of a function that will return a string
+        (memo . ,(concat "* Some heading" ; expand this `concat' into a string
+                         "\n\n"
+                         "* Another heading"
+                         "\n\n"))))
+#+end_src
+
+Thanks to skissue (Ad) for the contribution in pull request 398:
+<https://github.com/protesilaos/denote/pull/398>. The change is small,
+meaning that its author does not need to assign copyright to the Free
+Software Foundation.
+
+Also thanks to Jean-Philippe Gagné Guay for extending this to
+~denote-org-capture~. Done in pull request 399:
+<https://github.com/protesilaos/denote/pull/399>. Jean-Philippe is a
+long-time contributor who has assigned copyright to the Free Software
+Foundation.
+
+** The ~denote-rename-buffer-mode~ can now show if a file has backlinks
+:PROPERTIES:
+:CUSTOM_ID: h:b163982b-3fea-48c8-90a0-d8358e066951
+:END:
+
+This global minor mode takes care to rename the buffers of Denote
+files to a pattern that is easier for users to read. As with
+everything, it is highly configurable. The default value now includes
+an indicator that shows if the current file has backlinks (other files
+linking to it).
+
+The exact characters used in this indicator are specified in the new
+user option ~denote-rename-buffer-backlinks-indicator~. The default
+value is ="<-->"=, which hopefully communicates the idea of a link
+(but, yeah, symbolism is hard). Users may want to modify this to add
+some fancier Unicode character.
+
+Thanks to Ashton Wiersdorf for the original contribution in pull
+request 392: <https://github.com/protesilaos/denote/pull/392>. Ashton
+has assigned copyright to the Free Software Foundation.
+
+** The ~denote-rename-buffer-format~ has changed
+:PROPERTIES:
+:CUSTOM_ID: h:8913785e-5c87-48ab-9df2-dafbbb9b1a5d
+:END:
+
+In the same theme as above, the user option ~denote-rename-buffer-format~
+has a new default value. Before, it would only show the title of the
+file. Now it shows the aforementioned ~denote-rename-buffer-backlinks-indicator~,
+if there are backlinks, plus the title, plus a literal ="[D]"= prefix.
+The prefix should make it easier to spot Denote files in a buffer
+listing.
+
+Read the documentation of ~denote-rename-buffer-format~ for how to
+tweak this to your liking.
+
+** New user option ~denote-kill-buffers~
+:PROPERTIES:
+:CUSTOM_ID: h:14177204-6269-48c1-bc65-de72b59d4e84
+:END:
+
+This controls whether and when Denote should automatically kill any
+buffer it generates while creating a new note or renaming an existing
+file. The manual describes the details.
+
+By default, Denote does not kill any buffers to give users the chance
+to review what is on display and confirm any changes or revert them
+accordingly.
+
+Thanks to Jean-Philippe Gagné Guay for the contribution in pull
+request 426: <https://github.com/protesilaos/denote/pull/426>. This is
+related to issues 273 and 413, so also thanks to Vineet C. Kulkarni
+and mentalisttraceur for their participation and/or questions.
+
+** The ~denote-journal-extras-new-or-existing-entry~ handles any filename component order
+:PROPERTIES:
+:CUSTOM_ID: h:0b570a97-3e0c-488f-9c9d-02d2f8ac786f
+:END:
+
+Version =3.0.0= of Denote introduced a new option to rearrange the
+file name components. All Denote commands should respect it. We did,
+however, have a problem with the command ~denote-journal-extras-new-or-existing-entry~ 
+which was not recognising the date properly.
+
+Thanks to Jakub Szczerbowski for the contribution in pull request 395:
+<https://github.com/protesilaos/denote/pull/395>. The change is small,
+meaning that Jakub does not need to assign copyright to the Free
+Software Foundation.
+
+While I am documenting this here, users should already have the fix as
+I published a minor release for it in July (in fact, there were 8
+minor releases in the aftermath of the =3.0.0= release, which
+addressed several small issues).
+
+** The ~denote-rename-file-using-front-matter~ recognises the file-at-point in Dired
+:PROPERTIES:
+:CUSTOM_ID: h:01f652c5-5713-4884-8a01-ee39f1388a12
+:END:
+
+This makes it consistent with how ~denote-rename-file~ works. I am
+implemented this in response to issue 401 where Alp Eren Kose assumed
+it was the default behaviour: <https://github.com/protesilaos/denote/issues/401>.
+
+I think it makes sense to have it this way to avoid such confusion.
+Still, it seems easier to edit the file and call ~denote-rename-file-using-front-matter~
+directly, rather do an intermediate step through Dired.
+
+** The ~denote-rename-file-using-front-matter~ does not ask to rewrite front matter
+:PROPERTIES:
+:CUSTOM_ID: h:337c5640-8e75-408e-b5cf-4a37ac8e249b
+:END:
+
+The workflow for this command is that the user modifies the front
+matter, invokes the command, and Denote takes care to rename the file
+accordingly. We had a regression were this would happen as expected,
+but Denote would still prompt if it was okay to update the front
+matter. That made no sense.
+
+As with the change mentioned above, this was also fixed in a minor
+release so that users would not have to wait all this time.
+
+** The ~denote-add-links~ and ~denote-find-link~ commands always works inside a silo
+:PROPERTIES:
+:CUSTOM_ID: h:9c343ddb-a31a-41d5-90c2-ce54622558fa
+:END:
+
+This was always the intended behaviour, though there was an issue with
+the implementation that prevented the directory-local value from being
+read.
+
+Thanks to yetanotherfossman for reporting the problem with
+~denote-add-links~ in issue 386 and to Kolmas for doing the same for
+~denote-find-link~:
+
+- <https://github.com/protesilaos/denote/issues/386>.
+- <https://github.com/protesilaos/denote/issues/416>.
+
+Also thanks to Jean-Philippe Gagné Guay for following up with a change
+to the code that should address the underlying problem with temporary
+buffers. This was done in pull request 419:
+<https://github.com/protesilaos/denote/pull/419>.
+
+** Denote commands should work in more special Org buffers
+:PROPERTIES:
+:CUSTOM_ID: h:e33bea49-f2b4-43ee-96ac-d24630c9bcd7
+:END:
+
+A case we already handled was ~org-capture~ buffers. Another one is
+the buffer produced by the command ~org-tree-to-indirect-buffer~.
+
+Thanks to coherentstate for bringing this matter to my attention in
+issue 418: <https://github.com/protesilaos/denote/issues/418>.
+
+Also thanks to skissue for noting another edge case that prevented
+~denote-rename-buffer-mode~ from doing the right thing. This was
+reported in issue 393: <https://github.com/protesilaos/denote/issues/393>.
+
+** Denote will not create a =CUSTOM_ID= via ~org-capture~ if not necessary
+:PROPERTIES:
+:CUSTOM_ID: h:c9c04d9a-776d-4b6b-826a-cd9a56f31643
+:END:
+
+If the ~org-capture~ template does not include one of the specifiers
+which produce a link, then we take care to not include a =CUSTOM_ID=
+in the properties of the current heading. We do this to make it
+possible to link directly to a heading inside of a file (a feature
+that is documented in the manual).
+
+Before, we were creating the =CUSTOM_ID= unconditionally, which was
+not the desired behaviour. Thanks to Jonas Großekathöfer for bringing
+this matter to my attention in issue 404:
+<https://github.com/protesilaos/denote/issues/404>.
+
+** The prompt for selecting a silo has the appropriate metadata
+:PROPERTIES:
+:CUSTOM_ID: h:cc5951b1-ee87-4126-b3f2-91c32e3431ae
+:END:
+
+All the Denote minibuffer prompts have the appropriate completion
+metadata to integrate with core Emacs functionalities and with
+third-party packages that leverage them. One such case pertains to the
+completion category our prompts report. This is used by a package such
+as ~embark~ to infer the set of relevant actions to perform or by the
+~marginalia~ package to produce the appropriate annotations.
+
+Users will now notice a difference while using commands such as
+~denote-silo-extras-create-note~ if they have ~marginalia-mode~
+enabled: all completion candidates will have file-related annotations.
+
+This is a small change which goes to show how the little things
+contribute to a more refined experience.
+
+** New name for option that controls where backlinks buffers are displayed
+:PROPERTIES:
+:CUSTOM_ID: h:3e0e2242-8802-4c63-adce-0e20d3f27ad9
+:END:
+
+The user option is now called ~denote-backlinks-display-buffer-action~.
+The old name ~denote-link-backlinks-display-buffer-action~ is an alias
+for it and will thus work the same way. Though you are encouraged to
+rename it in your configuration as I will eventually remove those
+obsolete symbols from the Denote code base.
+
+** The ~revert-buffer~ should do the right thing in backlinks buffers
+:PROPERTIES:
+:CUSTOM_ID: h:2982cfcd-6bef-452d-aa0d-d8ab4e721b25
+:END:
+
+I made several tweaks to the underlying code to ensure that reverting
+a backlinks buffer will always reuse the original parameters that
+generated it. Backlinks buffers are produced by the ~denote-backlinks~
+command, among others.
+
+** Lots of new entries in the manual with custom code
+:PROPERTIES:
+:CUSTOM_ID: h:991d980b-1353-4b53-8ae4-ae09450cce05
+:END:
+
+The manual of Denote is a rich resource of knowledge for how to use
+this package and how to extend it with custom code. I have written the
+following entries to further help you improve your productivity:
+
+- A custom ~denote-region~ that references the source
+- Custom sluggification to remove non-ASCII characters
+- Sort signatures that include Luhmann-style sequences
+- Why are some Org links opening outside Emacs?
+
+** More functions for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:2e41930a-1907-47f2-956e-fef8b2459461
+:END:
+
+The following functions are now public, meaning that they are safe to
+be used in the code of other packages or incorporated in user
+configurations:
+
+- ~denote-identifier-p~.
+
+- ~denote-get-identifier-at-point~. I am implementing this in response
+  to a question by Alan Schmitt in issue 400: <https://github.com/protesilaos/denote/issues/400>.
+
+- ~denote-org-extras-outline-prompt~.
+
+- ~denote-silo-extras-directory-prompt~.
+
+Consult their respective doc strings for the technicalities.
+
+Note that the Elisp convention is that private functions (intended for
+use only inside the package) have a double dash (=--=) in their name.
+In principle, these are undocumented and can change at any moment
+without any notice. I do try to avoid such cases and even add warnings
+when I make changes to them. Still, you should not use private
+functions without understanding the risks involved.
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:be41d902-8d65-4012-aad2-d66507d34f78
+:END:
+
+- Wrote more unit tests for various functions.
+- Improve the doc strings of several symbols (everything in the Denote
+  code base is documented).
+- Fix some typos thanks to Nicolas Semrau and bryanrinders:
+  - <https://github.com/protesilaos/denote/commit/e7cfd48bd63e0815718cd9f1f0465d8c1c4f4a84>.
+  - <https://github.com/protesilaos/denote/pull/425>.
+- Commented on all sorts of issues on the GitHub repository and many
+  more in private.
+
+** New release cycle starts in mid-September
+:PROPERTIES:
+:CUSTOM_ID: h:2b55dd84-6ebe-438d-aba8-97dd329ec34e
+:END:
+
+I have many ideas for how to further refine Denote. Maybe you do too.
+Though we must all wait a couple of weeks in case someone reports a
+bug. This way, it is easy to fix it and publish a new minor version.
+Otherwise, we may have to bundle the fix with some in-development
+feature that we have not fully tested yet.
+
+** Git commits
+:PROPERTIES:
+:CUSTOM_ID: h:c0da6de0-c683-4029-9d95-06c27102dc4a
+:END:
+
+This is just an overview of the Git commits, though remember that
+there is more that goes into a project, such as the reporting of
+inconsistencies, discussion of new ideas, etc.. Thanks to everybody
+involved!
+
+#+begin_src 
+~/Git/Projects/denote $ git shortlog 3.0.0..3.1.0 --summary --numbered
+   104	Protesilaos Stavrou
+     7	Jean-Philippe Gagné Guay
+     3	Ashton Wiersdorf
+     1	Ad
+     1	Jakub Szczerbowski
+     1	bryanrinders
+#+end_src
+
 * Version 3.0.0 on 2024-06-30
 :PROPERTIES:
 :CUSTOM_ID: h:bf5e869d-548f-4c77-bf1c-b7dcf6d1d4da

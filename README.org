@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 3.0.0
-#+macro: release-date 2024-06-30
-#+macro: development-version 3.1.0-dev
+#+macro: stable-version 3.1.0
+#+macro: release-date 2024-09-04
+#+macro: development-version 3.2.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -333,9 +333,6 @@ minibuffer completion, due to the specifics of their data.
 :CUSTOM_ID: h:f635a490-d29e-4608-9372-7bd13b34d56c
 :END:
 
-[ Updated as part of {{{development-version}}} to accept a function
-  that returns a string. This is in addition to accepting a string. ]
-
 #+vindex: denote-templates
 The user option ~denote-templates~ is an alist of content templates for
 new notes.  A template is arbitrary text that Denote will add to a newly
@@ -410,8 +407,6 @@ For when the =VALUE= is a function, we have this:
                          "* Another heading"
                          "\n\n"))))
 #+end_src
-
-[ This is part of {{{development-version}}}. ]
 
 In this example, ~my-denote-template-function-for-blog~ is a function
 that returns a string. Denote will take care to insert it in the buffer.
@@ -596,8 +591,6 @@ related) and knows it is reliable ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Re
 :PROPERTIES:
 :CUSTOM_ID: h:c8fd826f-3ac9-4820-9709-4375603f8865
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 #+vindex: denote-kill-buffers
 The user option ~denote-kill-buffers~ controls whether to kill a
@@ -2217,9 +2210,6 @@ You have been warned.
 :CUSTOM_ID: h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a
 :END:
 
-[ This relies on the ~denote-slug-keep-only-ascii~ function, which is
-  part of {{{development-version}}}. ]
-
 A common use-case for Denote is to rename files such as videos
 downloaded from the Internet. Sometimes, those files have Unicode
 characters that (i) not all fonts support and (ii) create all sorts of
@@ -2869,8 +2859,7 @@ Backlinks to "On being honest" (20220614T130812)
 
 #+findex: denote-backlinks-toggle-context
 The command ~denote-backlinks-toggle-context~ will toggle between the
-compact and detailed views inside of the current backlinks buffer. [
-Part of {{{development-version}}}. ]
+compact and detailed views inside of the current backlinks buffer.
 
 Note that the width of the lines in the context depends on the
 underlying file.  In the above example, the lines are split at the
@@ -2919,10 +2908,6 @@ instead. Reproducing it here for the sake of convenience:
         (dedicated . t)
         (preserve-size . (t . t))))
 #+end_src
-
-[ As part of {{{development-version}}}, the user option
-  ~denote-link-backlinks-display-buffer-action~ is now called
-  ~denote-backlinks-display-buffer-action~. ]
 
 *** Backlinks for Org headings
 :PROPERTIES:
@@ -3254,7 +3239,7 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 - The =%b= is an indicator of whether or not the file has backlinks
   pointing to it. The indicator string is defined in the user option
   ~denote-rename-buffer-backlinks-indicator~, alias
-  ~denote-buffer-has-backlinks-string~ [ Part of {{{development-version}}} ].
+  ~denote-buffer-has-backlinks-string~.
 - The =%%= is a literal percent sign.
 
 In addition, the following flags are available for each of the specifiers:
@@ -3275,12 +3260,13 @@ include some text that makes Denote buffers stand out, such as
 a =[D]= prefix.  Examples:
 
 #+begin_src emacs-lisp
-;; Use the title prefixed with the backlink indicator (default).
-(setq denote-rename-buffer-format "%t %b")
+;; Use a literal [D] prefix, followed by the title and then the
+;; backlinks indicator (default).
+(setq denote-rename-buffer-format "[D] %t%b")
 
 ;; Customize what the backlink indicator looks like.  This two-faced
 ;; arrow is the default.
-(setq denote-rename-buffer-backlinks-indicator "<-->")
+(setq denote-rename-buffer-backlinks-indicator  "<-->")
 
 ;; Use just the title and keywords with some emoji in between, because
 ;; why not?
@@ -3392,8 +3378,7 @@ line to update the block.
   other symbol, then the ~denote-excluded-directories-regexp~ is
   ignored altogether. This is useful in the scenario where the user
   option is set to exclude some directories but the dynamic blocks
-  wants to lift that restriction. [ The =excluded-dirs-regexp=
-  parameter is part of {{{development-version}}}. ]
+  wants to lift that restriction.
 
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
@@ -3414,7 +3399,7 @@ line to update the block.
 
 - The =:include-date= parameter controls whether to display the date
   of the file name after the title. This is done when its value is
-  ~t~. By default (a nil value), no date is shown. [ Part of {{{development-version}}}. ]
+  ~t~. By default (a nil value), no date is shown.
 
 - An optional =:block-name= parameter can be specified with a string
   value to add a =#+name= to the results. This is useful for further
@@ -3481,8 +3466,6 @@ about the file or the heading under which the dynamic block is inserted
 (the default), then the backlinks are about the whole file, but if
 this parameter has a ~t~ value then the backlinks are specifically for
 the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]). 
-
-[ The =:this-heading-only= parameter is part of {{{development-version}}}. ]
 
 ** Org dynamic block to insert file contents
 :PROPERTIES:
@@ -3551,8 +3534,7 @@ parameters, which are described further below:
   other symbol, then the ~denote-excluded-directories-regexp~ is
   ignored altogether. This is useful in the scenario where the user
   option is set to exclude some directories but the dynamic blocks
-  wants to lift that restriction. [ The =excluded-dirs-regexp=
-  parameter is part of {{{development-version}}}. ]
+  wants to lift that restriction.
 
 - The =:sort-by-component= parameter is optional. It sorts the files
   by the given Denote file name component. The value it accepts is an
@@ -3605,8 +3587,6 @@ parameters, which are described further below:
 :PROPERTIES:
 :CUSTOM_ID: h:d6254a12-b762-4096-a5de-66a0d423e204
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 [ IMPORTANT NOTE: This dynamic block only works with Org files,
   because it has to assume the Org notation in order to insert each
@@ -3722,8 +3702,6 @@ also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic bl
 :CUSTOM_ID: h:a34228cb-484f-48fe-9cbc-8e41f313127b
 :END:
 
-[ Part of {{{development-version}}}. ]
-
 #+vindex: denote-sort-dired-extra-prompts
 By default, the ~denote-sort-dired~ command prompts for (i) a query to
 match file names, (ii) a file name component to sort by, and (iii)
@@ -3767,8 +3745,6 @@ Here are some examples:
 :PROPERTIES:
 :CUSTOM_ID: h:c958e087-1d23-4a25-afdd-db7bf5606b4c
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 When sorting by =title=, =keywords=, or =signature= with the
 ~denote-sort-dired~ command, Denote will internally apply a sorting
@@ -4972,7 +4948,7 @@ might change them without further notice.
 
 #+findex: denote-identifier-p
 + Function ~denote-identifier-p~ :: Return non-nil if =IDENTIFIER=
-  string is a Denote identifier. [ Part of {{{development-version}}}. ]
+  string is a Denote identifier.
 
 #+findex: denote-file-is-note-p
 + Function ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an
@@ -5090,7 +5066,7 @@ might change them without further notice.
 
 #+findex: denote-get-identifier-at-point
 + Function ~denote-get-identifier-at-point~ :: Return the identifier
-  at point or =POINT=. [ Part of {{{development-version}}}. ]
+  at point or =POINT=.
 
 #+findex: denote-slug-keep-only-ascii
 + Function ~denote-slug-keep-only-ascii~ :: Remove all non-ASCII
@@ -6321,9 +6297,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   (nobiot), Norwid Behrnd, Peter Prevos, Philip Kaludercic, Quiliro
   Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut
   Benjamin, Tomasz Hołubowicz, Vedang Manerikar, Wesley Harvey, Zhenxu
-  Xu, arsaber101, ezchi, jarofromel, leinfink (Henrik), l-o-l-h
-  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
-  relict007, skissue.
+  Xu, arsaber101, bryanrinders, ezchi, jarofromel, leinfink (Henrik),
+  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
+  pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,
@@ -6336,12 +6312,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
   Kolmas, M. Hadi Timachi, Maikol Solis, Mark Olson, Mirko Hernandez,
   Niall Dooley, Nick Bell, Paul van Gelder, Peter Prevos, Peter Smith,
-  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
-  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
-  (VicZz), Viktor Haag, Wade Mealing, Yi Liu, Ypot, atanasj, azegas,
-  babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
-  hpgisler, mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic,
-  skissue, sundar bp, yetanotherfossman, zadca123
+  Riccardo Giannitrapani, Samuel W. Flint, Sergio Rey, Suhail Singh,
+  Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
+  Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni,
+  Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri, coherentstate,
+  doolio, duli, drcxd, elge70, fingerknight, hpgisler,
+  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, skissue,
+  sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
