@@ -2994,7 +2994,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
 `denote-kill-buffers'."
   (let* ((initial-state (if (find-buffer-visiting file) 'visited 'not-visited))
          (file-type (denote-filetype-heuristics file))
-         (current-title (or (denote-retrieve-front-matter-title-value file file-type) ""))
+         (current-title (or (denote-retrieve-title-or-filename file file-type) ""))
          (current-keywords (denote-extract-keywords-from-path file))
          (current-signature (or (denote-retrieve-filename-signature file) ""))
          (title (if (eq title 'keep-current) current-title title))
