@@ -3061,7 +3061,7 @@ renaming commands."
     (list title keywords signature date)))
 
 ;;;###autoload
-(defun denote-rename-file (file &optional title keywords signature date)
+(defun denote-rename-file (file title keywords signature date)
   "Rename file and update existing front matter if appropriate.
 
 Always rename the file where it is located in the file system:
