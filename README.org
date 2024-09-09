@@ -1492,8 +1492,8 @@ an instruction to remove that file name component. For example, if a
 =TITLE= prompt is available and =FILE= is =20240211T093531--some-title__keyword1.org=
 then it renames =FILE= to =20240211T093531__keyword1.org=.
 
-In interactive use, if there is no entry for a file name
-component in `denote-prompts', keep it as-is.
+In interactive use, if there is no entry for a file name component in
+~denote-prompts~, keep it as-is ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
 
 When called from Lisp, the special symbol `keep-current' can be
 used for the TITLE, KEYWORDS, SIGNATURE and DATE parameters to
