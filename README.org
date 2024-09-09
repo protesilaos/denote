@@ -4009,15 +4009,137 @@ configuration:
 (add-hook 'after-init-hook #'savehist-mode)
 #+end_src
 
+* Packages that build on Denote
+:PROPERTIES:
+:CUSTOM_ID: h:08b14682-e73f-4b11-b2e2-be3b788c8572
+:END:
+
+This is a list of packages that extend Denote. If you are a package
+author, please let us know about your work and we will include it
+here (either use the Git repositories or email Protesilaos directly).
+
+** Use the ~consult-denote~ package for enhanced minibuffer interactions
+:PROPERTIES:
+:CUSTOM_ID: h:113a13e1-35da-46f1-9414-81e9be2facc1
+:END:
+
+The ~consult-denote~ package by me (Protesilaos) integrates Denote
+with Daniel Mendler's ~consult~ package: <https://github.com/protesilaos/consult-denote>.
+
+The idea is to preserve the familiar patterns of interaction with the
+various Denote commands but add to them an extra layer of
+functionality, such as the preview mechanism that Consult provides
+(e.g. preview the file you are about to link to).
+
+Additionally, ~consult-denote~ defines new "sources" for the
+~consult-buffer~ command. This command provides a single point of
+entry for buffers, recently opened files, and bookmarks. With
+~consult-denote~, it has a dedicated place for Denote-specific
+buffers, silos, and more (all of which are configurable).
+
+Unlike the ~consult-notes~ package by Colin McLear, ~consult-denote~
+uses the same presentation of data in the minibuffer to stay in sync
+with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
+It also only works with Denote.
+
+** Use the ~denote-explore~ package to explore your notes
+:PROPERTIES:
+:CUSTOM_ID: h:110ae3a4-5fc6-45da-b9bb-0e294bd12981
+:END:
+
+Peter Prevos has developed the ~denote-explore~ package which provides
+four groups of Emacs commands to explore your Denote files:
+
+- Summary statistics :: Count notes, attachments and keywords.
+- Random walks :: Generate new ideas using serendipity.
+- Janitor :: Manage your denote collection.
+- Visualisations :: Visualise your Denote network.
+
+The package's documentation covers the details:
+<https://lucidmanager.org/productivity/denote-explore/>.
+
+** Use the ~citar-denote~ package for bibliography notes
+:PROPERTIES:
+:CUSTOM_ID: h:226d66e4-b7de-4617-87e2-a7f2d6f007dd
+:END:
+
+Peter Prevos has produced the ~citar-denote~ package which makes it
+possible to write notes on BibTeX entries with the help of the ~citar~
+package.  These notes have the citation's unique key associated with
+them in the file's front matter.  They also get a configurable keyword
+in their file name, making it easy to find them in Dired and/or
+retrieve them with the various Denote methods.
+
+With ~citar-denote~, the user leverages standard minibuffer completion
+mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
+to manage bibliographic notes and access those notes with ease.  The
+package's documentation covers the details: <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>.
+
+** Use the ~consult-notes~ package
+:PROPERTIES:
+:CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
+:END:
+
+[ Also check the ~consult-denote~ package by me (Protesilaos):
+  [[#h:113a13e1-35da-46f1-9414-81e9be2facc1][Use the ~consult-denote~ package for enhanced minibuffer interactions]]. ]
+
+If you are using Daniel Mendler's ~consult~ (which is a brilliant
+package), you will most probably like its ~consult-notes~ extension,
+developed by Colin McLear.  It uses the familiar mechanisms of Consult
+to preview the currently selected entry and to filter searches via a
+prefix key.  For example:
+
+#+begin_src emacs-lisp
+(setq consult-notes-file-dir-sources
+      `(("Denote Notes"  ?d ,(denote-directory))
+        ("Books"  ?b "~/Documents/books/")))
+#+end_src
+
+With the above, =M-x consult-notes= will list the files in those two
+directories.  If you type =d= and space, it narrows the list to just
+the notes, while =b= does the same for books.
+
+The other approach is to enable the ~consult-notes-denote-mode~.  It
+takes care to add the ~denote-directory~ to the sources that
+~consult-notes~ reads from.  Denote notes are then filtered by the =d=
+prefix followed by a space.
+
+The minor mode has the extra feature of reformatting the title of
+notes shown in the minibuffer.  It isolates the =TITLE= component of
+each note and shows it without hyphens, while presenting keywords in
+their own column.  The user option ~consult-notes-denote-display-id~
+can be set to ~nil~ to hide the identifier.  Depending on how one
+searches through their notes, this refashioned presentation may be the
+best option ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
+
+** Use the ~denote-menu~ package
+:PROPERTIES:
+:CUSTOM_ID: h:472db709-27de-4a1f-a171-c3fe0a7a9be8
+:END:
+
+Denote's file-naming scheme is designed to be efficient and to provide
+valueable meta information about the file.  The cost, however, is that
+it is terse and harder to read, depending on how the user chooses to
+filter and process their notes.
+
+To this end, [[https://github.com/namilus/denote-menu][the ~denote-menu~ package by Mohamed Suliman]] provides the
+convenience of a nice tabular interface for all notes.  ~denote-menu~
+removes the delimiters that are found in Denote file names and
+presents the information in a human-readable format.  Furthermore, the
+package provides commands to interact with the list of notes, such as
+to filter them and to transition from the tabular list to Dired.  Its
+documentation expands on the technicalities.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
 :END:
 
 Denote is a tool with a narrow scope: create notes and link between
-them, based on the aforementioned file-naming scheme.  For other common
+them, based on the aforementioned file-naming scheme. For other common
 operations the user is advised to rely on standard Emacs facilities or
-specialised third-party packages.  This section covers the details.
+specialised third-party packages ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]]). This
+section covers the details.
 
 ** Create a new note in any directory
 :PROPERTIES:
@@ -4293,118 +4415,6 @@ has the means to group together buffers, recent files, and bookmarks.
 Each of those types can be narrowed to with a prefix key.  The package
 =consult-dir= is an extension to =consult= which provides useful extras
 for working with directories, including bookmarks.
-
-** Use the ~denote-explore~ package to explore your notes
-:PROPERTIES:
-:CUSTOM_ID: h:110ae3a4-5fc6-45da-b9bb-0e294bd12981
-:END:
-
-Peter Prevos has developed the ~denote-explore~ package which provides
-four groups of Emacs commands to explore your Denote files:
-
-- Summary statistics :: Count notes, attachments and keywords.
-- Random walks :: Generate new ideas using serendipity.
-- Janitor :: Manage your denote collection.
-- Visualisations :: Visualise your Denote network.
-
-The package's documentation covers the details:
-<https://lucidmanager.org/productivity/denote-explore/>.
-
-** Use the ~citar-denote~ package for bibliography notes
-:PROPERTIES:
-:CUSTOM_ID: h:226d66e4-b7de-4617-87e2-a7f2d6f007dd
-:END:
-
-Peter Prevos has produced the ~citar-denote~ package which makes it
-possible to write notes on BibTeX entries with the help of the ~citar~
-package.  These notes have the citation's unique key associated with
-them in the file's front matter.  They also get a configurable keyword
-in their file name, making it easy to find them in Dired and/or
-retrieve them with the various Denote methods.
-
-With ~citar-denote~, the user leverages standard minibuffer completion
-mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
-to manage bibliographic notes and access those notes with ease.  The
-package's documentation covers the details: <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>.
-
-** Use the ~consult-denote~ package for enhanced minibuffer interactions
-:PROPERTIES:
-:CUSTOM_ID: h:113a13e1-35da-46f1-9414-81e9be2facc1
-:END:
-
-The ~consult-denote~ package by me (Protesilaos) integrates Denote
-with Daniel Mendler's ~consult~ package: <https://github.com/protesilaos/consult-denote>.
-
-The idea is to preserve the familiar patterns of interaction with the
-various Denote commands but add to them an extra layer of
-functionality, such as the preview mechanism that Consult provides
-(e.g. preview the file you are about to link to).
-
-Additionally, ~consult-denote~ defines new "sources" for the
-~consult-buffer~ command. This command provides a single point of
-entry for buffers, recently opened files, and bookmarks. With
-~consult-denote~, it has a dedicated place for Denote-specific
-buffers, silos, and more (all of which are configurable).
-
-Unlike the ~consult-notes~ package by Colin McLear, ~consult-denote~
-uses the same presentation of data in the minibuffer to stay in sync
-with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
-It also only works with Denote.
-
-** Use the ~consult-notes~ package
-:PROPERTIES:
-:CUSTOM_ID: h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d
-:END:
-
-[ Also check the ~consult-denote~ package by me (Protesilaos):
-  [[#h:113a13e1-35da-46f1-9414-81e9be2facc1][Use the ~consult-notes~ package for enhanced minibuffer interactions]]. ]
-
-If you are using Daniel Mendler's ~consult~ (which is a brilliant
-package), you will most probably like its ~consult-notes~ extension,
-developed by Colin McLear.  It uses the familiar mechanisms of Consult
-to preview the currently selected entry and to filter searches via a
-prefix key.  For example:
-
-#+begin_src emacs-lisp
-(setq consult-notes-file-dir-sources
-      `(("Denote Notes"  ?d ,(denote-directory))
-        ("Books"  ?b "~/Documents/books/")))
-#+end_src
-
-With the above, =M-x consult-notes= will list the files in those two
-directories.  If you type =d= and space, it narrows the list to just
-the notes, while =b= does the same for books.
-
-The other approach is to enable the ~consult-notes-denote-mode~.  It
-takes care to add the ~denote-directory~ to the sources that
-~consult-notes~ reads from.  Denote notes are then filtered by the =d=
-prefix followed by a space.
-
-The minor mode has the extra feature of reformatting the title of
-notes shown in the minibuffer.  It isolates the =TITLE= component of
-each note and shows it without hyphens, while presenting keywords in
-their own column.  The user option ~consult-notes-denote-display-id~
-can be set to ~nil~ to hide the identifier.  Depending on how one
-searches through their notes, this refashioned presentation may be the
-best option ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
-
-** Use the ~denote-menu~ package
-:PROPERTIES:
-:CUSTOM_ID: h:472db709-27de-4a1f-a171-c3fe0a7a9be8
-:END:
-
-Denote's file-naming scheme is designed to be efficient and to provide
-valueable meta information about the file.  The cost, however, is that
-it is terse and harder to read, depending on how the user chooses to
-filter and process their notes.
-
-To this end, [[https://github.com/namilus/denote-menu][the ~denote-menu~ package by Mohamed Suliman]] provides the
-convenience of a nice tabular interface for all notes.  ~denote-menu~
-removes the delimiters that are found in Denote file names and
-presents the information in a human-readable format.  Furthermore, the
-package provides commands to interact with the list of notes, such as
-to filter them and to transition from the tabular list to Dired.  Its
-documentation expands on the technicalities.
 
 ** Treat your notes as a project
 :PROPERTIES:
@@ -4906,10 +4916,10 @@ Everything is in place to set up the package.
 :END:
 
 Denote is in a stable state and can be relied upon as the basis for
-custom extensions.  Further below is a list with the functions or
-variables we provide for public usage.  Those are in addition to all
-user options and commands that are already documented in the various
-sections of this manual.
+custom extensions ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]]). Further below is a
+list with the functions or variables we provide for public usage.
+Those are in addition to all user options and commands that are
+already documented in the various sections of this manual.
 
 In this context "public" is any form with single hyphens in its symbol,
 such as ~denote-directory-files~.  We expressly support those, meaning
