@@ -1490,9 +1490,14 @@ separated by a comma, else the ~crm-separator~).
 For all prompts, the ~denote-rename-file~ interprets an empty input as
 an instruction to remove that file name component. For example, if a
 =TITLE= prompt is available and =FILE= is =20240211T093531--some-title__keyword1.org=
-then it renames =FILE= to =20240211T093531__keyword1.org=. If a file
-name component is present, but there is no entry for it in
-~denote-prompts~, keep it as-is.
+then it renames =FILE= to =20240211T093531__keyword1.org=.
+
+In interactive use, if there is no entry for a file name
+component in `denote-prompts', keep it as-is.
+
+When called from Lisp, the special symbol `keep-current' can be
+used for the TITLE, KEYWORDS, SIGNATURE and DATE parameters to
+keep them as-is.
 
 [ NOTE: Please check with your minibuffer user interface how to
   provide an empty input. The Emacs default setup accepts the empty
