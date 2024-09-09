@@ -4228,6 +4228,9 @@ of the minibuffer ([[#h:ea173a01-69ef-4574-89a7-6e60ede02f13][Narrow the list of
 :CUSTOM_ID: h:76198fab-d6d2-4c67-9ccb-7a08cc883952
 :END:
 
+[ Users of ~consult~ can use the ~consult-denote~ package instead
+  ([[#h:113a13e1-35da-46f1-9414-81e9be2facc1][Use the ~consult-denote~ package for enhanced minibuffer interactions]]). ]
+
 Emacs provides built-in commands which are wrappers of standard Unix
 tools: =M-x grep= lets the user input the flags of a ~grep~ call and
 pass a regular expression to the =-e= flag.
