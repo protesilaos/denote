@@ -4166,6 +4166,32 @@ Prompt for the directory using minibuffer completion."
     (call-interactively 'denote)))
 #+end_src
 
+** Automatically rename the note after saving it
+:PROPERTIES:
+:CUSTOM_ID: h:c7d4dd3a-38bb-4f1c-a36e-989ec0bc79a6
+:END:
+
+While experimenting with Denote, users may need to try different
+workflows to figure out what works for them. Those might involve
+changing keywords and specifying titles in a particular way. The
+following sample can be used:
+
+#+begin_src emacs-lisp
+(defun my-denote-always-rename-on-save-based-on-front-matter ()
+  "Rename the current Denote file, if needed, upon saving the file.
+Rename the file based on its front matter, checking for changes in the
+title or keywords fields.
+
+Add this function to the `after-save-hook'."
+  (let ((denote-rename-confirmations nil)
+        (denote-save-buffers t)) ; to save again post-rename
+    (when (denote-file-is-note-p buffer-file-name)
+      (ignore-errors (denote-rename-file-using-front-matter buffer-file-name))
+      (message "Buffer saved; Denote file renamed"))))
+
+(add-hook 'after-save-hook #'my-denote-always-rename-on-save-based-on-front-matter)
+#+end_src
+
 ** Narrow the list of files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:ea173a01-69ef-4574-89a7-6e60ede02f13
@@ -6328,13 +6354,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Baty, Jay Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy
   Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
-  Kolmas, M. Hadi Timachi, Maikol Solis, Mark Olson, Mirko Hernandez,
-  Niall Dooley, Nick Bell, Paul van Gelder, Peter Prevos, Peter Smith,
-  Riccardo Giannitrapani, Samuel W. Flint, Sergio Rey, Suhail Singh,
-  Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
-  Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni,
-  Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri, coherentstate,
-  doolio, duli, drcxd, elge70, fingerknight, hpgisler,
+  Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
+  Mirko Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter
+  Prevos, Peter Smith, Riccardo Giannitrapani, Samuel W. Flint, Sergio
+  Rey, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
+  Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet
+  C. Kulkarni, Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri,
+  coherentstate, doolio, duli, drcxd, elge70, fingerknight, hpgisler,
   mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, skissue,
   sundar bp, yetanotherfossman, zadca123
 
