@@ -4324,7 +4324,7 @@ mechanisms (e.g. with the help of the ~vertico~ and ~embark~ packages)
 to manage bibliographic notes and access those notes with ease.  The
 package's documentation covers the details: <https://lucidmanager.org/productivity/bibliographic-notes-in-emacs-with-citar-denote/>.
 
-** Use the ~consult-notes~ package for enhanced minibuffer interactions
+** Use the ~consult-denote~ package for enhanced minibuffer interactions
 :PROPERTIES:
 :CUSTOM_ID: h:113a13e1-35da-46f1-9414-81e9be2facc1
 :END:
