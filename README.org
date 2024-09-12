@@ -1211,6 +1211,44 @@ minibuffer completion for a directory among ~denote-silo-extras-directories~.
 Once the user selects a silo, a second prompt asks for a Denote
 note-creation command to call from inside that silo ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
+**** Switch to a silo directory outright
+:PROPERTIES:
+:CUSTOM_ID: h:6cec8750-d444-4d85-9e1e-512580c4bd58
+:END:
+
+Users who rely on silos may have a need to quickly switch between
+directories. This can be done with bookmarks or projects, both of
+which are built into Emacs:
+
+- [[#h:1bba4c1e-6812-4749-948f-57df4fd49b36][Bookmark the directory with the notes]].
+- [[#h:fad3eb08-ddc7-43e4-ba28-210d89668037][Treat your notes as a project]].
+
+Another approach is to use the following small custom commands to (i)
+be prompted for a silo and (ii) either use ~cd~ or ~dired~ to switch
+to it.
+
+#+begin_src emacs-lisp
+(defun my-denote-silo-extras-dired-to-silo (silo)
+  "Switch to SILO directory using `dired'.
+SILO is a file path from `denote-silo-extras-directories'.
+
+When called from Lisp, SILO is a file system path to a directory that
+conforms with `denote-silo-extras-path-is-silo-p'."
+  (interactive (list (denote-silo-extras-directory-prompt)))
+  (denote-silo-extras-with-silo silo
+    (dired silo)))
+
+(defun my-denote-silo-extras-cd-to-silo (silo)
+  "Switch to SILO directory using `cd'.
+SILO is a file path from `denote-silo-extras-directories'.
+
+When called from Lisp, SILO is a file system path to a directory that
+conforms with `denote-silo-extras-path-is-silo-p'."
+  (interactive (list (denote-silo-extras-directory-prompt)))
+  (denote-silo-extras-with-silo silo
+    (cd silo)))
+#+end_src
+
 *** Make Org export work with silos
 :PROPERTIES:
 :CUSTOM_ID: h:fed09992-7c43-4237-b48f-f654bc29d1d8
@@ -6350,19 +6388,20 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Alfredo Borrás, Alp Eren Kose, Ashton Wiersdorf, Benjamin Kästner,
   Claudio Migliorelli, Claudiu Tănăselia, Colin McLear, Damien Cassou,
   Elias Storms, Federico Stilman, Florian, Frédéric Willem Frank
-  Ehmsen, Glenna D., Guo Yong, Hanspeter Gisler Harold Ollivier, Jack
-  Baty, Jay Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy
-  Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
-  Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
-  Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
-  Mirko Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter
-  Prevos, Peter Smith, Riccardo Giannitrapani, Samuel W. Flint, Sergio
-  Rey, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
-  Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet
-  C. Kulkarni, Wade Mealing, Yi Liu, Ypot, atanasj, azegas, babusri,
-  coherentstate, doolio, duli, drcxd, elge70, fingerknight, hpgisler,
-  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sienic, skissue,
-  sundar bp, yetanotherfossman, zadca123
+  Ehmsen, Glenna D., Guo Yong, Hanspeter Gisler Harold Ollivier,
+  IceAsteroid, Jack Baty, Jay Rajput, Jean-Charles Bagneris, Jens
+  Östlund, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas
+  Großekathöfer, Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel,
+  Kaushal Modi, Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol
+  Solis, Mark Olson, Mirko Hernandez, Niall Dooley, Nick Bell, Paul
+  van Gelder, Peter Prevos, Peter Smith, Riccardo Giannitrapani,
+  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
+  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
+  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Yi Liu,
+  Ypot, atanasj, azegas, babusri, coherentstate, doolio, duli, drcxd,
+  elge70, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
+  rbenit68, relict007, sienic, skissue, sundar bp, yetanotherfossman,
+  zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
