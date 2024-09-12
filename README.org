@@ -1216,6 +1216,8 @@ note-creation command to call from inside that silo ([[#h:17896c8c-d97a-4faa-abf
 :CUSTOM_ID: h:6cec8750-d444-4d85-9e1e-512580c4bd58
 :END:
 
+[ The code snippets in this section depend on {{{development-version}}}. ]
+
 Users who rely on silos may have a need to quickly switch between
 directories. This can be done with bookmarks or projects, both of
 which are built into Emacs:
