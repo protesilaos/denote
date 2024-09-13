@@ -4932,7 +4932,7 @@ mkdir manual-packages
 cd manual-packages
 
 # Clone this repo, naming it "denote"
-git clone https://git.sr.ht/~protesilaos/denote denote
+git clone https://github.com/protesilaos/denote denote
 #+end_src
 
 Finally, in your =init.el= (or equivalent) evaluate this:
