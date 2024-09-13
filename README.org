@@ -4813,6 +4813,84 @@ The export process thus occurs outside of Emacs.  Users need to read
 the documentation of their preferred processor to prevent the creation
 of duplicate Denote identifiers.
 
+** Set up your workflow for daily or weekly meeting notes
+:PROPERTIES:
+:CUSTOM_ID: h:00998f94-0194-43ef-b349-260106ef7177
+:END:
+
+Perhaps as part of work, we meet with certain people on a regular
+basis. During the meeting we may discuss a variety of topics. How best
+to approach with the help of Denote?
+
+One option is to write a new file for each meeting, giving it the
+appropriate keywords each time ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). This is what Denote
+does by default and does not need any further tweaks. If we need to
+review those notes, we can use the command ~denote-sort-dired~
+([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]), or one of the Org dynamic blocks we provide
+([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]), among other options.
+
+Another approach is to write one file per person with the regular
+~denote~ command (or related), give it the name of the person as a
+title and, optionally, use some relevant keywords. Inside each file,
+write a top-level heading with the date of the meeting, and then
+produce the meeting notes below as paragraphs and subheadings. This
+can all be done without any changes to Denote, though we can
+streamline it by incorporating the following code in our setup.
+Configure ~my-denote-colleagues~ and then use the command
+~my-denote-colleagues-new-meeting~ to see how it works.
+
+#+begin_src emacs-lisp
+(defvar my-denote-colleagues '("Prot" "Protesilaos")
+  "List of names I collaborate with.
+There is at least one file in the variable `denote-directory' that has
+the name of this person.")
+
+(defvar my-denote-colleagues-prompt-history nil
+  "Minibuffer history for `my-denote-colleagues-new-meeting'.")
+
+(defun my-denote-colleagues-prompt ()
+  "Prompt with completion for a name among `my-denote-colleagues'.
+Use the last input as the default value."
+  (let ((default-value (car my-denote-colleagues-prompt-history)))
+    (completing-read
+     (format-prompt "New meeting with COLLEAGUE" default-value)
+     my-denote-colleagues
+     nil :require-match nil
+     'my-denote-colleagues-prompt-history
+     default-value)))
+
+(defun my-denote-colleagues-get-file (name)
+  "Find file in variable `denote-directory' for NAME colleague.
+If there are more than one files, prompt with completion for one among
+them.
+
+NAME is one among `my-denote-colleagues'."
+  (if-let ((files (denote-directory-files name))
+           (length-of-files (length files)))
+      (cond
+       ((= length-of-files 1)
+        (car files))
+       ((> length-of-files 1)
+        (completing-read "Select a file: " files nil :require-match)))
+    (user-error "No files for colleague with name `%s'" name)))
+
+(defun my-denote-colleagues-new-meeting ()
+  "Prompt for the name of a colleague and insert a timestamped heading therein.
+The name of a colleague corresponds to at least one file in the variable
+`denote-directory'.  In case there are multiple files, prompt to choose
+one among them and operate therein."
+  (declare (interactive-only t))
+  (interactive)
+  (let* ((name (my-denote-colleagues-prompt))
+         (file (my-denote-colleagues-get-file name))
+         (time (format-time-string "%F %a %R")))  ; remove %R if you do not want the time
+    (with-current-buffer (find-file file)
+      (goto-char (point-max))
+      ;; Here I am assuming we are in `org-mode', hence the leading
+      ;; asterisk for the heading.  Adapt accordingly.
+      (insert (format "* [%s]\n\n" time)))))
+#+end_src
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
