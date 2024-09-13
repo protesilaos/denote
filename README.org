@@ -4019,12 +4019,11 @@ Sources for ~tmr~:
 
 + Package name (GNU ELPA): ~tmr~
 + Official manual: <https://protesilaos.com/emacs/tmr>
-+ Change log: <https://protesilaos.com/emacs/denote-changelog>
-+ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
-  - Mirrors:
-    + GitHub: <https://github.com/protesilaos/tmr>
-    + GitLab: <https://gitlab.com/protesilaos/tmr>
-+ Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
++ Change log: <https://protesilaos.com/emacs/tmr-changelog>
++ Git repositories:
+  + GitHub: <https://github.com/protesilaos/tmr>
+  + GitLab: <https://gitlab.com/protesilaos/tmr>
++ Backronym: TMR May Ring; Timer Must Run.
 
 * Minibuffer histories
 :PROPERTIES:
