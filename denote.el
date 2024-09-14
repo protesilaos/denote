@@ -868,16 +868,10 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)\\|\\..*\\)*$"
   "Regular expression to match the KEYWORDS field in a file name.")
 
-(defconst denote-excluded-punctuation-regexp "[][{}!@#$%^&*()=+'\"?,.\|;:~`‘’“”/]*"
-  "Punctionation that is removed from file names.
-We consider those characters illegal for our purposes.")
-
-(defvar denote-excluded-punctuation-extra-regexp nil
-  "Additional punctuation that is removed from file names.
-This variable is for advanced users who need to extend the
-`denote-excluded-punctuation-regexp'.  Once we have a better
-understanding of what we should be omitting, we will update
-things accordingly.")
+(make-obsolete-variable
+ 'denote-excluded-punctuation-extra-regexp
+ 'denote-file-name-slug-functions
+ "3.2.0")
 
 ;;;; File helper functions
 
@@ -943,42 +937,7 @@ This is useful as a helper function to construct
          (characters (seq-filter #'characterp ascii-range)))
     (mapconcat #'string characters)))
 
-;; TODO 2024-09-03: After Denote version 3.1.0 I want to make those
-;; public because (i) they are stable and (ii) we want to encourage
-;; people to use them as part of their `denote-file-name-slug-functions'.
-(defun denote--slug-no-punct (str &optional extra-characters)
-  "Remove punctuation from STR.
-Concretely, replace with an empty string anything that matches
-the `denote-excluded-punctuation-regexp' and
-`denote-excluded-punctuation-extra-regexp'.
-
-EXTRA-CHARACTERS is an optional string that has the same meaning
-as the aforementioned variables."
-  (dolist (regexp (list denote-excluded-punctuation-regexp
-                        denote-excluded-punctuation-extra-regexp
-                        extra-characters))
-    (when (stringp regexp)
-      (setq str (replace-regexp-in-string regexp "" str))))
-  str)
-
-;; See above TODO.
-(defun denote--slug-no-punct-for-signature (str &optional extra-characters)
-  "Remove punctuation (except = signs) from STR.
-
-This works the same way as `denote--slug-no-punct', except that =
-signs are not removed from STR.
-
-EXTRA-CHARACTERS is an optional string.  See
-`denote--slug-no-punct' for its documentation."
-  (dolist (regexp (list denote-excluded-punctuation-regexp
-                        denote-excluded-punctuation-extra-regexp
-                        extra-characters))
-    (when (stringp regexp)
-      (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" str))))
-  str)
-
-;; See above TODO.
-(defun denote--slug-hyphenate (str)
+(defun denote-slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
 leading and trailing hyphen."
@@ -988,12 +947,20 @@ leading and trailing hyphen."
     "-\\{2,\\}" "-"
     (replace-regexp-in-string "_\\|\s+" "-" str))))
 
-;; See above TODO.
+(defun denote-slug-put-equals (str)
+  "Replace spaces and underscores with equals signs in STR.
+Also replace multiple equals signs with a single one and remove
+any leading and trailing signs."
+  (replace-regexp-in-string
+   "^=\\|=$" ""
+   (replace-regexp-in-string
+    "=\\{2,\\}" "="
+    (replace-regexp-in-string "_\\|\s+" "=" str))))
+
 (defun denote--remove-dot-characters (str)
   "Remove dot characters from STR."
   (replace-regexp-in-string "\\." "" str))
 
-;; See above TODO.
 (defun denote--trim-right-token-characters (str component)
   "Remove =, -, _ and @ from the end of STR.
 The removal is done only if necessary according to COMPONENT."
@@ -1001,7 +968,6 @@ The removal is done only if necessary according to COMPONENT."
       (string-trim-right str "[=@_]+")
     (string-trim-right str "[=@_-]+")))
 
-;; See above TODO.
 (defun denote--replace-consecutive-token-characters (str component)
   "Replace consecutive characters with a single one in STR.
 Hyphens, underscores, equal signs and at signs are replaced with
@@ -1045,30 +1011,22 @@ they are used as the keywords separator in file names."
  'denote-sluggify
  "2.3.0")
 
-(defun denote--slug-put-equals (str)
-  "Replace spaces and underscores with equals signs in STR.
-Also replace multiple equals signs with a single one and remove
-any leading and trailing signs."
-  (replace-regexp-in-string
-   "^=\\|=$" ""
-   (replace-regexp-in-string
-    "=\\{2,\\}" "="
-    (replace-regexp-in-string "_\\|\s+" "=" str))))
-
 (defun denote-sluggify-title (str)
   "Make STR an appropriate slug for title."
-  (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
+  (downcase
+   (denote-slug-hyphenate
+    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/=]*" "" str))))
 
 (defun denote-sluggify-signature (str)
   "Make STR an appropriate slug for signature."
-  (downcase (denote--slug-put-equals (denote--slug-no-punct-for-signature str "-+"))))
+  (downcase
+   (denote-slug-put-equals
+    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/-]*" "" str))))
 
 (defun denote-sluggify-keyword (str)
   "Sluggify STR while joining separate words."
   (downcase
-   (replace-regexp-in-string
-    "-" ""
-    (denote--slug-hyphenate (denote--slug-no-punct str)))))
+   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ -=]*" "" str)))
 
 (make-obsolete
  'denote-sluggify-and-join
