@@ -2755,9 +2755,9 @@ Return nil if the file type is not recognized."
   "Return likely file type of FILE.
 If in the process of `org-capture', consider the file type to be that of
 Org.  Otherwise, use the function `denote-file-type' to return the type."
-  (cond
-   ((denote--file-type-org-extra-p) 'org)
-   (file (denote-file-type file))))
+  (if (denote--file-type-org-extra-p)
+      'org
+    (denote-file-type file)))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
