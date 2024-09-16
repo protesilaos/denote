@@ -2733,28 +2733,31 @@ See the format of `denote-file-types'."
            (string-match-p "\\`\\*Org Note\\*" (buffer-name))
            (null buffer-file-name))))
 
-(defun denote-filetype-heuristics (file)
-  "Return likely file type of FILE.
-If in the process of `org-capture', consider the file type to be that of
-Org.  Otherwise, use the file extension to detect the file type of FILE.
+(defun denote-file-type (file)
+  "Use the file extension to detect the file type of FILE.
 
 If more than one file type correspond to this file extension, use the
 first file type for which the :title-key-regexp in `denote-file-types'
 matches in the file.
 
 Return nil if the file type is not recognized."
+  (when-let ((extension (denote-get-file-extension-sans-encryption file))
+             (types (denote--file-types-with-extension extension)))
+    (if (= (length types) 1)
+        (caar types)
+      (or (car (seq-find
+                (lambda (type)
+                  (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+                types))
+          (caar types)))))
+
+(defun denote-filetype-heuristics (file)
+  "Return likely file type of FILE.
+If in the process of `org-capture', consider the file type to be that of
+Org.  Otherwise, use the function `denote-file-type' to return the type."
   (cond
    ((denote--file-type-org-extra-p) 'org)
-   (file
-    (when-let ((extension (denote-get-file-extension-sans-encryption file))
-               (types (denote--file-types-with-extension extension)))
-      (if (= (length types) 1)
-          (caar types)
-        (or (car (seq-find
-                  (lambda (type)
-                    (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
-                  types))
-            (caar types)))))))
+   (file (denote-file-type file))))
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
