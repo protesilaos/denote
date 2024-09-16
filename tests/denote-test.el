@@ -40,13 +40,11 @@
     (should (and (file-directory-p path)
                  (file-name-absolute-p path)))))
 
-(ert-deftest denote-test--denote--slug-no-punct ()
-  "Test that `denote--slug-no-punct' removes punctuation from the string.
-Concretely, replace with spaces anything that matches the
-`denote-excluded-punctuation-regexp' and
-`denote-excluded-punctuation-extra-regexp'."
-  (should (equal (denote--slug-no-punct "This is !@# test")
-                 "This is  test")))
+(ert-deftest denote-test--denote-sluggify-title ()
+  "Test that `denote-sluggify-title' removes punctuation from the string.
+Concretely, remove anything specified in `denote-sluggify-title'."
+  (should (equal (denote-sluggify-title "this-is-!@#test")
+                 "this-is-test")))
 
 (ert-deftest denote-test--denote-slug-keep-only-ascii ()
   "Test that `denote-slug-keep-only-ascii' removes non-ASCII characters."
@@ -54,11 +52,11 @@ Concretely, replace with spaces anything that matches the
            (denote-slug-keep-only-ascii "There are no-ASCII ： characters ｜ here 😀")
            "There are no-ASCII   characters   here  ")))
 
-(ert-deftest denote-test--denote--slug-hyphenate ()
-  "Test that `denote--slug-hyphenate' hyphenates the string.
+(ert-deftest denote-test--denote-slug-hyphenate ()
+  "Test that `denote-slug-hyphenate' hyphenates the string.
 Also replace multiple hyphens with a single one and remove any
 leading and trailing hyphen."
-  (should (equal (denote--slug-hyphenate "__  This is   a    test  __  ")
+  (should (equal (denote-slug-hyphenate "__  This is   a    test  __  ")
                  "This-is-a-test")))
 
 (ert-deftest denote-test--denote-sluggify ()
@@ -67,20 +65,20 @@ To sluggify is to (i) downcase, (ii) hyphenate, (iii) de-punctuate, and (iv) rem
   (should (equal (denote-sluggify 'title " ___ !~!!$%^ This iS a tEsT ++ ?? ")
                  "this-is-a-test")))
 
-(ert-deftest denote-test--denote--slug-put-equals ()
-  "Test that `denote--slug-put-equals' replaces spaces/underscores with =.
+(ert-deftest denote-test-denote--slug-put-equals ()
+  "Test that `denote-slug-put-equals' replaces spaces/underscores with =.
 Otherwise do the same as what is described in
-`denote-test--denote--slug-hyphenate'.
+`denote-test--denote-slug-hyphenate'.
 
 The use of the equals sign is for the SIGNATURE field of the
 Denote file name."
-  (should (equal (denote--slug-put-equals "__  This is   a    test  __  ")
+  (should (equal (denote-slug-put-equals "__  This is   a    test  __  ")
                  "This=is=a=test")))
 
 (ert-deftest denote-test--denote-sluggify-signature ()
   "Test that `denote-sluggify-signature' sluggifies the string for file signatures.
 This is like `denote-test--denote-sluggify', except that it also
-accounts for what we describe in `denote-test--denote--slug-put-equals'."
+accounts for what we describe in `denote-test--denote-slug-put-equals'."
   (should (equal (denote-sluggify-signature "--- ___ !~!!$%^ This -iS- a tEsT ++ ?? ")
                  "this=is=a=test")))
 
