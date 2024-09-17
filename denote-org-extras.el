@@ -80,17 +80,22 @@ the current file."
     (save-excursion
       (goto-char (point-min))
       (forward-line (1- line))
-      (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
+      (cons (denote-link-ol-get-heading)
+            (if (eq denote-org-store-link-to-heading 'context)
+                (org-entry-get (point) "CUSTOM_ID")
+              (denote-link-ol-get-id))))))
 
-(defun denote-org-extras-format-link-with-heading (file heading-id description)
-  "Prepare link to FILE with HEADING-ID using DESCRIPTION."
+(defun denote-org-extras-format-link-with-heading (file heading-id description &optional format)
+  "Prepare link to FILE with HEADING-ID using DESCRIPTION.
+Optional FORMAT is the exact link pattern to use."
   (when (region-active-p)
     (setq description (buffer-substring-no-properties (region-beginning) (region-end)))
     (denote--delete-active-region-content))
-  (format "[[denote:%s::#%s][%s]]"
-          (denote-retrieve-filename-identifier file)
-          heading-id
-          description))
+  (format
+   (or format "[[denote:%s::#%s][%s]]")
+   (denote-retrieve-filename-identifier file)
+   heading-id
+   description))
 
 ;;;###autoload
 (defun denote-org-extras-link-to-heading ()
@@ -118,24 +123,44 @@ Also see `denote-org-extras-backlinks-for-heading'."
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Links to headings only work between Org files"))
-  (when-let ((file (denote-file-prompt ".*\\.org"))
-             (file-text (denote--link-get-description file))
-             (heading (denote-org-extras-outline-prompt file))
-             (line (string-to-number (car (split-string heading "\t"))))
-             (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
-             (heading-text (car heading-data))
-             (heading-id (cdr heading-data))
-             (description (denote-link-format-heading-description file-text heading-text)))
-    (insert (denote-org-extras-format-link-with-heading file heading-id description))))
+  (let ((context-p (eq denote-org-store-link-to-heading 'context)))
+    (when-let ((file (denote-file-prompt ".*\\.org"))
+               (file-text (denote--link-get-description file))
+               (heading (denote-org-extras-outline-prompt file))
+               (line (string-to-number (car (split-string heading "\t"))))
+               (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
+               (heading-text (car heading-data))
+               (heading-id (cdr heading-data))
+               (description (denote-link-format-heading-description file-text heading-text)))
+      (let ((context-priority-p (and context-p (null heading-id))))
+        (insert
+         (denote-org-extras-format-link-with-heading
+          file
+          (if context-priority-p
+              heading-text
+            heading-id)
+          description
+          (when context-priority-p
+            "[[denote:%s::*%s][%s]]")))))))
 
 ;;;; Heading backlinks
 
 (defun denote-org-extras--get-file-id-and-heading-id (&optional file)
   "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for FILE heading at point.
 If FILE is nil, use the variable `buffer-file-name'."
-  (if-let ((heading-id (org-entry-get (point) "CUSTOM_ID")))
-      (concat (denote-retrieve-filename-identifier-with-error (or file buffer-file-name)) "::#" heading-id)
-    (error "No CUSTOM_ID for heading at point in file `%s'" file)))
+  (let* ((context-p (eq denote-org-store-link-to-heading 'context))
+         (id (org-entry-get (point) "CUSTOM_ID"))
+         (context-priority-p (and context-p (null id))))
+    (if-let ((heading-id (if context-priority-p
+                             (denote-link-ol-get-heading)
+                           id)))
+        (concat
+         (denote-retrieve-filename-identifier-with-error (or file buffer-file-name))
+         (if context-priority-p
+             "::*"
+           "::#")
+         heading-id)
+      (error "No CUSTOM_ID or context for heading at point in file `%s'" file))))
 
 (defun denote-org-extras--get-backlinks-buffer-name (text)
   "Format a buffer name for `denote-org-extras-backlinks-for-heading' with TEXT."
@@ -145,7 +170,11 @@ If FILE is nil, use the variable `buffer-file-name'."
   "Get backlinks to FILE-AND-HEADING-ID as a list of strings."
   (when-let ((files (denote-directory-files nil :omit-current :text-only))
              (xref-file-name-display 'abs)
-             (matches-in-files (xref-matches-in-files file-and-heading-id files))
+             (matches-in-files (xref-matches-in-files
+                                (if (string-match-p "::\\*" file-and-heading-id)
+                                    (shell-quote-argument file-and-heading-id)
+                                  file-and-heading-id)
+                                files))
              (xref-alist (xref--analyze matches-in-files)))
     (mapcar
      (lambda (x)

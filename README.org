@@ -2602,48 +2602,75 @@ other links.
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
 :END:
 
+[ Revised to also support context links that do not use a =PROPERTIES=
+  drawer but which are easier to break. This is done as part of
+  {{{development-version}}}. ]
+
 #+vindex: denote-org-store-link-to-heading
 The user option ~denote-org-store-link-to-heading~ determines whether
-~org-store-link~ links to the current Org heading (such links are
-merely "stored" and need to be inserted afterwards with the command
-~org-insert-link~). Note that the ~org-capture~ command uses the
-~org-link~ internally if it has to store a link.
+~org-store-link~ links to the current Org heading.
 
-When its value is non-nil, ~org-store-link~ stores a link to the
-current Org heading inside the Denote Org file. If the heading does
-not have a =CUSTOM_ID=, it creates it and includes it in the heading's
-=PROPERTIES= drawer. If a =CUSTOM_ID= exists, ~org-store-link~ use it
-as-is.
+[ Remember that what ~org-store-link~ does is merely collect a link.  To
+  actually insert it, use the command ~org-insert-link~.  Note that
+  ~org-capture~ uses ~org-store-link~ internally when it needs to store
+  a link.  ]
 
-This makes the resulting link a combination of the =denote:= link type,
-pointing to the identifier of the current file, plus the value of the
-heading's =CUSTOM_ID=, such as:
+When the value is nil, the Denote handler for ~org-store-link~ produces
+links only to the current file (by using the file's identifier).  For
+example:
 
-- =[[denote:20240118T060608][Some test]]=
-- =[[denote:20240118T060608::#h:eed0fb8e-4cc7-478f-acb6-f0aa1a8bffcd][Some test::Heading text]]=
+: [[denote:20240118T060608][Some test]]
 
-Both lead to the same Denote file, but the latter jumps to the heading
-with the given =CUSTOM_ID=. Notice that the link to the heading also
-has a different description, which includes the heading text.
+This is what Denote was doing in versions prior to 2.3.0.
+
+If the value is ~context~, the link consists of the file's identifier
+and the text of the current heading, like this:
+
+: [[denote:20240118T060608::*Heading text][Some test::Heading text]].
+
+However, if there already exists a =CUSTOM_ID= for the current
+heading, this is always given priority and is used instead of the
+context.
+
+If the value if ~id~ or, for backward-compatibility, any other non-nil
+value, then Denote will use the standard Org mechanism of the
+=CUSTOM_ID= to create a unique link to the heading. If the heading
+does not have a =CUSTOM_ID=, it creates it and includes it in its
+=PROPERTIES= drawer. If a =CUSTOM_ID= exists, it takes it as-is. The
+result is like this:
+
+ : [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f][Some test::Heading text]]
 
 The value of the =CUSTOM_ID= is determined by the Org user option
 ~org-id-method~. The sample shown above uses the default UUID
-infrastructure.
+infrastructure (though I deleted a few characters to not get
+complaints from the byte compiler about long lines in the doc
+string...).
 
-If ~denote-org-store-link-to-heading~ is set to a nil value, the
-command ~org-store-link~ only stores links to the Denote file (using
-its identifier), but not to the given heading. This is what Denote was
-doing in versions prior to =2.3.0=.
+Note that this option does not affect how Org behaves with regard to
+~org-id-link-to-org-use-id~. If that user option is set to create IDs,
+then those will be created by Org, even if the Denote link handler
+will take care to not use/store the ID. Concretely, users who never
+want =PROPERTIES= drawers under their headings for linking purposes
+should keep ~org-id-link-to-org-use-id~ in its nil value.
 
-Note that the optional extension =denote-org-extras.el= defines the command
-~denote-org-extras-link-to-heading~, which always links to a file+heading
-regardless of the aforementioned user option ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
+Context links are easier to break than those with a =CUSTOM_ID= in
+cases where either the heading text changes or there is another
+heading that matches that text. The potential advantage of context
+links is that they do not require a =PROPERTIES= drawer.
+
+When visiting a link to a heading, Org opens the Denote file and then
+navigates to that heading.
 
 [ This feature only works in Org mode files, as other file types do
   not have a linking mechanism that handles unique identifiers for
   headings or other patterns to jump to. If ~org-store-link~ is
   invoked in one such file, it captures only the Denote identifier of
   the file, even if this user option is set to a non-nil value. ]
+
+Note that the optional extension =denote-org-extras.el= defines the command
+~denote-org-extras-link-to-heading~, which always links to a file+heading
+regardless of the aforementioned user option ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
 
 ** Insert link to an Org file with a further pointer to a heading
 :PROPERTIES:

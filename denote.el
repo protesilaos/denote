@@ -482,25 +482,37 @@ and/or when the user invokes the command `denote-date'."
   :package-version '(denote . "0.6.0")
   :type 'boolean)
 
-(defcustom denote-org-store-link-to-heading t
+(defcustom denote-org-store-link-to-heading 'id
   "Determine whether `org-store-link' links to the current Org heading.
 
-When non-nil store link to the current Org heading inside the
-Denote file.  If the heading does not have a CUSTOM_ID, create it
-and include it in its PROPERTIES drawer.  If a CUSTOM_ID exists,
-take it as-is.
+[ Remember that what `org-store-link' does is merely collect a link.  To
+  actually insert it, use the command `org-insert-link'.  Note that
+  `org-capture' uses `org-store-link' internally when it needs to store
+  a link.  ]
 
-Make the resulting link a combination of the `denote:' link type,
-pointing to the identifier of the current file, plus the value of
-the heading's CUSTOM_ID, such as:
+When the value is nil, the Denote handler for `org-store-link' produces
+links only to the current file (by using the file's identifier).  For
+example:
 
-- [[denote:20240118T060608][Some test]]
-- [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f][Some test::Heading text]]
+    [[denote:20240118T060608][Some test]]
 
-Both lead to the same Denote file, but the latter jumps to the
-heading with the given CUSTOM_ID.  Notice that the link to the
-heading also has a different description, which includes the
-heading text.
+This is what Denote was doing in versions prior to 2.3.0.
+
+If the value is `context', the link consists of the file's identifier
+and the text of the current heading, like this:
+
+    [[denote:20240118T060608::*Heading text][Some test::Heading text]].
+
+However, if there already exists a CUSTOM_ID for the current heading,
+this is always given priority and is used instead of the context.
+
+If the value if `id' or, for backward-compatibility, any other non-nil
+value, then Denote will use the standard Org mechanism of the CUSTOM_ID
+to create a unique link to the heading.  If the heading does not have a
+CUSTOM_ID, it creates it and includes it in its PROPERTIES drawer.  If a
+CUSTOM_ID exists, it takes it as-is.  The result is like this:
+
+    [[denote:20240118T060608::#h:eed0fb8e-4cc7-478f][Some test::Heading text]]
 
 The value of the CUSTOM_ID is determined by the Org user option
 `org-id-method'.  The sample shown above uses the default UUID
@@ -508,13 +520,20 @@ infrastructure (though I deleted a few characters to not get
 complaints from the byte compiler about long lines in the doc
 string...).
 
-If this user option is set to nil, only store links to the Denote
-file (using its identifier), but not to the given heading.  This
-is what Denote was doing in versions prior to 2.3.0.
+Note that this option does not affect how Org behaves with regard to
+`org-id-link-to-org-use-id'.  If that user option is set to create IDs,
+then those will be created by Org, even if the Denote link handler will
+take care to not use/store the ID.  Concretely, users who never want
+PROPERTIES drawers under their headings for linking purposes should keep
+`org-id-link-to-org-use-id' in its nil value.
 
-What `org-store-link' does is merely collect a link.  To actually insert
-it, use the command `org-insert-link'.  Note that `org-capture' uses
-`org-store-link' internally when it needs to store a link.
+Context links are easier to break than those with a CUSTOM_ID in cases
+where either the heading text changes or there is another heading that
+matches that text.  The potential advantage of context links is that
+they do not require a PROPERTIES drawer.
+
+When visiting a link to a heading, Org opens the Denote file and then
+navigates to that heading.
 
 [ This feature only works in Org mode files, as other file types
   do not have a linking mechanism that handles unique identifiers
@@ -523,8 +542,10 @@ it, use the command `org-insert-link'.  Note that `org-capture' uses
   identifier of the file, even if this user option is set to a
   non-nil value.  ]"
   :group 'denote
-  :package-version '(denote . "2.3.0")
-  :type 'boolean)
+  :package-version '(denote . "3.2.0")
+  :type '(choice (const :tag "No link to heading" nil)
+                 (const :tag "Link to the context" context)
+                 (const :tag "Link wtih CUSTOM_ID" id)))
 
 (defcustom denote-templates nil
   "Alist of content templates for new notes.
@@ -4865,17 +4886,22 @@ Also see the user option `denote-org-store-link-to-heading'."
              (description (denote--link-get-description file)))
     (let ((heading-links (and denote-org-store-link-to-heading
                               (derived-mode-p 'org-mode)
-                              (denote--org-capture-link-specifiers-p))))
+                              (denote--org-capture-link-specifiers-p)))
+          (heading (denote-link-ol-get-heading)))
       (org-link-store-props
        :type "denote"
-       :description (if heading-links
+       :description (if (and heading-links heading)
                         (denote-link-format-heading-description
                          description
-                         (denote-link-ol-get-heading))
+                         heading)
                       description)
-       :link (if heading-links
-                 (format "denote:%s::#%s" file-id (denote-link-ol-get-id))
-               (concat "denote:" file-id)))
+       :link (cond
+              ((and heading-links (eq denote-org-store-link-to-heading 'context) heading)
+               (format "denote:%s::*%s" file-id heading))
+              ((and heading-links heading)
+               (format "denote:%s::#%s" file-id (denote-link-ol-get-id)))
+              (t
+               (concat "denote:" file-id))))
       org-store-link-plist)))
 
 ;;;###autoload
