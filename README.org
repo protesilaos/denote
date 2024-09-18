@@ -4203,6 +4203,136 @@ Prompt for the directory using minibuffer completion."
     (call-interactively 'denote)))
 #+end_src
 
+** Find empty notes and put them in a Dired buffer
+:PROPERTIES:
+:CUSTOM_ID: h:bbc7a769-19e8-4598-a2b7-06e1d673ae80
+:END:
+
+[ This feature is based on the command ~denote-sort-dired~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Sort files by component]]). ]
+
+Users may have a workflow where they use the commands
+~denote-link-or-create~ or ~denote-link-after-creating~ (and related)
+to produce new notes that they plan to elaborate on later ([[#h:b6056e6b-93df-4e6b-a778-eebd105bac46][Link to an existing note or create a new one]]).
+
+To help users find those empty notes, we document the following
+commands:
+
+- ~my-denote-sort-dired-empty-files~
+- ~my-denote-sort-dired-without-empty-files~
+- ~my-denote-sort-dired-all-empty-files~
+- ~my-denote-sort-dired-without-all-empty-files~
+
+#+begin_src emacs-lisp
+(require 'denote-sort)
+
+(defun my-denote--note-has-no-contents-p (file)
+  "Return non-nil if FILE is an empty note.
+This means that FILE conforms with `denote-file-is-note-p' and either
+has no contents or has only the front matter."
+  (and (denote-file-is-note-p file)
+       (or (denote--file-with-temp-buffer file
+             (re-search-forward "^$" nil t)
+             (if (re-search-forward "[^\s\t\n\r]+" nil t)
+                 nil
+               t))
+           ;; This must come later because here we consider a file
+           ;; "empty" even if it only has front matter.
+           (denote--file-empty-p file))))
+
+(defun my-denote-sort-dired-empty-files (files-matching-regexp sort-by-component reverse)
+  "Like `denote-sort-dired' but only cover empty files.
+Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
+  (interactive
+   (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
+  (let ((component (or sort-by-component
+                       denote-sort-dired-default-sort-component
+                       'identifier))
+        (reverse-sort (or reverse
+                          denote-sort-dired-default-reverse-sort
+                          nil)))
+    (if-let ((default-directory (denote-directory))
+             (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+             (empty-files (seq-filter #'my-denote--note-has-no-contents-p files))
+             ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+             ;; buffer-name produces an error if the regexp contains a
+             ;; wildcard for a directory. I can reproduce this in emacs
+             ;; -Q and am not sure if it is a bug. Anyway, I will report
+             ;; it upstream, but even if it is fixed we cannot use it
+             ;; for now (whatever fix will be available for Emacs 30+).
+             (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
+             (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
+          (setq denote-sort--dired-buffer dired-buffer)
+          (with-current-buffer dired-buffer
+            (setq-local revert-buffer-function
+                        (lambda (&rest _)
+                          (kill-buffer dired-buffer)
+                          (denote-sort-dired files-matching-regexp component reverse-sort))))
+          ;; Because of the above NOTE, I am printing a message.  Not
+          ;; what I want, but it is better than nothing...
+          (message denote-sort-dired-buffer-name))
+      (message "No matching files for: %s" files-matching-regexp))))
+
+(defun my-denote-sort-dired-without-empty-files (files-matching-regexp sort-by-component reverse)
+  "Like `denote-sort-dired' but only cover empty files.
+Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
+  (interactive
+   (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
+  (let ((component (or sort-by-component
+                       denote-sort-dired-default-sort-component
+                       'identifier))
+        (reverse-sort (or reverse
+                          denote-sort-dired-default-reverse-sort
+                          nil)))
+    (if-let ((default-directory (denote-directory))
+             (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+             (empty-files (seq-remove #'my-denote--note-has-no-contents-p files))
+             ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+             ;; buffer-name produces an error if the regexp contains a
+             ;; wildcard for a directory. I can reproduce this in emacs
+             ;; -Q and am not sure if it is a bug. Anyway, I will report
+             ;; it upstream, but even if it is fixed we cannot use it
+             ;; for now (whatever fix will be available for Emacs 30+).
+             (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
+             (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
+          (setq denote-sort--dired-buffer dired-buffer)
+          (with-current-buffer dired-buffer
+            (setq-local revert-buffer-function
+                        (lambda (&rest _)
+                          (kill-buffer dired-buffer)
+                          (denote-sort-dired files-matching-regexp component reverse-sort))))
+          ;; Because of the above NOTE, I am printing a message.  Not
+          ;; what I want, but it is better than nothing...
+          (message denote-sort-dired-buffer-name))
+      (message "No matching files for: %s" files-matching-regexp))))
+
+(defun my-denote-sort-dired-all-empty-files ()
+  "List all empty files in a Dired buffer.
+This is the same as calling `my-denote-sort-dired' with a
+FILES-MATCHING-REGEXP of \".*\"."
+  (declare (interactive-only t))
+  (interactive)
+  (let* ((other-prompts (denote-sort-dired--prompts))
+         (sort-key (nth 1 other-prompts))
+         (reverse (nth 2 other-prompts)))
+    (funcall-interactively #'my-denote-sort-dired-empty-files ".*" sort-key reverse)))
+
+(defun my-denote-sort-dired-without-all-empty-files ()
+  "List all empty files in a Dired buffer.
+This is the same as calling `my-denote-sort-dired' with a
+FILES-MATCHING-REGEXP of \".*\"."
+  (declare (interactive-only t))
+  (interactive)
+  (let* ((other-prompts (denote-sort-dired--prompts))
+         (sort-key (nth 1 other-prompts))
+         (reverse (nth 2 other-prompts)))
+    (funcall-interactively #'my-denote-sort-dired-without-empty-files ".*" sort-key reverse)))
+#+end_src
+
+[ In the above snippet, I am purposefully duplicating code to make it
+  easier for users to pick the ones they need. ]
+
 ** Automatically rename the note after saving it
 :PROPERTIES:
 :CUSTOM_ID: h:c7d4dd3a-38bb-4f1c-a36e-989ec0bc79a6
@@ -6462,9 +6592,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   van Gelder, Peter Prevos, Peter Smith, Riccardo Giannitrapani,
   Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
   Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
-  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Yi Liu,
-  Ypot, atanasj, azegas, babusri, coherentstate, doolio, duli, drcxd,
-  elge70, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
+  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi
+  Liu, Ypot, atanasj, azegas, babusri, coherentstate, doolio, duli,
+  drcxd, elge70, fingerknight, hpgisler, mentalisttraceur, pRot0ta1p,
   rbenit68, relict007, sienic, skissue, sundar bp, yetanotherfossman,
   zadca123
 
