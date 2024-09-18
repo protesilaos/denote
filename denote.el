@@ -4369,7 +4369,7 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
 (define-button-type 'denote-link-backlink-button
   'follow-link t
   'action #'denote-link--backlink-find-file
-  'face nil)            ; we use this face though we style it later
+  'face nil) ; we add fontification in `denote-link--prepare-backlinks'
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
