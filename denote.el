@@ -4978,7 +4978,7 @@ Consult the manual for template samples."
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (front-matter (denote--format-front-matter
-                              title (denote--date nil 'org) keywords id 'org))
+                              title (denote--date date 'org) keywords id 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
                                       (t (user-error "Invalid template")))))
