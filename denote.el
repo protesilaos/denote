@@ -1275,7 +1275,9 @@ With optional NO-REQUIRE-MATCH, accept the given input as-is.
 Return the absolute path to the matching file."
   (let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
                                  (denote-directory-files files-matching-regexp :omit-current)))
-         (prompt (format "%s in %s: " (or prompt-text "Select FILE") (denote-directory)))
+         (prompt (format "%s in %s: "
+                         (or prompt-text "Select FILE")
+                         (propertize (denote-directory) 'face 'denote-faces-prompt-current-name)))
          (input (completing-read
                  prompt
                  (denote--completion-table 'file relative-files)
