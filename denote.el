@@ -2502,9 +2502,7 @@ Use Org's more advanced date selection utility if the user option
   "Match DIRS as a completion table."
   (let* ((def (car denote-subdirectory-history))
          (table (denote--completion-table 'file dirs))
-         (prompt (if def
-                     (format "Select SUBDIRECTORY [%s]: " def)
-                   "Select SUBDIRECTORY: ")))
+         (prompt (format-prompt "Select SUBDIRECTORY" def)))
     (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
 
 (defun denote-subdirectory-prompt ()
