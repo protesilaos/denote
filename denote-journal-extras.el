@@ -173,19 +173,20 @@ DATE has the same format as that returned by `denote-parse-date'."
      files)))
 
 (defun denote-journal-extra-path-to-new-or-existing-entry (&optional date)
-  "Return the path to the journal file corresponding to DATE, or to
-the current date if DATE in nil.  DATE is a string and has the same
-format as that covered in the documentation of the `denote' function.
-It is internally processed by `denote-parse-date'.
+  "Return path to existing or new journal file.
+With optional DATE, do it for that date, else do it for today.  DATE is
+a string and has the same format as that covered in the documentation of
+the `denote' function.  It is internally processed by
+`denote-parse-date'.
 
-If there are multiple journal entries for the date, prompt for one
-using minibuffer completion.  If there is only one, return it.  If
-there is no journal entry, return nil."
+If there are multiple journal entries for the date, prompt for one among
+them using minibuffer completion.  If there is only one, return it.  If
+there can be no journal entry, return nil."
   (let* ((internal-date (denote-parse-date date))
          (files (denote-journal-extras--entry-today internal-date)))
     (cond
      ((length> files 1)
-      (completing-read "Select journal entry: " files nil :require-match))
+      (completing-read "Select journal entry: " files nil t))
      (files
       (car files))
      (t nil))))
@@ -213,7 +214,8 @@ It is internally processed by `denote-parse-date'."
     (when current-prefix-arg
       (denote-date-prompt))))
   (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
-    (if path (find-file path)
+    (if path
+        (find-file path)
       (denote-journal-extras-new-entry date))))
 
 ;;;###autoload
