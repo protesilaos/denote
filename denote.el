@@ -4631,8 +4631,7 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar #'file-name-nondirectory
-                                   buffers)))
+  (let ((buffer-file-names (mapcar #'file-name-nondirectory buffers)))
     (completing-read
      "Select note buffer: "
      (denote--completion-table 'buffer buffer-file-names)
