@@ -106,7 +106,6 @@ minibuffer prompt that asks for a reverse sort or not."
   :package-version '(denote . "3.1.0")
   :group 'denote-sort)
 
-
 ;; NOTE 2023-12-04: We can have compound sorting algorithms such as
 ;; title+signature, but I want to keep this simple for the time being.
 ;; Let us first hear from users to understand if there is a real need
