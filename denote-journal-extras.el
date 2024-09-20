@@ -172,6 +172,24 @@ DATE has the same format as that returned by `denote-parse-date'."
        (string-match-p keyword file))
      files)))
 
+(defun denote-journal-extra-path-to-new-or-existing-entry (&optional date)
+  "Return the path to the journal file corresponding to DATE, or to
+the current date if DATE in nil.  DATE is a string and has the same
+format as that covered in the documentation of the `denote' function.
+It is internally processed by `denote-parse-date'.
+
+If there are multiple journal entries for the date, prompt for one
+using minibuffer completion.  If there is only one, return it.  If
+there is no journal entry, return nil."
+  (let* ((internal-date (denote-parse-date date))
+         (files (denote-journal-extras--entry-today internal-date)))
+    (cond
+     ((length> files 1)
+      (completing-read "Select journal entry: " files nil :require-match))
+     (files
+      (car files))
+     (t nil))))
+
 ;;;###autoload
 (defun denote-journal-extras-new-or-existing-entry (&optional date)
   "Locate an existing journal entry or create a new one.
@@ -194,15 +212,9 @@ It is internally processed by `denote-parse-date'."
    (list
     (when current-prefix-arg
       (denote-date-prompt))))
-  (let* ((internal-date (denote-parse-date date))
-         (files (denote-journal-extras--entry-today internal-date)))
-    (cond
-     ((length> files 1)
-      (find-file (completing-read "Select journal entry: " files nil :require-match)))
-     (files
-      (find-file (car files)))
-     (t
-      (denote-journal-extras-new-entry date)))))
+  (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
+    (if path (find-file path)
+      (denote-journal-extras-new-entry date))))
 
 ;;;###autoload
 (defun denote-journal-extras-link-or-create-entry (&optional date id-only)
@@ -230,19 +242,12 @@ file's title.  This has the same meaning as in `denote-link'."
    (pcase current-prefix-arg
      ('(16) (list (denote-date-prompt) :id-only))
      ('(4) (list (denote-date-prompt)))))
-  (let* ((internal-date (denote-parse-date date))
-         (files (denote-journal-extras--entry-today internal-date))
-         (path))
-    (cond
-     ((length> files 1)
-      (setq path (completing-read "Select journal entry: " files nil :require-match)))
-     (files
-      (setq path (car files)))
-     (t
+  (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
+    (unless path
       (save-window-excursion
         (denote-journal-extras-new-entry date)
         (save-buffer)
-        (setq path (buffer-file-name)))))
+        (setq path (buffer-file-name))))
     (denote-link path
                  (denote-filetype-heuristics (buffer-file-name))
                  (denote--link-get-description path)
