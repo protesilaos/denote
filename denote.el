@@ -639,7 +639,7 @@ but carries out the renaming without asking for confirmation)."
                      (const :tag "Rewrite front matter" rewrite-front-matter)
                      (const :tag "Modify file name" modify-file-name))))
 
- (defcustom denote-excluded-directories-regexp nil
+(defcustom denote-excluded-directories-regexp nil
   "Regular expression of directories to exclude from all operations.
 Omit matching directories from file prompts and also exclude them
 from all functions that check the contents of the variable
@@ -3904,7 +3904,7 @@ With optional INCLUDE-DATE, convert the identifier using
   (let* ((identifier (denote-retrieve-filename-identifier file))
          (desc (if include-date
                    (format "%s (%s)" description (denote--id-to-date identifier))
-                description)))
+                 description)))
     (format
      (cond
       ((or id-only (null description) (string-empty-p description))
@@ -4293,13 +4293,13 @@ Implementation based on the function `org-activate-links'."
                           (memq 'font-lock-comment-face face)
                         (eq 'font-lock-comment-face face)))
               (let* ((properties `(face denote-faces-link
-                                   mouse-face highlight
-                                              keymap ,denote-link-mouse-map
-                                              denote-link-id ,id
-                                              help-echo ,(or (denote-retrieve-title-or-filename path type)
-                                                             (concat "denote:" id))
-                                              htmlize-link (:uri ,file-link)
-                                              font-lock-multiline t))
+                                        mouse-face highlight
+                                        keymap ,denote-link-mouse-map
+                                        denote-link-id ,id
+                                        help-echo ,(or (denote-retrieve-title-or-filename path type)
+                                                       (concat "denote:" id))
+                                        htmlize-link (:uri ,file-link)
+                                        font-lock-multiline t))
                      (non-sticky-props
                       '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
                      (face-property 'link)
@@ -4579,7 +4579,7 @@ Optional INCLUDE-DATE has the same meaning as in `denote-format-link'."
       (let* ((description (denote--link-get-description file))
              (link (denote-format-link file description current-file-type id-only include-date))
              (link-as-list-item (format denote-link--prepare-links-format link)))
-         (push link-as-list-item links)))
+        (push link-as-list-item links)))
     (if no-sort
         (nreverse links)
       (sort links #'string-collate-lessp))))
