@@ -181,7 +181,7 @@ the `denote' function.  It is internally processed by
 
 If there are multiple journal entries for the date, prompt for one among
 them using minibuffer completion.  If there is only one, return it.  If
-there can be no journal entry, return nil."
+there is no journal entry, return nil."
   (let* ((internal-date (denote-parse-date date))
          (files (denote-journal-extras--entry-today internal-date)))
     (cond
