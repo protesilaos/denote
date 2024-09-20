@@ -260,7 +260,7 @@ of the following:
 - `file-type': Prompts with completion for the file type of the
   new note.  Available candidates are those specified in the user
   option `denote-file-type'.  Without this prompt, `denote' uses
-  the value of `denote-file-type'.
+  the value of the variable `denote-file-type'.
 
 - `subdirectory': Prompts with completion for a subdirectory in
   which to create the note.  Available candidates are the value
@@ -290,9 +290,9 @@ of the following:
 
 The prompts occur in the given order.
 
-If the value of this user option is nil, no prompts are used.
-The resulting file name will consist of an identifier (i.e. the
-date and time) and a supported file type extension (per
+If the value of this user option is nil, no prompts are used.  The
+resulting file name will consist of an identifier (i.e. the date and
+time) and a supported file type extension (per the variable
 `denote-file-type').
 
 Recall that Denote's standard file-naming scheme is defined as
@@ -451,7 +451,7 @@ technicalities."
   "Date format in the front matter (file header) of new notes.
 
 When nil (the default value), use a file-type-specific
-format (also check `denote-file-type'):
+format (also check the user option `denote-file-type'):
 
 - For Org, an inactive timestamp is used, such as [2022-06-30 Wed
   15:31].
@@ -1055,8 +1055,8 @@ they are used as the keywords separator in file names."
 
 (defun denote-file-has-supported-extension-p (file)
   "Return non-nil if FILE has supported extension.
-Also account for the possibility of an added .gpg suffix.
-Supported extensions are those implied by `denote-file-type'."
+Also account for the possibility of an added .gpg suffix.  Supported
+extensions are those implied by the variable `denote-file-type'."
   (seq-some (lambda (e)
               (string-suffix-p e file))
             (denote-file-type-extensions-with-encryption)))
@@ -1064,8 +1064,8 @@ Supported extensions are those implied by `denote-file-type'."
 (defun denote-filename-is-note-p (filename)
   "Return non-nil if FILENAME is a valid name for a Denote note.
 For our purposes, its path must be part of the variable
-`denote-directory', it must have a Denote identifier in its name,
-and use one of the extensions implied by `denote-file-type'."
+`denote-directory', it must have a Denote identifier in its name, and
+use one of the extensions implied by the variable `denote-file-type'."
   (and (string-prefix-p (denote-directory) (expand-file-name filename))
        (denote-file-has-identifier-p filename)
        (denote-file-has-supported-extension-p filename)))
@@ -1153,7 +1153,8 @@ Files that match `denote-excluded-files-regexp' are excluded from the
 list.
 
 Files only need to have an identifier.  The return value may thus
-include file types that are not implied by `denote-file-type'.
+include file types that are not implied by the variable
+`denote-file-type'.
 
 With optional FILES-MATCHING-REGEXP, restrict files to those
 matching the given regular expression.
@@ -1538,10 +1539,10 @@ Consult the `denote-file-types' for how this is used."
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp))
-  "Alist of `denote-file-type' and their format properties.
+  "Alist of variable `denote-file-type' and their format properties.
 
-Each element is of the form (SYMBOL PROPERTY-LIST).  SYMBOL is
-one of those specified in `denote-file-type' or an arbitrary
+Each element is of the form (SYMBOL PROPERTY-LIST).  SYMBOL is one of
+those specified in the user option `denote-file-type' or an arbitrary
 symbol that defines a new file type.
 
 PROPERTY-LIST is a plist that consists of the following elements:
@@ -1592,8 +1593,8 @@ PROPERTY-LIST is a plist that consists of the following elements:
   to match the aforementioned link format.  See the variables
   `denote-org-link-in-context-regexp',`denote-md-link-in-context-regexp'.
 
-If `denote-file-type' is nil, use the first element of this list
-for new note creation.  The default is `org'.")
+If the user option `denote-file-type' is nil, use the first element of
+this list for new note creation.  The default is `org'.")
 
 (defun denote--date-format-function (file-type)
   "Return date format function of FILE-TYPE."
@@ -1686,7 +1687,7 @@ for new note creation.  The default is `org'.")
 
 TITLE, DATE, and ID are all strings or functions that return a
 string.  KEYWORDS is a list of strings.  FILETYPE is one of the
-values of `denote-file-type'."
+values of variable `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title (denote--format-front-matter-title title filetype))
          (kws (denote--format-front-matter-keywords keywords filetype)))
@@ -2377,7 +2378,8 @@ When called from Lisp, all arguments are optional.
 - KEYWORDS is a list of strings.  The list can be empty or the
   value can be set to nil.
 
-- FILE-TYPE is a symbol among those described in `denote-file-type'.
+- FILE-TYPE is a symbol among those described in the user option
+  `denote-file-type'.
 
 - DIRECTORY is a string representing the path to either the
   value of the variable `denote-directory' or a subdirectory
@@ -2452,7 +2454,7 @@ non-nil value."
   "Compatibility alias for `denote-file-type-history'.")
 
 (defun denote-file-type-prompt ()
-  "Prompt for `denote-file-type'.
+  "Prompt for variable `denote-file-type'.
 Note that a non-nil value other than `text', `markdown-yaml', and
 `markdown-toml' falls back to an Org file type.  We use `org'
 here for clarity."
@@ -3118,10 +3120,10 @@ double-check the result, such as by invoking the command
 in the front matter should not affect the rest of the front
 matter.
 
-If the file does not have front matter but is among the supported
-file types (per `denote-file-type'), add front matter to the top
-of it and leave the buffer unsaved for further inspection.  Save
-the buffer if `denote-save-buffers' is non-nil.
+If the file does not have front matter but is among the supported file
+types (per the user option `denote-file-type'), add front matter to the
+top of it and leave the buffer unsaved for further inspection.  Save the
+buffer if `denote-save-buffers' is non-nil.
 
 When `denote-kill-buffers' is t or `on-rename', kill the buffer
 if it was not already being visited before the rename operation.
@@ -3293,8 +3295,8 @@ Specifically, do the following:
   that may exist while removing keywords that do exist if
   KEYWORDS is empty;
 
-- add or rewrite existing front matter to the underlying file, if
-  it is recognized as a Denote note (per `denote-file-type'),
+- add or rewrite existing front matter to the underlying file, if it is
+  recognized as a Denote note (per the user option `denote-file-type'),
   such that it includes the new keywords.
 
 Construct the file name in accordance with the user option
@@ -3333,7 +3335,7 @@ Also see the specialized commands to only add or remove keywords:
 When called interactively, FILE is the variable `buffer-file-name' or
 the Dired file at point, which is subsequently inspected for the
 requisite front matter.  It is thus implied that the FILE has a file
-type that is supported by Denote, per `denote-file-type'.
+type that is supported by Denote, per the user option `denote-file-type'.
 
 The values of `denote-rename-confirmations',
 `denote-save-buffers' and `denote-kill-buffers' are respected.
@@ -3367,11 +3369,11 @@ Construct the file name in accordance with the user option
   "Call `denote-rename-file-using-front-matter' over the Dired marked files.
 Refer to the documentation of that command for the technicalities.
 
-Marked files must count as notes for the purposes of Denote,
-which means that they at least have an identifier in their file
-name and use a supported file type, per `denote-file-type'.
-Files that do not meet this criterion are ignored because Denote
-cannot know if they have front matter and what that may be."
+Marked files must count as notes for the purposes of Denote, which means
+that they at least have an identifier in their file name and use a
+supported file type, per the user option `denote-file-type'.  Files that
+do not meet this criterion are ignored because Denote cannot know if
+they have front matter and what that may be."
   (interactive nil dired-mode)
   (if-let ((marks (seq-filter
                    (lambda (m)
@@ -3985,9 +3987,9 @@ and no further description.  In this case, the link format is always
 If the DESCRIPTION is empty, format the link the same as with ID-ONLY.
 
 When called from Lisp, FILE is a string representing a full file system
-path.  FILE-TYPE is a symbol as described in `denote-file-type'.
-DESCRIPTION is a string.  Whether the caller treats the active region
-specially, is up to it.
+path.  FILE-TYPE is a symbol as described in the user option
+`denote-file-type'.  DESCRIPTION is a string.  Whether the caller treats
+the active region specially, is up to it.
 
 Also see `denote-link-with-signature'."
   (interactive
@@ -4585,10 +4587,10 @@ Optional INCLUDE-DATE has the same meaning as in `denote-format-link'."
 (defun denote-link--insert-links (files current-file-type &optional id-only no-sort include-date)
   "Insert at point a typographic list of links matching FILES.
 
-With CURRENT-FILE-TYPE as a symbol among those specified in
-`denote-file-type' (or the `car' of each element in
-`denote-file-types'), format the link accordingly.  With a nil or
-unknown non-nil value, default to the Org notation.
+With CURRENT-FILE-TYPE as a symbol among those specified in variable
+`denote-file-type' (or the `car' of each element in `denote-file-types'),
+format the link accordingly.  With a nil or unknown non-nil value,
+default to the Org notation.
 
 With ID-ONLY as a non-nil value, produce links that consist only
 of the identifier, thus deviating from CURRENT-FILE-TYPE.
@@ -4645,13 +4647,12 @@ inserts links with just the identifier."
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
   "Insert Dired marked FILES as links in BUFFER.
 
-FILES are Denote notes, meaning that they have our file-naming
-scheme, are writable/regular files, and use the appropriate file
-type extension (per `denote-file-type').  Furthermore, the marked
-files need to be inside the variable `denote-directory' or one of
-its subdirectories.  No other file is recognised (the list of
-marked files ignores whatever does not count as a note for our
-purposes).
+FILES are Denote notes, meaning that they have our file-naming scheme,
+are writable/regular files, and use the appropriate file type
+extension (per the user option `denote-file-type').  Furthermore, the
+marked files need to be inside the variable `denote-directory' or one of
+its subdirectories.  No other file is recognised (the list of marked
+files ignores whatever does not count as a note for our purposes).
 
 The BUFFER is one which visits a Denote note file.  If there are
 multiple buffers, prompt with completion for one among them.  If

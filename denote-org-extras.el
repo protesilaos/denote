@@ -216,7 +216,7 @@ For the rest, consult the value of the user option
   one.
 
 Make the new note an Org file regardless of the value of
-`denote-file-type'."
+the variable `denote-file-type'."
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Headings can only be extracted from Org files"))
