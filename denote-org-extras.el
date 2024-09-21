@@ -130,18 +130,17 @@ Also see `denote-org-extras-backlinks-for-heading'."
                (line (string-to-number (car (split-string heading "\t"))))
                (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
                (heading-text (car heading-data))
-               (heading-id (cdr heading-data))
+               (heading-id (if (and context-p (null (cdr heading-data)))
+                               heading-text
+                             (cdr heading-data)))
                (description (denote-link-format-heading-description file-text heading-text)))
-      (let ((context-priority-p (and context-p (null heading-id))))
-        (insert
-         (denote-org-extras-format-link-with-heading
-          file
-          (if context-priority-p
-              heading-text
-            heading-id)
-          description
-          (when context-priority-p
-            "[[denote:%s::*%s][%s]]")))))))
+      (insert
+       (denote-org-extras-format-link-with-heading
+        file
+        heading-id
+        description
+        (when (equal heading-text heading-id)
+          "[[denote:%s::*%s][%s]]"))))))
 
 ;;;; Heading backlinks
 
