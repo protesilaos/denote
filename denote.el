@@ -2980,8 +2980,6 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
             (denote--add-front-matter new-name title keywords id file-type))))
-      ;; NOTE: Maybe offer to regenerate link descriptions in other
-      ;; files on rename. This could be a distinct command.
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
