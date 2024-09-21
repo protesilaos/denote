@@ -2943,9 +2943,7 @@ If `denote-rename-confirmations' does not contain
   "Rename FILE according to the other parameters.
 Parameters TITLE, KEYWORDS, SIGNATURE and DATE are as described
 in `denote-rename-file' and are assumed to be valid (TITLE and
-SIGNATURE are strings, KEYWORDS is a list, etc.).  The special
-symbol `keep-current' can be used for the TITLE, KEYWORDS,
-SIGNATURE and DATE parameters to keep the current value.
+SIGNATURE are strings, KEYWORDS is a list, etc.).
 
 This function only does the work necessary to rename a file
 according to its parameters.  In particular, it does not prompt
@@ -2959,12 +2957,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (file-type (denote-filetype-heuristics file))
          (current-title (or (denote-retrieve-title-or-filename file file-type) ""))
          (current-keywords (denote-extract-keywords-from-path file))
-         (current-signature (or (denote-retrieve-filename-signature file) ""))
-         (title (if (eq title 'keep-current) current-title title))
-         (keywords (if (eq keywords 'keep-current) current-keywords (denote-keywords-sort keywords)))
-         (signature (if (eq signature 'keep-current) current-signature signature))
-         ;; 'keep-current is the same as nil because we do not currently allow the modification of the identifier
-         (date (if (eq date 'keep-current) nil date))
+         (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
          ;; TODO: For now, we cannot change the identifier. We retrieve
@@ -2987,8 +2980,6 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
             (denote--add-front-matter new-name title keywords id file-type))))
-      ;; NOTE: Maybe offer to regenerate link descriptions in other
-      ;; files on rename. This could be a distinct command.
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -3150,7 +3141,19 @@ one-by-one, use `denote-dired-rename-files'."
   (interactive
    (let* ((file (denote--rename-dired-file-or-current-file-or-prompt)))
      (append (list file) (denote--rename-get-file-info-from-prompts-or-existing file))))
-  (let ((new-name (denote--rename-file file title keywords signature date)))
+  (let* ((file-type (denote-filetype-heuristics file))
+         (title (if (eq title 'keep-current)
+                    (or (denote-retrieve-title-or-filename file file-type) "")
+                  title))
+         (keywords (if (eq keywords 'keep-current)
+                       (denote-extract-keywords-from-path file)
+                     keywords))
+         (signature (if (eq signature 'keep-current)
+                        (or (denote-retrieve-filename-signature file) "")
+                      signature))
+         ;; 'keep-current is the same as nil because we do not currently allow the modification of the identifier
+         (date (if (eq date 'keep-current) nil date))
+         (new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
 
