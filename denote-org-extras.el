@@ -156,7 +156,7 @@ If FILE is nil, use the variable `buffer-file-name'."
         (concat
          (denote-retrieve-filename-identifier-with-error (or file buffer-file-name))
          (if context-priority-p
-             "::*"
+             "::\\*" ; we escape it, otherwise xref treats it as a regexp character
            "::#")
          heading-id)
       (error "No CUSTOM_ID or context for heading at point in file `%s'" file))))
