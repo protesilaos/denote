@@ -5468,7 +5468,9 @@ might change them without further notice.
   from =PATH= and return them as a list of strings.  =PATH= must be a
   Denote-style file name where keywords are prefixed with an
   underscore.  If =PATH= has no such keywords, which is possible,
-  return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). [ As part of {{{development-version}}},
+  this function has an alias ~denote-retrieve-filename-keywords-as-list~
+  which should make it easier to discover this functionality. ]
 
 #+findex: denote-extract-id-from-string
 + Function ~denote-extract-id-from-string~ :: Return existing Denote

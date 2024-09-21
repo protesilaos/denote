@@ -1303,9 +1303,14 @@ Return the absolute path to the matching file."
 PATH must be a Denote-style file name where keywords are prefixed
 with an underscore.
 
-If PATH has no such keywords, return nil."
+If PATH has no such keywords, return nil.
+
+Also see `denote-retrieve-filename-keywords'."
   (when-let ((kws (denote-retrieve-filename-keywords path)))
     (split-string kws "_" :omit-nulls)))
+
+(defalias 'denote-retrieve-filename-keywords-as-list 'denote-extract-keywords-from-path
+  "Alias for the function `denote-extract-keywords-from-path'")
 
 (defun denote--inferred-keywords ()
   "Extract keywords from `denote-directory-files'.
@@ -1775,7 +1780,10 @@ To only return an existing identifier, refer to the function
 
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
-Return matched keywords as a single string."
+Return matched keywords as a single string.
+
+Also see `denote-extract-keywords-from-path' (alias
+`denote-retrieve-filename-keywords-as-list')."
   (let ((filename (file-name-nondirectory file)))
     (when (string-match denote-keywords-regexp filename)
       (match-string 1 filename))))
