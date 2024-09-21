@@ -1066,8 +1066,7 @@ extensions are those implied by the variable `denote-file-type'."
 For our purposes, its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name, and
 use one of the extensions implied by the variable `denote-file-type'."
-  (and (string-prefix-p (file-truename (denote-directory))
-                        (file-truename (expand-file-name filename)))
+  (and (string-prefix-p (denote-directory) (expand-file-name filename))
        (denote-file-has-identifier-p filename)
        (denote-file-has-supported-extension-p filename)))
 
@@ -2025,8 +2024,8 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
 (defun denote--dir-in-denote-directory-p (directory)
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
   (and directory
-       (string-prefix-p (file-truename (denote-directory))
-                        (file-truename (expand-file-name directory)))))
+       (string-prefix-p (denote-directory)
+                        (expand-file-name directory))))
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype symbol given the argument FILETYPE.
