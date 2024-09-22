@@ -112,7 +112,7 @@ The function also account for the value of the user option
 For our purposes, a note must note be a directory, must satisfy
 `file-regular-p', its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name,
-and use one of the extensions implied by `denote-file-type'."
+and use one of the extensions implied by the variable `denote-file-type'."
   (should (let* ((tmp (temporary-file-directory))
                  (denote-directory tmp)
                  (file (concat tmp "20230522T154900--test__keyword.txt")))
