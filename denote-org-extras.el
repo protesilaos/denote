@@ -169,11 +169,7 @@ If FILE is nil, use the variable `buffer-file-name'."
   "Get backlinks to FILE-AND-HEADING-ID as a list of strings."
   (when-let ((files (denote-directory-files nil :omit-current :text-only))
              (xref-file-name-display 'abs)
-             (matches-in-files (xref-matches-in-files
-                                (if (string-match-p "::\\*" file-and-heading-id)
-                                    (shell-quote-argument file-and-heading-id)
-                                  file-and-heading-id)
-                                files))
+             (matches-in-files (xref-matches-in-files file-and-heading-id files))
              (xref-alist (xref--analyze matches-in-files)))
     (mapcar
      (lambda (x)
