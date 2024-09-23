@@ -144,8 +144,19 @@ Also see `denote-org-extras-backlinks-for-heading'."
 
 ;;;; Heading backlinks
 
-(defun denote-org-extras--get-file-id-and-heading-id ()
-  "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for heading at point."
+(defun denote-org-extras--get-file-id-and-heading-id-or-context ()
+  "Return link to current file and heading.
+If a CUSTOM_ID is present and the value of the user option
+`denote-org-store-link-to-heading' is set to `context', then return a
+regexp that matches both the CUSTOM_ID and the context of the current
+heading.  This looks like:
+
+    \\(ID::*HEADING-TEXT\\|ID::#HEADING-ID\\)
+
+If CUSTOM_ID is present but `denote-org-store-link-to-heading' is not
+set to `context', then return a patternf of the following form:
+
+    ID::#HEADING-ID"
   (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
     (let ((context-p (eq denote-org-store-link-to-heading 'context))
           (heading-id (org-entry-get (point) "CUSTOM_ID")))
@@ -182,7 +193,7 @@ that for the details.
 
 Also see `denote-org-extras-link-to-heading'."
   (interactive)
-  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id))
+  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id-or-context))
              (heading-text (substring-no-properties (denote-link-ol-get-heading))))
     (denote-link--prepare-backlinks heading-id ".*\\.org" (denote-org-extras--get-backlinks-buffer-name heading-text))))
 
@@ -512,7 +523,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let ((files (if (plist-get params :this-heading-only)
-                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id))
+                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id-or-context))
                       (denote-link-return-backlinks))))
     (let* ((sort (plist-get params :sort-by-component))
            (reverse (plist-get params :reverse-sort))
