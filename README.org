@@ -502,11 +502,11 @@ the existing ~denote-prompts~.
 :END:
 
 The convenience commands we provide only cover some basic use-cases
-([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]).  The user may require
-combinations that are not covered, such as to prompt for a template and
-for a subdirectory, instead of only one of the two.  To this end, we
-show how to follow the code we use in Denote to write your own variants
-of those commands.
+([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]). The user may require
+combinations that are not covered, such as to prompt for a template
+and for a subdirectory, instead of only one of the two. To this end,
+we show how to follow the code we use in Denote to write your own
+variants of those commands.
 
 First let's take a look at the definition of one of those commands.
 They all look the same, but we use ~denote-subdirectory~ for this
@@ -519,40 +519,48 @@ example:
 Available candidates include the value of the variable
 `denote-directory' and any subdirectory thereof.
 
-This is equivalent to calling `denote' when `denote-prompts' is
-set to '(subdirectory title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts'
+has the `subdirectory' prompt appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(subdirectory title keywords)))
+  (let ((denote-prompts (denote-add-prompts '(subdirectory))))
     (call-interactively #'denote)))
 #+end_src
 
-The hyphenated word after ~defun~ is the name of the function.  It has
-to be unique.  Then we have the documentation string (or "doc string")
+The hyphenated word after ~defun~ is the name of the function. It has
+to be unique. Then we have the documentation string (or "doc string")
 which is for the user's convenience.
 
-This function is ~interactive~, meaning that it can be called via =M-x=
-or be assigned to a key binding.  Then we have the local binding of the
-~denote-prompts~ to the desired combination ("local" means specific to
-this function without affecting other contexts).  Lastly, it calls the
-standard ~denote~ command interactively, so it uses all the prompts in
-their specified order.
+This function is ~interactive~, meaning that it can be called via
+=M-x= or be assigned to a key binding. Then we have the local binding
+of the ~denote-prompts~ to the desired combination ("local" means
+specific to this function without affecting other contexts). Lastly,
+it calls the standard ~denote~ command interactively, so it uses all
+the prompts in their specified order.
 
-Now let's say we want to have a command that (i) asks for a template and
-(ii) for a subdirectory ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).  All we need to
-do is tweak the ~let~ bound value of ~denote-prompts~ and give our
-command a unique name:
+The function call ~(denote-add-prompts '(subdirectory))~ will append
+the subdirectory prompt to the existing value of the ~denote-prompts~.
+If, for example, the default value is ='(title keywords)= (to prompt
+for a title and then for keywords), it will become ='(subdirectory
+title keywords)= inside the context of this ~let~. Remember that this
+is "local", so the global value of ~denote-prompts~ remains unaffected.
+
+Now let's say we want to have a command that (i) asks for a template
+(ii) for a subdirectory ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]), and (iii) then
+goes through the remaining ~denote-prompts~. All we need to do is
+tweak the ~let~ bound value of ~denote-prompts~ and give our command a
+unique name:
 
 #+begin_src emacs-lisp
 ;; Like `denote-subdirectory' but also ask for a template
-(defun denote-subdirectory-with-template ()
+(defun my-denote-subdirectory-with-template ()
   "Create note while also prompting for a template and subdirectory.
 
-This is equivalent to calling `denote' when `denote-prompts' is
-set to '(template subdirectory title keywords)."
+This is the equivalent of calling `denote' when `denote-prompts' has the
+`subdirectory' and `template' prompts appended to its existing prompts."
   (declare (interactive-only t))
   (interactive)
-  (let ((denote-prompts '(template subdirectory title keywords)))
+  (let ((denote-prompts (denote-add-prompts '(subdirectory template))))
     (call-interactively #'denote)))
 #+end_src
 
@@ -561,6 +569,23 @@ The tweaks to ~denote-prompts~ determine how the command will behave
 variants which you can then assign to keys, invoke with =M-x=, or add
 to the list of commands available at the ~denote-command-prompt~
 ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
+
+In the above scenario, we are using the ~denote-add-prompts~ function,
+which appends whatever prompts we want to the existing value of
+~denote-prompts~. If the user prefers to completely override the
+~denote-prompts~, they can set the value outright:
+
+#+begin_src emacs-lisp
+(defun my-denote-subdirectory-with-template-title-and-keywords ()
+  "Create a note while prompting for subdirectory, template, title, and keywords.
+
+This is the equivalent of calling `denote' when `denote-prompts' has the
+value '(template subdirectory title keywords)."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(subdirectory template title keywords)))
+    (call-interactively #'denote)))
+#+end_src
 
 *** The ~denote-save-buffers~ option
 :PROPERTIES:
