@@ -4896,6 +4896,8 @@ Also see the user option `denote-org-store-link-to-heading'."
                          heading)
                       description)
        :link (cond
+              ((when-let ((id (org-entry-get (point) "CUSTOM_ID")))
+                 (format "denote:%s::#%s" file-id id)))
               ((and heading-links (eq denote-org-store-link-to-heading 'context) heading)
                (format "denote:%s::*%s" file-id heading))
               ((and heading-links heading)
