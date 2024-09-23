@@ -769,6 +769,8 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+[ You may not need ~org-capture~ to do what you want ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]). ]
+
 ** Create note with specific prompts using Org capture
 :PROPERTIES:
 :CUSTOM_ID: h:95b78582-9086-47e8-967f-62373e2369a0
@@ -851,6 +853,8 @@ treated the same as =:title= or ~t~).
                :kill-buffer t
                :jump-to-captured t))
 #+end_src
+
+[ You may not need ~org-capture~ to do what you want ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]). ]
 
 ** Create note with specific values using Org capture
 :PROPERTIES:
@@ -935,7 +939,8 @@ prompted for a date.
 
 The above highlights the hackability of the Denote code base, namely,
 how we can affect the behaviour of the underlying ~denote~ command by
-~let~ binding variables that affect every aspect of its behaviour.
+~let~ binding variables that affect every aspect of its behaviour
+([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]).
 
 ** Create a note with the region's contents
 :PROPERTIES:
