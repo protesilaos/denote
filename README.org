@@ -708,15 +708,20 @@ template.  Such as:
                  :jump-to-captured t)))
 #+end_src
 
-[ In the future, we might develop Denote in ways which do not require such
-  manual intervention.  More user feedback is required to identify the
-  relevant workflows. ]
+Once the template is added, it is accessed from the specified key. If,
+for instance, ~org-capture~ is bound to =C-c c=, then the note
+creation is initiated with =C-c c n=, per the above snippet. After
+that, the process is the same as with invoking ~denote~ directly,
+namely: a prompt for a title followed by a prompt for keywords,
+assuming the default settings ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). Concretely,
+this method always respects the value of the user option
+~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
 
-Once the template is added, it is accessed from the specified key.  If,
-for instance, ~org-capture~ is bound to =C-c c=, then the note creation
-is initiated with =C-c c n=, per the above snippet.  After that, the
-process is the same as with invoking ~denote~ directly, namely: a prompt
-for a title followed by a prompt for keywords ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+It is also possible to define templates that have specific prompts or
+certain values set, for which there is no prompt:
+
+- [[#h:115b6797-f265-40e9-a603-32eeda13a7ac][Create note with specific values using Org capture]]
+- [[#h:95b78582-9086-47e8-967f-62373e2369a0][Create note with specific prompts using Org capture]]
 
 #+vindex: denote-org-capture-specifiers
 Users may prefer to leverage ~org-capture~ in order to extend file
@@ -749,11 +754,11 @@ explained in the previous section ([[#h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881][Cr
 
 #+findex: denote-org-capture-with-prompts
 The previous section shows how to define an Org capture template that
-always prompts for a title and keywords.  There are, however, cases
-where the user wants more control over what kind of input Denote will
-prompt for.  To this end, we provide the function
-~denote-org-capture-with-prompts~.  Below we explain it and then show
-some examples of how to use it.
+always prompts for whatever is set in the user option ~denote-prompts~
+(title and keywords, by default). There are, however, cases where the
+user wants more control over what kind of input Denote will prompt
+for. To this end, we provide the function ~denote-org-capture-with-prompts~.
+Below we explain it and then show some examples of how to use it.
 
 The ~denote-org-capture-with-prompts~ is like ~denote-org-capture~ but
 with optional prompt parameters.
@@ -761,16 +766,12 @@ with optional prompt parameters.
 When called without arguments, it does not prompt for anything.  It
 just returns the front matter with title and keyword fields empty and
 the date and identifier fields specified.  It also makes the file name
-consist of only the identifier plus the Org file name extension.
-
-[[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]].
+consist of only the identifier plus the Org file name extension ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 Otherwise, it produces a minibuffer prompt for every non-nil value
 that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
 and =TEMPLATE= arguments.  The prompts are those used by the standard
-~denote~ command and all of its utility commands.
-
-[[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]].
+~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
 When returning the contents that fill in the Org capture template, the
 sequence is as follows: front matter, =TEMPLATE=, and then the value
