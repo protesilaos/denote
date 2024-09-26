@@ -166,7 +166,7 @@ set to `context', then return a patternf of the following form:
        (context-p
         (concat id "::" (shell-quote-argument "*") (denote-link-ol-get-heading)))
        (heading-id
-        (concat id "::#" (denote-link-ol-get-heading)))
+        (concat id "::#" heading-id))
        (t
         (error "No way to get link to a heading at point in file `%s'" buffer-file-name))))))
 
