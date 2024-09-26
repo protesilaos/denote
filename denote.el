@@ -4332,9 +4332,10 @@ Implementation based on the function `org-activate-links'."
              (_ (or (eq face-at-point 'denote-faces-link)
                     (member 'denote-faces-link face-at-point))))
     (or (get-text-property position 'denote-link-id)
-        (let ((property (get-text-property position 'help-echo)))
-          (string-match denote-id-regexp property)
-          (match-string-no-properties 0 property)))))
+        (when-let ((link-data (get-text-property position 'htmlize-link))
+                   (link (cadr link-data)))
+          (string-match denote-id-regexp link)
+          (match-string-no-properties 0 link)))))
 
 (defun denote--get-link-file-path-at-point (&optional point)
   "Return link to the Denote file path at point or optional POINT.
