@@ -181,7 +181,7 @@ the `denote' function.  It is internally processed by
 
 If there are multiple journal entries for the date, prompt for one among
 them using minibuffer completion.  If there is only one, return it.  If
-there is no journal entry, return nil."
+there is no journal entry, create it."
   (let* ((internal-date (denote-parse-date date))
          (files (denote-journal-extras--entry-today internal-date)))
     (cond
@@ -189,7 +189,11 @@ there is no journal entry, return nil."
       (completing-read "Select journal entry: " files nil t))
      (files
       (car files))
-     (t nil))))
+     (t
+      (save-window-excursion
+        (denote-journal-extras-new-entry date)
+        (save-buffer)
+        (buffer-file-name))))))
 
 ;;;###autoload
 (defun denote-journal-extras-new-or-existing-entry (&optional date)
@@ -213,10 +217,7 @@ It is internally processed by `denote-parse-date'."
    (list
     (when current-prefix-arg
       (denote-date-prompt))))
-  (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
-    (if path
-        (find-file path)
-      (denote-journal-extras-new-entry date))))
+  (find-file (denote-journal-extra-path-to-new-or-existing-entry date)))
 
 ;;;###autoload
 (defun denote-journal-extras-link-or-create-entry (&optional date id-only)
@@ -245,11 +246,6 @@ file's title.  This has the same meaning as in `denote-link'."
      ('(16) (list (denote-date-prompt) :id-only))
      ('(4) (list (denote-date-prompt)))))
   (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
-    (unless path
-      (save-window-excursion
-        (denote-journal-extras-new-entry date)
-        (save-buffer)
-        (setq path (buffer-file-name))))
     (denote-link path
                  (denote-filetype-heuristics (buffer-file-name))
                  (denote--link-get-description path)
