@@ -1026,7 +1026,7 @@ they are used as the keywords separator in file names."
 (defun denote-sluggify-keyword (str)
   "Sluggify STR while joining separate words."
   (downcase
-   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ -=]*" "" str)))
+   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" "" str)))
 
 (make-obsolete
  'denote-sluggify-and-join
