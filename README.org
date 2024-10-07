@@ -2401,7 +2401,7 @@ use the following in their Emacs configuration ([[#h:d375c6d2-92c7-425f-9d9d-219
 
 (defun my-denote-sluggify-keyword (str)
   (downcase
-   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ -=]*" ""
+   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" ""
                              (denote-slug-keep-only-ascii str))))
 
 (defcustom denote-file-name-slug-functions
