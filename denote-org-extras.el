@@ -80,17 +80,22 @@ the current file."
     (save-excursion
       (goto-char (point-min))
       (forward-line (1- line))
-      (cons (denote-link-ol-get-heading) (denote-link-ol-get-id)))))
+      (cons (denote-link-ol-get-heading)
+            (if (eq denote-org-store-link-to-heading 'context)
+                (org-entry-get (point) "CUSTOM_ID")
+              (denote-link-ol-get-id))))))
 
-(defun denote-org-extras-format-link-with-heading (file heading-id description)
-  "Prepare link to FILE with HEADING-ID using DESCRIPTION."
+(defun denote-org-extras-format-link-with-heading (file heading-id description &optional format)
+  "Prepare link to FILE with HEADING-ID using DESCRIPTION.
+Optional FORMAT is the exact link pattern to use."
   (when (region-active-p)
     (setq description (buffer-substring-no-properties (region-beginning) (region-end)))
     (denote--delete-active-region-content))
-  (format "[[denote:%s::#%s][%s]]"
-          (denote-retrieve-filename-identifier file)
-          heading-id
-          description))
+  (format
+   (or format "[[denote:%s::#%s][%s]]")
+   (denote-retrieve-filename-identifier file)
+   heading-id
+   description))
 
 ;;;###autoload
 (defun denote-org-extras-link-to-heading ()
@@ -118,24 +123,52 @@ Also see `denote-org-extras-backlinks-for-heading'."
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Links to headings only work between Org files"))
-  (when-let ((file (denote-file-prompt ".*\\.org"))
-             (file-text (denote--link-get-description file))
-             (heading (denote-org-extras-outline-prompt file))
-             (line (string-to-number (car (split-string heading "\t"))))
-             (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
-             (heading-text (car heading-data))
-             (heading-id (cdr heading-data))
-             (description (denote-link-format-heading-description file-text heading-text)))
-    (insert (denote-org-extras-format-link-with-heading file heading-id description))))
+  (let ((context-p (eq denote-org-store-link-to-heading 'context)))
+    (when-let ((file (denote-file-prompt ".*\\.org"))
+               (file-text (denote--link-get-description file))
+               (heading (denote-org-extras-outline-prompt file))
+               (line (string-to-number (car (split-string heading "\t"))))
+               (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
+               (heading-text (car heading-data))
+               (heading-id (if (and context-p (null (cdr heading-data)))
+                               heading-text
+                             (cdr heading-data)))
+               (description (denote-link-format-heading-description file-text heading-text)))
+      (insert
+       (denote-org-extras-format-link-with-heading
+        file
+        heading-id
+        description
+        (when (equal heading-text heading-id)
+          "[[denote:%s::*%s][%s]]"))))))
 
 ;;;; Heading backlinks
 
-(defun denote-org-extras--get-file-id-and-heading-id (&optional file)
-  "Return IDENTIFIER::#ORG-HEADING-CUSTOM-ID string for FILE heading at point.
-If FILE is nil, use the variable `buffer-file-name'."
-  (if-let ((heading-id (org-entry-get (point) "CUSTOM_ID")))
-      (concat (denote-retrieve-filename-identifier-with-error (or file buffer-file-name)) "::#" heading-id)
-    (error "No CUSTOM_ID for heading at point in file `%s'" file)))
+(defun denote-org-extras--get-file-id-and-heading-id-or-context ()
+  "Return link to current file and heading.
+If a CUSTOM_ID is present and the value of the user option
+`denote-org-store-link-to-heading' is set to `context', then return a
+regexp that matches both the CUSTOM_ID and the context of the current
+heading.  This looks like:
+
+    \\(ID::*HEADING-TEXT\\|ID::#HEADING-ID\\)
+
+If CUSTOM_ID is present but `denote-org-store-link-to-heading' is not
+set to `context', then return a patternf of the following form:
+
+    ID::#HEADING-ID"
+  (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
+    (let ((context-p (eq denote-org-store-link-to-heading 'context))
+          (heading-id (org-entry-get (point) "CUSTOM_ID")))
+      (cond
+       ((and context-p heading-id)
+        (format "\\(%s::%s%s\\|#%s\\)" id (shell-quote-argument "*") (denote-link-ol-get-heading) heading-id))
+       (context-p
+        (concat id "::" (shell-quote-argument "*") (denote-link-ol-get-heading)))
+       (heading-id
+        (concat id "::#" heading-id))
+       (t
+        (error "No way to get link to a heading at point in file `%s'" buffer-file-name))))))
 
 (defun denote-org-extras--get-backlinks-buffer-name (text)
   "Format a buffer name for `denote-org-extras-backlinks-for-heading' with TEXT."
@@ -160,7 +193,7 @@ that for the details.
 
 Also see `denote-org-extras-link-to-heading'."
   (interactive)
-  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id buffer-file-name))
+  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id-or-context))
              (heading-text (substring-no-properties (denote-link-ol-get-heading))))
     (denote-link--prepare-backlinks heading-id ".*\\.org" (denote-org-extras--get-backlinks-buffer-name heading-text))))
 
@@ -490,7 +523,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (when-let ((files (if (plist-get params :this-heading-only)
-                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id))
+                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id-or-context))
                       (denote-link-return-backlinks))))
     (let* ((sort (plist-get params :sort-by-component))
            (reverse (plist-get params :reverse-sort))
