@@ -172,7 +172,12 @@ DATE has the same format as that returned by `denote-parse-date'."
        (string-match-p keyword file))
      files)))
 
-(defun denote-journal-extra-path-to-new-or-existing-entry (&optional date)
+(define-obsolete-function-alias
+  'denote-journal-extra-path-to-new-or-existing-entry
+  'denote-journal-extras-path-to-new-or-existing-entry
+  "3.2.0")
+
+(defun denote-journal-extras-path-to-new-or-existing-entry (&optional date)
   "Return path to existing or new journal file.
 With optional DATE, do it for that date, else do it for today.  DATE is
 a string and has the same format as that covered in the documentation of
@@ -217,7 +222,7 @@ It is internally processed by `denote-parse-date'."
    (list
     (when current-prefix-arg
       (denote-date-prompt))))
-  (find-file (denote-journal-extra-path-to-new-or-existing-entry date)))
+  (find-file (denote-journal-extras-path-to-new-or-existing-entry date)))
 
 ;;;###autoload
 (defun denote-journal-extras-link-or-create-entry (&optional date id-only)
@@ -245,7 +250,7 @@ file's title.  This has the same meaning as in `denote-link'."
    (pcase current-prefix-arg
      ('(16) (list (denote-date-prompt) :id-only))
      ('(4) (list (denote-date-prompt)))))
-  (let ((path (denote-journal-extra-path-to-new-or-existing-entry date)))
+  (let ((path (denote-journal-extras-path-to-new-or-existing-entry date)))
     (denote-link path
                  (denote-filetype-heuristics (buffer-file-name))
                  (denote--link-get-description path)
