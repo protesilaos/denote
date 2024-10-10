@@ -947,6 +947,9 @@ how we can affect the behaviour of the underlying ~denote~ command by
 :CUSTOM_ID: h:14d2430e-d60f-4c66-9229-bec2098039d2
 :END:
 
+[ What we document here uses the ~denote-journal-extras-path-to-new-or-existing-entry~
+  which is modified as part of {{{development-version}}}. ]
+
 Denote can be used for a free-form journaling out-of-the-box. We also
 provide the =denote-journal-extras.el= file, which contains extensions
 for a more streamlined workflow ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]).
