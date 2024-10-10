@@ -177,6 +177,7 @@ DATE has the same format as that returned by `denote-parse-date'."
   'denote-journal-extras-path-to-new-or-existing-entry
   "3.2.0")
 
+;;;###autoload
 (defun denote-journal-extras-path-to-new-or-existing-entry (&optional date)
   "Return path to existing or new journal file.
 With optional DATE, do it for that date, else do it for today.  DATE is
