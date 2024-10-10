@@ -942,6 +942,36 @@ how we can affect the behaviour of the underlying ~denote~ command by
 ~let~ binding variables that affect every aspect of its behaviour
 ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]).
 
+** Create a journal entry using Org capture
+:PROPERTIES:
+:CUSTOM_ID: h:14d2430e-d60f-4c66-9229-bec2098039d2
+:END:
+
+Denote can be used for a free-form journaling out-of-the-box. We also
+provide the =denote-journal-extras.el= file, which contains extensions
+for a more streamlined workflow ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]).
+
+One of the features of those extras is the ability to create a Denote
+file for a given day, if there is none, but revisit the file if it
+exists. Users can thus leverage this to set up a workflow where they
+quickly add a new heading to their daily journal file via the command
+~org-capture~:
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
+               '("j" "Journal" entry
+                 (file denote-journal-extras-path-to-new-or-existing-entry)
+                 "* %U %?\n%i\n%a"
+                 :kill-buffer t
+                 :empty-lines 1)))
+#+end_src
+
+Using the above, is the same as calling the command
+~denote-journal-extras-new-or-existing-entry~ and then manually
+appending a heading with a timestamp. The template can be modified
+accordingly, in accordance with the documentation of ~org-capture-templates~.
+
 ** Create a note with the region's contents
 :PROPERTIES:
 :CUSTOM_ID: h:2f8090f1-50af-4965-9771-d5a91a0a87bd
@@ -4081,12 +4111,14 @@ the ~tmr~ package from GNU ELPA ([[#h:4af1f81e-e93a-43cc-b344-960032a16d42][Jour
 
 #+findex: denote-journal-extras-new-or-existing-entry
 The command ~denote-journal-extras-new-or-existing-entry~ locates an
-existing journal entry or creates a new one.  A journal entry is one
-that has ~denote-journal-extras-keyword~ as part of its file name.  If
+existing journal entry or creates a new one. A journal entry is one
+that has ~denote-journal-extras-keyword~ as part of its file name. If
 there are multiple journal entries for the current date, it prompts
-for one among them using minibuffer completion.  If there is only one,
-it visits it outright.  If there is no journal entry, it creates one
-by calling ~denote-journal-extra-new-entry~ (as described above).
+for one among them using minibuffer completion. If there is only one,
+it visits it outright. If there is no journal entry, it creates one by
+calling ~denote-journal-extra-new-entry~ (as described above).
+Depending on one's workflow, this can be done via ~org-capture~
+([[#h:14d2430e-d60f-4c66-9229-bec2098039d2][Create a journal entry using Org capture]]).
 
 #+findex: denote-journal-extras-link-or-create-entry
 The command ~denote-journal-extras-link-or-create-entry~ links to the
@@ -6726,22 +6758,22 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,
   Alfredo Borrás, Alp Eren Kose, Ashton Wiersdorf, Benjamin Kästner,
-  Claudio Migliorelli, Claudiu Tănăselia, Colin McLear, Damien Cassou,
-  Elias Storms, Federico Stilman, Florian, Frédéric Willem Frank
-  Ehmsen, Glenna D., Guo Yong, Hanspeter Gisler Harold Ollivier,
-  IceAsteroid, Jack Baty, Jay Rajput, Jean-Charles Bagneris, Jens
-  Östlund, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas
-  Großekathöfer, Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel,
-  Kaushal Modi, Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol
-  Solis, Mark Olson, Mirko Hernandez, Niall Dooley, Nick Bell, Paul
-  van Gelder, Peter Prevos, Peter Smith, Riccardo Giannitrapani,
-  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
-  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
-  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi
-  Liu, Ypot, atanasj, azegas, babusri, coherentstate, doolio, duli,
-  drcxd, elge70, fingerknight, hpgisler, jtpavlock, mentalisttraceur,
-  pRot0ta1p, rbenit68, relict007, sienic, skissue, sundar bp,
-  yetanotherfossman, zadca123
+  Claudio Migliorelli, Claudiu Tănăselia, Colin McLear,
+  Cosmin-Octavian C, Damien Cassou, Elias Storms, Federico Stilman,
+  Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
+  Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty, Jay
+  Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen,
+  Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer, Jousimies,
+  Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi, Kolmas,
+  Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson, Mirko
+  Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter Prevos,
+  Peter Smith, Riccardo Giannitrapani, Samuel W. Flint, Sergio Rey,
+  Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven
+  Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C.
+  Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas,
+  babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
+  hpgisler, jtpavlock, mentalisttraceur, pRot0ta1p, rbenit68,
+  relict007, sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
