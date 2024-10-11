@@ -3463,10 +3463,13 @@ relevant front matter.
   That Vertico command is bound to M-RET as of this writing on
   2024-02-29 09:24 +0200. ]"
   (interactive
-   (list
-    (buffer-file-name)
-    (denote-title-prompt nil "Add TITLE (empty to ignore)")
-    (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)"))))
+   (let* ((file buffer-file-name)
+          (default-title (denote-retrieve-filename-title file))
+          (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ",")))
+     (list
+      file
+      (denote-title-prompt default-title "Add TITLE (empty to ignore)")
+      (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords)))))
   (when-let ((denote-file-is-writable-and-supported-p file)
              (id (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file)))
