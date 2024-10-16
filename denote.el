@@ -4355,8 +4355,8 @@ Implementation based on the function `org-activate-links'."
   "Return the Denote identifier at point or optional POINT."
   (when-let ((position (or point (point)))
              (face-at-point (get-text-property position 'face))
-             (_ (or (eq face-at-point 'denote-faces-link)
-                    (member 'denote-faces-link face-at-point))))
+             ((or (eq face-at-point 'denote-faces-link)
+                  (member 'denote-faces-link face-at-point))))
     (or (get-text-property position 'denote-link-id)
         (when-let ((link-data (get-text-property position 'htmlize-link))
                    (link (cadr link-data)))

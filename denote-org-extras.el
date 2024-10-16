@@ -667,10 +667,10 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun denote-org-extras-dblock--get-file-contents-as-heading (file add-links)
   "Insert the contents of Org FILE, formatting the #+title as a heading.
 With optional ADD-LINKS, make the title link to the original file."
-  (when-let ((_ (denote-file-is-note-p file))
+  (when-let (((denote-file-is-note-p file))
              (identifier (denote-retrieve-filename-identifier file))
              (file-type (denote-filetype-heuristics file))
-             (_ (eq file-type 'org)))
+             ((eq file-type 'org)))
     (with-temp-buffer
       (let ((beginning-of-contents (point))
             title
