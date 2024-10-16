@@ -99,9 +99,9 @@ buffer will be used, if available."
 
 (defun denote-rename-buffer--format (buffer)
   "Parse the BUFFER through the `denote-rename-buffer-format'."
-  (when-let ((file (buffer-file-name buffer))
-             (type (denote-filetype-heuristics file)))
-    (let ((should-show-backlink-indicator (and ; only do search if format contains "%b"
+  (when-let ((file (buffer-file-name buffer)))
+    (let ((type (denote-filetype-heuristics file))
+          (should-show-backlink-indicator (and ; only do search if format contains "%b"
                                            (string-match-p "%b" denote-rename-buffer-format)
                                            (denote--file-has-backlinks-p file))))
       (string-trim
