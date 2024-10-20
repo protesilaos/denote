@@ -4668,11 +4668,12 @@ inserts links with just the identifier."
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-prompt (buffers)
   "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar #'file-name-nondirectory buffers)))
-    (completing-read
-     "Select note buffer: "
-     (denote--completion-table 'buffer buffer-file-names)
-     nil t)))
+  (let ((buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffers)))
+    (concat (denote-directory)
+            (completing-read
+             "Select note buffer: "
+             (denote--completion-table 'buffer buffer-file-names)
+             nil t))))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-is-note-p' from Dired marked items."
