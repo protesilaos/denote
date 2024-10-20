@@ -268,8 +268,7 @@ the variable `denote-file-type'."
             ('signature (setq signature (denote-signature-prompt)))))
         (delete-region (org-entry-beginning-position)
                        (save-excursion (org-end-of-subtree t) (point)))
-        (denote heading tags 'org subdirectory date nil signature)
-        (insert text))
+        (denote heading tags 'org subdirectory date text signature))
     (user-error "No subtree to extract; aborting")))
 
 ;;;; Convert links from `:denote' to `:file' and vice versa
