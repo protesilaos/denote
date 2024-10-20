@@ -4666,13 +4666,13 @@ inserts links with just the identifier."
 ;;;;; Links from Dired marks
 
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
-(defun denote-link--buffer-prompt (buffers)
-  "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffers)))
+(defun denote-link--buffer-file-prompt (buffer-file-names)
+  "Select file from BUFFER-FILE-NAMES of Denote notes."
+  (let ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)))
     (concat (denote-directory)
             (completing-read
-             "Select note buffer: "
-             (denote--completion-table 'buffer buffer-file-names)
+             "Select note file buffer: "
+             (denote--completion-table 'buffer relative-buffer-file-names)
              nil t))))
 
 (defun denote-link--map-over-notes ()
@@ -4709,7 +4709,7 @@ This command is meant to be used from a Dired buffer."
         ((eq (length file-names) 1)
          (car file-names))
         (t
-         (denote-link--buffer-prompt file-names)))))
+         (denote-link--buffer-file-prompt file-names)))))
     current-prefix-arg)
    dired-mode)
   (when (null files)
