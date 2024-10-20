@@ -2046,9 +2046,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
-  (and directory
-       (string-prefix-p (denote-directory)
-                        (expand-file-name directory))))
+  (string-prefix-p (denote-directory) (expand-file-name directory)))
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype symbol given the argument FILETYPE.
