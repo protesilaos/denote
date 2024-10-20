@@ -4719,10 +4719,9 @@ This command is meant to be used from a Dired buffer."
       (user-error "The buffer's file type is not recognized by Denote")))
   (when (y-or-n-p (format "Create links at point in %s?" buffer))
     (with-current-buffer buffer
-      (insert (denote-link--prepare-links
-               files
-               (denote-filetype-heuristics (buffer-file-name))
-               id-only)))))
+      (denote-link--insert-links files
+                                 (denote-filetype-heuristics (buffer-file-name))
+                                 id-only))))
 
 ;;;;; Define menu
 
