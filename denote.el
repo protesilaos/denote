@@ -2396,8 +2396,9 @@ instead of that of the parameter."
 (defun denote (&optional title keywords file-type directory date template signature)
   "Create a new note with the appropriate metadata and file name.
 
-Run the `denote-after-new-note-hook' after creating the new note
-and return its path.
+Run the `denote-after-new-note-hook' after creating the new note and
+return its path.  Before returning the path, determine what needs to be
+done to the buffer, in accordance with the user option `denote-kill-buffers'.
 
 When called interactively, the metadata and file name are prompted
 according to the value of `denote-prompts'.
@@ -2432,9 +2433,9 @@ When called from Lisp, all arguments are optional.
                 (denote--creation-prepare-note-data title keywords file-type directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
-    (denote--handle-save-and-kill-buffer 'creation note-path nil)
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
+    (denote--handle-save-and-kill-buffer 'creation note-path nil)
     note-path))
 
 (defvar denote-title-history nil

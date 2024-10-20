@@ -176,7 +176,12 @@ explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
 
 #+vindex: denote-after-new-note-hook
 The ~denote~ command runs the hook ~denote-after-new-note-hook~ after
-creating the new note.
+creating the new note. When called from Lisp, it returns the path it
+generates. Before returning the path, it decides what to do with the
+buffer of the note, in accordance with the user option
+~denote-kill-buffers~ ([[#h:c8fd826f-3ac9-4820-9709-4375603f8865][The ~denote-kill-buffers~ option]]). [ As part of
+{{{development-version}}}, the ~denote~ command runs the hook and then
+kills the buffer, whereas it was the other way around before. ]
 
 The file type of the new note is determined by the user option
 ~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
