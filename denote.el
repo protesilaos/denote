@@ -2046,9 +2046,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
-  (and directory
-       (string-prefix-p (denote-directory)
-                        (expand-file-name directory))))
+  (string-prefix-p (denote-directory) (expand-file-name directory)))
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype symbol given the argument FILETYPE.
@@ -4668,18 +4666,18 @@ inserts links with just the identifier."
 ;;;;; Links from Dired marks
 
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
-(defun denote-link--buffer-prompt (buffers)
-  "Select buffer from BUFFERS visiting Denote notes."
-  (let ((buffer-file-names (mapcar #'file-name-nondirectory buffers)))
-    (completing-read
-     "Select note buffer: "
-     (denote--completion-table 'buffer buffer-file-names)
-     nil t)))
+(defun denote-link--buffer-file-prompt (buffer-file-names)
+  "Select file from BUFFER-FILE-NAMES of Denote notes."
+  (let ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)))
+    (concat (denote-directory)
+            (completing-read
+             "Select note file buffer: "
+             (denote--completion-table 'buffer relative-buffer-file-names)
+             nil t))))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-is-note-p' from Dired marked items."
-  (when (denote--dir-in-denote-directory-p default-directory)
-    (seq-filter #'denote-file-is-note-p (dired-get-marked-files))))
+  (seq-filter #'denote-file-is-note-p (dired-get-marked-files)))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
@@ -4711,7 +4709,7 @@ This command is meant to be used from a Dired buffer."
         ((eq (length file-names) 1)
          (car file-names))
         (t
-         (denote-link--buffer-prompt file-names)))))
+         (denote-link--buffer-file-prompt file-names)))))
     current-prefix-arg)
    dired-mode)
   (when (null files)
@@ -4722,10 +4720,9 @@ This command is meant to be used from a Dired buffer."
       (user-error "The buffer's file type is not recognized by Denote")))
   (when (y-or-n-p (format "Create links at point in %s?" buffer))
     (with-current-buffer buffer
-      (insert (denote-link--prepare-links
-               files
-               (denote-filetype-heuristics (buffer-file-name))
-               id-only)))))
+      (denote-link--insert-links files
+                                 (denote-filetype-heuristics (buffer-file-name))
+                                 id-only))))
 
 ;;;;; Define menu
 
