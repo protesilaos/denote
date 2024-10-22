@@ -4925,15 +4925,12 @@ Also see the user option `denote-org-store-link-to-heading'."
   "Export a `denote:' link from Org files.
 The LINK, DESCRIPTION, and FORMAT are handled by the export
 backend."
-  (let* ((path-id (denote-link--ol-resolve-link-to-target link :full-data))
-         (path (file-relative-name (nth 0 path-id)))
-         (id (nth 1 path-id))
-         (query (nth 2 path-id))
-         (anchor (file-name-sans-extension path))
-         (desc (cond
-                (description)
-                (query (format "denote:%s::%s" id query))
-                (t (concat "denote:" id)))))
+  (pcase-let* ((`(,path ,id ,query) (denote-link--ol-resolve-link-to-target link :full-data))
+               (anchor (file-relative-name (file-name-sans-extension path)))
+               (desc (cond
+                      (description)
+                      (query (format "denote:%s::%s" id query))
+                      (t (concat "denote:" id)))))
     (cond
      ((eq format 'html)
       (if query
