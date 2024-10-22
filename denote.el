@@ -2381,7 +2381,7 @@ instead of that of the parameter."
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
          (date (denote-parse-date date))
-         (directory (if (denote--dir-in-denote-directory-p directory)
+         (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
                       (denote-directory)))
          (template (if (or (stringp template) (functionp template))
@@ -2802,7 +2802,7 @@ Do it if BUF is in Dired mode and is either part of the variable
   (let ((current (current-buffer)))
     (with-current-buffer buf
       (when (and (eq major-mode 'dired-mode)
-                 (or (denote--dir-in-denote-directory-p default-directory)
+                 (or (and default-directory (denote--dir-in-denote-directory-p default-directory))
                      (eq current buf)))
         (revert-buffer)))))
 
