@@ -101,8 +101,8 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
 
 (defun denote-journal-extras-directory ()
   "Make the variable `denote-journal-extras-directory' and its parents."
-  (if-let (((stringp denote-journal-extras-directory))
-           (directory (file-name-as-directory (expand-file-name denote-journal-extras-directory))))
+  (if-let* (((stringp denote-journal-extras-directory))
+            (directory (file-name-as-directory (expand-file-name denote-journal-extras-directory))))
       (progn
         (when (not (file-directory-p denote-journal-extras-directory))
           (make-directory directory :parents))
@@ -132,7 +132,7 @@ is non-nil, prompt the user for a template among
 `denote-templates'.  Else return nil.
 
 Also see `denote-journal-extras-new-entry'."
-  (if-let ((template (alist-get 'journal denote-templates)))
+  (if-let* ((template (alist-get 'journal denote-templates)))
       template
     (when denote-templates
       (denote-template-prompt))))

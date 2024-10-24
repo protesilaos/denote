@@ -124,16 +124,16 @@ Also see `denote-org-extras-backlinks-for-heading'."
   (unless (derived-mode-p 'org-mode)
     (user-error "Links to headings only work between Org files"))
   (let ((context-p (eq denote-org-store-link-to-heading 'context)))
-    (when-let ((file (denote-file-prompt ".*\\.org"))
-               (file-text (denote--link-get-description file))
-               (heading (denote-org-extras-outline-prompt file))
-               (line (string-to-number (car (split-string heading "\t"))))
-               (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
-               (heading-text (car heading-data))
-               (heading-id (if (and context-p (null (cdr heading-data)))
-                               heading-text
-                             (cdr heading-data)))
-               (description (denote-link-format-heading-description file-text heading-text)))
+    (when-let* ((file (denote-file-prompt ".*\\.org"))
+                (file-text (denote--link-get-description file))
+                (heading (denote-org-extras-outline-prompt file))
+                (line (string-to-number (car (split-string heading "\t"))))
+                (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
+                (heading-text (car heading-data))
+                (heading-id (if (and context-p (null (cdr heading-data)))
+                                heading-text
+                              (cdr heading-data)))
+                (description (denote-link-format-heading-description file-text heading-text)))
       (insert
        (denote-org-extras-format-link-with-heading
         file
@@ -157,7 +157,7 @@ If CUSTOM_ID is present but `denote-org-store-link-to-heading' is not
 set to `context', then return a patternf of the following form:
 
     ID::#HEADING-ID"
-  (when-let ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
+  (when-let* ((id (denote-retrieve-filename-identifier-with-error buffer-file-name)))
     (let ((context-p (eq denote-org-store-link-to-heading 'context))
           (heading-id (org-entry-get (point) "CUSTOM_ID")))
       (cond
@@ -176,10 +176,10 @@ set to `context', then return a patternf of the following form:
 
 (defun denote-org-extras--get-backlinks-for-heading (file-and-heading-id)
   "Get backlinks to FILE-AND-HEADING-ID as a list of strings."
-  (when-let ((files (denote-directory-files nil :omit-current :text-only))
-             (xref-file-name-display 'abs)
-             (matches-in-files (xref-matches-in-files file-and-heading-id files))
-             (xref-alist (xref--analyze matches-in-files)))
+  (when-let* ((files (denote-directory-files nil :omit-current :text-only))
+              (xref-file-name-display 'abs)
+              (matches-in-files (xref-matches-in-files file-and-heading-id files))
+              (xref-alist (xref--analyze matches-in-files)))
     (mapcar
      (lambda (x)
        (denote-get-file-name-relative-to-denote-directory (car x)))
@@ -193,8 +193,8 @@ that for the details.
 
 Also see `denote-org-extras-link-to-heading'."
   (interactive)
-  (when-let ((heading-id (denote-org-extras--get-file-id-and-heading-id-or-context))
-             (heading-text (substring-no-properties (denote-link-ol-get-heading))))
+  (when-let* ((heading-id (denote-org-extras--get-file-id-and-heading-id-or-context))
+              (heading-text (substring-no-properties (denote-link-ol-get-heading))))
     (denote-link--prepare-backlinks heading-id ".*\\.org" (denote-org-extras--get-backlinks-buffer-name heading-text))))
 
 ;;;; Extract subtree into its own note
@@ -203,10 +203,10 @@ Also see `denote-org-extras-link-to-heading'."
   "Try to return a timestamp for the current Org heading.
 This can be used as the value for the DATE argument of the
 `denote' command."
-  (when-let ((pos (point))
-             (timestamp (or (org-entry-get pos "DATE")
-                            (org-entry-get pos "CREATED")
-                            (org-entry-get pos "CLOSED"))))
+  (when-let* ((pos (point))
+              (timestamp (or (org-entry-get pos "DATE")
+                             (org-entry-get pos "CREATED")
+                             (org-entry-get pos "CLOSED"))))
     (date-to-time timestamp)))
 
 ;;;###autoload
@@ -253,8 +253,8 @@ the variable `denote-file-type'."
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Headings can only be extracted from Org files"))
-  (if-let ((text (org-get-entry))
-           (heading (denote-link-ol-get-heading)))
+  (if-let* ((text (org-get-entry))
+            (heading (denote-link-ol-get-heading)))
       (let ((tags (org-get-tags))
             (date (denote-org-extras--get-heading-date))
             subdirectory
@@ -385,7 +385,7 @@ Missing links are those for which REGEXP does not have a match in
 the current buffer."
   (let ((found-files (denote-directory-files regexp :omit-current))
         (linked-files (denote-link--expand-identifiers denote-org-link-in-context-regexp)))
-    (if-let ((final-files (seq-difference found-files linked-files)))
+    (if-let* ((final-files (seq-difference found-files linked-files)))
         final-files
       (message "All links matching `%s' are present" regexp)
       '())))
@@ -521,9 +521,9 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun org-dblock-write:denote-backlinks (params)
   "Function to update `denote-backlinks' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (when-let ((files (if (plist-get params :this-heading-only)
-                        (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id-or-context))
-                      (denote-link-return-backlinks))))
+  (when-let* ((files (if (plist-get params :this-heading-only)
+                         (denote-org-extras--get-backlinks-for-heading (denote-org-extras--get-file-id-and-heading-id-or-context))
+                       (denote-link-return-backlinks))))
     (let* ((sort (plist-get params :sort-by-component))
            (reverse (plist-get params :reverse-sort))
            (include-date (plist-get params :include-date))
@@ -666,10 +666,10 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun denote-org-extras-dblock--get-file-contents-as-heading (file add-links)
   "Insert the contents of Org FILE, formatting the #+title as a heading.
 With optional ADD-LINKS, make the title link to the original file."
-  (when-let (((denote-file-is-note-p file))
-             (identifier (denote-retrieve-filename-identifier file))
-             (file-type (denote-filetype-heuristics file))
-             ((eq file-type 'org)))
+  (when-let* (((denote-file-is-note-p file))
+              (identifier (denote-retrieve-filename-identifier file))
+              (file-type (denote-filetype-heuristics file))
+              ((eq file-type 'org)))
     (with-temp-buffer
       (let ((beginning-of-contents (point))
             title

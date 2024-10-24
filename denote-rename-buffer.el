@@ -99,7 +99,7 @@ buffer will be used, if available."
 
 (defun denote-rename-buffer--format (buffer)
   "Parse the BUFFER through the `denote-rename-buffer-format'."
-  (when-let ((file (buffer-file-name buffer)))
+  (when-let* ((file (buffer-file-name buffer)))
     (let ((type (denote-filetype-heuristics file))
           (should-show-backlink-indicator (and ; only do search if format contains "%b"
                                            (string-match-p "%b" denote-rename-buffer-format)
@@ -114,7 +114,7 @@ buffer will be used, if available."
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                          (cons ?k (if-let ((kws (denote-retrieve-front-matter-keywords-value file type)))
+                          (cons ?k (if-let* ((kws (denote-retrieve-front-matter-keywords-value file type)))
                                        (denote-keywords-combine kws)
                                      (or (denote-retrieve-filename-keywords file) "")))
                           (cons ?% "%"))
@@ -125,10 +125,10 @@ buffer will be used, if available."
 The symbol of this function is the default value of the user
 option `denote-rename-buffer-function' and is thus used by the
 `denote-rename-buffer-mode'."
-  (when-let ((file (buffer-file-name buffer))
-             ((denote-file-has-identifier-p file))
-             (new-name (denote-rename-buffer--format (or buffer (current-buffer))))
-             ((not (string-blank-p new-name))))
+  (when-let* ((file (buffer-file-name buffer))
+              ((denote-file-has-identifier-p file))
+              (new-name (denote-rename-buffer--format (or buffer (current-buffer))))
+              ((not (string-blank-p new-name))))
     (rename-buffer new-name :unique)))
 
 (make-obsolete

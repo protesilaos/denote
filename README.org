@@ -2086,7 +2086,7 @@ identifiers inside the current directory:
   (interactive
    (list
     (read-directory-name "Select DIRECTORY to check for duplicate identifiers: " default-directory)))
-  (if-let ((duplicates (my-denote-find-duplicate-identifiers directory)))
+  (if-let* ((duplicates (my-denote-find-duplicate-identifiers directory)))
       (dired (cons (format "Denote duplicate identifiers" directory) duplicates))
     (message "No duplicates identifiers in `%s'" directory)))
 #+end_src
@@ -4433,17 +4433,17 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
                           nil)))
-    (if-let ((default-directory (denote-directory))
-             (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
-             (empty-files (seq-filter #'my-denote--note-has-no-contents-p files))
-             ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-             ;; buffer-name produces an error if the regexp contains a
-             ;; wildcard for a directory. I can reproduce this in emacs
-             ;; -Q and am not sure if it is a bug. Anyway, I will report
-             ;; it upstream, but even if it is fixed we cannot use it
-             ;; for now (whatever fix will be available for Emacs 30+).
-             (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-             (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+    (if-let* ((default-directory (denote-directory))
+              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+              (empty-files (seq-filter #'my-denote--note-has-no-contents-p files))
+              ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+              ;; buffer-name produces an error if the regexp contains a
+              ;; wildcard for a directory. I can reproduce this in emacs
+              ;; -Q and am not sure if it is a bug. Anyway, I will report
+              ;; it upstream, but even if it is fixed we cannot use it
+              ;; for now (whatever fix will be available for Emacs 30+).
+              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
+              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
         (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
@@ -4467,17 +4467,17 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
                           nil)))
-    (if-let ((default-directory (denote-directory))
-             (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
-             (empty-files (seq-remove #'my-denote--note-has-no-contents-p files))
-             ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-             ;; buffer-name produces an error if the regexp contains a
-             ;; wildcard for a directory. I can reproduce this in emacs
-             ;; -Q and am not sure if it is a bug. Anyway, I will report
-             ;; it upstream, but even if it is fixed we cannot use it
-             ;; for now (whatever fix will be available for Emacs 30+).
-             (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-             (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+    (if-let* ((default-directory (denote-directory))
+              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+              (empty-files (seq-remove #'my-denote--note-has-no-contents-p files))
+              ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
+              ;; buffer-name produces an error if the regexp contains a
+              ;; wildcard for a directory. I can reproduce this in emacs
+              ;; -Q and am not sure if it is a bug. Anyway, I will report
+              ;; it upstream, but even if it is fixed we cannot use it
+              ;; for now (whatever fix will be available for Emacs 30+).
+              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
+              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
         (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
@@ -4966,7 +4966,7 @@ Prompt for keywords and rename all marked files in the Dired
 buffer to only have Denote-style keywords, but none of the other
 conventions of Denote's file-naming scheme."
   (interactive nil dired-mode)
-  (if-let ((marks (dired-get-marked-files)))
+  (if-let* ((marks (dired-get-marked-files)))
       (let ((keywords (denote-keywords-prompt)))
         (dolist (file marks)
           (let* ((dir (file-name-directory file))
@@ -5175,8 +5175,8 @@ If there are more than one files, prompt with completion for one among
 them.
 
 NAME is one among `my-denote-colleagues'."
-  (if-let ((files (denote-directory-files name))
-           (length-of-files (length files)))
+  (if-let* ((files (denote-directory-files name))
+            (length-of-files (length files)))
       (cond
        ((= length-of-files 1)
         (car files))
