@@ -4931,16 +4931,15 @@ backend."
                       (description)
                       (query (format "denote:%s::%s" id query))
                       (t (concat "denote:" id)))))
-    (cond
-     ((eq format 'html)
-      (if query
-          (format "<a href=\"%s.html%s\">%s</a>" anchor query desc)
-        (format "<a href=\"%s.html\">%s</a>" anchor desc)))
-     ((eq format 'latex) (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
-     ((eq format 'texinfo) (format "@uref{%s,%s}" path desc))
-     ((eq format 'ascii) (format "[%s] <denote:%s>" desc path))
-     ((eq format 'md) (format "[%s](%s)" desc path))
-     (t path))))
+    (pcase format
+      ('html (if query
+                 (format "<a href=\"%s.html%s\">%s</a>" anchor query desc)
+               (format "<a href=\"%s.html\">%s</a>" anchor desc)))
+      ('latex (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
+      ('texinfo (format "@uref{%s,%s}" path desc))
+      ('ascii (format "[%s] <denote:%s>" desc path))
+      ('md (format "[%s](%s)" desc path))
+      (_ path))))
 
 (defun denote-link-ol-help-echo (_window _object position)
   "Echo the full file path of the identifier at POSITION."
