@@ -857,19 +857,54 @@ have been warned."
  'denote-file-name-slug-functions
  "2.3.0")
 
-(defcustom denote-link-description-function #'denote-link-description-with-signature-and-title
-  "Function to create the description of links.
-
-The function specified takes a FILE argument and returns the description
-as a string.
-
-By default, the title of the file is returned as the description.  If
-the file has a signature, it is prepended to the title."
+(defcustom denote-link-description-function #'denote-get-link-description
+  "Function to create the description of a link.
+The default value is a function that interprets the user option
+`denote-link-description-format'.  Users are advised to modify that
+variable.  Those who need a completely custom behaviour can provide
+their own function as the value of this user option."
   :group 'denote
   :type '(choice
-          (function :tag "Link to title and include signature, if present" denote-link-description-with-signature-and-title)
-          (function :tag "Custom function like `denote-link-description-with-signature-and-title'"))
-  :package-version '(denote . "2.3.0"))
+          (function :tag "Link using active region or `denote-link-description-format'" denote-get-link-description)
+          (function :tag "Custom function like `denote-get-link-description'"))
+  :package-version '(denote . "3.2.0"))
+
+(defcustom denote-link-description-format "%t"
+  "The format of a link description text.
+This determines how `denote-link' and related functions create a link
+description by default, notwithstanding their particular patterns of
+behaviour (e.g. when a region is selected, its text is used as the
+description of the link).
+
+The value is a string that treats specially the following
+specifiers:
+
+- The %t is the Denote TITLE of the file.
+- The %i is the Denote IDENTIFIER of the file.
+- The %d is the same as %i (DATE mnemonic).
+- The %s is the Denote SIGNATURE of the file.
+- The %k is the Denote KEYWORDS of the file.
+- The %% is a literal percent sign.
+
+In addition, the following flags are available for each of the specifiers:
+
+- 0 :: Pad to the width, if given, with zeros instead of spaces.
+- - :: Pad to the width, if given, on the right instead of the left.
+- < :: Truncate to the width and precision, if given, on the left.
+- > :: Truncate to the width and precision, if given, on the right.
+- ^ :: Convert to upper case.
+- _ :: Convert to lower case.
+
+When combined all together, the above are written thus:
+
+    %<flags><width><precision>SPECIFIER-CHARACTER
+
+Any other string it taken as-is.  Users may want, for example, to
+include some text that makes Denote links stand out, such as a [D]
+prefix."
+  :type 'string
+  :package-version '(denote . "3.2.0")
+  :group 'denote)
 
 ;;;; Main variables
 
@@ -3957,35 +3992,10 @@ With optional INCLUDE-DATE, convert the identifier using
 
 (make-obsolete 'denote-link-signature-format nil "2.3.0")
 
-(defun denote--link-get-description (file)
-  "Return link description for FILE."
-  (funcall
-   (or denote-link-description-function #'denote-link-description-with-signature-and-title)
-   file))
-
-(defun denote-link-description-with-signature-and-title (file)
-  "Return link description for FILE.
-
-- If the region is active, use it as the description.
-
-- If FILE has a signature, then format the description as a sequence of
-  the signature text and the title with two spaces between them.
-
-- If FILE does not have a signature, then use its title as the
-  description.
-
-This is useful as the value of the user option
-`denote-link-description-function'."
-  (let* ((file-type (denote-filetype-heuristics file))
-         (signature (denote-retrieve-filename-signature file))
-         (title (denote-retrieve-title-or-filename file file-type))
-         (region-text (denote--get-active-region-content)))
-    (cond
-     (region-text region-text)
-     ((and signature title) (format "%s  %s" signature title))
-     (title (format "%s" title))
-     (signature (format "%s" signature))
-     (t ""))))
+(make-obsolete
+ 'denote-link-description-with-signature-and-title
+ 'denote-get-link-description
+ "3.2.0: Also see the user option `denote-link-description-format'.")
 
 (defun denote--get-active-region-content ()
   "Return the text of the active region, else nil."
@@ -4000,6 +4010,40 @@ This is useful as the value of the user option
               (beg (region-beginning))
               (end (region-end)))
     (delete-region beg end)))
+
+(defun denote--get-link-description-format (file type)
+  "Return link format for FILE of TYPE given `denote-link-description-format'."
+  (string-trim
+   (format-spec denote-link-description-format
+                (list (cons ?t (cond
+                                ((denote-retrieve-front-matter-title-value file type))
+                                ((denote-retrieve-filename-title file))
+                                (t  "")))
+                      (cons ?i (or (denote-retrieve-filename-identifier file) ""))
+                      (cons ?d (or (denote-retrieve-filename-identifier file) ""))
+                      (cons ?s (or (denote-retrieve-filename-signature file) ""))
+                      (cons ?k (or (denote-retrieve-filename-keywords file) ""))
+                      (cons ?% "%"))
+                'delete)))
+
+(defun denote-get-link-description (file)
+  "Return a link description for FILE.
+If the region is active, use it as the description.  Otherwise, format a
+description based on the value of the `denote-link-description-format'
+user option.
+
+This function is useful as the value of the user option
+`denote-link-description-function'."
+  (let* ((file-type (denote-filetype-heuristics file))
+         (region-text (denote--get-active-region-content)))
+    (or region-text
+         (denote--get-link-description-format file file-type))))
+
+(defun denote--link-get-description (file)
+  "Return link description for FILE."
+  (funcall
+   (or denote-link-description-function #'denote-get-link-description)
+   file))
 
 ;;;###autoload
 (defun denote-link (file file-type description &optional id-only)
