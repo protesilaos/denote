@@ -1270,7 +1270,8 @@ something like .org even if the actual file extension is
 (defun denote-get-relative-path-by-id (id &optional directory)
   "Return relative path of ID string in `denote-directory-files'.
 The path is relative to DIRECTORY (default: ‘default-directory’)."
-  (file-relative-name (denote-get-path-by-id id) directory))
+  (when-let* ((path (denote-get-path-by-id id)))
+    (file-relative-name path directory)))
 
 (defvar denote-file-history nil
   "Minibuffer history of `denote-file-prompt'.")
