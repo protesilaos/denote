@@ -261,8 +261,7 @@ the variable `denote-file-type'."
             signature)
         (dolist (prompt denote-prompts)
           (pcase prompt
-            ('keywords (when (not tags)
-                         (setq tags (denote-keywords-prompt))))
+            ('keywords (when (not tags) (setq tags (denote-keywords-prompt))))
             ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
             ('date (when (not date) (setq date (denote-date-prompt))))
             ('signature (setq signature (denote-signature-prompt)))))
