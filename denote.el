@@ -1464,12 +1464,9 @@ Change the front matter format'.")
 
 (defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
-If S is not a string, return a literal emptry string.
 
 This can be used in `denote-file-types' to format front mattter."
-  (if (stringp s)
-      (format "%S" s)
-    "\"\""))
+  (format "%S" s))
 
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
@@ -1487,9 +1484,8 @@ This can be used in `denote-file-types' to format front mattter."
   (denote--trim-quotes (denote-trim-whitespace s)))
 
 (defun denote-format-string-for-org-front-matter (s)
-  "Return string S as-is for Org or plain text front matter.
-If S is not a string, return an empty string."
-  (if (stringp s) s ""))
+  "Return string S as-is for Org or plain text front matter."
+  s)
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
