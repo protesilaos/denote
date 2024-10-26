@@ -212,44 +212,40 @@ This can be used as the value for the DATE argument of the
 ;;;###autoload
 (defun denote-org-extras-extract-org-subtree ()
   "Create new Denote note using the current Org subtree as input.
-Remove the subtree from its current file and move its contents
-into a new Denote file (a subtree is a heading with all of its
-contents, including subheadings).
+Remove the subtree from its current file and move its contents into a
+new Denote file (a subtree is a heading with all of its contents,
+including subheadings).
 
-Take the text of the subtree's top level heading and use it as
-the title of the new note.
+Take the text of the subtree's top level heading and use it as the title
+of the new note.
 
-If the heading has any tags, use them as the keywords of the new
-note.  If the Org file has any #+filetags use them as well (Org's
-filetags are inherited by the headings).  If none of these are
-true and the user option `denote-prompts' includes an entry for
-keywords, then prompt for keywords.  Else do not include any
-keywords.
+If the heading has any tags, use them as the keywords of the new note.
+If the Org file has any #+filetags use them as well (Org's filetags are
+inherited by the headings).  If none of these are true and the user
+option `denote-prompts' includes an entry for keywords, then prompt for
+keywords.  Else do not include any keywords.
 
-If the heading has a PROPERTIES drawer, retain it for further
-review.
+If the heading has a PROPERTIES drawer, retain it for further review.
 
-If the heading's PROPERTIES drawer includes a DATE or CREATED
-property, or there exists a CLOSED statement with a timestamp
-value, use that to derive the date (or date and time) of the new
-note (if there is only a date, the time is taken as 00:00).  If
-more than one of these is present, the order of preference is
-DATE, then CREATED, then CLOSED.  If none of these is present,
-use the current time.  If the `denote-prompts' includes an entry
-for a date, then prompt for a date at this stage (also see
-`denote-date-prompt-use-org-read-date').
+If the heading's PROPERTIES drawer includes a DATE or CREATED property,
+or there exists a CLOSED statement with a timestamp value, use that to
+derive the date (or date and time) of the new note (if there is only a
+date, the time is taken as 00:00).  If more than one of these is
+present, the order of preference is DATE, then CREATED, then CLOSED.  If
+none of these is present, use the current time.  If the `denote-prompts'
+includes an entry for a date, then prompt for a date at this stage (also
+see `denote-date-prompt-use-org-read-date').
 
-For the rest, consult the value of the user option
-`denote-prompts' in the following scenaria:
+For the rest, consult the value of the user option `denote-prompts' in
+the following scenaria:
 
-- Optionally prompt for a subdirectory, otherwise produce the new
-  note in the variable `denote-directory'.
+- Optionally prompt for a subdirectory, otherwise produce the new note
+  in the variable `denote-directory'.
 
-- Optionally prompt for a file signature, otherwise do not use
-  one.
+- Optionally prompt for a file signature, otherwise do not use one.
 
-Make the new note an Org file regardless of the value of
-the variable `denote-file-type'."
+Make the new note an Org file regardless of the value of the user option
+`denote-file-type'."
   (interactive nil org-mode)
   (unless (derived-mode-p 'org-mode)
     (user-error "Headings can only be extracted from Org files"))
