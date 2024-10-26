@@ -1464,12 +1464,9 @@ Change the front matter format'.")
 
 (defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
-If S is not a string, return a literal emptry string.
 
 This can be used in `denote-file-types' to format front mattter."
-  (if (stringp s)
-      (format "%S" s)
-    "\"\""))
+  (format "%S" s))
 
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
@@ -1487,9 +1484,8 @@ This can be used in `denote-file-types' to format front mattter."
   (denote--trim-quotes (denote-trim-whitespace s)))
 
 (defun denote-format-string-for-org-front-matter (s)
-  "Return string S as-is for Org or plain text front matter.
-If S is not a string, return an empty string."
-  (if (stringp s) s ""))
+  "Return string S as-is for Org or plain text front matter."
+  s)
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
@@ -1518,10 +1514,15 @@ Split KEYWORDS-STRING into a list of strings.
 Consult the `denote-file-types' for how this is used."
   (split-string keywords-string "[:,\s]+" t "[][ \"']+"))
 
+(defun denote-extract-date-from-front-matter (date-string)
+  "Extract date object from front matter DATE-STRING.
+
+Consult the `denote-file-types' for how this is used."
+  (date-to-time (denote-trim-whitespace date-string)))
+
 (defvar denote-file-types
   '((org
      :extension ".org"
-     :date-function denote-date-org-timestamp
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function denote-format-string-for-org-front-matter
@@ -1529,11 +1530,19 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^#\\+filetags\\s-*:"
      :keywords-value-function denote-format-keywords-for-org-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+     :signature-key-regexp "^#\\+signature\\s-*:"
+     :signature-value-function denote-format-string-for-org-front-matter
+     :signature-value-reverse-function denote-trim-whitespace
+     :identifier-key-regexp "^#\\+identifier\\s-*:"
+     :identifier-value-function denote-format-string-for-org-front-matter
+     :identifier-value-reverse-function denote-trim-whitespace
+     :date-key-regexp "^#\\+date\\s-*:"
+     :date-value-function denote-date-org-timestamp
+     :date-value-reverse-function denote-extract-date-from-front-matter
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp)
     (markdown-yaml
      :extension ".md"
-     :date-function denote-date-rfc3339
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-format-string-for-md-front-matter
@@ -1541,11 +1550,19 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-md-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+     :signature-key-regexp "^signature\\s-*:"
+     :signature-value-function denote-format-string-for-md-front-matter
+     :signature-value-reverse-function denote-trim-whitespace-then-quotes
+     :identifier-key-regexp "^identifier\\s-*:"
+     :identifier-value-function denote-format-string-for-md-front-matter
+     :identifier-value-reverse-function denote-trim-whitespace-then-quotes
+     :date-key-regexp "^date\\s-*:"
+     :date-value-function denote-date-rfc3339
+     :date-value-reverse-function denote-extract-date-from-front-matter
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (markdown-toml
      :extension ".md"
-     :date-function denote-date-rfc3339
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
      :title-value-function denote-format-string-for-md-front-matter
@@ -1553,11 +1570,19 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^tags\\s-*="
      :keywords-value-function denote-format-keywords-for-md-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+     :signature-key-regexp "^signature\\s-*="
+     :signature-value-function denote-format-string-for-md-front-matter
+     :signature-value-reverse-function denote-trim-whitespace-then-quotes
+     :identifier-key-regexp "^identifier\\s-*="
+     :identifier-value-function denote-format-string-for-md-front-matter
+     :identifier-value-reverse-function denote-trim-whitespace-then-quotes
+     :date-key-regexp "^date\\s-*="
+     :date-value-function denote-date-rfc3339
+     :date-value-reverse-function denote-extract-date-from-front-matter
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (text
      :extension ".txt"
-     :date-function denote-date-iso-8601
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-format-string-for-org-front-matter
@@ -1565,6 +1590,15 @@ Consult the `denote-file-types' for how this is used."
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+     :signature-key-regexp "^signature\\s-*:"
+     :signature-value-function denote-format-string-for-org-front-matter
+     :signature-value-reverse-function denote-trim-whitespace
+     :identifier-key-regexp "^identifier\\s-*:"
+     :identifier-value-function denote-format-string-for-org-front-matter
+     :identifier-value-reverse-function denote-trim-whitespace
+     :date-key-regexp "^date\\s-*:"
+     :date-value-function denote-date-iso-8601
+     :date-value-reverse-function denote-extract-date-from-front-matter
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp))
   "Alist of variable `denote-file-type' and their format properties.
@@ -1624,12 +1658,6 @@ PROPERTY-LIST is a plist that consists of the following elements:
 If the user option `denote-file-type' is nil, use the first element of
 this list for new note creation.  The default is `org'.")
 
-(defun denote--date-format-function (file-type)
-  "Return date format function of FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :date-function))
-
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
   (plist-get
@@ -1680,6 +1708,60 @@ this list for new note creation.  The default is `org'.")
   (plist-get
    (alist-get file-type denote-file-types)
    :keywords-value-reverse-function))
+
+(defun denote--signature-key-regexp (file-type)
+  "Return the signature key regexp associated to FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :signature-key-regexp))
+
+(defun denote--signature-value-function (file-type)
+  "Convert signature string to front matter signature, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :signature-value-function))
+
+(defun denote--signature-value-reverse-function (file-type)
+  "Convert front matter signature to signature string, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :signature-value-reverse-function))
+
+(defun denote--identifier-key-regexp (file-type)
+  "Return the identifier key regexp associated to FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :identifier-key-regexp))
+
+(defun denote--identifier-value-function (file-type)
+  "Convert identifier string to front matter identifier, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :identifier-value-function))
+
+(defun denote--identifier-value-reverse-function (file-type)
+  "Convert front matter identifier to identifier string, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :identifier-value-reverse-function))
+
+(defun denote--date-key-regexp (file-type)
+  "Return the date key regexp associated to FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :date-key-regexp))
+
+(defun denote--date-value-function (file-type)
+  "Convert date object to front matter date, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :date-value-function))
+
+(defun denote--date-value-reverse-function (file-type)
+  "Convert front matter date to date object, per FILE-TYPE."
+  (plist-get
+   (alist-get file-type denote-file-types)
+   :date-value-reverse-function))
 
 (defun denote--link-format (file-type)
   "Return link format extension based on FILE-TYPE."
@@ -2017,7 +2099,7 @@ Apply `denote-sluggify' to KEYWORDS."
     (cond
      (format
       (format-time-string format date))
-     ((when-let* ((fn (denote--date-format-function file-type)))
+     ((when-let* ((fn (denote--date-value-function file-type)))
         (funcall fn date)))
      (t
       (denote-date-org-timestamp date)))))

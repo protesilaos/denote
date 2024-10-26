@@ -173,10 +173,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 (ert-deftest denote-test--denote-surround-with-quotes ()
   "Test that `denote-surround-with-quotes' returns a string in quotes."
   (should (and (equal (denote-surround-with-quotes "test") "\"test\"")
-               (equal (denote-surround-with-quotes "") "\"\"")
-               (equal (denote-surround-with-quotes nil) "\"\"")
-               (equal (denote-surround-with-quotes 'wrong) "\"\"")
-               (equal (denote-surround-with-quotes '(wrong)) "\"\""))))
+               (equal (denote-surround-with-quotes "") "\"\""))))
 
 (ert-deftest denote-test--denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly."
