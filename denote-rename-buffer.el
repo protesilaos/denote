@@ -114,9 +114,7 @@ buffer will be used, if available."
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                          (cons ?k (if-let* ((kws (denote-retrieve-front-matter-keywords-value file type)))
-                                       (denote-keywords-combine kws)
-                                     (or (denote-retrieve-filename-keywords file) "")))
+                          (cons ?k (or (denote-retrieve-filename-keywords file) ""))
                           (cons ?% "%"))
                     'delete)))))
 
