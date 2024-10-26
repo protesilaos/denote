@@ -3206,10 +3206,12 @@ To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
 in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
 
-** Convert =denote:= links to =file:= links
+** Convert =denote:= links to =file:= links in Org
 :PROPERTIES:
 :CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
 :END:
+
+[ Also: [[#h:e01d6621-34e9-487d-8721-c4e42a6a286a][Convert =:denote= links to paths in Markdown]]. ]
 
 Sometimes the user needs to translate all =denote:= link types to
 their =file:= equivalent. This may be because some other tool does not
@@ -3234,6 +3236,46 @@ that are relevant for this use-case:
 + Convert =file:= links to =denote:= links :: The command ~denote-org-extras-convert-links-to-denote-type~
   behaves like the one above. The difference is that it finds the file
   system path and converts it into its identifier.
+
+** Convert =:denote= links to paths in Markdown
+:PROPERTIES:
+:CUSTOM_ID: h:e01d6621-34e9-487d-8721-c4e42a6a286a
+:END:
+
+[ Also: [[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links in Org]]. ]
+
+[ These commands are part of {{{development-version}}}. ]
+
+Although Markdown is a ubiquitous file format, there is no
+standardised way to extend its link facility. This means that we
+cannot reliably make =denote:= links work in applications outside of
+Emacs. Though users will likely need this feature for interoperability.
+
+All we can do is provide commands which convert links from the
+=denote:= type to a relative or absolute file path, and vice versa:
+
+#+findex: denote-md-extras-convert-links-to-file-paths
++ Convert =denote:= links to file paths :: The command
+  ~denote-md-extras-convert-links-to-file-paths~ runs through the
+  current Markdown file and converts every instance of a =denote:=
+  link to file path implied by the Denote identifier. For example,
+  this link =[Test description](denote:20241026T051243)= expands to
+  the file =20241026T051243--test-description__denote_testing.md=.
+  When ~denote-md-extras-convert-links-to-file-paths~ is called with a
+  prefix argument (=C-u= by default), it produces absolute file system
+  paths.
+
+#+findex: denote-md-extras-convert-links-to-denote-type
++ Convert file paths links to =denote:= :: The command
+  ~denote-md-extras-convert-links-to-denote-type~ is the inverse of
+  the above. It finds all the file paths , be they relative or
+  absolute, and converts them into their corresponding =denote:= style
+  links. It only does so for files with a Denote identifier.
+
+DEVELOPMENT NOTE: The regular expressions I am using to determine what
+is a link are much simpler than what ~markdown-mode~ is using.
+Everything seems to work on my end, though do let me know if there are
+bugs.
 
 ** Fontify links in non-Org buffers
 :PROPERTIES:
