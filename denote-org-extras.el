@@ -273,9 +273,6 @@ the variable `denote-file-type'."
 
 ;;;; Convert links from `:denote' to `:file' and vice versa
 
-;; TODO 2024-02-28: Do we need to convert between other link types?  I
-;; think not, since the `denote:' type is modelled after the `file:'
-;; one.
 (defun denote-org-extras--get-link-type-regexp (type)
   "Return regexp for Org link TYPE.
 TYPE is a symbol of either `file' or `denote'.
