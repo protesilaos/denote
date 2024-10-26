@@ -301,7 +301,7 @@ Ignore all other link types.  Also ignore links that do not
 resolve to a file in the variable `denote-directory'."
   (interactive nil org-mode)
   (if (derived-mode-p 'org-mode)
-      (progn
+      (let ((count 0))
         (goto-char (point-min))
         (while (re-search-forward (denote-org-extras--get-link-type-regexp 'denote) nil :no-error)
           (let* ((id (match-string-no-properties 2))
@@ -312,9 +312,9 @@ resolve to a file in the variable `denote-directory'."
               (let ((new-text (if desc
                                   (format "[[file:%s%s]%s]" file search desc)
                                 (format "[[file:%s%s]]" file search))))
-                (replace-match new-text :fixed-case :literal)))))
-        ;; TODO 2024-02-28: notify how many changed.
-        (message "Converted `denote:' links to `file:' links"))
+                (replace-match new-text :fixed-case :literal)
+                (setq count (1+ count))))))
+        (message "Converted %d `denote:' links to `file:' links" count))
     (user-error "The current file is not using Org mode")))
 
 ;;;###autoload
@@ -324,7 +324,7 @@ Ignore all other link types.  Also ignore file: links that do not
 point to a file with a Denote file name."
   (interactive nil org-mode)
   (if (derived-mode-p 'org-mode)
-      (progn
+      (let ((count 0))
         (goto-char (point-min))
         (while (re-search-forward (denote-org-extras--get-link-type-regexp 'file) nil :no-error)
           (let* ((file (match-string-no-properties 2))
@@ -335,9 +335,9 @@ point to a file with a Denote file name."
               (let ((new-text (if desc
                                   (format "[[denote:%s%s]%s]" id search desc)
                                 (format "[[denote:%s%s]]" id search))))
-                (replace-match new-text :fixed-case :literal)))))
-        ;; TODO 2024-02-28: notify how many changed.
-        (message "Converted as `file:' links to `denote:' links"))
+                (replace-match new-text :fixed-case :literal)
+                (setq count (1+ count))))))
+        (message "Converted %d `file:' links to `denote:' links" count))
     (user-error "The current file is not using Org mode")))
 
 ;;;; Org dynamic blocks
