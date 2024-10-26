@@ -6781,7 +6781,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas,
   babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
   hpgisler, jtpavlock, mentalisttraceur, pRot0ta1p, rbenit68,
-  relict007, sienic, skissue, sundar bp, yetanotherfossman, zadca123
+  relict007, sarcom-sar, sienic, skissue, sundar bp,
+  yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
