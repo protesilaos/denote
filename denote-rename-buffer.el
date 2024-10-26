@@ -49,7 +49,7 @@
 
 (defcustom denote-rename-buffer-format "[D] %t%b"
   "The format of the buffer name `denote-rename-buffer' should use.
-Thie value is a string that treats specially the following
+The value is a string that treats specially the following
 specifiers:
 
 - The %t is the Denote TITLE of the file.
