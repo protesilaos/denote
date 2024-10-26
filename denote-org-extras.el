@@ -296,20 +296,21 @@ Ignore all other link types.  Also ignore links that do not
 resolve to a file in the variable `denote-directory'."
   (interactive nil org-mode)
   (if (derived-mode-p 'org-mode)
-      (let ((count 0))
-        (goto-char (point-min))
-        (while (re-search-forward (denote-org-extras--get-link-type-regexp 'denote) nil :no-error)
-          (let* ((id (match-string-no-properties 2))
-                 (search (or (match-string-no-properties 3) ""))
-                 (desc (or (match-string-no-properties 4) ""))
-                 (file (save-match-data (denote-org-extras--get-path id))))
-            (when id
-              (let ((new-text (if desc
-                                  (format "[[file:%s%s]%s]" file search desc)
-                                (format "[[file:%s%s]]" file search))))
-                (replace-match new-text :fixed-case :literal)
-                (setq count (1+ count))))))
-        (message "Converted %d `denote:' links to `file:' links" count))
+      (save-excursion
+        (let ((count 0))
+          (goto-char (point-min))
+          (while (re-search-forward (denote-org-extras--get-link-type-regexp 'denote) nil :no-error)
+            (let* ((id (match-string-no-properties 2))
+                   (search (or (match-string-no-properties 3) ""))
+                   (desc (or (match-string-no-properties 4) ""))
+                   (file (save-match-data (denote-org-extras--get-path id))))
+              (when file
+                (let ((new-text (if desc
+                                    (format "[[file:%s%s]%s]" file search desc)
+                                  (format "[[file:%s%s]]" file search))))
+                  (replace-match new-text :fixed-case :literal)
+                  (setq count (1+ count))))))
+          (message "Converted %d `denote:' links to `file:' links" count)))
     (user-error "The current file is not using Org mode")))
 
 ;;;###autoload
@@ -319,20 +320,21 @@ Ignore all other link types.  Also ignore file: links that do not
 point to a file with a Denote file name."
   (interactive nil org-mode)
   (if (derived-mode-p 'org-mode)
-      (let ((count 0))
-        (goto-char (point-min))
-        (while (re-search-forward (denote-org-extras--get-link-type-regexp 'file) nil :no-error)
-          (let* ((file (match-string-no-properties 2))
-                 (search (or (match-string-no-properties 3) ""))
-                 (desc (or (match-string-no-properties 4) ""))
-                 (id (save-match-data (denote-retrieve-filename-identifier file))))
-            (when id
-              (let ((new-text (if desc
-                                  (format "[[denote:%s%s]%s]" id search desc)
-                                (format "[[denote:%s%s]]" id search))))
-                (replace-match new-text :fixed-case :literal)
-                (setq count (1+ count))))))
-        (message "Converted %d `file:' links to `denote:' links" count))
+      (save-excursion
+        (let ((count 0))
+          (goto-char (point-min))
+          (while (re-search-forward (denote-org-extras--get-link-type-regexp 'file) nil :no-error)
+            (let* ((file (match-string-no-properties 2))
+                   (search (or (match-string-no-properties 3) ""))
+                   (desc (or (match-string-no-properties 4) ""))
+                   (id (save-match-data (denote-retrieve-filename-identifier file))))
+              (when id
+                (let ((new-text (if desc
+                                    (format "[[denote:%s%s]%s]" id search desc)
+                                  (format "[[denote:%s%s]]" id search))))
+                  (replace-match new-text :fixed-case :literal)
+                  (setq count (1+ count))))))
+          (message "Converted %d `file:' links to `denote:' links" count)))
     (user-error "The current file is not using Org mode")))
 
 ;;;; Org dynamic blocks
