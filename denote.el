@@ -1955,6 +1955,12 @@ or `line', referring to what the function should retrieve."
 (denote--define-retrieve-front-matter title line)
 (denote--define-retrieve-front-matter keywords value)
 (denote--define-retrieve-front-matter keywords line)
+(denote--define-retrieve-front-matter signature value)
+(denote--define-retrieve-front-matter signature line)
+(denote--define-retrieve-front-matter identifier value)
+(denote--define-retrieve-front-matter identifier line)
+(denote--define-retrieve-front-matter date value)
+(denote--define-retrieve-front-matter date line)
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
   "Alias for `denote-retrieve-front-matter-title-value'.")
