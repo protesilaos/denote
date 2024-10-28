@@ -4813,6 +4813,9 @@ This command is meant to be used from a Dired buffer."
                                  (denote-filetype-heuristics (buffer-file-name))
                                  id-only))))
 
+(defalias 'denote-link-dired-marked-notes 'denote-dired-link-marked-notes
+  "Alias for `denote-link-dired-marked-notes' command.")
+
 ;;;;; Define menu
 
 (defvar denote--menu-contents

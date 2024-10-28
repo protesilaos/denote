@@ -2964,6 +2964,11 @@ Dired buffer.
 As always, links are created only for files which qualify as a "note"
 for our purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
+#+findex: denote-dired-link-marked-notes
+The ~denote-dired-link-marked-notes~ is an alias for
+~denote-link-dired-marked-notes~. [ The alias is part of
+{{{development-version}}}. ]
+
 ** Link to an existing note or create a new one
 :PROPERTIES:
 :CUSTOM_ID: h:b6056e6b-93df-4e6b-a778-eebd105bac46
@@ -5380,7 +5385,7 @@ Everything is in place to set up the package.
 
 ;; Key bindings specifically for Dired.
 (let ((map dired-mode-map))
-  (define-key map (kbd "C-c C-d C-i") #'denote-link-dired-marked-notes)
+  (define-key map (kbd "C-c C-d C-i") #'denote-dired-link-marked-notes)
   (define-key map (kbd "C-c C-d C-r") #'denote-dired-rename-files)
   (define-key map (kbd "C-c C-d C-k") #'denote-dired-rename-marked-files-with-keywords)
   (define-key map (kbd "C-c C-d C-R") #'denote-dired-rename-marked-files-using-front-matter))
