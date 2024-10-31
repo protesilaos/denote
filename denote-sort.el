@@ -187,7 +187,7 @@ component.  If SORT-BY-COMPONENT is nil or an unknown non-nil
 value, default to the identifier-based sorting.
 
 With CURRENT-FILE-TYPE as a symbol among those specified in
-`denote-file-type' (or the `car' of each element in
+the variable `denote-file-type' (or the `car' of each element in
 `denote-file-types'), format the link accordingly.  With a nil or
 unknown non-nil value, default to the Org notation.
 
