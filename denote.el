@@ -1804,30 +1804,6 @@ values of variable `denote-file-type'."
          (kws (denote--format-front-matter-keywords keywords filetype)))
     (if fm (format fm title date kws id) "")))
 
-(defun denote--get-title-line-from-front-matter (title file-type)
-  "Retrieve title line from front matter based on FILE-TYPE.
-Format TITLE in the title line.  The returned line does not
-contain the newline."
-  (let ((front-matter (denote--format-front-matter title "" nil "" file-type))
-        (key-regexp (denote--title-key-regexp file-type)))
-    (with-temp-buffer
-      (insert front-matter)
-      (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
-
-(defun denote--get-keywords-line-from-front-matter (keywords file-type)
-  "Retrieve keywords line from front matter based on FILE-TYPE.
-Format KEYWORDS in the keywords line.  The returned line does not
-contain the newline."
-  (let ((front-matter (denote--format-front-matter "" "" keywords "" file-type))
-        (key-regexp (denote--keywords-key-regexp file-type)))
-    (with-temp-buffer
-      (insert front-matter)
-      (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
-
 ;;;; Front matter or content retrieval functions
 
 (defun denote-retrieve-filename-identifier (file)
@@ -3001,16 +2977,18 @@ With optional SAVE-BUFFER, save the buffer corresponding to FILE.
 This function is for use in the commands `denote-keywords-add',
 `denote-keywords-remove', `denote-dired-rename-files', or
 related."
-  (with-current-buffer (find-file-noselect file)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-          (goto-char (line-beginning-position))
-          (insert (denote--get-keywords-line-from-front-matter keywords file-type))
-          (delete-region (point) (line-end-position))
-          (when save-buffer (save-buffer)))))))
+  (let* ((new-front-matter (denote--format-front-matter "" "" keywords "" file-type))
+         (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
+    (with-current-buffer (find-file-noselect file)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+            (goto-char (line-beginning-position))
+            (insert new-keywords-line)
+            (delete-region (point) (line-end-position))
+            (when save-buffer (save-buffer))))))))
 
 (defun denote-rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-rename-file'.
@@ -3023,8 +3001,9 @@ prompt to confirm the rewriting of the front matter.  Otherwise
 produce a `y-or-n-p' prompt to that effect."
   (when-let* ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
               (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
-              (new-title-line (denote--get-title-line-from-front-matter title file-type))
-              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
+              (new-front-matter (denote--format-front-matter title "" keywords "" file-type))
+              (new-title-line (denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))
+              (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
       (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
                 (y-or-n-p (format
