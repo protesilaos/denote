@@ -1933,6 +1933,8 @@ Subroutine of `denote--file-with-temp-buffer'."
        (goto-char (point-min))
        ,@body)))
 
+;; These are public front matter retrieval functions, working with a FILE argument
+
 (defmacro denote--define-retrieve-front-matter (component scope)
   "Define a function to retrieve front matter for COMPONENT given SCOPE.
 The COMPONENT is one of the file name components that has a
@@ -1961,6 +1963,39 @@ or `line', referring to what the function should retrieve."
 (denote--define-retrieve-front-matter identifier line)
 (denote--define-retrieve-front-matter date value)
 (denote--define-retrieve-front-matter date line)
+
+;; These are private front matter retrieval functions, working with a content parameter
+
+(defmacro denote--define-retrieve-front-matter-from-content (component scope)
+  "Define a function to retrieve front matter for COMPONENT given SCOPE.
+The COMPONENT is one of the file name components that has a
+corresponding front matter entry.  SCOPE is a symbol of either `value'
+or `line', referring to what the function should retrieve."
+  (declare (indent 1))
+  `(defun ,(intern (format "denote--retrieve-front-matter-%s-%s-from-content" component scope)) (content file-type)
+     (when file-type
+       (with-temp-buffer
+         (insert content)
+         (goto-char (point-min))
+         (when (re-search-forward (,(intern (format "denote--%s-key-regexp" component)) file-type) nil t 1)
+           ,(cond
+             ((eq scope 'value)
+              `(funcall (,(intern (format "denote--%s-value-reverse-function" component)) file-type)
+                        (buffer-substring-no-properties (point) (line-end-position))))
+             ((eq scope 'line)
+              '(buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+             (t (error "`%s' is not a known scope" scope))))))))
+
+(denote--define-retrieve-front-matter-from-content title value)
+(denote--define-retrieve-front-matter-from-content title line)
+(denote--define-retrieve-front-matter-from-content keywords value)
+(denote--define-retrieve-front-matter-from-content keywords line)
+(denote--define-retrieve-front-matter-from-content signature value)
+(denote--define-retrieve-front-matter-from-content signature line)
+(denote--define-retrieve-front-matter-from-content identifier value)
+(denote--define-retrieve-front-matter-from-content identifier line)
+(denote--define-retrieve-front-matter-from-content date value)
+(denote--define-retrieve-front-matter-from-content date line)
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
   "Alias for `denote-retrieve-front-matter-title-value'.")
