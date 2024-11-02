@@ -1428,7 +1428,7 @@ Change the front matter format'.")
 title:      %s
 date:       %s
 tags:       %s
-identifier: %S
+identifier: %s
 ---\n\n"
   "YAML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1440,7 +1440,7 @@ Change the front matter format'.")
 title      = %s
 date       = %s
 tags       = %s
-identifier = %S
+identifier = %s
 +++\n\n"
   "TOML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1801,8 +1801,9 @@ strings.  FILETYPE is one of the values of variable `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title (denote--format-front-matter-title title filetype))
          (date-string (denote--date date filetype))
-         (kws (denote--format-front-matter-keywords keywords filetype)))
-    (if fm (format fm title date-string kws id) "")))
+         (kws (denote--format-front-matter-keywords keywords filetype))
+         (id-string (funcall (denote--identifier-value-function filetype) id)))
+    (if fm (format fm title date-string kws id-string) "")))
 
 ;;;; Front matter or content retrieval functions
 
