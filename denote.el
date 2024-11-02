@@ -2928,12 +2928,12 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords id file-type)
+(defun denote--add-front-matter (file title keywords id signature file-type)
   "Prepend front matter to FILE.
-The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
-renaming command and are used to construct a new front matter
-block if appropriate."
-  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id "" file-type)))
+The TITLE, KEYWORDS, ID, SIGNATURE, and FILE-TYPE are passed from the
+renaming command and are used to construct a new front matter block if
+appropriate."
+  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -3101,7 +3101,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords id file-type))))
+            (denote--add-front-matter new-name title keywords id signature file-type))))
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -3564,7 +3564,7 @@ relevant front matter.
   (when-let* ((denote-file-is-writable-and-supported-p file)
               (id (denote-retrieve-filename-identifier file))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords id file-type)))
+    (denote--add-front-matter file title keywords id "" file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -3608,7 +3608,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords id new-file-type)
+        (denote--add-front-matter new-name title keywords id signature new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
