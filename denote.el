@@ -1796,13 +1796,13 @@ this list for new note creation.  The default is `org'.")
 (defun denote--format-front-matter (title date keywords id filetype)
   "Front matter for new notes.
 
-TITLE, DATE, and ID are all strings or functions that return a
-string.  KEYWORDS is a list of strings.  FILETYPE is one of the
-values of variable `denote-file-type'."
+TITLE and ID are strings.  DATE is a date object.  KEYWORDS is a list of
+strings.  FILETYPE is one of the values of variable `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title (denote--format-front-matter-title title filetype))
+         (date-string (denote--date date filetype))
          (kws (denote--format-front-matter-keywords keywords filetype)))
-    (if fm (format fm title date kws id) "")))
+    (if fm (format fm title date-string kws id) "")))
 
 ;;;; Front matter or content retrieval functions
 
@@ -2130,10 +2130,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote-format-file-name
                 directory id keywords title (denote--file-extension file-type) signature))
          (buffer (find-file path))
-         (header (denote--format-front-matter
-                  title (denote--date date file-type) keywords
-                  id
-                  file-type)))
+         (header (denote--format-front-matter title date keywords id file-type)))
     (when (file-regular-p path)
       (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
@@ -2943,8 +2940,7 @@ If a buffer is visiting the file, its name is updated."
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
-  (when-let* ((date (denote--date (date-to-time id) file-type))
-              (new-front-matter (denote--format-front-matter title date keywords id file-type)))
+  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -2977,7 +2973,7 @@ With optional SAVE-BUFFER, save the buffer corresponding to FILE.
 This function is for use in the commands `denote-keywords-add',
 `denote-keywords-remove', `denote-dired-rename-files', or
 related."
-  (let* ((new-front-matter (denote--format-front-matter "" "" keywords "" file-type))
+  (let* ((new-front-matter (denote--format-front-matter "" (current-time) keywords "" file-type))
          (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
       (save-excursion
@@ -3001,7 +2997,7 @@ prompt to confirm the rewriting of the front matter.  Otherwise
 produce a `y-or-n-p' prompt to that effect."
   (when-let* ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
               (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
-              (new-front-matter (denote--format-front-matter title "" keywords "" file-type))
+              (new-front-matter (denote--format-front-matter title (current-time) keywords "" file-type))
               (new-title-line (denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))
               (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
@@ -5121,8 +5117,7 @@ Consult the manual for template samples."
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
-               (front-matter (denote--format-front-matter
-                              title (denote--date date 'org) keywords id 'org))
+               (front-matter (denote--format-front-matter title date keywords id 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
                                       (t (user-error "Invalid template")))))
