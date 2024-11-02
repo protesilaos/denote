@@ -1799,11 +1799,11 @@ this list for new note creation.  The default is `org'.")
 TITLE and ID are strings.  DATE is a date object.  KEYWORDS is a list of
 strings.  FILETYPE is one of the values of variable `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
-         (title (denote--format-front-matter-title title filetype))
+         (title-string (funcall (denote--title-value-function filetype) title))
          (date-string (denote--date date filetype))
-         (kws (denote--format-front-matter-keywords keywords filetype))
+         (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
          (id-string (funcall (denote--identifier-value-function filetype) id)))
-    (if fm (format fm title date-string kws id-string) "")))
+    (if fm (format fm title-string date-string keywords-string id-string) "")))
 
 ;;;; Front matter or content retrieval functions
 
@@ -2085,16 +2085,6 @@ which case it is not added to the base file name."
                (string-match-p (concat "\\`" denote-id-regexp "\\'") id)) ; This is always true for now.
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
-
-(defun denote--format-front-matter-title (title file-type)
-  "Format TITLE according to FILE-TYPE for the file's front matter."
-  (funcall (denote--title-value-function file-type) title))
-
-(defun denote--format-front-matter-keywords (keywords file-type)
-  "Format KEYWORDS according to FILE-TYPE for the file's front matter.
-Apply `denote-sluggify' to KEYWORDS."
-  (let ((kws (denote-sluggify-keywords keywords)))
-    (funcall (denote--keywords-value-function file-type) kws)))
 
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
