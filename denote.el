@@ -1793,17 +1793,19 @@ this list for new note creation.  The default is `org'.")
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
 
-(defun denote--format-front-matter (title date keywords id filetype)
+(defun denote--format-front-matter (title date keywords id signature filetype)
   "Front matter for new notes.
 
-TITLE and ID are strings.  DATE is a date object.  KEYWORDS is a list of
-strings.  FILETYPE is one of the values of variable `denote-file-type'."
+TITLE, SIGNATURE, and ID are strings.  DATE is a date object.  KEYWORDS
+is a list of strings.  FILETYPE is one of the values of variable
+`denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title-string (funcall (denote--title-value-function filetype) title))
          (date-string (denote--date date filetype))
          (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
-         (id-string (funcall (denote--identifier-value-function filetype) id)))
-    (if fm (format fm title-string date-string keywords-string id-string) "")))
+         (id-string (funcall (denote--identifier-value-function filetype) id))
+         (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
+    (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
 
 ;;;; Front matter or content retrieval functions
 
@@ -2121,7 +2123,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote-format-file-name
                 directory id keywords title (denote--file-extension file-type) signature))
          (buffer (find-file path))
-         (header (denote--format-front-matter title date keywords id file-type)))
+         (header (denote--format-front-matter title date keywords id signature file-type)))
     (when (file-regular-p path)
       (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
@@ -2931,7 +2933,7 @@ If a buffer is visiting the file, its name is updated."
 The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter
 block if appropriate."
-  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id file-type)))
+  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id "" file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -2964,7 +2966,7 @@ With optional SAVE-BUFFER, save the buffer corresponding to FILE.
 This function is for use in the commands `denote-keywords-add',
 `denote-keywords-remove', `denote-dired-rename-files', or
 related."
-  (let* ((new-front-matter (denote--format-front-matter "" (current-time) keywords "" file-type))
+  (let* ((new-front-matter (denote--format-front-matter "" (current-time) keywords "" "" file-type))
          (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
       (save-excursion
@@ -2988,7 +2990,7 @@ prompt to confirm the rewriting of the front matter.  Otherwise
 produce a `y-or-n-p' prompt to that effect."
   (when-let* ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
               (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
-              (new-front-matter (denote--format-front-matter title (current-time) keywords "" file-type))
+              (new-front-matter (denote--format-front-matter title (current-time) keywords "" "" file-type))
               (new-title-line (denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))
               (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
@@ -5108,7 +5110,7 @@ Consult the manual for template samples."
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
-               (front-matter (denote--format-front-matter title date keywords id 'org))
+               (front-matter (denote--format-front-matter title date keywords id signature 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
                                       (t (user-error "Invalid template")))))

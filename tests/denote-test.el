@@ -178,7 +178,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 (ert-deftest denote-test--denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly."
   (let ((denote-date-format "%Y-%m-%d"))
-    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") '("") "" 'text)
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") '("") "" "" 'text)
                         (mapconcat #'identity
                                    '("title:      "
                                      "date:       2024-01-01"
@@ -190,7 +190,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                  (equal
                   (denote--format-front-matter
                    "Some test" (date-to-time "2023-06-05") '("one" "two")
-                   "20230605T102234" 'text)
+                   "20230605T102234" "sig" 'text)
                   (mapconcat #'identity
                              '("title:      Some test"
                                "date:       2023-06-05"
@@ -199,7 +199,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                                "---------------------------\n\n")
                              "\n"))))
 
-    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" 'org)
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'org)
                         (mapconcat #'identity
                                    '("#+title:      "
                                      "#+date:       2024-01-01"
@@ -211,7 +211,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                  (equal
                   (denote--format-front-matter
                    "Some test" (date-to-time "2023-06-05") '("one" "two")
-                   "20230605T102234" 'org)
+                   "20230605T102234" "sig" 'org)
                   (mapconcat #'identity
                              '("#+title:      Some test"
                                "#+date:       2023-06-05"
@@ -220,7 +220,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                                "\n")
                              "\n"))))
 
-    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" 'markdown-yaml)
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'markdown-yaml)
                         (mapconcat #'identity
                                    '("---"
                                      "title:      \"\""
@@ -234,7 +234,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                  (equal
                   (denote--format-front-matter
                    "Some test" (date-to-time "2023-06-05") '("one" "two")
-                   "20230605T102234" 'markdown-yaml)
+                   "20230605T102234" "sig" 'markdown-yaml)
                   (mapconcat #'identity
                              '("---"
                                "title:      \"Some test\""
@@ -245,7 +245,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                                "\n")
                              "\n"))))
 
-    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" 'markdown-toml)
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'markdown-toml)
                         (mapconcat #'identity
                                    '("+++"
                                      "title      = \"\""
@@ -259,7 +259,7 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                  (equal
                   (denote--format-front-matter
                    "Some test" (date-to-time "2023-06-05") '("one" "two")
-                   "20230605T102234" 'markdown-toml)
+                   "20230605T102234" "sig" 'markdown-toml)
                   (mapconcat #'identity
                              '("+++"
                                "title      = \"Some test\""
