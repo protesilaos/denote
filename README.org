@@ -3359,6 +3359,9 @@ The value can be either a function or a string. If it is a function,
 it is called with one argument, the file, and should return a string
 representing the link description.
 
+The default is a function that returns the active region or the title of
+the note (with the signature if present).
+
 If the value is a string, it treats specially the following specifiers:
 
 - The =%t= is the Denote =TITLE= of the file.
