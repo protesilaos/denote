@@ -3340,19 +3340,53 @@ aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
 these aliases is to offer alternative, more descriptive names of
 select commands.
 
-*** The ~denote-link-description-function~ to format links
+*** The ~denote-link-description-format~ to format link descriptions
 :PROPERTIES:
 :CUSTOM_ID: h:f634427c-b451-40e2-993e-e00ac627af68
 :END:
 
-#+vindex: denote-link-description-function
-The user option ~denote-link-description-function~ takes as its value
-the symbol of a function. This is used to format the text of the link.
-The default function inserts the title. If the file has a signature,
-it includes that as well, prepending it to the title.
+[ As part of {{{development-version}}}, the old user option
+  ~denote-link-description-function~ is deprecated and superseded by
+  the new ~denote-link-description-format~. The new user option still
+  accepts a custom function as its value, so the old behaviour should
+  be retained. ]
 
-The function specified accepts a single =FILE= argument and returns
-the description as a string.
+The user option ~denote-link-description-format~ controls how the
+command ~denote-link~ and related functions create a link description
+by default, when no region is active. If the region is active, its
+text is used as the link's description when that is relevant (for
+example, some linking commands insert many links, so those do not
+consider the active region).
+
+The value can be either a function or a string. If it is a function,
+it is called with one argument, the file, and should return a string
+representing the link description.
+
+If the value is a string, it treats specially the following specifiers:
+
+- The =%t= is the Denote =TITLE= of the file.
+- The =%i= is the Denote =IDENTIFIER= of the file.
+- The =%d= is the same as =%i= (=DATE= mnemonic).
+- The =%s= is the Denote =SIGNATURE= of the file.
+- The =%k= is the Denote =KEYWORDS= of the file.
+- The =%%= is a literal percent sign.
+
+In addition, the following flags are available for each of the specifiers:
+
+- 0 :: Pad to the width, if given, with zeros instead of spaces.
+- - :: Pad to the width, if given, on the right instead of the left.
+- < :: Truncate to the width and precision, if given, on the left.
+- > :: Truncate to the width and precision, if given, on the right.
+- ^ :: Convert to upper case.
+- _ :: Convert to lower case.
+
+When combined all together, the above are written thus:
+
+: %<flags><width><precision>SPECIFIER-CHARACTER
+
+Any other text in the string it taken as-is. Users may want, for
+example, to include some text that makes Denote links stand out, such
+as a =[D]= prefix.
 
 * Choose which commands to prompt for
 :PROPERTIES:
