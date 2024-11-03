@@ -3353,10 +3353,7 @@ select commands.
 
 The user option ~denote-link-description-format~ controls how the
 command ~denote-link~ and related functions create a link description
-by default, when no region is active. If the region is active, its
-text is used as the link's description when that is relevant (for
-example, some linking commands insert many links, so those do not
-consider the active region).
+by default.
 
 The value can be either a function or a string. If it is a function,
 it is called with one argument, the file, and should return a string
@@ -3387,6 +3384,8 @@ When combined all together, the above are written thus:
 Any other text in the string it taken as-is. Users may want, for
 example, to include some text that makes Denote links stand out, such
 as a =[D]= prefix.
+
+If the region is active, its text is used as the link's description.
 
 * Choose which commands to prompt for
 :PROPERTIES:
