@@ -176,7 +176,9 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                (equal (denote-surround-with-quotes "") "\"\""))))
 
 (ert-deftest denote-test--denote--format-front-matter ()
-  "Test that `denote--format-front-matter' formats front matter correctly."
+  "Test that `denote--format-front-matter' formats front matter correctly.
+To make the test reproducible, set `denote-date-format' to a value that
+does not involve the time zone."
   (let ((denote-date-format "%Y-%m-%d"))
     (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") '("") "" "" 'text)
                         (mapconcat #'identity
