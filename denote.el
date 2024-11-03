@@ -1428,7 +1428,7 @@ Change the front matter format'.")
 title:      %s
 date:       %s
 tags:       %s
-identifier: %S
+identifier: %s
 ---\n\n"
   "YAML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1440,7 +1440,7 @@ Change the front matter format'.")
 title      = %s
 date       = %s
 tags       = %s
-identifier = %S
+identifier = %s
 +++\n\n"
   "TOML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1793,40 +1793,19 @@ this list for new note creation.  The default is `org'.")
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
 
-(defun denote--format-front-matter (title date keywords id filetype)
+(defun denote--format-front-matter (title date keywords id signature filetype)
   "Front matter for new notes.
 
-TITLE, DATE, and ID are all strings or functions that return a
-string.  KEYWORDS is a list of strings.  FILETYPE is one of the
-values of variable `denote-file-type'."
+TITLE, SIGNATURE, and ID are strings.  DATE is a date object.  KEYWORDS
+is a list of strings.  FILETYPE is one of the values of variable
+`denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
-         (title (denote--format-front-matter-title title filetype))
-         (kws (denote--format-front-matter-keywords keywords filetype)))
-    (if fm (format fm title date kws id) "")))
-
-(defun denote--get-title-line-from-front-matter (title file-type)
-  "Retrieve title line from front matter based on FILE-TYPE.
-Format TITLE in the title line.  The returned line does not
-contain the newline."
-  (let ((front-matter (denote--format-front-matter title "" nil "" file-type))
-        (key-regexp (denote--title-key-regexp file-type)))
-    (with-temp-buffer
-      (insert front-matter)
-      (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
-
-(defun denote--get-keywords-line-from-front-matter (keywords file-type)
-  "Retrieve keywords line from front matter based on FILE-TYPE.
-Format KEYWORDS in the keywords line.  The returned line does not
-contain the newline."
-  (let ((front-matter (denote--format-front-matter "" "" keywords "" file-type))
-        (key-regexp (denote--keywords-key-regexp file-type)))
-    (with-temp-buffer
-      (insert front-matter)
-      (goto-char (point-min))
-      (when (re-search-forward key-regexp nil t 1)
-        (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
+         (title-string (funcall (denote--title-value-function filetype) title))
+         (date-string (denote--date date filetype))
+         (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
+         (id-string (funcall (denote--identifier-value-function filetype) id))
+         (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
+    (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
 
 ;;;; Front matter or content retrieval functions
 
@@ -1933,6 +1912,8 @@ Subroutine of `denote--file-with-temp-buffer'."
        (goto-char (point-min))
        ,@body)))
 
+;; These are public front matter retrieval functions, working with a FILE argument
+
 (defmacro denote--define-retrieve-front-matter (component scope)
   "Define a function to retrieve front matter for COMPONENT given SCOPE.
 The COMPONENT is one of the file name components that has a
@@ -1961,6 +1942,39 @@ or `line', referring to what the function should retrieve."
 (denote--define-retrieve-front-matter identifier line)
 (denote--define-retrieve-front-matter date value)
 (denote--define-retrieve-front-matter date line)
+
+;; These are private front matter retrieval functions, working with a content parameter
+
+(defmacro denote--define-retrieve-front-matter-from-content (component scope)
+  "Define a function to retrieve front matter for COMPONENT given SCOPE.
+The COMPONENT is one of the file name components that has a
+corresponding front matter entry.  SCOPE is a symbol of either `value'
+or `line', referring to what the function should retrieve."
+  (declare (indent 1))
+  `(defun ,(intern (format "denote--retrieve-front-matter-%s-%s-from-content" component scope)) (content file-type)
+     (when file-type
+       (with-temp-buffer
+         (insert content)
+         (goto-char (point-min))
+         (when (re-search-forward (,(intern (format "denote--%s-key-regexp" component)) file-type) nil t 1)
+           ,(cond
+             ((eq scope 'value)
+              `(funcall (,(intern (format "denote--%s-value-reverse-function" component)) file-type)
+                        (buffer-substring-no-properties (point) (line-end-position))))
+             ((eq scope 'line)
+              '(buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+             (t (error "`%s' is not a known scope" scope))))))))
+
+(denote--define-retrieve-front-matter-from-content title value)
+(denote--define-retrieve-front-matter-from-content title line)
+(denote--define-retrieve-front-matter-from-content keywords value)
+(denote--define-retrieve-front-matter-from-content keywords line)
+(denote--define-retrieve-front-matter-from-content signature value)
+(denote--define-retrieve-front-matter-from-content signature line)
+(denote--define-retrieve-front-matter-from-content identifier value)
+(denote--define-retrieve-front-matter-from-content identifier line)
+(denote--define-retrieve-front-matter-from-content date value)
+(denote--define-retrieve-front-matter-from-content date line)
 
 (defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
   "Alias for `denote-retrieve-front-matter-title-value'.")
@@ -2074,16 +2088,6 @@ which case it is not added to the base file name."
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
-(defun denote--format-front-matter-title (title file-type)
-  "Format TITLE according to FILE-TYPE for the file's front matter."
-  (funcall (denote--title-value-function file-type) title))
-
-(defun denote--format-front-matter-keywords (keywords file-type)
-  "Format KEYWORDS according to FILE-TYPE for the file's front matter.
-Apply `denote-sluggify' to KEYWORDS."
-  (let ((kws (denote-sluggify-keywords keywords)))
-    (funcall (denote--keywords-value-function file-type) kws)))
-
 ;; Adapted from `org-hugo--org-date-time-to-rfc3339' in the `ox-hugo'
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote-date-rfc3339 (date)
@@ -2119,10 +2123,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote-format-file-name
                 directory id keywords title (denote--file-extension file-type) signature))
          (buffer (find-file path))
-         (header (denote--format-front-matter
-                  title (denote--date date file-type) keywords
-                  id
-                  file-type)))
+         (header (denote--format-front-matter title date keywords id signature file-type)))
     (when (file-regular-p path)
       (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
@@ -2927,13 +2928,12 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords id file-type)
+(defun denote--add-front-matter (file title keywords id signature file-type)
   "Prepend front matter to FILE.
-The TITLE, KEYWORDS ID, and FILE-TYPE are passed from the
-renaming command and are used to construct a new front matter
-block if appropriate."
-  (when-let* ((date (denote--date (date-to-time id) file-type))
-              (new-front-matter (denote--format-front-matter title date keywords id file-type)))
+The TITLE, KEYWORDS, ID, SIGNATURE, and FILE-TYPE are passed from the
+renaming command and are used to construct a new front matter block if
+appropriate."
+  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -2966,16 +2966,18 @@ With optional SAVE-BUFFER, save the buffer corresponding to FILE.
 This function is for use in the commands `denote-keywords-add',
 `denote-keywords-remove', `denote-dired-rename-files', or
 related."
-  (with-current-buffer (find-file-noselect file)
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-min))
-        (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-          (goto-char (line-beginning-position))
-          (insert (denote--get-keywords-line-from-front-matter keywords file-type))
-          (delete-region (point) (line-end-position))
-          (when save-buffer (save-buffer)))))))
+  (let* ((new-front-matter (denote--format-front-matter "" (current-time) keywords "" "" file-type))
+         (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
+    (with-current-buffer (find-file-noselect file)
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+            (goto-char (line-beginning-position))
+            (insert new-keywords-line)
+            (delete-region (point) (line-end-position))
+            (when save-buffer (save-buffer))))))))
 
 (defun denote-rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-rename-file'.
@@ -2988,8 +2990,9 @@ prompt to confirm the rewriting of the front matter.  Otherwise
 produce a `y-or-n-p' prompt to that effect."
   (when-let* ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
               (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
-              (new-title-line (denote--get-title-line-from-front-matter title file-type))
-              (new-keywords-line (denote--get-keywords-line-from-front-matter keywords file-type)))
+              (new-front-matter (denote--format-front-matter title (current-time) keywords "" "" file-type))
+              (new-title-line (denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))
+              (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
     (with-current-buffer (find-file-noselect file)
       (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
                 (y-or-n-p (format
@@ -3098,7 +3101,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords id file-type))))
+            (denote--add-front-matter new-name title keywords id signature file-type))))
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -3474,17 +3477,18 @@ Construct the file name in accordance with the user option
   (interactive (list (or (dired-get-filename nil t) buffer-file-name)))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
+  (unless (denote-retrieve-filename-identifier file)
+    (user-error "No identifier in file name"))
   (if-let* ((file-type (denote-filetype-heuristics file))
-            (front-matter-title (denote-retrieve-front-matter-title-value file file-type))
-            (id (denote-retrieve-filename-identifier file)))
-      (let ((denote-rename-confirmations (delq 'rewrite-front-matter denote-rename-confirmations)))
-        (pcase-let* ((denote-prompts '())
-                     (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-                     (`(_title _keywords ,signature ,date)
-                      (denote--rename-get-file-info-from-prompts-or-existing file)))
-          (denote--rename-file file front-matter-title front-matter-keywords signature date)
-          (denote-update-dired-buffers)))
-    (user-error "No identifier or front matter for title")))
+            (front-matter-title (denote-retrieve-front-matter-title-value file file-type)))
+      (pcase-let* ((denote-rename-confirmations (delq 'rewrite-front-matter denote-rename-confirmations))
+                   (denote-prompts '())
+                   (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
+                   (`(_title _keywords ,signature ,date)
+                    (denote--rename-get-file-info-from-prompts-or-existing file)))
+        (denote--rename-file file front-matter-title front-matter-keywords signature date)
+        (denote-update-dired-buffers))
+    (user-error "No front matter line for title")))
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-using-front-matter ()
@@ -3561,7 +3565,7 @@ relevant front matter.
   (when-let* ((denote-file-is-writable-and-supported-p file)
               (id (denote-retrieve-filename-identifier file))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords id file-type)))
+    (denote--add-front-matter file title keywords id "" file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -3605,7 +3609,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords id new-file-type)
+        (denote--add-front-matter new-name title keywords id signature new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
@@ -5107,8 +5111,7 @@ Consult the manual for template samples."
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
-               (front-matter (denote--format-front-matter
-                              title (denote--date date 'org) keywords id 'org))
+               (front-matter (denote--format-front-matter title date keywords id signature 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
                                       (t (user-error "Invalid template")))))

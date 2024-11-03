@@ -177,97 +177,98 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
 
 (ert-deftest denote-test--denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly."
-  (should (and (equal (denote--format-front-matter "" "" '("") "" 'text)
-                      (mapconcat #'identity
-                                 '("title:      "
-                                   "date:       "
-                                   "tags:       "
-                                   "identifier: "
-                                   "---------------------------\n\n")
-                                 "\n"))
+  (let ((denote-date-format "%Y-%m-%d"))
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") '("") "" "" 'text)
+                        (mapconcat #'identity
+                                   '("title:      "
+                                     "date:       2024-01-01"
+                                     "tags:       "
+                                     "identifier: "
+                                     "---------------------------\n\n")
+                                   "\n"))
 
-               (equal
-                (denote--format-front-matter
-                 "Some test" "2023-06-05" '("one" "two")
-                 "20230605T102234" 'text)
-                (mapconcat #'identity
-                           '("title:      Some test"
-                             "date:       2023-06-05"
-                             "tags:       one  two"
-                             "identifier: 20230605T102234"
-                             "---------------------------\n\n")
-                           "\n"))))
+                 (equal
+                  (denote--format-front-matter
+                   "Some test" (date-to-time "2023-06-05") '("one" "two")
+                   "20230605T102234" "sig" 'text)
+                  (mapconcat #'identity
+                             '("title:      Some test"
+                               "date:       2023-06-05"
+                               "tags:       one  two"
+                               "identifier: 20230605T102234"
+                               "---------------------------\n\n")
+                             "\n"))))
 
-  (should (and (equal (denote--format-front-matter "" "" nil "" 'org)
-                      (mapconcat #'identity
-                                 '("#+title:      "
-                                   "#+date:       "
-                                   "#+filetags:   "
-                                   "#+identifier: "
-                                   "\n")
-                                 "\n"))
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'org)
+                        (mapconcat #'identity
+                                   '("#+title:      "
+                                     "#+date:       2024-01-01"
+                                     "#+filetags:   "
+                                     "#+identifier: "
+                                     "\n")
+                                   "\n"))
 
-               (equal
-                (denote--format-front-matter
-                 "Some test" "2023-06-05" '("one" "two")
-                 "20230605T102234" 'org)
-                (mapconcat #'identity
-                           '("#+title:      Some test"
-                             "#+date:       2023-06-05"
-                             "#+filetags:   :one:two:"
-                             "#+identifier: 20230605T102234"
-                             "\n")
-                           "\n"))))
+                 (equal
+                  (denote--format-front-matter
+                   "Some test" (date-to-time "2023-06-05") '("one" "two")
+                   "20230605T102234" "sig" 'org)
+                  (mapconcat #'identity
+                             '("#+title:      Some test"
+                               "#+date:       2023-06-05"
+                               "#+filetags:   :one:two:"
+                               "#+identifier: 20230605T102234"
+                               "\n")
+                             "\n"))))
 
-  (should (and (equal (denote--format-front-matter "" "" nil "" 'markdown-yaml)
-                      (mapconcat #'identity
-                                 '("---"
-                                   "title:      \"\""
-                                   "date:       "
-                                   "tags:       []"
-                                   "identifier: \"\""
-                                   "---"
-                                   "\n")
-                                 "\n"))
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'markdown-yaml)
+                        (mapconcat #'identity
+                                   '("---"
+                                     "title:      \"\""
+                                     "date:       2024-01-01"
+                                     "tags:       []"
+                                     "identifier: \"\""
+                                     "---"
+                                     "\n")
+                                   "\n"))
 
-               (equal
-                (denote--format-front-matter
-                 "Some test" "2023-06-05" '("one" "two")
-                 "20230605T102234" 'markdown-yaml)
-                (mapconcat #'identity
-                           '("---"
-                             "title:      \"Some test\""
-                             "date:       2023-06-05"
-                             "tags:       [\"one\", \"two\"]"
-                             "identifier: \"20230605T102234\""
-                             "---"
-                             "\n")
-                           "\n"))))
+                 (equal
+                  (denote--format-front-matter
+                   "Some test" (date-to-time "2023-06-05") '("one" "two")
+                   "20230605T102234" "sig" 'markdown-yaml)
+                  (mapconcat #'identity
+                             '("---"
+                               "title:      \"Some test\""
+                               "date:       2023-06-05"
+                               "tags:       [\"one\", \"two\"]"
+                               "identifier: \"20230605T102234\""
+                               "---"
+                               "\n")
+                             "\n"))))
 
-(should (and (equal (denote--format-front-matter "" "" nil "" 'markdown-toml)
-                    (mapconcat #'identity
-                               '("+++"
-                                 "title      = \"\""
-                                 "date       = "
-                                 "tags       = []"
-                                 "identifier = \"\""
-                                 "+++"
-                                 "\n")
-                               "\n"))
+    (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") nil "" "" 'markdown-toml)
+                        (mapconcat #'identity
+                                   '("+++"
+                                     "title      = \"\""
+                                     "date       = 2024-01-01"
+                                     "tags       = []"
+                                     "identifier = \"\""
+                                     "+++"
+                                     "\n")
+                                   "\n"))
 
-             (equal
-              (denote--format-front-matter
-               "Some test" "2023-06-05" '("one" "two")
-               "20230605T102234" 'markdown-toml)
-              (mapconcat #'identity
-                         '("+++"
-                           "title      = \"Some test\""
-                           "date       = 2023-06-05"
-                           "tags       = [\"one\", \"two\"]"
-                           "identifier = \"20230605T102234\""
-                           "+++"
-                           "\n")
-                         "\n")))))
+                 (equal
+                  (denote--format-front-matter
+                   "Some test" (date-to-time "2023-06-05") '("one" "two")
+                   "20230605T102234" "sig" 'markdown-toml)
+                  (mapconcat #'identity
+                             '("+++"
+                               "title      = \"Some test\""
+                               "date       = 2023-06-05"
+                               "tags       = [\"one\", \"two\"]"
+                               "identifier = \"20230605T102234\""
+                               "+++"
+                               "\n")
+                             "\n"))))))
 
 (ert-deftest denote-test--denote-format-file-name ()
   "Test that `denote-format-file-name' returns all expected paths."
