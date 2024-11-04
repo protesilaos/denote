@@ -4256,8 +4256,7 @@ function."
 
 (defun denote-select-linked-file-prompt (files)
   "Prompt for linked file among FILES."
-  (let ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory
-                            files)))
+  (let ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files)))
     (completing-read
      "Find linked file: "
      (denote--completion-table 'file file-names)
