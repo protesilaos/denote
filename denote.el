@@ -865,17 +865,17 @@ have been warned."
 ;; FIXME 2024-11-03: This breaks `denote-link-with-signature'.  Check
 ;; the FIXME above that function to decide how best to proceed.
 
-(defcustom denote-link-description-format "%t"
+(defcustom denote-link-description-format #'denote-link-description-with-signature-and-title
   "The format of a link description text.
 This determines how `denote-link' and related functions create a link
-description by default, when no region is active.  If the region is
-active, its text is used as the link's description when that is
-relevant (e.g. some linking commands insert many links, so those do not
-consider the active region).
+description by default.
 
 The value can be either a function or a string.  If it is a function, it
 is called with one argument, the file, and should return a string
 representing the link description.
+
+The default is a function that returns the active region or the title of
+the note (with the signature if present).
 
 If the value is a string, it treats specially the following specifiers:
 
@@ -901,10 +901,12 @@ When combined all together, the above are written thus:
 
 Any other text in the string it taken as-is.  Users may want, for
 example, to include some text that makes Denote links stand out, such as
-a [D] prefix."
+a [D] prefix.
+
+If the region is active, its text is used as the link's description."
   :type '(choice
           (string :tag "String with treats format specifiers specially")
-          (function :tag "Custom function like `denote-get-link-description'"))
+          (function :tag "Custom function like `denote-link-description-with-signature-and-title'"))
   :package-version '(denote . "3.2.0")
   :group 'denote)
 
@@ -4087,10 +4089,29 @@ With optional INCLUDE-DATE, convert the identifier using
 
 (make-obsolete 'denote-link-signature-format nil "2.3.0")
 
-(make-obsolete
- 'denote-link-description-with-signature-and-title
- 'denote-get-link-description
- "3.2.0: Also see the user option `denote-link-description-format'.")
+(defun denote-link-description-with-signature-and-title (file)
+  "Return link description for FILE.
+
+- If the region is active, use it as the description.
+
+- If FILE has a signature, then format the description as a sequence of
+  the signature text and the title with two spaces between them.
+
+- If FILE does not have a signature, then use its title as the
+  description.
+
+This is useful as the value of the user option
+`denote-link-description-function'."
+  (let* ((file-type (denote-filetype-heuristics file))
+         (signature (denote-retrieve-filename-signature file))
+         (title (denote-retrieve-title-or-filename file file-type))
+         (region-text (denote--get-active-region-content)))
+    (cond
+     (region-text region-text)
+     ((and signature title) (format "%s  %s" signature title))
+     (title (format "%s" title))
+     (signature (format "%s" signature))
+     (t ""))))
 
 (defun denote--get-active-region-content ()
   "Return the text of the active region, else nil."
@@ -4106,13 +4127,8 @@ With optional INCLUDE-DATE, convert the identifier using
               (end (region-end)))
     (delete-region beg end)))
 
-;; FIXME 2024-11-03: This breaks `denote-link-with-signature'.  Check
-;; the FIXME above that function to decide how best to proceed.
-
-(defun denote-get-link-description (file &optional ignore-region)
+(defun denote-get-link-description (file)
   "Return a link description for FILE.
-If the region is active, use it as the description, unless optional
-IGNORE-REGION is non-nil.
 
 If `denote-link-description-format' is a function, call it with FILE as
 an argument.  The function should return a string, representing the link
@@ -4120,25 +4136,26 @@ description.
 
 If the user option `denote-link-description-format' is a string, parse
 it to substitute any format specifiers therein with their respective
-values (see the documentation of that user option)."
+values (see the documentation of that user option).  If the region is
+active, use it as the description."
   (cond
-   ((unless ignore-region
-      (denote--get-active-region-content)))
    ((functionp denote-link-description-format)
     (funcall denote-link-description-format file))
    ((stringp denote-link-description-format)
-    (string-trim
-     (format-spec denote-link-description-format
-                  (list (cons ?t (cond
-                                  ((denote-retrieve-front-matter-title-value file (denote-filetype-heuristics file)))
-                                  ((denote-retrieve-filename-title file))
-                                  (t  "")))
-                        (cons ?i (or (denote-retrieve-filename-identifier file) ""))
-                        (cons ?d (or (denote-retrieve-filename-identifier file) ""))
-                        (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                        (cons ?k (or (denote-retrieve-filename-keywords file) ""))
-                        (cons ?% "%"))
-                  'delete)))
+    (if-let* ((region (denote--get-active-region-content)))
+        region
+      (string-trim
+       (format-spec denote-link-description-format
+                    (list (cons ?t (cond
+                                    ((denote-retrieve-front-matter-title-value file (denote-filetype-heuristics file)))
+                                    ((denote-retrieve-filename-title file))
+                                    (t  "")))
+                          (cons ?i (or (denote-retrieve-filename-identifier file) ""))
+                          (cons ?d (or (denote-retrieve-filename-identifier file) ""))
+                          (cons ?s (or (denote-retrieve-filename-signature file) ""))
+                          (cons ?k (or (denote-retrieve-filename-keywords file) ""))
+                          (cons ?% "%"))
+                    'delete))))
    (t
     (error "The `denote-link-description-format' must be a function or string"))))
 
@@ -4156,8 +4173,9 @@ case, derive FILE-TYPE from the current buffer.  FILE-TYPE is used to
 determine the format of the link.
 
 Return the DESCRIPTION of the link in the format specified by
-`denote-link-description-format', according to the function
-`denote-get-link-description'.
+`denote-link-description-format'.  The default is to return the text of
+the active region or the title of the note (with the signature if
+present).
 
 With optional ID-ONLY as a non-nil argument, such as with a universal
 prefix (\\[universal-argument]), insert links with just the identifier
@@ -4188,14 +4206,6 @@ Also see `denote-link-with-signature'."
 
 (defalias 'denote-insert-link 'denote-link
   "Alias for `denote-link' command.")
-
-;; FIXME 2024-11-03: This is now broken by the
-;; `denote-get-link-description', which only reads the
-;; `denote-link-description-format'.  How best to ensure we keep the
-;; behaviour that was there before?  Maybe make the user option accept
-;; an alist and have `denote-get-link-description' try to read that if
-;; given a non-nil value for a CONSIDER-SIGNATURE parameter (or
-;; something along those lines)?
 
 ;;;###autoload
 (defun denote-link-with-signature ()
@@ -4765,7 +4775,7 @@ Otherwise sort lines while accounting for `denote-link-add-links-sort'.
 Optional INCLUDE-DATE has the same meaning as in `denote-format-link'."
   (let ((links))
     (dolist (file files)
-      (let* ((description (denote-get-link-description file :ignore-region))
+      (let* ((description (denote-get-link-description file))
              (link (denote-format-link file description current-file-type id-only include-date))
              (link-as-list-item (format denote-link--prepare-links-format link)))
         (push link-as-list-item links)))
