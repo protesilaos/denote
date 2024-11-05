@@ -2603,7 +2603,7 @@ non-nil value."
    'denote-title-prompt
    (format-prompt (or prompt-text "New file TITLE") denote-title-prompt-current-default)
    denote-title-history
-   initial-title
+   (or initial-title denote-title-prompt-current-default)
    denote-title-prompt-current-default))
 
 (defvar denote-file-type-history nil
