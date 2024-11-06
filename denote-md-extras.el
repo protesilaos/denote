@@ -29,8 +29,6 @@
 
 (require 'denote)
 
-;;;; Convert links from `:denote' to absolute/relative file paths and vice versa
-
 (defun denote-md-extras--get-regexp (type)
   "Return regular expression to match link TYPE.
 TYPE is either the symbol `denote' or `file' for Denote-style links and
