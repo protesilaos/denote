@@ -3538,7 +3538,8 @@ The value of this user option is a string. The following specifiers
 are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]):
 
 #+vindex: denote-rename-buffer-backlinks-indicator
-- The =%t= is the Denote =TITLE= of the file.
+- The =%t= is the Denote =TITLE= in the front matter or the file name.
+- The =%T= is the Denote =TITLE= in the file name. [ The =%T= is part of {{{development-version}}}. ]
 - The =%i= is the Denote =IDENTIFIER= of the file.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%s= is the Denote =SIGNATURE= of the file.

@@ -52,7 +52,8 @@
 The value is a string that treats specially the following
 specifiers:
 
-- The %t is the Denote TITLE of the file.
+- The %t is the Denote TITLE in the front matter or the file name.
+- The %T is the Denote TITLE in the file name.
 - The %i is the Denote IDENTIFIER of the file.
 - The %d is the same as %i (DATE mnemonic).
 - The %s is the Denote SIGNATURE of the file.
@@ -110,6 +111,7 @@ buffer will be used, if available."
                                     ((denote-retrieve-front-matter-title-value file type))
                                     ((denote-retrieve-filename-title file))
                                     (t  "")))
+                          (cons ?T (or (denote-retrieve-filename-title file) ""))
                           (cons ?b (if should-show-backlink-indicator denote-rename-buffer-backlinks-indicator ""))
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
