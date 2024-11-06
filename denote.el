@@ -879,7 +879,8 @@ the note (with the signature if present).
 
 If the value is a string, it treats specially the following specifiers:
 
-- The %t is the Denote TITLE of the file.
+- The %t is the Denote TITLE in the front matter or the file name.
+- The %T is the Denote TITLE in the file name.
 - The %i is the Denote IDENTIFIER of the file.
 - The %d is the same as %i (DATE mnemonic).
 - The %s is the Denote SIGNATURE of the file.
@@ -4150,6 +4151,7 @@ active, use it as the description."
                                     ((denote-retrieve-front-matter-title-value file (denote-filetype-heuristics file)))
                                     ((denote-retrieve-filename-title file))
                                     (t  "")))
+                          (cons ?T (or (denote-retrieve-filename-title file) ""))
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))
