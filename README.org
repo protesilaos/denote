@@ -3242,7 +3242,7 @@ that are relevant for this use-case:
   behaves like the one above. The difference is that it finds the file
   system path and converts it into its identifier.
 
-** Convert =:denote= links to paths in Markdown
+** Convert =:denote= links to paths in Markdown or Obsidian style
 :PROPERTIES:
 :CUSTOM_ID: h:e01d6621-34e9-487d-8721-c4e42a6a286a
 :END:
@@ -3276,6 +3276,17 @@ All we can do is provide commands which convert links from the
   the above. It finds all the file paths , be they relative or
   absolute, and converts them into their corresponding =denote:= style
   links. It only does so for files with a Denote identifier.
+
+#+findex: denote-md-extras-convert-links-to-obsidian-type
++ Convert =denote:= links to Obsidian type :: The command
+  ~denote-md-extras-convert-links-to-obsidian-type~ changes links from
+  =[Test description](denote:20241026T051243)= becomes
+  =[20241026T051243--test-description__keyword1](20241026T051243--test-description__keyword1.md)=.
+
+#+findex: denote-md-extras-convert-obsidian-links-to-denote-type
++ Convert Obsidian style links to =denote:= type :: The command
+  ~denote-md-extras-convert-obsidian-links-to-denote-type~ does the
+  inverse of ~denote-md-extras-convert-links-to-obsidian-type~.
 
 DEVELOPMENT NOTE: The regular expressions I am using to determine what
 is a link are much simpler than what ~markdown-mode~ is using.
@@ -6865,8 +6876,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C.
   Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas,
   babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
-  hpgisler, jtpavlock, mentalisttraceur, pRot0ta1p, rbenit68,
-  relict007, sarcom-sar, sienic, skissue, sundar bp,
+  hpgisler, hyperfocus1337, jtpavlock, mentalisttraceur, pRot0ta1p,
+  rbenit68, relict007, sarcom-sar, sienic, skissue, sundar bp,
   yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming

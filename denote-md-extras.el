@@ -31,11 +31,12 @@
 
 (defun denote-md-extras--get-regexp (type)
   "Return regular expression to match link TYPE.
-TYPE is either the symbol `denote' or `file' for Denote-style links and
-file paths, respectively."
+TYPE is a symbol among `denote', `file', `obsidian', and `reverse-obsidian'."
   (pcase type
     ('denote "(denote:\\(?1:.*?\\))")
     ('file (format "(.*?\\(?1:%s\\).*?)" denote-id-regexp))
+    ('obsidian "\\(?2:\\[.*?\\]\\)(denote:\\(?1:.*?\\))")
+    ('reverse-obsidian (format "\\(?2:\\[.*?\\(?:%s\\).*?\\]\\)(\\(?1:.*?\\(?:%s\\).*?\\))" denote-id-regexp denote-id-regexp))
     (_ (error "`%s' is an unknown type of link" type))))
 
 ;;;###autoload
@@ -64,9 +65,11 @@ relative to the variable `denote-directory'."
 
 ;;;###autoload
 (defun denote-md-extras-convert-links-to-denote-type ()
-  "Convert file: links to denote: links in the current Markdown buffer.
-Ignore all other link types.  Also ignore file: links that do not
-point to a file with a Denote file name."
+  "Convert generic file links to denote: links in the current Markdown buffer.
+Ignore all other link types.  Also ignore file links that do not point
+to a file with a Denote file name.
+
+Also see `denote-md-extras-convert-obsidian-links-to-denote-type'."
   (interactive nil markdown-mode)
   (if (derived-mode-p 'markdown-mode)
       (save-excursion
@@ -79,6 +82,51 @@ point to a file with a Denote file name."
                 (replace-match (format "(denote:%s)" id) :fixed-case :literal)
                 (setq count (1+ count)))))
           (message "Converted %d file links to `denote:' links" count)))
+    (user-error "The current file is not using Markdown mode")))
+
+;;;###autoload
+(defun denote-md-extras-convert-links-to-obsidian-type ()
+  "Convert denote: links to Obsidian-style file paths.
+Ignore all other link types.  Also ignore links that do not
+resolve to a file in the variable `denote-directory'."
+  (interactive nil markdown-mode)
+  (if (derived-mode-p 'markdown-mode)
+      (save-excursion
+        (let ((count 0))
+          (goto-char (point-min))
+          (while (re-search-forward (denote-md-extras--get-regexp 'obsidian) nil :no-error)
+            (when-let* ((id (match-string-no-properties 1))
+                        (path (save-match-data (denote-get-relative-path-by-id id)))
+                        (name (file-name-sans-extension path)))
+              (replace-match (format "[%s](%s)" name path) :fixed-case :literal)
+              (setq count (1+ count))))
+          (message "Converted %d `denote:' links to Obsidian-style format" count)))
+    (user-error "The current file is not using Markdown mode")))
+
+;;;###autoload
+(defun denote-md-extras-convert-obsidian-links-to-denote-type ()
+  "Convert Obsidian-style links to denote: links in the current Markdown buffer.
+Ignore all other link types.  Also ignore file links that do not point
+to a file with a Denote file name.
+
+Also see `denote-md-extras-convert-links-to-denote-type'."
+  (interactive nil markdown-mode)
+  (if (derived-mode-p 'markdown-mode)
+      (save-excursion
+        (let ((count 0))
+          (goto-char (point-min))
+          (while (re-search-forward (denote-md-extras--get-regexp 'reverse-obsidian) nil :no-error)
+            (let ((file nil)
+                  (id nil)
+                  (description nil))
+              (save-match-data
+                (setq file (expand-file-name (match-string-no-properties 1) (denote-directory))
+                      id (denote-retrieve-filename-identifier file)
+                      description (denote-get-link-description file)))
+              (when id
+                (replace-match (format "[%s](denote:%s)" description id) :fixed-case :literal)
+                (setq count (1+ count)))))
+          (message "Converted %d Obsidian-style links to `denote:' links" count)))
     (user-error "The current file is not using Markdown mode")))
 
 (provide 'denote-md-extras)
