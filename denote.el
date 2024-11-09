@@ -1559,7 +1559,10 @@ Consult the `denote-file-types' for how this is used."
   "Extract date object from front matter DATE-STRING.
 
 Consult the `denote-file-types' for how this is used."
-  (date-to-time (denote-trim-whitespace date-string)))
+  (let ((date-string (denote-trim-whitespace date-string)))
+    (if (string-empty-p date-string)
+        nil
+      (date-to-time date-string))))
 
 (defvar denote-file-types
   '((org
@@ -2125,6 +2128,8 @@ which case it is not added to the base file name."
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
+     ((null date)
+      "")
      (format
       (format-time-string format date))
      ((when-let* ((fn (denote--date-value-function file-type)))
@@ -2950,7 +2955,8 @@ If a buffer is visiting the file, its name is updated."
 The TITLE, KEYWORDS, ID, SIGNATURE, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id signature file-type)))
+  (when-let* ((date (if (string-empty-p id) nil (date-to-time id)))
+              (new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
