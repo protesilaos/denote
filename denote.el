@@ -2084,9 +2084,7 @@ which case it is not added to the base file name."
    ((string-empty-p dir-path)
     (error "DIR-PATH must not be an empty string"))
    ((not (string-suffix-p "/" dir-path))
-    (error "DIR-PATH does not end with a / as directories ought to"))
-   ((not (string-match-p denote-id-regexp id))
-    (error "ID `%s' does not match `denote-id-regexp'" id)))
+    (error "DIR-PATH does not end with a / as directories ought to")))
   (let ((file-name "")
         (components (seq-union denote-file-name-components-order
                                '(identifier signature title keywords))))
