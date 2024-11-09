@@ -2213,6 +2213,11 @@ where the former does not read dates without a time component."
   'denote-valid-date-p
   "2.3.0")
 
+(define-obsolete-function-alias
+  'denote-parse-date
+  'denote-valid-date-p
+  "3.2.0")
+
 (defun denote-valid-date-p (date)
   "Return DATE as a valid date.
 A valid DATE is a value that can be parsed by either
@@ -2229,13 +2234,6 @@ If DATE is nil or an empty string, return nil."
          date)
         (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
          (date-to-time (denote--date-add-current-time date)))))
-
-(defun denote-parse-date (date)
-  "Return DATE as an appropriate value for the `denote' command.
-Pass DATE through `denote-valid-date-p' and use its return value.
-If either that or DATE is nil or an empty string, return
-`current-time'."
-  (or (denote-valid-date-p date) (current-time)))
 
 (defun denote--id-to-date (identifier)
   "Convert IDENTIFIER string to YYYY-MM-DD."
@@ -2510,7 +2508,7 @@ instead of that of the parameter."
          (title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
-         (date (denote-parse-date date))
+         (date (denote-valid-date-p date))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
                       (denote-directory)))
@@ -2559,6 +2557,11 @@ When called from Lisp, all arguments are optional.
   (interactive (denote--creation-get-note-data-from-prompts))
   (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,template ,signature)
                 (denote--creation-prepare-note-data title keywords file-type directory date template signature))
+               ;; TODO: When the following line is removed, Denote should
+               ;; create a note without a date/id.  However, some features
+               ;; will not completely work (fontification, linking, etc.).
+               ;; They need to be reviewed before making this available.
+               (date (or date (current-time)))
                (id (denote--find-first-unused-id (denote-get-identifier date)))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (denote--keywords-add-to-history keywords)

@@ -5577,12 +5577,6 @@ might change them without further notice.
   or ~date-to-time~ .Those functions signal an error if =DATE= is a
   value they do not recognise. If =DATE= is nil, return nil.
 
-#+findex: denote-parse-date
-+ Function ~denote-parse-date~ :: Return =DATE= as an appropriate
-  value for the ~denote~ command. Pass =DATE= through
-  ~denote-valid-date-p~ and use its return value. If either that or
-  =DATE= is nil, return ~current-time~.
-
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a

@@ -150,9 +150,9 @@ date selection module.
 
 When called from Lisp DATE is a string and has the same format as
 that covered in the documentation of the `denote' function.  It
-is internally processed by `denote-parse-date'."
+is internally processed by `denote-valid-date-p'."
   (interactive (list (when current-prefix-arg (denote-date-prompt))))
-  (let ((internal-date (denote-parse-date date))
+  (let ((internal-date (or (denote-valid-date-p date) (current-time)))
         (denote-directory (denote-journal-extras-directory)))
     (denote
      (denote-journal-extras-daily--title-format internal-date)
@@ -163,7 +163,7 @@ is internally processed by `denote-parse-date'."
 
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
-DATE has the same format as that returned by `denote-parse-date'."
+DATE has the same format as that returned by `denote-valid-date-p'."
   (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date)))
          (files (denote-directory-files identifier))
          (keyword (concat "_" (regexp-quote denote-journal-extras-keyword))))
@@ -183,12 +183,12 @@ DATE has the same format as that returned by `denote-parse-date'."
 With optional DATE, do it for that date, else do it for today.  DATE is
 a string and has the same format as that covered in the documentation of
 the `denote' function.  It is internally processed by
-`denote-parse-date'.
+`denote-valid-date-p'.
 
 If there are multiple journal entries for the date, prompt for one among
 them using minibuffer completion.  If there is only one, return it.  If
 there is no journal entry, create it."
-  (let* ((internal-date (denote-parse-date date))
+  (let* ((internal-date (or (denote-valid-date-p date) (current-time)))
          (files (denote-journal-extras--entry-today internal-date)))
     (cond
      ((length> files 1)
@@ -218,7 +218,7 @@ date selection module.
 
 When called from Lisp, DATE is a string and has the same format
 as that covered in the documentation of the `denote' function.
-It is internally processed by `denote-parse-date'."
+It is internally processed by `denote-valid-date-p'."
   (interactive
    (list
     (when current-prefix-arg
@@ -242,7 +242,7 @@ date selection module.
 
 When called from Lisp, DATE is a string and has the same format
 as that covered in the documentation of the `denote' function.
-It is internally processed by `denote-parse-date'.
+It is internally processed by `denote-valid-date-p'.
 
 With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
