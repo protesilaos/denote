@@ -5775,8 +5775,8 @@ might change them without further notice.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
-  identifier using ~denote-id-format~. =DATE= is parsed by
-  ~denote-valid-date-p~. If =DATE= is nil, use the current time.
+  identifier using ~denote-id-format~. If =DATE= is nil, return an empty
+  string as the identifier.
 
 #+findex: denote-create-unique-file-identifier
 + Function ~denote-create-unique-file-identifier~ :: Create a new unique

@@ -1867,13 +1867,12 @@ To create a new one, refer to the function
   (or (denote-retrieve-filename-identifier file)
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
-(defun denote-get-identifier (&optional date)
+(defun denote-get-identifier (date)
   "Convert DATE into a Denote identifier using `denote-id-format'.
-DATE is parsed by `denote-valid-date-p'.  If DATE is nil, use the
-current time."
-  (format-time-string
-   denote-id-format
-   (when date (denote-valid-date-p date))))
+If DATE is nil, return an empty string as the identifier."
+  (if date
+      (format-time-string denote-id-format date)
+    ""))
 
 (defvar denote--used-ids nil
   "Hash table of used identifiers.
@@ -1899,7 +1898,7 @@ To only return an existing identifier, refer to the function
   (let ((id (cond
              (date (denote-get-identifier date))
              ((denote--file-attributes-time file))
-             (t (denote-get-identifier)))))
+             (t (denote-get-identifier (current-time))))))
     (denote--find-first-unused-id id)))
 
 (defun denote-retrieve-filename-keywords (file)
@@ -2653,7 +2652,7 @@ Use Org's more advanced date selection utility if the user option
 
 (defun denote-prompt-for-date-return-id ()
   "Use `denote-date-prompt' and return it as `denote-id-format'."
-  (denote-get-identifier (denote-date-prompt)))
+  (denote-get-identifier (denote-valid-date-p (denote-date-prompt))))
 
 (defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
@@ -2926,7 +2925,9 @@ Org.  Otherwise, use the function `denote-file-type' to return the type."
 
 (defun denote--file-attributes-time (file)
   "Return `file-attribute-modification-time' of FILE as identifier."
-  (denote-get-identifier (file-attribute-modification-time (file-attributes file))))
+  (when-let* ((file-modification-time
+               (file-attribute-modification-time (file-attributes file))))
+    (denote-get-identifier file-modification-time)))
 
 (defun denote--revert-dired (buf)
   "Revert BUF if appropriate.
