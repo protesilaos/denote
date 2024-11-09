@@ -5718,8 +5718,9 @@ might change them without further notice.
   the case when returning the value of the variable ~denote-directory~).
   =DIR-PATH= cannot be nil or an empty string.
 
-  =ID= is a string holding the identifier of the note. It cannot be
-  nil or an empty string and must match ~denote-id-regexp~.
+  =ID= is a string holding the identifier of the note. It can be an
+  empty string, in which case its respective file name component is
+  not added to the base file name.
 
   =DIR-PATH= and =ID= form the base file name.
 
