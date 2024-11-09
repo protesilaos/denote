@@ -1841,7 +1841,7 @@ is a list of strings.  FILETYPE is one of the values of variable
 `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title-string (funcall (denote--title-value-function filetype) title))
-         (date-string (denote--date date filetype))
+         (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
          (id-string (funcall (denote--identifier-value-function filetype) id))
          (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
@@ -2144,7 +2144,7 @@ which case it is not added to the base file name."
   "Format DATE according to ISO 8601 standard."
   (format-time-string "%F" date))
 
-(defun denote--date (date file-type)
+(defun denote--format-front-matter-date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
