@@ -1852,8 +1852,8 @@ is a list of strings.  FILETYPE is one of the values of variable
 (defun denote-retrieve-filename-identifier (file)
   "Extract identifier from FILE name, if present, else return nil.
 
-To create a new one, refer to the function
-`denote-create-unique-file-identifier'."
+To create a new one from a date, refer to the function
+`denote-get-identifier'."
   (let ((filename (file-name-nondirectory file)))
     (cond ((string-match (concat "\\`" denote-id-regexp) filename)
            (match-string-no-properties 0 filename))
@@ -1879,27 +1879,10 @@ If DATE is nil, return an empty string as the identifier."
 This variable should be set only for the duration of a command.
 It should stay nil otherwise.")
 
-(defun denote-create-unique-file-identifier (file &optional date)
-  "Generate a unique identifier for FILE.
-
-The conditions are as follows:
-
-- If optional DATE is non-nil pass it to `denote-get-identifier'.
-  DATE will have to conform with `denote-valid-date-p'.  If it
-  does not, return an error.
-
-- If optional DATE is nil, use the file attributes to determine
-  the last modified date and format it as an identifier.
-
-- As a fallback, derive an identifier from the current time.
-
-To only return an existing identifier, refer to the function
-`denote-retrieve-filename-identifier'."
-  (let ((id (cond
-             (date (denote-get-identifier date))
-             ((denote--file-attributes-time file))
-             (t (denote-get-identifier (current-time))))))
-    (denote--find-first-unused-id id)))
+(define-obsolete-function-alias
+  'denote-create-unique-file-identifier
+  'denote-get-identifier
+  "3.2.0")
 
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
@@ -2923,12 +2906,6 @@ Org.  Otherwise, use the function `denote-file-type' to return the type."
       'org
     (denote-file-type file)))
 
-(defun denote--file-attributes-time (file)
-  "Return `file-attribute-modification-time' of FILE as identifier."
-  (when-let* ((file-modification-time
-               (file-attribute-modification-time (file-attributes file))))
-    (denote-get-identifier file-modification-time)))
-
 (defun denote--revert-dired (buf)
   "Revert BUF if appropriate.
 Do it if BUF is in Dired mode and is either part of the variable
@@ -3126,10 +3103,11 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
-         ;; TODO: For now, we cannot change the identifier. We retrieve
-         ;; the current one or generate a new one with DATE, if non-nil.
-         (id (or (denote-retrieve-filename-identifier file)
-                 (denote-create-unique-file-identifier file date)))
+         (old-id (or (denote-retrieve-filename-identifier file) ""))
+         (id (denote-get-identifier date))
+         (id (if (or (string-empty-p id) (string= old-id id))
+                 id
+               (denote--find-first-unused-id id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (file-regular-p new-name)
@@ -3159,7 +3137,7 @@ It is meant to be combined with `denote--rename-file' to create
 renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
-         (date (denote-retrieve-filename-identifier file))
+         (date (denote-valid-date-p (denote-retrieve-filename-identifier file)))
          (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
@@ -3184,7 +3162,13 @@ renaming commands."
          ;; `denote-prompts`, like other components (ie remove this
          ;; condition).
          (unless (denote-file-has-identifier-p file)
-           (setq date (denote-date-prompt))))))
+           (setq date (denote-valid-date-p (denote-date-prompt)))))))
+    ;; TODO: If the date is still nil, use the modification time of the file or the current time.
+    ;; This is done because the absence of an identifier is not supported yet.
+    ;; Once we do, this should be removed or made optional with a user option.
+    (setq date (or date
+                   (file-attribute-modification-time (file-attributes file))
+                   (current-time)))
     (list title keywords signature date)))
 
 ;;;###autoload
