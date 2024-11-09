@@ -2085,8 +2085,6 @@ which case it is not added to the base file name."
     (error "DIR-PATH must not be an empty string"))
    ((not (string-suffix-p "/" dir-path))
     (error "DIR-PATH does not end with a / as directories ought to"))
-   ((null id)
-    (error "ID must not be nil"))
    ((string-empty-p id)
     (error "ID must not be an empty string"))
    ((not (string-match-p denote-id-regexp id))
