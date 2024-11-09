@@ -2539,7 +2539,8 @@ When called from Lisp, all arguments are optional.
                ;; will not completely work (fontification, linking, etc.).
                ;; They need to be reviewed before making this available.
                (date (or date (current-time)))
-               (id (denote--find-first-unused-id (denote-get-identifier date)))
+               (id (denote-get-identifier date))
+               (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
@@ -5163,7 +5164,9 @@ Consult the manual for template samples."
                 (denote--creation-get-note-data-from-prompts))
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
-               (id (denote--find-first-unused-id (denote-get-identifier date)))
+               (date (or date (current-time)))  ; See comment in `denote' command.
+               (id (denote-get-identifier date))
+               (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
                (front-matter (denote--format-front-matter title date keywords id signature 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
