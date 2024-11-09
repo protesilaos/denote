@@ -2085,8 +2085,6 @@ which case it is not added to the base file name."
     (error "DIR-PATH must not be an empty string"))
    ((not (string-suffix-p "/" dir-path))
     (error "DIR-PATH does not end with a / as directories ought to"))
-   ((string-empty-p id)
-    (error "ID must not be an empty string"))
    ((not (string-match-p denote-id-regexp id))
     (error "ID `%s' does not match `denote-id-regexp'" id)))
   (let ((file-name "")
