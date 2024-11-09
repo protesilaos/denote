@@ -2227,7 +2227,7 @@ If DATE is nil or an empty string, return nil."
         ((and (or (numberp date) (listp date))
               (decode-time date))
          date)
-        (t
+        (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
          (date-to-time (denote--date-add-current-time date)))))
 
 (defun denote-parse-date (date)
