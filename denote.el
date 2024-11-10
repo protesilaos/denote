@@ -2957,7 +2957,7 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords date id signature file-type)
+(defun denote--add-front-matter (file title keywords signature date id file-type)
   "Prepend front matter to FILE.
 The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter block if
@@ -3132,7 +3132,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords date id signature file-type))))
+            (denote--add-front-matter new-name title keywords signature date id file-type))))
       (when (and denote--used-ids (not (string-empty-p id)))
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -3602,7 +3602,7 @@ relevant front matter.
               (id (or (denote-retrieve-filename-identifier file) ""))
               (date (if (string-empty-p id) nil (date-to-time id)))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords date id "" file-type)))
+    (denote--add-front-matter file title keywords "" date id file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -3647,7 +3647,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords date id signature new-file-type)
+        (denote--add-front-matter new-name title keywords signature date id new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
