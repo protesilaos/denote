@@ -5720,7 +5720,8 @@ might change them without further notice.
 
   =ID= is a string holding the identifier of the note. It can be an
   empty string, in which case its respective file name component is
-  not added to the base file name.
+  not added to the base file name. [ This is changed as part of
+  {{{development-version}}}. ]
 
   =DIR-PATH= and =ID= form the base file name.
 
@@ -5752,8 +5753,9 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
-  from =FILE= name, if present, else return nil.  To create a new one
-  from a date, refer to the ~denote-get-identifier~ function.
+  from =FILE= name, if present, else return nil. To create a new one
+  from a date, refer to the ~denote-get-identifier~ function. [ This
+  is changed as part of {{{development-version}}}. ]
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ ::  Extract Denote title
@@ -5776,8 +5778,8 @@ might change them without further notice.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
-  identifier using ~denote-id-format~. If =DATE= is nil, return an empty
-  string as the identifier.
+  identifier using ~denote-id-format~. If =DATE= is nil, return an
+  empty string as the identifier. [ This is changed as part of {{{development-version}}}. ]
 
 #+findex: denote-retrieve-front-matter-title-value
 + Function ~denote-retrieve-front-matter-title-value~ :: Return title value from
