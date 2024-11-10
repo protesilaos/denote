@@ -3140,7 +3140,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
             (denote--add-front-matter new-name title keywords date id signature file-type))))
-      (when denote--used-ids
+      (when (and denote--used-ids (not (string-empty-p id)))
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
       (run-hooks 'denote-after-rename-file-hook))
