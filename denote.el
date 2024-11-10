@@ -2474,7 +2474,7 @@ instead."
   "Return parameters in a valid form for file creation.
 
 The data is: TITLE, KEYWORDS, FILE-TYPE, DIRECTORY, DATE,
-TEMPLATE and SIGNATURE.
+TEMPLATE and SIGNATURE.  The identifier is also returned.
 
 If a `denote-use-*' variable is set for a data, its value is used
 instead of that of the parameter."
@@ -2491,6 +2491,10 @@ instead of that of the parameter."
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
          (date (denote-valid-date-p date))
+         (date (or date (current-time)))
+         (id (denote-get-identifier date))
+         (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
                       (denote-directory)))
@@ -2498,7 +2502,7 @@ instead of that of the parameter."
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
-    (list title keywords file-type directory date template signature)))
+    (list title keywords file-type directory date id template signature)))
 
 ;;;###autoload
 (defun denote (&optional title keywords file-type directory date template signature)
@@ -2537,15 +2541,8 @@ When called from Lisp, all arguments are optional.
 
 - SIGNATURE is a string or a function returning a string."
   (interactive (denote--creation-get-note-data-from-prompts))
-  (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,template ,signature)
+  (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,id ,template ,signature)
                 (denote--creation-prepare-note-data title keywords file-type directory date template signature))
-               ;; TODO: When the following line is removed, Denote should
-               ;; create a note without a date/id.  However, some features
-               ;; will not completely work (fontification, linking, etc.).
-               ;; They need to be reviewed before making this available.
-               (date (or date (current-time)))
-               (id (denote-get-identifier date))
-               (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
@@ -5168,11 +5165,8 @@ Consult the manual for template samples."
   (pcase-let* ((denote-prompts (remove 'file-type denote-prompts)) ; Do not prompt for file-type. We use org.
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-get-note-data-from-prompts))
-               (`(,title ,keywords _ ,directory ,date ,template ,signature)
+               (`(,title ,keywords _ ,directory ,date ,id ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
-               (date (or date (current-time)))  ; See comment in `denote' command.
-               (id (denote-get-identifier date))
-               (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
                (front-matter (denote--format-front-matter title date keywords id signature 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))
