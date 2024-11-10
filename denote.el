@@ -2964,13 +2964,12 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords id signature file-type)
+(defun denote--add-front-matter (file title keywords date id signature file-type)
   "Prepend front matter to FILE.
-The TITLE, KEYWORDS, ID, SIGNATURE, and FILE-TYPE are passed from the
+The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((date (if (string-empty-p id) nil (date-to-time id)))
-              (new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
+  (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -3124,6 +3123,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (id (if (or (string-empty-p id) (string= old-id id))
                  id
                (denote--find-first-unused-id id)))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (file-regular-p new-name)
@@ -3139,7 +3139,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords id signature file-type))))
+            (denote--add-front-matter new-name title keywords date id signature file-type))))
       (when denote--used-ids
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -3606,9 +3606,10 @@ relevant front matter.
       (denote-title-prompt default-title "Add TITLE (empty to ignore)")
       (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords)))))
   (when-let* ((denote-file-is-writable-and-supported-p file)
-              (id (denote-retrieve-filename-identifier file))
+              (id (or (denote-retrieve-filename-identifier file) ""))
+              (date (if (string-empty-p id) nil (date-to-time id)))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords id "" file-type)))
+    (denote--add-front-matter file title keywords date id "" file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -3641,6 +3642,7 @@ Construct the file name in accordance with the user option
          (dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file) ""))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (title (or (denote-retrieve-title-or-filename file old-file-type) ""))
          (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
@@ -3652,7 +3654,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords id signature new-file-type)
+        (denote--add-front-matter new-name title keywords date id signature new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
