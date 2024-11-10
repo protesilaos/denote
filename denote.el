@@ -3317,8 +3317,9 @@ one-by-one, use `denote-dired-rename-files'."
          (signature (if (eq signature 'keep-current)
                         (or (denote-retrieve-filename-signature file) "")
                       signature))
-         ;; 'keep-current is the same as nil because we do not currently allow the modification of the identifier
-         (date (if (eq date 'keep-current) nil date))
+         (date (if (eq date 'keep-current)
+                   (denote-valid-date-p (denote-retrieve-filename-identifier file))
+                 date))
          (new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
