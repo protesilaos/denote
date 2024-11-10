@@ -985,6 +985,20 @@ to override what this function returns."
       (denote--make-denote-directory)
       denote-directory)))
 
+;; TODO: Review and fix the features listed in the docstring below before
+;; making this a user option.
+(defvar denote-generate-identifier-automatically t
+  "Make creation and renaming commands automatically create and identifier.
+
+This applies when a note is created or renamed.  The default is to
+always create an identifier automatically.
+
+Valid values are: t, nil, `on-creation', and `on-rename'.
+
+IMPORTANT: Some features are not working with notes that do not have an
+identifier.  Among them are the Dired fontification, identifier and date
+lines updated in front matter, linking (backlinks).")
+
 ;;;;; Sluggification functions
 
 (defun denote-slug-keep-only-ascii (str)
@@ -2491,7 +2505,10 @@ instead of that of the parameter."
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
          (date (denote-valid-date-p date))
-         (date (or date (current-time)))
+         (date (cond (date date)
+                     ((or (eq denote-generate-identifier-automatically t)
+                          (eq denote-generate-identifier-automatically 'on-creation))
+                      (current-time))))
          (id (denote-get-identifier date))
          (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
          (date (if (string-empty-p id) nil (date-to-time id)))
@@ -3162,12 +3179,11 @@ renaming commands."
          ;; condition).
          (unless (denote-file-has-identifier-p file)
            (setq date (denote-valid-date-p (denote-date-prompt)))))))
-    ;; TODO: If the date is still nil, use the modification time of the file or the current time.
-    ;; This is done because the absence of an identifier is not supported yet.
-    ;; Once we do, this should be removed or made optional with a user option.
-    (setq date (or date
-                   (file-attribute-modification-time (file-attributes file))
-                   (current-time)))
+    (when (and (null date)
+               (or (eq denote-generate-identifier-automatically t)
+                   (eq denote-generate-identifier-automatically 'on-rename)))
+      (setq date (or (file-attribute-modification-time (file-attributes file))
+                     (current-time))))
     (list title keywords signature date)))
 
 ;;;###autoload
