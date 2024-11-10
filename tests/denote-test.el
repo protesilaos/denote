@@ -395,11 +395,9 @@ does not involve the time zone."
 
 (ert-deftest denote-test--denote-get-identifier ()
   "Test that `denote-get-identifier' returns an identifier."
-  (should (and (equal (denote-get-identifier) (format-time-string denote-id-format (current-time)))
-               (equal (denote-get-identifier "2024-02-01 10:34") "20240201T103400")
+  (should (and (equal (denote-get-identifier nil) "")
                (equal (denote-get-identifier 1705644188) "20240119T080308")
-               (equal (denote-get-identifier '(26026 4251)) "20240119T080307")))
-  (should-error (denote-get-identifier "Invalid date")))
+               (equal (denote-get-identifier '(26026 4251)) "20240119T080307"))))
 
 (ert-deftest denote-test--denote-retrieve-filename-identifier ()
   "Test that `denote-retrieve-filename-identifier' returns only the identifier."

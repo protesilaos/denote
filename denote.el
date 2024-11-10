@@ -922,13 +922,13 @@ The note's ID is derived from the date and time of its creation.")
 (defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-id-format'.")
 
-(defconst denote-signature-regexp "==\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)\\|\\|\\..*\\)*$"
+(defconst denote-signature-regexp "==\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@.*\\|\\..*\\)*$"
   "Regular expression to match the SIGNATURE field in a file name.")
 
-(defconst denote-title-regexp "--\\([^.]*?\\)\\(==.*\\|__.*\\|@@\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)\\|\\|\\..*\\)*$"
+(defconst denote-title-regexp "--\\([^.]*?\\)\\(==.*\\|__.*\\|@@.*\\|\\..*\\)*$"
   "Regular expression to match the TITLE field in a file name.")
 
-(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)\\|\\..*\\)*$"
+(defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@.*\\|\\..*\\)*$"
   "Regular expression to match the KEYWORDS field in a file name.")
 
 (make-obsolete-variable
@@ -984,6 +984,20 @@ to override what this function returns."
     (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
       (denote--make-denote-directory)
       denote-directory)))
+
+;; TODO: Review and fix the features listed in the docstring below before
+;; making this a user option.
+(defvar denote-generate-identifier-automatically t
+  "Make creation and renaming commands automatically create and identifier.
+
+This applies when a note is created or renamed.  The default is to
+always create an identifier automatically.
+
+Valid values are: t, nil, `on-creation', and `on-rename'.
+
+IMPORTANT: Some features are not working with notes that do not have an
+identifier.  Among them are the Dired fontification, identifier and date
+lines updated in front matter, linking (backlinks).")
 
 ;;;;; Sluggification functions
 
@@ -1559,7 +1573,10 @@ Consult the `denote-file-types' for how this is used."
   "Extract date object from front matter DATE-STRING.
 
 Consult the `denote-file-types' for how this is used."
-  (date-to-time (denote-trim-whitespace date-string)))
+  (let ((date-string (denote-trim-whitespace date-string)))
+    (if (string-empty-p date-string)
+        nil
+      (date-to-time date-string))))
 
 (defvar denote-file-types
   '((org
@@ -1841,7 +1858,7 @@ is a list of strings.  FILETYPE is one of the values of variable
 `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
          (title-string (funcall (denote--title-value-function filetype) title))
-         (date-string (denote--date date filetype))
+         (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
          (id-string (funcall (denote--identifier-value-function filetype) id))
          (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
@@ -1852,8 +1869,8 @@ is a list of strings.  FILETYPE is one of the values of variable
 (defun denote-retrieve-filename-identifier (file)
   "Extract identifier from FILE name, if present, else return nil.
 
-To create a new one, refer to the function
-`denote-create-unique-file-identifier'."
+To create a new one from a date, refer to the function
+`denote-get-identifier'."
   (let ((filename (file-name-nondirectory file)))
     (cond ((string-match (concat "\\`" denote-id-regexp) filename)
            (match-string-no-properties 0 filename))
@@ -1867,40 +1884,22 @@ To create a new one, refer to the function
   (or (denote-retrieve-filename-identifier file)
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
-(defun denote-get-identifier (&optional date)
+(defun denote-get-identifier (date)
   "Convert DATE into a Denote identifier using `denote-id-format'.
-DATE is parsed by `denote-valid-date-p'.  If DATE is nil, use the
-current time."
-  (format-time-string
-   denote-id-format
-   (when date (denote-valid-date-p date))))
+If DATE is nil, return an empty string as the identifier."
+  (if date
+      (format-time-string denote-id-format date)
+    ""))
 
 (defvar denote--used-ids nil
   "Hash table of used identifiers.
 This variable should be set only for the duration of a command.
 It should stay nil otherwise.")
 
-(defun denote-create-unique-file-identifier (file &optional date)
-  "Generate a unique identifier for FILE.
-
-The conditions are as follows:
-
-- If optional DATE is non-nil pass it to `denote-get-identifier'.
-  DATE will have to conform with `denote-valid-date-p'.  If it
-  does not, return an error.
-
-- If optional DATE is nil, use the file attributes to determine
-  the last modified date and format it as an identifier.
-
-- As a fallback, derive an identifier from the current time.
-
-To only return an existing identifier, refer to the function
-`denote-retrieve-filename-identifier'."
-  (let ((id (cond
-             (date (denote-get-identifier date))
-             ((denote--file-attributes-time file))
-             (t (denote-get-identifier)))))
-    (denote--find-first-unused-id id)))
+(define-obsolete-function-alias
+  'denote-create-unique-file-identifier
+  'denote-get-identifier
+  "3.2.0")
 
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
@@ -2079,8 +2078,9 @@ forward slash (the function `denote-directory' makes sure this is
 the case when returning the value of the variable `denote-directory').
 DIR-PATH cannot be nil or an empty string.
 
-ID is a string holding the identifier of the note.  It cannot be
-nil or an empty string and must match `denote-id-regexp'.
+ID is a string holding the identifier of the note.  It can be an
+empty string, in which case its respective file name component is
+not added to the base file name.
 
 DIR-PATH and ID form the base file name.
 
@@ -2102,13 +2102,7 @@ which case it is not added to the base file name."
    ((string-empty-p dir-path)
     (error "DIR-PATH must not be an empty string"))
    ((not (string-suffix-p "/" dir-path))
-    (error "DIR-PATH does not end with a / as directories ought to"))
-   ((null id)
-    (error "ID must not be nil"))
-   ((string-empty-p id)
-    (error "ID must not be an empty string"))
-   ((not (string-match-p denote-id-regexp id))
-    (error "ID `%s' does not match `denote-id-regexp'" id)))
+    (error "DIR-PATH does not end with a / as directories ought to")))
   (let ((file-name "")
         (components (seq-union denote-file-name-components-order
                                '(identifier signature title keywords))))
@@ -2144,10 +2138,12 @@ which case it is not added to the base file name."
   "Format DATE according to ISO 8601 standard."
   (format-time-string "%F" date))
 
-(defun denote--date (date file-type)
+(defun denote--format-front-matter-date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
+     ((null date)
+      "")
      (format
       (format-time-string format date))
      ((when-let* ((fn (denote--date-value-function file-type)))
@@ -2213,6 +2209,11 @@ where the former does not read dates without a time component."
   'denote-valid-date-p
   "2.3.0")
 
+(define-obsolete-function-alias
+  'denote-parse-date
+  'denote-valid-date-p
+  "3.2.0")
+
 (defun denote-valid-date-p (date)
   "Return DATE as a valid date.
 A valid DATE is a value that can be parsed by either
@@ -2227,15 +2228,8 @@ If DATE is nil or an empty string, return nil."
         ((and (or (numberp date) (listp date))
               (decode-time date))
          date)
-        (t
+        (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
          (date-to-time (denote--date-add-current-time date)))))
-
-(defun denote-parse-date (date)
-  "Return DATE as an appropriate value for the `denote' command.
-Pass DATE through `denote-valid-date-p' and use its return value.
-If either that or DATE is nil or an empty string, return
-`current-time'."
-  (or (denote-valid-date-p date) (current-time)))
 
 (defun denote--id-to-date (identifier)
   "Convert IDENTIFIER string to YYYY-MM-DD."
@@ -2494,7 +2488,7 @@ instead."
   "Return parameters in a valid form for file creation.
 
 The data is: TITLE, KEYWORDS, FILE-TYPE, DIRECTORY, DATE,
-TEMPLATE and SIGNATURE.
+TEMPLATE and SIGNATURE.  The identifier is also returned.
 
 If a `denote-use-*' variable is set for a data, its value is used
 instead of that of the parameter."
@@ -2510,7 +2504,14 @@ instead of that of the parameter."
          (title (or title ""))
          (file-type (denote--valid-file-type (or file-type denote-file-type)))
          (keywords (denote-keywords-sort keywords))
-         (date (denote-parse-date date))
+         (date (denote-valid-date-p date))
+         (date (cond (date date)
+                     ((or (eq denote-generate-identifier-automatically t)
+                          (eq denote-generate-identifier-automatically 'on-creation))
+                      (current-time))))
+         (id (denote-get-identifier date))
+         (id (if (string-empty-p id) id (denote--find-first-unused-id id)))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
                       (denote-directory)))
@@ -2518,7 +2519,7 @@ instead of that of the parameter."
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
-    (list title keywords file-type directory date template signature)))
+    (list title keywords file-type directory date id template signature)))
 
 ;;;###autoload
 (defun denote (&optional title keywords file-type directory date template signature)
@@ -2557,9 +2558,8 @@ When called from Lisp, all arguments are optional.
 
 - SIGNATURE is a string or a function returning a string."
   (interactive (denote--creation-get-note-data-from-prompts))
-  (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,template ,signature)
+  (pcase-let* ((`(,title ,keywords ,file-type ,directory ,date ,id ,template ,signature)
                 (denote--creation-prepare-note-data title keywords file-type directory date template signature))
-               (id (denote--find-first-unused-id (denote-get-identifier date)))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (denote--keywords-add-to-history keywords)
     (run-hooks 'denote-after-new-note-hook)
@@ -2650,7 +2650,7 @@ Use Org's more advanced date selection utility if the user option
 
 (defun denote-prompt-for-date-return-id ()
   "Use `denote-date-prompt' and return it as `denote-id-format'."
-  (denote-get-identifier (denote-date-prompt)))
+  (denote-get-identifier (denote-valid-date-p (denote-date-prompt))))
 
 (defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
@@ -2921,10 +2921,6 @@ Org.  Otherwise, use the function `denote-file-type' to return the type."
       'org
     (denote-file-type file)))
 
-(defun denote--file-attributes-time (file)
-  "Return `file-attribute-modification-time' of FILE as identifier."
-  (denote-get-identifier (file-attribute-modification-time (file-attributes file))))
-
 (defun denote--revert-dired (buf)
   "Revert BUF if appropriate.
 Do it if BUF is in Dired mode and is either part of the variable
@@ -2968,12 +2964,12 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords id signature file-type)
+(defun denote--add-front-matter (file title keywords date id signature file-type)
   "Prepend front matter to FILE.
-The TITLE, KEYWORDS, ID, SIGNATURE, and FILE-TYPE are passed from the
+The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from the
 renaming command and are used to construct a new front matter block if
 appropriate."
-  (when-let* ((new-front-matter (denote--format-front-matter title (date-to-time id) keywords id signature file-type)))
+  (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
@@ -3122,10 +3118,12 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
-         ;; TODO: For now, we cannot change the identifier. We retrieve
-         ;; the current one or generate a new one with DATE, if non-nil.
-         (id (or (denote-retrieve-filename-identifier file)
-                 (denote-create-unique-file-identifier file date)))
+         (old-id (or (denote-retrieve-filename-identifier file) ""))
+         (id (denote-get-identifier date))
+         (id (if (or (string-empty-p id) (string= old-id id))
+                 id
+               (denote--find-first-unused-id id)))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
     (when (file-regular-p new-name)
@@ -3141,8 +3139,8 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--edit-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords id signature file-type))))
-      (when denote--used-ids
+            (denote--add-front-matter new-name title keywords date id signature file-type))))
+      (when (and denote--used-ids (not (string-empty-p id)))
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
       (run-hooks 'denote-after-rename-file-hook))
@@ -3155,7 +3153,7 @@ It is meant to be combined with `denote--rename-file' to create
 renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
-         (date (denote-retrieve-filename-identifier file))
+         (date (denote-valid-date-p (denote-retrieve-filename-identifier file)))
          (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
@@ -3180,7 +3178,12 @@ renaming commands."
          ;; `denote-prompts`, like other components (ie remove this
          ;; condition).
          (unless (denote-file-has-identifier-p file)
-           (setq date (denote-date-prompt))))))
+           (setq date (denote-valid-date-p (denote-date-prompt)))))))
+    (when (and (null date)
+               (or (eq denote-generate-identifier-automatically t)
+                   (eq denote-generate-identifier-automatically 'on-rename)))
+      (setq date (or (file-attribute-modification-time (file-attributes file))
+                     (current-time))))
     (list title keywords signature date)))
 
 ;;;###autoload
@@ -3603,9 +3606,10 @@ relevant front matter.
       (denote-title-prompt default-title "Add TITLE (empty to ignore)")
       (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords)))))
   (when-let* ((denote-file-is-writable-and-supported-p file)
-              (id (denote-retrieve-filename-identifier file))
+              (id (or (denote-retrieve-filename-identifier file) ""))
+              (date (if (string-empty-p id) nil (date-to-time id)))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords id "" file-type)))
+    (denote--add-front-matter file title keywords date id "" file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -3638,6 +3642,7 @@ Construct the file name in accordance with the user option
          (dir (file-name-directory file))
          (old-file-type (denote-filetype-heuristics file))
          (id (or (denote-retrieve-filename-identifier file) ""))
+         (date (if (string-empty-p id) nil (date-to-time id)))
          (title (or (denote-retrieve-title-or-filename file old-file-type) ""))
          (keywords (denote-retrieve-front-matter-keywords-value file old-file-type))
          (signature (or (denote-retrieve-filename-signature file) ""))
@@ -3649,7 +3654,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords id signature new-file-type)
+        (denote--add-front-matter new-name title keywords date id signature new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
@@ -5178,9 +5183,8 @@ Consult the manual for template samples."
   (pcase-let* ((denote-prompts (remove 'file-type denote-prompts)) ; Do not prompt for file-type. We use org.
                (`(,title ,keywords _ ,directory ,date ,template ,signature)
                 (denote--creation-get-note-data-from-prompts))
-               (`(,title ,keywords _ ,directory ,date ,template ,signature)
+               (`(,title ,keywords _ ,directory ,date ,id ,template ,signature)
                 (denote--creation-prepare-note-data title keywords 'org directory date template signature))
-               (id (denote--find-first-unused-id (denote-get-identifier date)))
                (front-matter (denote--format-front-matter title date keywords id signature 'org))
                (template-string (cond ((stringp template) template)
                                       ((functionp template) (funcall template))

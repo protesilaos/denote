@@ -5577,12 +5577,6 @@ might change them without further notice.
   or ~date-to-time~ .Those functions signal an error if =DATE= is a
   value they do not recognise. If =DATE= is nil, return nil.
 
-#+findex: denote-parse-date
-+ Function ~denote-parse-date~ :: Return =DATE= as an appropriate
-  value for the ~denote~ command. Pass =DATE= through
-  ~denote-valid-date-p~ and use its return value. If either that or
-  =DATE= is nil, return ~current-time~.
-
 #+findex: denote-directory
 + Function ~denote-directory~ :: Return path of the variable
   ~denote-directory~ as a proper directory, also because it accepts a
@@ -5724,8 +5718,9 @@ might change them without further notice.
   the case when returning the value of the variable ~denote-directory~).
   =DIR-PATH= cannot be nil or an empty string.
 
-  =ID= is a string holding the identifier of the note. It cannot be
-  nil or an empty string and must match ~denote-id-regexp~.
+  =ID= is a string holding the identifier of the note. It can be an
+  empty string, in which case its respective file name component is
+  not added to the base file name.
 
   =DIR-PATH= and =ID= form the base file name.
 
@@ -5757,8 +5752,8 @@ might change them without further notice.
 
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
-  from =FILE= name, if present, else return nil.  To create a new one, refer to the
-  ~denote-create-unique-file-identifier~ function.
+  from =FILE= name, if present, else return nil.  To create a new one
+  from a date, refer to the ~denote-get-identifier~ function.
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ ::  Extract Denote title
@@ -5781,26 +5776,8 @@ might change them without further notice.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
-  identifier using ~denote-id-format~. =DATE= is parsed by
-  ~denote-valid-date-p~. If =DATE= is nil, use the current time.
-
-#+findex: denote-create-unique-file-identifier
-+ Function ~denote-create-unique-file-identifier~ :: Create a new unique
-  =FILE= identifier.  Test that the identifier is unique among
-  =USED-IDS=.  The conditions are as follows:
-
-  - If =DATE= is non-nil, invoke ~denote-prompt-for-date-return-id~.
-
-  - If =DATE= is nil, use the file attributes to determine the last
-    modified date and format it as an identifier.
-
-  - As a fallback, derive an identifier from the current time.
-
-  With optional =USED-IDS= as nil, test that the identifier is unique
-  among all files and buffers in variable ~denote-directory~.
-
-  To only return an existing identifier, refer to the function
-  ~denote-retrieve-filename-identifier~.
+  identifier using ~denote-id-format~. If =DATE= is nil, return an empty
+  string as the identifier.
 
 #+findex: denote-retrieve-front-matter-title-value
 + Function ~denote-retrieve-front-matter-title-value~ :: Return title value from
