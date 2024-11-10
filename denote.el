@@ -405,6 +405,15 @@ it again. When in doubt, leave the default file-naming scheme as-is."
           (const :tag "The title of the file" title)
           (const :tag "Keywords of the file" keywords)))
 
+(defcustom denote-always-include-all-front-matter-lines t
+  "Whether to insert front matter lines that have an empty value.
+
+When non-nil (the default), include all front matter lines in new front
+matters, even those with an empty value."
+  :group 'denote
+  :package-version '(denote . "3.2.0")
+  :type 'boolean)
+
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
 
@@ -996,8 +1005,7 @@ always create an identifier automatically.
 Valid values are: t, nil, `on-creation', and `on-rename'.
 
 IMPORTANT: Some features are not working with notes that do not have an
-identifier.  Among them are the Dired fontification, identifier and date
-lines updated in front matter, linking (backlinks).")
+identifier.  Among them are the Dired fontification and linking (backlinks).")
 
 ;;;;; Sluggification functions
 
@@ -2976,24 +2984,16 @@ appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
-      (insert new-front-matter))))
+      (insert new-front-matter))
+    ;; `denote-rewrite-front-matter' is called to remove lines without a value
+    ;; depending on the value of `denote-always-include-all-front-matter-lines'.
+    (let ((denote-rename-confirmations nil))
+      (denote-rewrite-front-matter file title keywords signature date id file-type))))
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
   (denote--file-with-temp-buffer file
     (re-search-forward regexp nil t 1)))
-
-(defun denote--edit-front-matter-p (file file-type)
-  "Test if FILE should be subject to front matter rewrite.
-Use FILE-TYPE to look for the front matter lines.  This is
-relevant for operations that insert or rewrite the front matter
-in a Denote note.
-
-For the purposes of this test, FILE is a Denote note when it
-contains a title line, a keywords line or both."
-  (and (denote--front-matter file-type)
-       (or (denote--regexp-in-file-p (denote--title-key-regexp file-type) file)
-           (denote--regexp-in-file-p (denote--keywords-key-regexp file-type) file))))
 
 (defun denote-rewrite-keywords (file keywords file-type &optional save-buffer)
   "Rewrite KEYWORDS in FILE outright according to FILE-TYPE.
@@ -3019,41 +3019,227 @@ related."
             (delete-region (point) (line-end-position))
             (when save-buffer (save-buffer))))))))
 
-(defun denote-rewrite-front-matter (file title keywords file-type)
+(defun denote--component-has-value-p (component value)
+  "Return non-nil if COMPONENT has a non-nil/non-empty VALUE.
+
+COMPONENT can be one of `title', `keywords', `signature', `date',
+`identifier'.
+
+VALUE is the corresponding value to test.
+
+This function returns nil given an empty string title, signature or
+identifier.  It also returns nil given a nil date or nil keywords."
+  (pcase component
+    ('title (not (string-empty-p value)))
+    ('keywords (not (null value)))
+    ('signature (not (string-empty-p (denote-sluggify-signature value))))
+    ('date (not (null value)))
+    ('identifier (not (string-empty-p value)))))
+
+(defun denote--get-old-and-new-front-matter-lines (file new-front-matter file-type)
+  "Return an alist of the old and new front-matter lines for each component.
+
+The FILE contains the old front matter lines.
+
+NEW-FRONT-MATTER is a the front matter with the new values, with the
+format given by FILE-TYPE."
+  `((title . ((old . ,(denote-retrieve-front-matter-title-line file file-type))
+              (new . ,(denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))))
+    (keywords . ((old . ,(denote-retrieve-front-matter-keywords-line file file-type))
+                 (new . ,(denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type))))
+    (signature . ((old . ,(denote-retrieve-front-matter-signature-line file file-type))
+                 (new . ,(denote--retrieve-front-matter-signature-line-from-content new-front-matter file-type))))
+    (date . ((old . ,(denote-retrieve-front-matter-date-line file file-type))
+                 (new . ,(denote--retrieve-front-matter-date-line-from-content new-front-matter file-type))))
+    (identifier . ((old . ,(denote-retrieve-front-matter-identifier-line file file-type))
+                 (new . ,(denote--retrieve-front-matter-identifier-line-from-content new-front-matter file-type))))))
+
+(defun denote--get-front-matter-components-order (content file-type)
+  "Return the components in the order they appear in CONTENT given FILE-TYPE.
+
+Return a list containing the symbols `title', `signature', `keywords',
+`identifier' and `date' in the order that they appear in TEXT.  TEXT can
+be any string.  For example, it can be a front matter template or an
+entire file content."
+  (let ((components-with-line-numbers '()))
+    (with-temp-buffer
+      (insert content)
+      (goto-char (point-min))
+      (when (re-search-forward (denote--title-key-regexp file-type) nil t 1)
+        (push `(,(line-number-at-pos) . title) components-with-line-numbers))
+      (goto-char (point-min))
+      (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
+        (push `(,(line-number-at-pos) . keywords) components-with-line-numbers))
+      (goto-char (point-min))
+      (when (re-search-forward (denote--signature-key-regexp file-type) nil t 1)
+        (push `(,(line-number-at-pos) . signature) components-with-line-numbers))
+      (goto-char (point-min))
+      (when (re-search-forward (denote--date-key-regexp file-type) nil t 1)
+        (push `(,(line-number-at-pos) . date) components-with-line-numbers))
+      (goto-char (point-min))
+      (when (re-search-forward (denote--identifier-key-regexp file-type) nil t 1)
+        (push `(,(line-number-at-pos) . identifier) components-with-line-numbers)))
+    (mapcar #'cdr
+            (sort components-with-line-numbers (lambda (x y) (< (car x) (car y)))))))
+
+(defun denote--file-has-front-matter-p (file file-type)
+  "Return non-nil if FILE has at least one front-matter line, given FILE-TYPE.
+
+This is checked against its front matter definition.  If the front matter
+definition has no lines, this function returns non-nil."
+  (let* ((front-matter (denote--front-matter file-type))
+         (file-content (with-temp-buffer (insert-file-contents file) (buffer-string)))
+         (components-in-template (denote--get-front-matter-components-order front-matter file-type))
+         (components-in-file (denote--get-front-matter-components-order file-content file-type)))
+    (or (null components-in-template)
+        (seq-intersection components-in-template components-in-file))))
+
+(defun denote--get-front-matter-rewrite-prompt (final-components to-add to-remove to-modify old-and-new-front-matter-lines)
+  "Return the prompt for the front matter rewrite operation.
+
+FINAL-COMPONENTS is the list of components to handle at the end of the
+rewrite operation.
+
+TO-ADD, TO-REMOVE, and TO-MODIFY are the list of components that needs
+to be added, removed or modified.
+
+OLD-AND-NEW-FRONT-MATTER-LINES is an alist containing the old and new
+front matter lines."
+  (let ((prompt "Replace front matter?"))
+    (dolist (component final-components)
+      (let ((old-line (alist-get 'old (alist-get component old-and-new-front-matter-lines)))
+            (new-line (alist-get 'new (alist-get component old-and-new-front-matter-lines)))
+            (next-prompt ""))
+        (cond ((memq component to-remove)
+               (setq next-prompt (format "\n-%s\n"
+                                         (propertize old-line 'face 'denote-faces-prompt-old-name))))
+              ((memq component to-add)
+               (setq next-prompt (format "\n-%s\n"
+                                         (propertize new-line 'face 'denote-faces-prompt-new-name))))
+              ((memq component to-modify)
+               (setq next-prompt (format "\n-%s\n-%s\n"
+                                         (propertize old-line 'face 'denote-faces-prompt-old-name)
+                                         (propertize new-line 'face 'denote-faces-prompt-new-name)))))
+        (setq prompt (concat prompt next-prompt))))
+    (concat prompt "?")))
+
+(defun denote--get-final-components-for-rewrite (components-in-file components-in-template components-to-add)
+  "Return the final components to handle by a front matter rewrite operation.
+
+COMPONENTS-TO-ADD is the list of components that have to be added to
+COMPONENTS-IN-FILE to build the list of components that will need to be
+handled during a front matter rewrite operation.
+
+COMPONENTS-IN-TEMPLATE is the list of components in a front matter
+template.  They are used to determine how the COMPONENTS-TO-ADD are
+added to COMPONENTS-IN-FILE.
+
+Example:
+          file = (title signature)
+      template = (title keywords date id signature)
+
+The date line is missing from the file.  From the template, we find out
+that it needs to be added *after* a keywords line.  Since we don't have
+one in the file, we keep looking for a line to add it *after* and find a
+title line.  Had we not found the title line in the file, we would have
+searched for a line to insert it *before*.  We would have inserted the
+date line before the signature line, for example.
+
+This is repeated until all missing components are added."
+  (let ((final-components (copy-sequence components-in-file)))
+    (dolist (component components-to-add)
+      (if-let* ((previous-components-in-template
+                 (seq-take-while (lambda (x) (not (eq x component))) components-in-template))
+                (first-previous-component-in-file
+                 (seq-find (lambda (x) (memq x final-components)) (reverse previous-components-in-template))))
+          ;; Insert after the existing element.
+          (let ((sublist final-components))
+            (while sublist
+              (if (not (eq (car sublist) first-previous-component-in-file))
+                  (setq sublist (cdr sublist))
+                (push component (cdr sublist))
+                (setq sublist nil))))
+        (let* ((next-components-in-template
+                (cdr (seq-drop-while (lambda (x) (not (eq x component))) components-in-template)))
+               (first-next-component-in-file
+                (seq-find (lambda (x) (memq x final-components)) next-components-in-template)))
+          ;; Insert before the existing element.
+          (let ((sublist final-components))
+            (while sublist
+              (if (not (eq (car sublist) first-next-component-in-file))
+                  (setq sublist (cdr sublist))
+                (push component sublist)
+                (setq sublist nil)))))))
+    final-components))
+
+(defun denote-rewrite-front-matter (file title keywords signature date identifier file-type)
   "Rewrite front matter of note after `denote-rename-file'.
-The FILE, TITLE, KEYWORDS, and FILE-TYPE are given by the
-renaming command and are used to construct new front matter
-values if appropriate.
+The FILE, TITLE, KEYWORDS, SIGNATURE, DATE, IDENTIFIER, and FILE-TYPE
+are given by the renaming command and are used to construct new front
+matter values if appropriate.
 
 If `denote-rename-confirmations' contains `rewrite-front-matter',
-prompt to confirm the rewriting of the front matter.  Otherwise
-produce a `y-or-n-p' prompt to that effect."
-  (when-let* ((old-title-line (denote-retrieve-front-matter-title-line file file-type))
-              (old-keywords-line (denote-retrieve-front-matter-keywords-line file file-type))
-              (new-front-matter (denote--format-front-matter title (current-time) keywords "" "" file-type))
-              (new-title-line (denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))
-              (new-keywords-line (denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type)))
-    (with-current-buffer (find-file-noselect file)
-      (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
-                (y-or-n-p (format
-                           "Replace front matter?\n-%s\n+%s\n\n-%s\n+%s?"
-                           (propertize old-title-line 'face 'denote-faces-prompt-old-name)
-                           (propertize new-title-line 'face 'denote-faces-prompt-new-name)
-                           (propertize old-keywords-line 'face 'denote-faces-prompt-old-name)
-                           (propertize new-keywords-line 'face 'denote-faces-prompt-new-name))))
-        (save-excursion
-          (save-restriction
-            (widen)
-            (goto-char (point-min))
-            (re-search-forward (denote--title-key-regexp file-type) nil t 1)
-            (goto-char (line-beginning-position))
-            (insert new-title-line)
-            (delete-region (point) (line-end-position))
-            (goto-char (point-min))
-            (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
-            (goto-char (line-beginning-position))
-            (insert new-keywords-line)
-            (delete-region (point) (line-end-position))))))))
+prompt to confirm the rewriting of the front matter."
+  (let* ((front-matter (denote--front-matter file-type))
+         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
+         (components-in-template (denote--get-front-matter-components-order front-matter file-type))
+         (components-in-file (denote--get-front-matter-components-order file-content file-type))
+         (components-to-add '())
+         (components-to-remove '())
+         (components-to-modify '())
+         (new-front-matter (denote--format-front-matter title date keywords identifier signature file-type))
+         (old-and-new-front-matter-lines (denote--get-old-and-new-front-matter-lines file new-front-matter file-type)))
+    ;; Build the lists of components to add, remove, modify.
+    (dolist (component '(title keywords signature identifier date))
+      ;; Ignore the component if it is not in the template.  It is not added, removed or modified.
+      (when (memq component components-in-template)
+        (let ((value (pcase component ('title title) ('keywords keywords) ('signature signature) ('date date) ('identifier identifier))))
+          (cond ((and (not (memq component components-in-file))
+                      (denote--component-has-value-p component value))
+                 (push component components-to-add))
+                ((and (memq component components-in-file)
+                      (not denote-always-include-all-front-matter-lines) ; The component can still be marked for modification
+                      (not (denote--component-has-value-p component value)))
+                 (push component components-to-remove))
+                ((and (memq component components-in-file)
+                      (not (string= (alist-get 'old (alist-get component old-and-new-front-matter-lines))
+                                    (alist-get 'new (alist-get component old-and-new-front-matter-lines)))))
+                 (push component components-to-modify))))))
+    ;; There should be at least one component in the file and the template.
+    (when (and (seq-intersection components-in-file components-in-template)
+               (or components-to-add components-to-remove components-to-modify))
+      (when-let* ((final-components (denote--get-final-components-for-rewrite
+                                     components-in-file components-in-template components-to-add)))
+        (with-current-buffer (find-file-noselect file)
+          (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
+                    (y-or-n-p (denote--get-front-matter-rewrite-prompt
+                               final-components
+                               components-to-add components-to-remove components-to-modify
+                               old-and-new-front-matter-lines)))
+            (save-excursion
+              (save-restriction
+                (widen)
+                (goto-char (point-min))
+                ;; Position point at the beginning of the first front matter line
+                (let ((first-component (car (seq-difference final-components components-to-add))))
+                  (re-search-forward
+                   (funcall (denote--get-component-key-regexp-function first-component) file-type) nil t 1)
+                  (goto-char (line-beginning-position)))
+                ;; Do the modifications
+                (dolist (component final-components)
+                  (let ((component-key-regexp-function (denote--get-component-key-regexp-function component))
+                        (new-line (alist-get 'new (alist-get component old-and-new-front-matter-lines))))
+                    (cond ((memq component components-to-remove)
+                           (re-search-forward (funcall component-key-regexp-function file-type) nil t 1)
+                           (delete-region (line-beginning-position) (line-beginning-position 2)))
+                          ((memq component components-to-add)
+                           (insert (concat new-line "\n")))
+                          ((memq component components-to-modify)
+                           (re-search-forward (funcall component-key-regexp-function file-type) nil t 1)
+                           (goto-char (line-beginning-position))
+                           (insert new-line)
+                           (delete-region (point) (line-end-position))
+                           (goto-char (line-beginning-position 2))))))))))))))
 
 ;;;;; The renaming commands and their prompts
 
@@ -3117,8 +3303,6 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
 `denote-kill-buffers'."
   (let* ((initial-state (if (find-buffer-visiting file) 'visited 'not-visited))
          (file-type (denote-filetype-heuristics file))
-         (current-title (or (denote-retrieve-title-or-filename file file-type) ""))
-         (current-keywords (denote-extract-keywords-from-path file))
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
@@ -3137,11 +3321,9 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
       (denote-rename-file-and-buffer file new-name)
       ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
       (when (and (denote-file-has-supported-extension-p file)
-                 (denote-file-is-writable-and-supported-p new-name)
-                 (or (not (string= title current-title))
-                     (not (equal keywords current-keywords))))
-        (if (denote--edit-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords file-type)
+                 (denote-file-is-writable-and-supported-p new-name))
+        (if (denote--file-has-front-matter-p new-name file-type)
+            (denote-rewrite-front-matter new-name title keywords signature date id file-type)
           (when (denote-add-front-matter-prompt new-name)
             (denote--add-front-matter new-name title keywords signature date id file-type))))
       (when (and denote--used-ids (not (string-empty-p id)))
