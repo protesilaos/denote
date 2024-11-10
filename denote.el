@@ -1850,6 +1850,17 @@ this list for new note creation.  The default is `org'.")
   "Return all `denote-file-types' keys."
   (delete-dups (mapcar #'car denote-file-types)))
 
+(defun denote--get-component-key-regexp-function (component)
+  "Return COMPONENT's key regexp function.
+
+COMPONENT can be one of `title', `keywords', `identifier', `date', `signature'."
+  (pcase component
+    ('title #'denote--title-key-regexp)
+    ('keywords #'denote--keywords-key-regexp)
+    ('signature #'denote--signature-key-regexp)
+    ('date #'denote--date-key-regexp)
+    ('identifier #'denote--identifier-key-regexp)))
+
 (defun denote--format-front-matter (title date keywords id signature filetype)
   "Front matter for new notes.
 
