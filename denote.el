@@ -2251,13 +2251,6 @@ If DATE is nil or an empty string, return nil."
              file))
          (buffer-list))))
 
-(defun denote--id-exists-p (identifier)
-  "Return non-nil if IDENTIFIER already exists."
-  (seq-some
-   (lambda (file)
-     (string= identifier (denote-retrieve-filename-identifier file)))
-   (append (denote-directory-files) (denote--buffer-file-names))))
-
 (defun denote--get-all-used-ids ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
