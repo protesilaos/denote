@@ -3118,6 +3118,12 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
+         ;; Handle nil date
+         (date (cond (date date)
+                     ((or (eq denote-generate-identifier-automatically t)
+                          (eq denote-generate-identifier-automatically 'on-rename))
+                      (or (file-attribute-modification-time (file-attributes file))
+                          (current-time)))))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
          (id (if (or (string-empty-p id) (string= old-id id))
@@ -3179,11 +3185,6 @@ renaming commands."
          ;; condition).
          (unless (denote-file-has-identifier-p file)
            (setq date (denote-valid-date-p (denote-date-prompt)))))))
-    (when (and (null date)
-               (or (eq denote-generate-identifier-automatically t)
-                   (eq denote-generate-identifier-automatically 'on-rename)))
-      (setq date (or (file-attribute-modification-time (file-attributes file))
-                     (current-time))))
     (list title keywords signature date)))
 
 ;;;###autoload
@@ -3316,8 +3317,9 @@ one-by-one, use `denote-dired-rename-files'."
          (signature (if (eq signature 'keep-current)
                         (or (denote-retrieve-filename-signature file) "")
                       signature))
-         ;; 'keep-current is the same as nil because we do not currently allow the modification of the identifier
-         (date (if (eq date 'keep-current) nil date))
+         (date (if (eq date 'keep-current)
+                   (denote-valid-date-p (denote-retrieve-filename-identifier file))
+                 date))
          (new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
