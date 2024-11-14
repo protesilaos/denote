@@ -5905,7 +5905,8 @@ might change them without further notice.
   arguments are given by the renaming command and are used to construct
   new front matter values if appropriate. If ~denote-rename-confirmations~
   contains ~rewrite-front-matter~, prompt to confirm the rewriting of
-  the front matter. Otherwise produce a ~y-or-n-p~ prompt to that effect.
+  the front matter. Otherwise produce a ~y-or-n-p~ prompt to that
+  effect. [ This function is changed as part of {{{development-version}}}. ]
 
 #+findex: denote-add-front-matter-prompt
 + Function ~denote-add-front-matter-prompt~ :: Prompt to add a
