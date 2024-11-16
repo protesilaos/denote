@@ -3088,7 +3088,7 @@ entire file content."
 This is checked against its front matter definition.  If the front matter
 definition has no lines, this function returns non-nil."
   (let* ((front-matter (denote--front-matter file-type))
-         (file-content (with-temp-buffer (insert-file-contents file) (buffer-string)))
+         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
          (components-in-template (denote--get-front-matter-components-order front-matter file-type))
          (components-in-file (denote--get-front-matter-components-order file-content file-type)))
     (or (null components-in-template)
