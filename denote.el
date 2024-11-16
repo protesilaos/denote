@@ -1770,7 +1770,7 @@ this list for new note creation.  The default is `org'.")
       "^denote12345678987654321")) ; Will not be found
 
 (defun denote--keywords-value-function (file-type)
-  "Convert keywords' string to front matter keywords, per FILE-TYPE."
+  "Convert keywords' list to front matter keywords, per FILE-TYPE."
   (plist-get
    (alist-get file-type denote-file-types)
    :keywords-value-function))
