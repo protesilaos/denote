@@ -1745,9 +1745,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :title-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :title-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--title-value-function (file-type)
   "Convert title string to a front matter title, per FILE-TYPE."
@@ -1763,9 +1764,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :keywords-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :keywords-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--keywords-value-function (file-type)
   "Convert keywords' string to front matter keywords, per FILE-TYPE."
@@ -1781,9 +1783,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--signature-key-regexp (file-type)
   "Return the signature key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :signature-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :signature-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--signature-value-function (file-type)
   "Convert signature string to front matter signature, per FILE-TYPE."
@@ -1799,9 +1802,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--identifier-key-regexp (file-type)
   "Return the identifier key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :identifier-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :identifier-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--identifier-value-function (file-type)
   "Convert identifier string to front matter identifier, per FILE-TYPE."
@@ -1817,9 +1821,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--date-key-regexp (file-type)
   "Return the date key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :date-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :date-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--date-value-function (file-type)
   "Convert date object to front matter date, per FILE-TYPE."
@@ -1880,11 +1885,15 @@ TITLE, SIGNATURE, and ID are strings.  DATE is a date object.  KEYWORDS
 is a list of strings.  FILETYPE is one of the values of variable
 `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
-         (title-string (funcall (denote--title-value-function filetype) title))
+         (title-value-function (denote--title-value-function filetype))
+         (keywords-value-function (denote--keywords-value-function filetype))
+         (id-value-function (denote--identifier-value-function filetype))
+         (signature-value-function (denote--signature-value-function filetype))
+         (title-string (if title-value-function (funcall title-value-function title) ""))
          (date-string (denote--format-front-matter-date date filetype))
-         (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
-         (id-string (funcall (denote--identifier-value-function filetype) id))
-         (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
+         (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
+         (id-string (if id-value-function (funcall id-value-function id) ""))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) "")))
     (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
 
 ;;;; Front matter or content retrieval functions
