@@ -3552,6 +3552,16 @@ how a completion User Interface may accept an empty input."
   (let ((denote-prompts '(keywords)))
     (call-interactively #'denote-rename-file)))
 
+(defun denote-rename-file-date ()
+  "Convenience command to change the date of a file.
+Like `denote-rename-file', but prompts only for the date.
+
+Modify a date in one go."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date)))
+    (call-interactively #'denote-rename-file)))
+
 (define-obsolete-function-alias 'denote-keywords-add 'denote-rename-file-keywords "3.0.0")
 (define-obsolete-function-alias 'denote-rename-add-keywords 'denote-rename-file-keywords "3.0.0")
 (define-obsolete-function-alias 'denote-keywords-remove 'denote-rename-file-keywords "3.0.0")
