@@ -3377,12 +3377,9 @@ renaming commands."
                           signature
                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
         ('date
-         ;; TODO: We currently prompt only if the current file has no
-         ;; identifier. Eventually, we may want to allow modifying the
-         ;; date/id. Then, it will be better to prompt according to
-         ;; `denote-prompts`, like other components (ie remove this
-         ;; condition).
-         (unless (denote-file-has-identifier-p file)
+         (if (and (denote-file-has-identifier-p file)
+                  (denote--file-has-backlinks-p file))
+             (user-error "The date cannot be modified because the file has backlinks")
            (setq date (denote-valid-date-p (denote-date-prompt)))))))
     (list title keywords signature date)))
 
