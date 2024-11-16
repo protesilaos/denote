@@ -1479,6 +1479,7 @@ Denote file-naming scheme."
 #+date:       %s
 #+filetags:   %s
 #+identifier: %s
+#+signature:  %s
 \n"
   "Org front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1491,6 +1492,7 @@ title:      %s
 date:       %s
 tags:       %s
 identifier: %s
+signature:  %s
 ---\n\n"
   "YAML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1503,6 +1505,7 @@ title      = %s
 date       = %s
 tags       = %s
 identifier = %s
+signature  = %s
 +++\n\n"
   "TOML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1514,6 +1517,7 @@ Change the front matter format'.")
 date:       %s
 tags:       %s
 identifier: %s
+signature:  %s
 ---------------------------\n\n"
   "Plain text front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -3747,7 +3751,7 @@ they have front matter and what that may be."
 ;;;;; Creation of front matter
 
 ;;;###autoload
-(defun denote-add-front-matter (file title keywords)
+(defun denote-add-front-matter (file title keywords signature)
   "Insert front matter at the top of FILE.
 
 When called interactively, FILE is the return value of the
@@ -3761,6 +3765,9 @@ KEYWORDS is a list of strings.  Interactively, it is the user
 input at the minibuffer prompt.  This one supports completion for
 multiple entries, each separated by the `crm-separator' (normally
 a comma).
+
+SIGNATURE is a string.  Interactively, it is the user input at the
+minibuffer prompt.
 
 The purpose of this command is to help the user generate new
 front matter for an existing note (perhaps because the user
@@ -3787,17 +3794,19 @@ relevant front matter.
   2024-02-29 09:24 +0200. ]"
   (interactive
    (let* ((file buffer-file-name)
-          (default-title (denote-retrieve-filename-title file))
-          (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ",")))
+          (default-title (or (denote-retrieve-filename-title file) ""))
+          (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ","))
+          (default-signature (or (denote-retrieve-filename-keywords-as-list file) "")))
      (list
       file
       (denote-title-prompt default-title "Add TITLE (empty to ignore)")
-      (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords)))))
+      (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords))
+      (denote-signature-prompt default-signature "Add SIGNATURE (empty to ignore)"))))
   (when-let* ((denote-file-is-writable-and-supported-p file)
               (id (or (denote-retrieve-filename-identifier file) ""))
               (date (if (string-empty-p id) nil (date-to-time id)))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords "" date id file-type)))
+    (denote--add-front-matter file title keywords signature date id file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
