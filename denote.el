@@ -1479,6 +1479,7 @@ Denote file-naming scheme."
 #+date:       %s
 #+filetags:   %s
 #+identifier: %s
+#+signature:  %s
 \n"
   "Org front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1491,6 +1492,7 @@ title:      %s
 date:       %s
 tags:       %s
 identifier: %s
+signature:  %s
 ---\n\n"
   "YAML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1503,6 +1505,7 @@ title      = %s
 date       = %s
 tags       = %s
 identifier = %s
+signature  = %s
 +++\n\n"
   "TOML (Markdown) front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1514,6 +1517,7 @@ Change the front matter format'.")
 date:       %s
 tags:       %s
 identifier: %s
+signature:  %s
 ---------------------------\n\n"
   "Plain text front matter.
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
@@ -1741,9 +1745,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :title-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :title-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--title-value-function (file-type)
   "Convert title string to a front matter title, per FILE-TYPE."
@@ -1759,12 +1764,13 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :keywords-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :keywords-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--keywords-value-function (file-type)
-  "Convert keywords' string to front matter keywords, per FILE-TYPE."
+  "Convert keywords' list to front matter keywords, per FILE-TYPE."
   (plist-get
    (alist-get file-type denote-file-types)
    :keywords-value-function))
@@ -1777,9 +1783,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--signature-key-regexp (file-type)
   "Return the signature key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :signature-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :signature-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--signature-value-function (file-type)
   "Convert signature string to front matter signature, per FILE-TYPE."
@@ -1795,9 +1802,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--identifier-key-regexp (file-type)
   "Return the identifier key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :identifier-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :identifier-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--identifier-value-function (file-type)
   "Convert identifier string to front matter identifier, per FILE-TYPE."
@@ -1813,9 +1821,10 @@ this list for new note creation.  The default is `org'.")
 
 (defun denote--date-key-regexp (file-type)
   "Return the date key regexp associated to FILE-TYPE."
-  (plist-get
-   (alist-get file-type denote-file-types)
-   :date-key-regexp))
+  (or (plist-get
+       (alist-get file-type denote-file-types)
+       :date-key-regexp)
+      "^denote12345678987654321")) ; Will not be found
 
 (defun denote--date-value-function (file-type)
   "Convert date object to front matter date, per FILE-TYPE."
@@ -1876,11 +1885,15 @@ TITLE, SIGNATURE, and ID are strings.  DATE is a date object.  KEYWORDS
 is a list of strings.  FILETYPE is one of the values of variable
 `denote-file-type'."
   (let* ((fm (denote--front-matter filetype))
-         (title-string (funcall (denote--title-value-function filetype) title))
+         (title-value-function (denote--title-value-function filetype))
+         (keywords-value-function (denote--keywords-value-function filetype))
+         (id-value-function (denote--identifier-value-function filetype))
+         (signature-value-function (denote--signature-value-function filetype))
+         (title-string (if title-value-function (funcall title-value-function title) ""))
          (date-string (denote--format-front-matter-date date filetype))
-         (keywords-string (funcall (denote--keywords-value-function filetype) (denote-sluggify-keywords keywords)))
-         (id-string (funcall (denote--identifier-value-function filetype) id))
-         (signature-string (funcall (denote--signature-value-function filetype) (denote-sluggify-signature signature))))
+         (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
+         (id-string (if id-value-function (funcall id-value-function id) ""))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) "")))
     (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
 
 ;;;; Front matter or content retrieval functions
@@ -3088,7 +3101,7 @@ entire file content."
 This is checked against its front matter definition.  If the front matter
 definition has no lines, this function returns non-nil."
   (let* ((front-matter (denote--front-matter file-type))
-         (file-content (with-temp-buffer (insert-file-contents file) (buffer-string)))
+         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
          (components-in-template (denote--get-front-matter-components-order front-matter file-type))
          (components-in-file (denote--get-front-matter-components-order file-content file-type)))
     (or (null components-in-template)
@@ -3364,12 +3377,9 @@ renaming commands."
                           signature
                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
         ('date
-         ;; TODO: We currently prompt only if the current file has no
-         ;; identifier. Eventually, we may want to allow modifying the
-         ;; date/id. Then, it will be better to prompt according to
-         ;; `denote-prompts`, like other components (ie remove this
-         ;; condition).
-         (unless (denote-file-has-identifier-p file)
+         (if (and (denote-file-has-identifier-p file)
+                  (denote--file-has-backlinks-p file))
+             (user-error "The date cannot be modified because the file has backlinks")
            (setq date (denote-valid-date-p (denote-date-prompt)))))))
     (list title keywords signature date)))
 
@@ -3540,6 +3550,16 @@ how a completion User Interface may accept an empty input."
   (declare (interactive-only t))
   (interactive)
   (let ((denote-prompts '(keywords)))
+    (call-interactively #'denote-rename-file)))
+
+(defun denote-rename-file-date ()
+  "Convenience command to change the date of a file.
+Like `denote-rename-file', but prompts only for the date.
+
+Modify a date in one go."
+  (declare (interactive-only t))
+  (interactive)
+  (let ((denote-prompts '(date)))
     (call-interactively #'denote-rename-file)))
 
 (define-obsolete-function-alias 'denote-keywords-add 'denote-rename-file-keywords "3.0.0")
@@ -3747,7 +3767,7 @@ they have front matter and what that may be."
 ;;;;; Creation of front matter
 
 ;;;###autoload
-(defun denote-add-front-matter (file title keywords)
+(defun denote-add-front-matter (file title keywords signature)
   "Insert front matter at the top of FILE.
 
 When called interactively, FILE is the return value of the
@@ -3761,6 +3781,9 @@ KEYWORDS is a list of strings.  Interactively, it is the user
 input at the minibuffer prompt.  This one supports completion for
 multiple entries, each separated by the `crm-separator' (normally
 a comma).
+
+SIGNATURE is a string.  Interactively, it is the user input at the
+minibuffer prompt.
 
 The purpose of this command is to help the user generate new
 front matter for an existing note (perhaps because the user
@@ -3787,17 +3810,19 @@ relevant front matter.
   2024-02-29 09:24 +0200. ]"
   (interactive
    (let* ((file buffer-file-name)
-          (default-title (denote-retrieve-filename-title file))
-          (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ",")))
+          (default-title (or (denote-retrieve-filename-title file) ""))
+          (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ","))
+          (default-signature (or (denote-retrieve-filename-keywords-as-list file) "")))
      (list
       file
       (denote-title-prompt default-title "Add TITLE (empty to ignore)")
-      (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords)))))
+      (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords))
+      (denote-signature-prompt default-signature "Add SIGNATURE (empty to ignore)"))))
   (when-let* ((denote-file-is-writable-and-supported-p file)
               (id (or (denote-retrieve-filename-identifier file) ""))
               (date (if (string-empty-p id) nil (date-to-time id)))
               (file-type (denote-filetype-heuristics file)))
-    (denote--add-front-matter file title keywords "" date id file-type)))
+    (denote--add-front-matter file title keywords signature date id file-type)))
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
