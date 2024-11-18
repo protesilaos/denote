@@ -90,8 +90,8 @@ When called from Lisp, SILO is a file system path to a directory that
 conforms with `denote-silo-extras-path-is-silo-p'."
   (interactive (list (denote-silo-extras-directory-prompt)))
   (denote-silo-extras-with-silo silo
-                                (let ((denote-directory silo))
-                                  (call-interactively #'denote))))
+    (let ((denote-directory silo))
+      (call-interactively #'denote))))
 
 ;;;###autoload
 (defun denote-silo-extras-open-or-create (silo)
@@ -102,8 +102,8 @@ When called from Lisp, SILO is a file system path to a directory that
 conforms with `denote-silo-extras-path-is-silo-p'."
   (interactive (list (denote-silo-extras-directory-prompt)))
   (denote-silo-extras-with-silo silo
-                                (let ((denote-directory silo))
-                                  (call-interactively #'denote-open-or-create))))
+    (let ((denote-directory silo))
+      (call-interactively #'denote-open-or-create))))
 
 ;;;###autoload
 (defun denote-silo-extras-select-silo-then-command (silo command)
@@ -118,8 +118,8 @@ conforms with `denote-silo-extras-path-is-silo-p'."
     (denote-silo-extras-directory-prompt)
     (denote-command-prompt)))
   (denote-silo-extras-with-silo silo
-                                (let ((denote-directory silo))
-                                  (call-interactively command))))
+    (let ((denote-directory silo))
+      (call-interactively command))))
 
 (provide 'denote-silo-extras)
 ;;; denote-silo-extras.el ends here
