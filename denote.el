@@ -867,9 +867,9 @@ have been warned."
  "2.3.0")
 
 (define-obsolete-variable-alias
- 'denote-link-description-function
- 'denote-link-description-format
- "3.2.0")
+  'denote-link-description-function
+  'denote-link-description-format
+  "3.2.0")
 
 ;; FIXME 2024-11-03: This breaks `denote-link-with-signature'.  Check
 ;; the FIXME above that function to decide how best to proceed.
@@ -3061,11 +3061,11 @@ format given by FILE-TYPE."
     (keywords . ((old . ,(denote-retrieve-front-matter-keywords-line file file-type))
                  (new . ,(denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type))))
     (signature . ((old . ,(denote-retrieve-front-matter-signature-line file file-type))
-                 (new . ,(denote--retrieve-front-matter-signature-line-from-content new-front-matter file-type))))
+                  (new . ,(denote--retrieve-front-matter-signature-line-from-content new-front-matter file-type))))
     (date . ((old . ,(denote-retrieve-front-matter-date-line file file-type))
-                 (new . ,(denote--retrieve-front-matter-date-line-from-content new-front-matter file-type))))
+             (new . ,(denote--retrieve-front-matter-date-line-from-content new-front-matter file-type))))
     (identifier . ((old . ,(denote-retrieve-front-matter-identifier-line file file-type))
-                 (new . ,(denote--retrieve-front-matter-identifier-line-from-content new-front-matter file-type))))))
+                   (new . ,(denote--retrieve-front-matter-identifier-line-from-content new-front-matter file-type))))))
 
 (defun denote--get-front-matter-components-order (content file-type)
   "Return the components in the order they appear in CONTENT given FILE-TYPE.
