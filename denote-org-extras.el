@@ -125,7 +125,7 @@ Also see `denote-org-extras-backlinks-for-heading'."
     (user-error "Links to headings only work between Org files"))
   (let ((context-p (eq denote-org-store-link-to-heading 'context)))
     (when-let* ((file (denote-file-prompt ".*\\.org"))
-                (file-text (denote--link-get-description file))
+                (file-text (denote-get-link-description file))
                 (heading (denote-org-extras-outline-prompt file))
                 (line (string-to-number (car (split-string heading "\t"))))
                 (heading-data (denote-org-extras--get-heading-and-id-from-line line file))
@@ -548,7 +548,7 @@ argument."
          (format "- %s\n\n"
                  (denote-format-link
                   file
-                  (denote--link-get-description file)
+                  (denote-get-link-description file)
                   'org
                   (eq add-links 'id-only)))))
       (let ((beginning-of-contents (point)))
