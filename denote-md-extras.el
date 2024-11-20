@@ -29,6 +29,38 @@
 
 (require 'denote)
 
+;;;; Register a new file type
+
+(defvar denote-md-extras-obsidian-format "# %s\n\n"
+  "Format of Obsidian-style Markdown front matter.")
+
+;; FIXME 2024-11-20: This works for file creation but is broken for
+;; other common operations.
+(add-to-list
+ 'denote-file-types
+ '(markdown-obsidian
+   :extension ".md"
+   :front-matter denote-md-extras-obsidian-format
+   :title-key-regexp "^# "
+   :title-value-function identity
+   :title-value-reverse-function identity
+   :keywords-key-regexp ""
+   :keywords-value-function identity
+   :keywords-value-reverse-function identity
+   :signature-key-regexp ""
+   :signature-value-function identity
+   :signature-value-reverse-function identity
+   :identifier-key-regexp ""
+   :identifier-value-function identity
+   :identifier-value-reverse-function identity
+   :date-key-regexp ""
+   :date-value-function identity
+   :date-value-reverse-function identity
+   :link denote-md-link-format
+   :link-in-context-regexp denote-md-link-in-context-regexp))
+
+;;;; Convert links
+
 (defun denote-md-extras--get-regexp (type)
   "Return regular expression to match link TYPE.
 TYPE is a symbol among `denote', `file', `obsidian', and `reverse-obsidian'."
