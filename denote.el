@@ -1748,7 +1748,7 @@ this list for new note creation.  The default is `org'.")
   (or (plist-get
        (alist-get file-type denote-file-types)
        :title-key-regexp)
-      "^denote12345678987654321")) ; Will not be found
+      "^DenoteUserWantsEmptyFieldSoHandleIt")) ; Will not be found
 
 (defun denote--title-value-function (file-type)
   "Convert title string to a front matter title, per FILE-TYPE."
@@ -1767,7 +1767,7 @@ this list for new note creation.  The default is `org'.")
   (or (plist-get
        (alist-get file-type denote-file-types)
        :keywords-key-regexp)
-      "^denote12345678987654321")) ; Will not be found
+      "^DenoteUserWantsEmptyFieldSoHandleIt")) ; Will not be found
 
 (defun denote--keywords-value-function (file-type)
   "Convert keywords' list to front matter keywords, per FILE-TYPE."
@@ -1786,7 +1786,7 @@ this list for new note creation.  The default is `org'.")
   (or (plist-get
        (alist-get file-type denote-file-types)
        :signature-key-regexp)
-      "^denote12345678987654321")) ; Will not be found
+      "^DenoteUserWantsEmptyFieldSoHandleIt")) ; Will not be found
 
 (defun denote--signature-value-function (file-type)
   "Convert signature string to front matter signature, per FILE-TYPE."
@@ -1805,7 +1805,7 @@ this list for new note creation.  The default is `org'.")
   (or (plist-get
        (alist-get file-type denote-file-types)
        :identifier-key-regexp)
-      "^denote12345678987654321")) ; Will not be found
+      "^DenoteUserWantsEmptyFieldSoHandleIt")) ; Will not be found
 
 (defun denote--identifier-value-function (file-type)
   "Convert identifier string to front matter identifier, per FILE-TYPE."
@@ -1824,7 +1824,7 @@ this list for new note creation.  The default is `org'.")
   (or (plist-get
        (alist-get file-type denote-file-types)
        :date-key-regexp)
-      "^denote12345678987654321")) ; Will not be found
+      "^DenoteUserWantsEmptyFieldSoHandleIt")) ; Will not be found
 
 (defun denote--date-value-function (file-type)
   "Convert date object to front matter date, per FILE-TYPE."
