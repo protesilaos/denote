@@ -52,11 +52,12 @@ the `denote-journal-extras-keyword'."
                  (const :tag "Use the `denote-directory'" nil)))
 
 (defcustom denote-journal-extras-keyword "journal"
-  "Single word keyword to tag journal entries.
+  "Single word keyword or lists of keywords to tag journal entries.
 It is used by `denote-journal-extras-new-entry' to add a keyword
 to the newly created file."
   :group 'denote-journal-extras
-  :type 'string)
+  :type '(choice (string :tag "Keyword")
+                 (repeat :tag "List of keywords" string)))
 
 (defcustom denote-journal-extras-title-format 'day-date-month-year-24h
   "Date format to construct the title with `denote-journal-extras-new-entry'.
@@ -109,6 +110,27 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
         directory)
     (denote-directory)))
 
+(defun denote-journal-extras-keyword ()
+  "Return the value of `denote-journal-extras-keyword' as a list."
+  (if (stringp denote-journal-extras-keyword)
+      (list denote-journal-extras-keyword)
+    denote-journal-extras-keyword))
+
+(defun denote-journal-extras--keyword-regex ()
+  "Return a regular expression string that matches the journal keyword(s)."
+  (let ((keywords-sorted (mapcar #'regexp-quote (denote-keywords-sort (denote-journal-extras-keyword)))))
+    (concat "_" (string-join keywords-sorted ".*_"))))
+
+(defun denote-journal-extras-file-is-journal-p (file)
+  "Return non-nil if FILE is a journal entry."
+  (and (denote-file-is-note-p file)
+       (string-match-p (denote-journal-extras--keyword-regex) (file-name-nondirectory file))))
+
+(defun denote-journal-extras-filename-is-journal-p (filename)
+  "Return non-nil if FILENAME is a valid name for a journal entry."
+  (and (denote-filename-is-note-p filename)
+       (string-match-p (denote-journal-extras--keyword-regex) (file-name-nondirectory filename))))
+
 (defun denote-journal-extras-daily--title-format (&optional date)
   "Return present date in `denote-journal-extras-title-format' or prompt for title.
 With optional DATE, use it instead of the present date.  DATE has
@@ -156,21 +178,21 @@ is internally processed by `denote-valid-date-p'."
         (denote-directory (denote-journal-extras-directory)))
     (denote
      (denote-journal-extras-daily--title-format internal-date)
-     `(,denote-journal-extras-keyword)
+     (denote-journal-extras-keyword)
      nil nil date
      (denote-journal-extras--get-template))
     (run-hooks 'denote-journal-extras-hook)))
 
+(defun denote-journal-extras--filename-date-regexp (&optional date)
+  "Regular expression to match journal entries for today or optional DATE.
+DATE has the same format as that returned by `denote-valid-date-p'."
+  (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date))))
+    (concat "^" identifier "--.*__?.*" (denote-journal-extras--keyword-regex))))
+
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
 DATE has the same format as that returned by `denote-valid-date-p'."
-  (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date)))
-         (files (denote-directory-files identifier))
-         (keyword (concat "_" (regexp-quote denote-journal-extras-keyword))))
-    (seq-filter
-     (lambda (file)
-       (string-match-p keyword file))
-     files)))
+  (denote-directory-files (denote-journal-extras--filename-date-regexp date)))
 
 (define-obsolete-function-alias
   'denote-journal-extra-path-to-new-or-existing-entry
