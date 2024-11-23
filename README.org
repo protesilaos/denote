@@ -4158,13 +4158,14 @@ To use those, add the following the Denote configuration:
 #+vindex: denote-journal-extras-keyword
 #+vindex: denote-journal-extras-directory
 The command ~denote-journal-extras-new-entry~ creates a new entry in
-the journal.  Such a file has the ~denote-journal-extras-keyword~,
-which is =journal= by default ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).  The user can
-set this keyword to an arbitrary string (single word is preferred).
-New journal entries can be stored in the ~denote-directory~ or
-subdirectory thereof.  To make it easier for the user, the new journal
-entry will be placed in ~denote-journal-extras-directory~, which
-defaults to a subdirectory of ~denote-directory~ called =journal=.
+the journal. Such a file has the ~denote-journal-extras-keyword~,
+which is =journal= by default ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). The user can
+set this keyword to an arbitrary string (single word is preferred) or
+a list of string (the support for a list of strings is part of
+{{{development-version}}}). New journal entries can be stored in the
+~denote-directory~ or subdirectory thereof. To make it easier for the
+user, the new journal entry will be placed in ~denote-journal-extras-directory~,
+which defaults to a subdirectory of ~denote-directory~ called =journal=.
 
 If ~denote-journal-extras-directory~ is nil, the ~denote-directory~ is
 used.  Journal entries will thus be in a flat listing together with
@@ -6832,12 +6833,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Bagneris, Jean-Philippe Gagné Guay, Jianwei Hou, Joseph Turner,
   Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kostas Andreadis,
   Kristoffer Balintona, Kyle Meyer, Marc Fargas, Matthew Lemon, Noboru
-  Ota (nobiot), Norwid Behrnd, Peter Prevos, Philip Kaludercic,
-  Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing,
-  Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar, Wesley
-  Harvey, Zhenxu Xu, arsaber101, bryanrinders, ezchi, jarofromel,
-  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
-  mentalisttraceur, pmenair, relict007, skissue.
+  Ota (nobiot), Norwid Behrnd, Octavian, Peter Prevos, Philip
+  Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier,
+  Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz, Vedang
+  Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101, bryanrinders,
+  ezchi, jarofromel, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
+  maxbrieiev, mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,
