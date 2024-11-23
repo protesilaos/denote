@@ -1901,8 +1901,22 @@ is a list of strings.  FILETYPE is one of the values of variable
          (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
          (id-string (if id-value-function (funcall id-value-function id) ""))
-         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) "")))
-    (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) ""))
+         (new-front-matter (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
+    ;; Remove lines with empty values if the corresponding component
+    ;; is not in `denote-front-matter-components-present-even-if-empty-value'.
+    (with-temp-buffer
+      (insert new-front-matter)
+      (dolist (component '(title date keywords signature identifier))
+        (let ((value (pcase component ('title title) ('keywords keywords) ('signature signature) ('date date) ('identifier id)))
+              (component-key-regexp-function (denote--get-component-key-regexp-function component)))
+          (goto-char (point-min))
+          (when (and (not (denote--component-has-value-p component value))
+                     (not (memq component denote-front-matter-components-present-even-if-empty-value))
+                     (re-search-forward (funcall component-key-regexp-function filetype) nil t 1))
+              (goto-char (line-beginning-position))
+              (delete-region (line-beginning-position) (line-beginning-position 2)))))
+      (buffer-string))))
 
 ;;;; Front matter or content retrieval functions
 
@@ -3005,11 +3019,7 @@ appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
-      (insert new-front-matter))
-    ;; `denote-rewrite-front-matter' is called to remove lines without a value
-    ;; depending on the value of `denote-front-matter-components-present-even-if-empty-value'.
-    (let ((denote-rename-confirmations nil))
-      (denote-rewrite-front-matter file title keywords signature date id file-type))))
+      (insert new-front-matter))))
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
