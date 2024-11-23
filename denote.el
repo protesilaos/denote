@@ -3256,6 +3256,8 @@ prompt to confirm the rewriting of the front matter."
                            (goto-char (line-beginning-position))
                            (insert new-line)
                            (delete-region (point) (line-end-position))
+                           (goto-char (line-beginning-position 2)))
+                          (t
                            (goto-char (line-beginning-position 2))))))))))))))
 
 ;;;;; The renaming commands and their prompts
