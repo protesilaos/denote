@@ -3715,31 +3715,53 @@ type that is supported by Denote, per the user option `denote-file-type'.
 
 The values of `denote-rename-confirmations',
 `denote-save-buffers' and `denote-kill-buffers' are respected.
-Though there is no prompt to confirm the rewrite of the front
-matter, since this is already done by the user.
 
-The identifier of the file, if any, is never modified even if it
-is edited in the front matter: Denote considers the file name to
-be the source of truth in this case, to avoid potential breakage
-with typos and the like.
+Only the front matter lines that appear in the front matter template (as
+defined in `denote-file-types') will be handled.
+
+To change the identifier (date) of the note with this command, the
+identifier line (if present) of the front matter must be modified.
+Modifying the date line has no effect.
+
+While this command generally does not modify the front matter, there are
+exceptions.  The value of the `date' line will follow that of the
+`identifier' line.  If they are both in the front matter template and
+the `date' line is missing, it will be added again.  Similarly, if they
+are both in the front matter template and the `date' line is present and
+the `identifier' line has been removed, the `date' line will be removed
+as well.  Also, if the keywords are out of order and
+`denote-sort-keywords' is non-nil, they will be sorted.  There will be a
+prompt for this if `denote-rename-confirmations' contains
+`rewrite-front-matter'.
 
 Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
   (interactive (list (or (dired-get-filename nil t) buffer-file-name)))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
-  (unless (denote-retrieve-filename-identifier file)
-    (user-error "No identifier in file name"))
-  (if-let* ((file-type (denote-filetype-heuristics file))
-            (front-matter-title (denote-retrieve-front-matter-title-value file file-type)))
-      (pcase-let* ((denote-rename-confirmations (delq 'rewrite-front-matter denote-rename-confirmations))
-                   (denote-prompts '())
-                   (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-                   (`(_title _keywords ,signature ,date)
-                    (denote--rename-get-file-info-from-prompts-or-existing file)))
-        (denote--rename-file file front-matter-title front-matter-keywords signature date)
-        (denote-update-dired-buffers))
-    (user-error "No front matter line for title")))
+  (let ((file-type (denote-filetype-heuristics file)))
+    (unless (denote--file-has-front-matter-p file file-type)
+      (user-error "The file does not appear to have a front matter"))
+    (let* ((front-matter-template (denote--front-matter file-type))
+           (components-in-template (denote--get-front-matter-components-order front-matter-template file-type))
+           (title (if (memq 'title components-in-template)
+                      (or (denote-retrieve-front-matter-title-value file file-type) "")
+                    (or (denote-retrieve-filename-title file) "")))
+           (keywords (if (memq 'keywords components-in-template)
+                         (denote-retrieve-front-matter-keywords-value file file-type)
+                       (denote-retrieve-filename-keywords-as-list file)))
+           (signature (if (memq 'signature components-in-template)
+                          (or (denote-retrieve-front-matter-signature-value file file-type) "")
+                        (or (denote-retrieve-filename-signature file) "")))
+           ;; We need to use the identifier because the date line may
+           ;; not contain all the information.  For example,
+           ;; "2024-01-01" does not have the time of the note.
+           (date (if (memq 'identifier components-in-template)
+                     (when-let* ((id-value (denote-retrieve-front-matter-identifier-value file file-type)))
+                       (denote-valid-date-p id-value))
+                   (denote-valid-date-p (or (denote-retrieve-filename-identifier file) "")))))
+      (denote--rename-file file title keywords signature date)
+      (denote-update-dired-buffers))))
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-using-front-matter ()
