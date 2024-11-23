@@ -5027,7 +5027,7 @@ Place the buffer below the current window or wherever the user option
 ;;;;; Add links matching regexp
 
 (defvar denote-link--prepare-links-format "- %s\n"
-  "Format specifiers for `denote-link-add-links'.")
+  "Format specifiers for `denote-add-links'.")
 
 (make-obsolete-variable 'denote-link-add-links-sort nil "3.1.0")
 
