@@ -52,9 +52,8 @@ the `denote-journal-extras-keyword'."
                  (const :tag "Use the `denote-directory'" nil)))
 
 (defcustom denote-journal-extras-keyword "journal"
-  "Single word keyword or lists of keywords to tag journal entries.
-It is used by `denote-journal-extras-new-entry' to add a keyword
-to the newly created file."
+  "Single word keyword or list of keywords to tag journal entries.
+It is used by `denote-journal-extras-new-entry' (or related)."
   :group 'denote-journal-extras
   :type '(choice (string :tag "Keyword")
                  (repeat :tag "List of keywords" string)))
