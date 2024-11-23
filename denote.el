@@ -405,14 +405,22 @@ it again. When in doubt, leave the default file-naming scheme as-is."
           (const :tag "The title of the file" title)
           (const :tag "Keywords of the file" keywords)))
 
-(defcustom denote-always-include-all-front-matter-lines t
-  "Whether to insert front matter lines that have an empty value.
+(defcustom denote-front-matter-components-present-even-if-empty-value '(title keywords date identifier)
+  "The components that are always present in front matter even when empty.
 
-When non-nil (the default), include all front matter lines in new front
-matters, even those with an empty value."
+Components are `title', `keywords', `signature', `date', `identifier'.
+
+Note that even though a component may be listed in this variable, it
+will not be present in the front matter if the corresponding line is not
+in the front matter template."
   :group 'denote
   :package-version '(denote . "3.2.0")
-  :type 'boolean)
+  :type '(list
+          (const :tag "Title" title)
+          (const :tag "Keywords" keywords)
+          (const :tag "Signature" signature)
+          (const :tag "Date" date)
+          (const :tag "Identifier" identifier)))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
@@ -2999,7 +3007,7 @@ appropriate."
       (goto-char (point-min))
       (insert new-front-matter))
     ;; `denote-rewrite-front-matter' is called to remove lines without a value
-    ;; depending on the value of `denote-always-include-all-front-matter-lines'.
+    ;; depending on the value of `denote-front-matter-components-present-even-if-empty-value'.
     (let ((denote-rename-confirmations nil))
       (denote-rewrite-front-matter file title keywords signature date id file-type))))
 
@@ -3215,7 +3223,8 @@ prompt to confirm the rewriting of the front matter."
                       (denote--component-has-value-p component value))
                  (push component components-to-add))
                 ((and (memq component components-in-file)
-                      (not denote-always-include-all-front-matter-lines) ; The component can still be marked for modification
+                      ;; The component can still be marked for modification.
+                      (not (memq component denote-front-matter-components-present-even-if-empty-value))
                       (not (denote--component-has-value-p component value)))
                  (push component components-to-remove))
                 ((and (memq component components-in-file)
