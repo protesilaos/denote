@@ -3333,9 +3333,12 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                           (current-time)))))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
-         (id (if (or (string-empty-p id) (string= old-id id))
-                 id
-               (denote--find-first-unused-id id)))
+         (id (cond ((or (string-empty-p id) (string= old-id id))
+                    id)
+                   ((and (not (string-empty-p old-id)) (denote--file-has-backlinks-p file))
+                    (user-error "The date cannot be modified because the file has backlinks"))
+                   (t
+                    (denote--find-first-unused-id id))))
          (date (if (string-empty-p id) nil (date-to-time id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
@@ -3383,10 +3386,7 @@ renaming commands."
                           signature
                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
         ('date
-         (if (and (denote-file-has-identifier-p file)
-                  (denote--file-has-backlinks-p file))
-             (user-error "The date cannot be modified because the file has backlinks")
-           (setq date (denote-valid-date-p (denote-date-prompt)))))))
+         (setq date (denote-valid-date-p (denote-date-prompt))))))
     (list title keywords signature date)))
 
 ;;;###autoload
