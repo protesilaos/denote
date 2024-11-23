@@ -254,7 +254,7 @@ file's title.  This has the same meaning as in `denote-link'."
   (let ((path (denote-journal-extras-path-to-new-or-existing-entry date)))
     (denote-link path
                  (denote-filetype-heuristics (buffer-file-name))
-                 (denote--link-get-description path)
+                 (denote-get-link-description path)
                  id-only)))
 
 (provide 'denote-journal-extras)
