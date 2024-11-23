@@ -3176,13 +3176,17 @@ This is repeated until all missing components are added."
                 (cdr (seq-drop-while (lambda (x) (not (eq x component))) components-in-template)))
                (first-next-component-in-file
                 (seq-find (lambda (x) (memq x final-components)) next-components-in-template)))
-          ;; Insert before the existing element.
-          (let ((sublist final-components))
-            (while sublist
-              (if (not (eq (car sublist) first-next-component-in-file))
-                  (setq sublist (cdr sublist))
-                (push component sublist)
-                (setq sublist nil)))))))
+          ;; Insert before the existing element.  The intention is to
+          ;; modify final-components, but it does not work when push
+          ;; is called on sublist on the first iteration of the loop.
+          (if (eq (car final-components) first-next-component-in-file)
+              (push component final-components)
+            (let ((sublist final-components))
+              (while sublist
+                (if (not (eq (car sublist) first-next-component-in-file))
+                    (setq sublist (cdr sublist))
+                  (push component sublist)
+                  (setq sublist nil))))))))
     final-components))
 
 (defun denote-rewrite-front-matter (file title keywords signature date identifier file-type)
