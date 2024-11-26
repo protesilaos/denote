@@ -875,6 +875,27 @@ have been warned."
  "2.3.0")
 
 (define-obsolete-variable-alias
+  'denote-link-button-action
+  'denote-open-link-function
+  "3.2.0")
+
+(defcustom denote-open-link-function #'find-file-other-window
+  "Function to find the file of a Denote link.
+
+The default value is `find-file-other-window', with `find-file' because
+another common option.  Users can provide a custom function which
+behaves like the other two.
+
+This is used in all non-Org buffers that have a link created by Denote.
+Org has its own mechanism, which you can learn more about by reading the
+documentation of the `org-open-at-point' command."
+  :group 'denote
+  :type '(choice (function :tag "Other window" find-file-other-window)
+                 (function :tag "Current window" find-file)
+                 (function :tag "Custom function"))
+  :package-version '(denote . "3.2.0"))
+
+(define-obsolete-variable-alias
   'denote-link-description-function
   'denote-link-description-format
   "3.2.0")
@@ -4681,12 +4702,6 @@ file's title.  This has the same meaning as in `denote-link'."
 
 ;;;;; Link buttons
 
-;; NOTE 2022-06-15: I add this as a variable for advanced users who may
-;; prefer something else.  If there is demand for it, we can make it a
-;; defcustom, but I think it would be premature at this stage.
-(defvar denote-link-button-action #'find-file-other-window
-  "Display buffer action for Denote buttons.")
-
 (defun denote-link--find-file-at-button (button)
   "Visit file referenced by BUTTON."
   (let* ((id (denote-extract-id-from-string
@@ -4694,7 +4709,7 @@ file's title.  This has the same meaning as in `denote-link'."
                (button-start button)
                (button-end button))))
          (file (denote-get-path-by-id id)))
-    (funcall denote-link-button-action file)))
+    (funcall denote-open-link-function file)))
 
 (make-obsolete
  'denote-link-buttonize-buffer
@@ -4705,7 +4720,7 @@ file's title.  This has the same meaning as in `denote-link'."
   "Function to open Denote file present in LINK.
 To be assigned to `markdown-follow-link-functions'."
   (when (ignore-errors (string-match denote-id-regexp link))
-    (funcall denote-link-button-action
+    (funcall denote-open-link-function
              (denote-get-path-by-id (match-string 0 link)))))
 
 (eval-after-load 'markdown-mode
@@ -4730,7 +4745,7 @@ To be assigned to `markdown-follow-link-functions'."
   (mouse-set-point ev)
   (if-let* ((id (get-text-property (point) 'denote-link-id))
             (path (denote-get-path-by-id id)))
-      (funcall denote-link-button-action path)
+      (funcall denote-open-link-function path)
     (error "Cannot resolve the link at point")))
 
 (defun denote-fontify-links (&optional limit)
@@ -4840,7 +4855,7 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
 
 (defun denote-link--backlink-find-file (button)
   "Action for BUTTON to `find-file'."
-  (funcall denote-link-button-action
+  (funcall denote-open-link-function
            (concat (denote-directory)
                    (buffer-substring (button-start button) (button-end button)))))
 

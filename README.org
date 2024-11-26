@@ -2751,6 +2751,24 @@ like an ordinary link by default.  This is just a convenience for the
 user/theme in case they want =denote:= links to remain distinct from
 other links.
 
+** The ~denote-open-link-function~ user option
+:PROPERTIES:
+:CUSTOM_ID: h:6aa22a2d-3338-433e-ab9f-ba272417aab9
+:END:
+
+[ This is part of {{{development-version}}}. ]
+
+#+vindex: denote-open-link-function
+The user option ~denote-open-link-function~ specifies the function
+used by Denote to open the file of a link. The default value opens the
+file in the other window. Another common value is the function
+~find-file~, which will open the file in the current window. Users may
+also specify a function of their choosing.
+
+Note that this is relevant in buffers other than Org mode because Org
+has its own mechanism for how to open links (read the documentation of
+the command ~org-open-at-point~).
+
 ** The ~denote-org-store-link-to-heading~ user option
 :PROPERTIES:
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
