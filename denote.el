@@ -405,14 +405,22 @@ it again. When in doubt, leave the default file-naming scheme as-is."
           (const :tag "The title of the file" title)
           (const :tag "Keywords of the file" keywords)))
 
-(defcustom denote-always-include-all-front-matter-lines t
-  "Whether to insert front matter lines that have an empty value.
+(defcustom denote-front-matter-components-present-even-if-empty-value '(title keywords date identifier)
+  "The components that are always present in front matter even when empty.
 
-When non-nil (the default), include all front matter lines in new front
-matters, even those with an empty value."
+Components are `title', `keywords', `signature', `date', `identifier'.
+
+Note that even though a component may be listed in this variable, it
+will not be present in the front matter if the corresponding line is not
+in the front matter template."
   :group 'denote
   :package-version '(denote . "3.2.0")
-  :type 'boolean)
+  :type '(list
+          (const :tag "Title" title)
+          (const :tag "Keywords" keywords)
+          (const :tag "Signature" signature)
+          (const :tag "Date" date)
+          (const :tag "Identifier" identifier)))
 
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
@@ -1893,8 +1901,22 @@ is a list of strings.  FILETYPE is one of the values of variable
          (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
          (id-string (if id-value-function (funcall id-value-function id) ""))
-         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) "")))
-    (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) ""))
+         (new-front-matter (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
+    ;; Remove lines with empty values if the corresponding component
+    ;; is not in `denote-front-matter-components-present-even-if-empty-value'.
+    (with-temp-buffer
+      (insert new-front-matter)
+      (dolist (component '(title date keywords signature identifier))
+        (let ((value (pcase component ('title title) ('keywords keywords) ('signature signature) ('date date) ('identifier id)))
+              (component-key-regexp-function (denote--get-component-key-regexp-function component)))
+          (goto-char (point-min))
+          (when (and (not (denote--component-has-value-p component value))
+                     (not (memq component denote-front-matter-components-present-even-if-empty-value))
+                     (re-search-forward (funcall component-key-regexp-function filetype) nil t 1))
+              (goto-char (line-beginning-position))
+              (delete-region (line-beginning-position) (line-beginning-position 2)))))
+      (buffer-string))))
 
 ;;;; Front matter or content retrieval functions
 
@@ -2997,11 +3019,7 @@ appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
-      (insert new-front-matter))
-    ;; `denote-rewrite-front-matter' is called to remove lines without a value
-    ;; depending on the value of `denote-always-include-all-front-matter-lines'.
-    (let ((denote-rename-confirmations nil))
-      (denote-rewrite-front-matter file title keywords signature date id file-type))))
+      (insert new-front-matter))))
 
 (defun denote--regexp-in-file-p (regexp file)
   "Return t if REGEXP matches in the FILE."
@@ -3176,13 +3194,17 @@ This is repeated until all missing components are added."
                 (cdr (seq-drop-while (lambda (x) (not (eq x component))) components-in-template)))
                (first-next-component-in-file
                 (seq-find (lambda (x) (memq x final-components)) next-components-in-template)))
-          ;; Insert before the existing element.
-          (let ((sublist final-components))
-            (while sublist
-              (if (not (eq (car sublist) first-next-component-in-file))
-                  (setq sublist (cdr sublist))
-                (push component sublist)
-                (setq sublist nil)))))))
+          ;; Insert before the existing element.  The intention is to
+          ;; modify final-components, but it does not work when push
+          ;; is called on sublist on the first iteration of the loop.
+          (if (eq (car final-components) first-next-component-in-file)
+              (push component final-components)
+            (let ((sublist final-components))
+              (while sublist
+                (if (not (eq (car sublist) first-next-component-in-file))
+                    (setq sublist (cdr sublist))
+                  (push component sublist)
+                  (setq sublist nil))))))))
     final-components))
 
 (defun denote-rewrite-front-matter (file title keywords signature date identifier file-type)
@@ -3211,7 +3233,8 @@ prompt to confirm the rewriting of the front matter."
                       (denote--component-has-value-p component value))
                  (push component components-to-add))
                 ((and (memq component components-in-file)
-                      (not denote-always-include-all-front-matter-lines) ; The component can still be marked for modification
+                      ;; The component can still be marked for modification.
+                      (not (memq component denote-front-matter-components-present-even-if-empty-value))
                       (not (denote--component-has-value-p component value)))
                  (push component components-to-remove))
                 ((and (memq component components-in-file)
@@ -3252,6 +3275,8 @@ prompt to confirm the rewriting of the front matter."
                            (goto-char (line-beginning-position))
                            (insert new-line)
                            (delete-region (point) (line-end-position))
+                           (goto-char (line-beginning-position 2)))
+                          (t
                            (goto-char (line-beginning-position 2))))))))))))))
 
 ;;;;; The renaming commands and their prompts
@@ -3327,9 +3352,12 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                           (current-time)))))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
-         (id (if (or (string-empty-p id) (string= old-id id))
-                 id
-               (denote--find-first-unused-id id)))
+         (id (cond ((or (string-empty-p id) (string= old-id id))
+                    id)
+                   ((and (not (string-empty-p old-id)) (denote--file-has-backlinks-p file))
+                    (user-error "The date cannot be modified because the file has backlinks"))
+                   (t
+                    (denote--find-first-unused-id id))))
          (date (if (string-empty-p id) nil (date-to-time id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
@@ -3377,10 +3405,7 @@ renaming commands."
                           signature
                           (format "Rename `%s' with SIGNATURE (empty to remove)" file-in-prompt))))
         ('date
-         (if (and (denote-file-has-identifier-p file)
-                  (denote--file-has-backlinks-p file))
-             (user-error "The date cannot be modified because the file has backlinks")
-           (setq date (denote-valid-date-p (denote-date-prompt)))))))
+         (setq date (denote-valid-date-p (denote-date-prompt))))))
     (list title keywords signature date)))
 
 ;;;###autoload
@@ -3715,31 +3740,53 @@ type that is supported by Denote, per the user option `denote-file-type'.
 
 The values of `denote-rename-confirmations',
 `denote-save-buffers' and `denote-kill-buffers' are respected.
-Though there is no prompt to confirm the rewrite of the front
-matter, since this is already done by the user.
 
-The identifier of the file, if any, is never modified even if it
-is edited in the front matter: Denote considers the file name to
-be the source of truth in this case, to avoid potential breakage
-with typos and the like.
+Only the front matter lines that appear in the front matter template (as
+defined in `denote-file-types') will be handled.
+
+To change the identifier (date) of the note with this command, the
+identifier line (if present) of the front matter must be modified.
+Modifying the date line has no effect.
+
+While this command generally does not modify the front matter, there are
+exceptions.  The value of the `date' line will follow that of the
+`identifier' line.  If they are both in the front matter template and
+the `date' line is missing, it will be added again.  Similarly, if they
+are both in the front matter template and the `date' line is present and
+the `identifier' line has been removed, the `date' line will be removed
+as well.  Also, if the keywords are out of order and
+`denote-sort-keywords' is non-nil, they will be sorted.  There will be a
+prompt for this if `denote-rename-confirmations' contains
+`rewrite-front-matter'.
 
 Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
   (interactive (list (or (dired-get-filename nil t) buffer-file-name)))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
-  (unless (denote-retrieve-filename-identifier file)
-    (user-error "No identifier in file name"))
-  (if-let* ((file-type (denote-filetype-heuristics file))
-            (front-matter-title (denote-retrieve-front-matter-title-value file file-type)))
-      (pcase-let* ((denote-rename-confirmations (delq 'rewrite-front-matter denote-rename-confirmations))
-                   (denote-prompts '())
-                   (front-matter-keywords (denote-retrieve-front-matter-keywords-value file file-type))
-                   (`(_title _keywords ,signature ,date)
-                    (denote--rename-get-file-info-from-prompts-or-existing file)))
-        (denote--rename-file file front-matter-title front-matter-keywords signature date)
-        (denote-update-dired-buffers))
-    (user-error "No front matter line for title")))
+  (let ((file-type (denote-filetype-heuristics file)))
+    (unless (denote--file-has-front-matter-p file file-type)
+      (user-error "The file does not appear to have a front matter"))
+    (let* ((front-matter-template (denote--front-matter file-type))
+           (components-in-template (denote--get-front-matter-components-order front-matter-template file-type))
+           (title (if (memq 'title components-in-template)
+                      (or (denote-retrieve-front-matter-title-value file file-type) "")
+                    (or (denote-retrieve-filename-title file) "")))
+           (keywords (if (memq 'keywords components-in-template)
+                         (denote-retrieve-front-matter-keywords-value file file-type)
+                       (denote-retrieve-filename-keywords-as-list file)))
+           (signature (if (memq 'signature components-in-template)
+                          (or (denote-retrieve-front-matter-signature-value file file-type) "")
+                        (or (denote-retrieve-filename-signature file) "")))
+           ;; We need to use the identifier because the date line may
+           ;; not contain all the information.  For example,
+           ;; "2024-01-01" does not have the time of the note.
+           (date (if (memq 'identifier components-in-template)
+                     (when-let* ((id-value (denote-retrieve-front-matter-identifier-value file file-type)))
+                       (denote-valid-date-p id-value))
+                   (denote-valid-date-p (or (denote-retrieve-filename-identifier file) "")))))
+      (denote--rename-file file title keywords signature date)
+      (denote-update-dired-buffers))))
 
 ;;;###autoload
 (defun denote-dired-rename-marked-files-using-front-matter ()
@@ -4980,7 +5027,7 @@ Place the buffer below the current window or wherever the user option
 ;;;;; Add links matching regexp
 
 (defvar denote-link--prepare-links-format "- %s\n"
-  "Format specifiers for `denote-link-add-links'.")
+  "Format specifiers for `denote-add-links'.")
 
 (make-obsolete-variable 'denote-link-add-links-sort nil "3.1.0")
 
