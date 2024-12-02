@@ -459,7 +459,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 ;;;###autoload
 (eval-after-load 'org
   '(progn
-     (org-dynamic-block-define "denote-missing-links" 'denote-org-extras-dblock-insert-links)))
+     (org-dynamic-block-define "denote-missing-links" 'denote-org-extras-dblock-insert-missing-links)))
 
 ;;;###autoload
 (defun org-dblock-write:denote-missing-links (params)
