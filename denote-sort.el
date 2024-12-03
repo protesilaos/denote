@@ -292,7 +292,7 @@ When called from Lisp, the arguments are a string, a symbol among
                           nil))
         (exclude-rx (or exclude-regexp nil)))
     (if-let* ((default-directory (denote-directory))
-              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort exclude-rx))
+              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx))
               ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
               ;; buffer-name produces an error if the regexp contains a
               ;; wildcard for a directory. I can reproduce this in emacs
