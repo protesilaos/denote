@@ -73,8 +73,14 @@ whether to sort by a given file name component and to then reverse the
 sort.
 
 The value is a list of symbols, which can include the symbols
-`sort-by-component' and `reverse-sort'.  The order is significant, with
-the leftmost symbol coming first.
+`sort-by-component', `reverse-sort', and `exclude-regexp'.  The order is
+significant, with the leftmost symbol coming first.
+
+These symbols correspond to the following:
+
+- A choice to select the file name component to sort by.
+- A yes or no prompt on whether to reverse the sorting.
+- A string (or regular expression) of files to be excluded from the results.
 
 If the value is nil, skip all prompts.  In this scenario, the sorting is
 done according to `denote-sort-dired-default-sort-component' and

@@ -4046,9 +4046,18 @@ match file names, (ii) a file name component to sort by, and (iii)
 whether to reverse the sorting. Users can configure the latter two by
 modifying the user option ~denote-sort-dired-extra-prompts~.
 
-It accepts either a nil value or a list of symbols among ~sort-by-component~
-and ~reverse-sort~. The order those symbols appear in the list is
-significant, with the leftmost coming first.
+It accepts either a nil value or a list of symbols among
+~sort-by-component~, ~reverse-sort~, and ~exclude-regexp~. The order
+those symbols appear in the list is significant, with the leftmost
+coming first. [ The ~exclude-regexp~ feature is part of
+{{{development-version}}}. ]
+
+These symbols correspond to the following:
+
+- A choice to select the file name component to sort by.
+- A yes or no prompt on whether to reverse the sorting.
+- A string (or regular expression) of files to be excluded from the
+  results.
 
 #+vindex: denote-sort-dired-default-sort-component
 #+vindex: denote-sort-dired-default-reverse-sort
