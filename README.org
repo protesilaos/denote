@@ -4465,6 +4465,23 @@ package provides commands to interact with the list of notes, such as
 to filter them and to transition from the tabular list to Dired.  Its
 documentation expands on the technicalities.
 
+** Use the ~denote-zettel-interface~ package
+:PROPERTIES:
+:CUSTOM_ID: h:b57f73fc-ac4d-4df2-bd7a-8d47cb202647
+:END:
+
+The [[https://github.com/krisbalintona/denote-zettel-interface][~denote-zettel-interface~ package by Kristoffer Balintona]] is
+designed for those who want to use Denote while adhering to a strict
+Zettelkasten methodology of sequence notes (Folgezettel). This method
+leverages the optional =SIGNATURE= file name component of Denote ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+The package provides a point of entry to one's note by visualising
+them in a tabulated (grid) interface. Files are sorted by their
+Folgezettel index. Users can then use a number of commands to filter
+their files, navigate around, and the like.
+
+Note that the package is in early development as of this writing
+(2024-12-03 10:18 +0200).
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
