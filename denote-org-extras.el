@@ -356,22 +356,22 @@ point to a file with a Denote file name."
 
 ;;;;; Common helper functions
 
-(defun denote-org-extras-dblock--files (files-matching-regexp &optional sort-by-component reverse)
+(defun denote-org-extras-dblock--files (files-matching-regexp &optional sort-by-component reverse exclude-regexp)
   "Return list of FILES-MATCHING-REGEXP in variable `denote-directory'.
-SORT-BY-COMPONENT and REVERSE have the same meaning as
-`denote-sort-files'.  If both are nil, do not try to perform any
-sorting.
+SORT-BY-COMPONENT, REVERSE, EXCLUDE-REGEXP have the same meaning as
+`denote-sort-get-directory-files'.  If both are nil, do not try to
+perform any sorting.
 
 Also see `denote-org-extras-dblock--files-missing-only'."
   (cond
    ((and sort-by-component reverse)
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse :omit-current))
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse :omit-current exclude-regexp))
    (sort-by-component
-    (denote-sort-get-directory-files files-matching-regexp sort-by-component nil :omit-current))
+    (denote-sort-get-directory-files files-matching-regexp sort-by-component nil :omit-current exclude-regexp))
    (reverse
-    (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse :omit-current))
+    (denote-sort-get-directory-files files-matching-regexp :no-component-specified reverse :omit-current exclude-regexp))
    (t
-    (denote-directory-files files-matching-regexp :omit-current))))
+    (denote-directory-files files-matching-regexp :omit-current nil exclude-regexp))))
 
 (defun denote-org-extras-dblock--get-missing-links (regexp)
   "Return list of missing links to all notes matching REGEXP.
@@ -407,6 +407,7 @@ Also see `denote-org-extras-dblock--files'."
    org-mode)
   (org-create-dblock (list :name "denote-links"
                            :regexp regexp
+                           :not-regexp nil
                            :excluded-dirs-regexp nil
                            :sort-by-component nil
                            :reverse-sort nil
@@ -426,18 +427,23 @@ Also see `denote-org-extras-dblock--files'."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (not-rx (plist-get params :not-regexp))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (include-date (plist-get params :include-date))
          (block-name (plist-get params :block-name))
          (denote-excluded-directories-regexp (or (plist-get params :excluded-dirs-regexp)
                                                  denote-excluded-directories-regexp))
-         (files (denote-org-extras-dblock--files rx sort reverse)))
+         (files (denote-org-extras-dblock--files rx sort reverse not-rx)))
     (when block-name (insert "#+name: " block-name "\n"))
     (denote-link--insert-links files 'org (plist-get params :id-only) :no-other-sorting include-date)
     (join-line))) ; remove trailing empty line
 
 ;;;;; Dynamic block to insert missing links
+
+;; TODO 2024-12-03: Do we need the :not-regexp here?  I think yes,
+;; though I prefer to have a user of this kind of dblock send me their
+;; feedback.
 
 ;;;###autoload
 (defun denote-org-extras-dblock-insert-missing-links (regexp)
@@ -491,6 +497,10 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
     (denote-sort-files files :no-component-specified reverse))
    (t
     files)))
+
+;; TODO 2024-12-03: Do we need the :not-regexp here?  I think yes,
+;; though I prefer to have a user of this kind of dblock send me their
+;; feedback.
 
 ;;;###autoload
 (defun denote-org-extras-dblock-insert-backlinks ()
@@ -574,7 +584,7 @@ argument."
    ((stringp separator) separator)
    (t denote-org-extras-dblock-file-contents-separator)))
 
-(defun denote-org-extras-dblock-add-files (regexp &optional separator no-front-matter add-links sort-by-component reverse excluded-dirs-regexp)
+(defun denote-org-extras-dblock-add-files (regexp &optional separator no-front-matter add-links sort-by-component reverse excluded-dirs-regexp exclude-regexp)
   "Insert files matching REGEXP.
 
 Seaprate them with the optional SEPARATOR.  If SEPARATOR is nil,
@@ -597,9 +607,12 @@ If optional REVERSE is non-nil reverse the sort order.
 
 Optional EXCLUDED-DIRS-REGEXP is the `let' bound value of
 `denote-excluded-directories-regexp'.  When nil, the original value of
-that user option is used."
+that user option is used.
+
+Optional EXCLUDE-REGEXP is a more general way to exclude files whose
+name matches the given regular expression."
   (let* ((denote-excluded-directories-regexp (or excluded-dirs-regexp denote-excluded-directories-regexp))
-         (files (denote-org-extras-dblock--files regexp sort-by-component reverse))
+         (files (denote-org-extras-dblock--files regexp sort-by-component reverse exclude-regexp))
          (files-contents (mapcar
                           (lambda (file) (denote-org-extras-dblock--get-file-contents file no-front-matter add-links))
                           files)))
@@ -617,6 +630,7 @@ among `denote-sort-components'."
    org-mode)
   (org-create-dblock (list :name "denote-files"
                            :regexp regexp
+                           :not-regexp nil
                            :excluded-dirs-regexp nil
                            :sort-by-component sort-by-component
                            :reverse-sort nil
@@ -637,6 +651,7 @@ among `denote-sort-components'."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (not-rx (plist-get params :not-regexp))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
@@ -645,7 +660,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
          (add-links (plist-get params :add-links))
          (excluded-dirs (plist-get params :excluded-dirs-regexp)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-extras-dblock-add-files rx separator no-f-m add-links sort reverse excluded-dirs)))
+    (when rx (denote-org-extras-dblock-add-files rx separator no-f-m add-links sort reverse excluded-dirs not-rx)))
   (join-line)) ; remove trailing empty line
 
 ;;;; Insert files as headings
@@ -682,7 +697,7 @@ With optional ADD-LINKS, make the title link to the original file."
           (replace-match (format "*%s " "\\1"))))
       (buffer-string))))
 
-(defun denote-org-extras-dblock-add-files-as-headings (regexp &optional add-links sort-by-component reverse excluded-dirs-regexp)
+(defun denote-org-extras-dblock-add-files-as-headings (regexp &optional add-links sort-by-component reverse excluded-dirs-regexp exclude-regexp)
   "Insert files matching REGEXP.
 
 If optional ADD-LINKS is non-nil, first insert a link to the file
@@ -698,9 +713,12 @@ If optional REVERSE is non-nil reverse the sort order.
 
 Optional EXCLUDED-DIRS-REGEXP is the `let' bound value of
 `denote-excluded-directories-regexp'.  When nil, the original value of
-that user option is used."
+that user option is used.
+
+Optional EXCLUDE-REGEXP is a more general way to exclude files whose
+name matches the given regular expression."
   (let* ((denote-excluded-directories-regexp (or excluded-dirs-regexp denote-excluded-directories-regexp))
-         (files (denote-org-extras-dblock--files regexp sort-by-component reverse))
+         (files (denote-org-extras-dblock--files regexp sort-by-component reverse exclude-regexp))
          (files-contents (mapcar
                           (lambda (file)
                             (denote-org-extras-dblock--get-file-contents-as-heading file add-links))
@@ -731,6 +749,7 @@ as its own heading."
    org-mode)
   (org-create-dblock (list :name "denote-files-as-headings"
                            :regexp regexp
+                           :not-regexp nil
                            :excluded-dirs-regexp nil
                            :sort-by-component sort-by-component
                            :reverse-sort nil
@@ -749,13 +768,14 @@ as its own heading."
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
   (let* ((regexp (plist-get params :regexp))
          (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+         (not-rx (plist-get params :not-regexp))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
          (add-links (plist-get params :add-links))
          (excluded-dirs (plist-get params :excluded-dirs-regexp)))
     (when block-name (insert "#+name: " block-name "\n"))
-    (when rx (denote-org-extras-dblock-add-files-as-headings rx add-links sort reverse excluded-dirs)))
+    (when rx (denote-org-extras-dblock-add-files-as-headings rx add-links sort reverse excluded-dirs not-rx)))
   (join-line)) ; remove trailing empty line
 
 (provide 'denote-org-extras)
