@@ -4015,8 +4015,11 @@ given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-n
 #+findex: denote-sort-dired
 The command ~denote-sort-dired~ produces a Dired file listing with a
 flat, filtered, and sorted set of files from the ~denote-directory~
-([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It does so by means of
-three minibuffer prompts:
+([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It does so by a series of
+prompts, which can be configured by the user option
+~denote-sort-dired-extra-prompts~ ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
+
+The out-of-the-box behaviour of ~denote-sort-dired~ is as follows:
 
 1. It first asks for a regular expression with which to match Denote
    files. Remember that due to Denote's efficient file-naming scheme,
