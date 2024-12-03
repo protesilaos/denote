@@ -5614,7 +5614,11 @@ might change them without further notice.
   regular expression. With optional =OMIT-CURRENT= as a non-nil value,
   do not include the current Denote file in the returned list. With
   optional =TEXT-ONLY= as a non-nil value, limit the results to text
-  files that satisfy ~denote-file-is-note-p~.
+  files that satisfy ~denote-file-is-note-p~. With optional
+  =EXCLUDE-REGEXP= exclude the files that match the given regular
+  expression. This is done after =FILES-MATCHING-REGEXP= and
+  =OMIT-CURRENT= have been applied. [ The optional =EXCLUDE-REGEXP= is
+  part of {{{development-version}}}. ]
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
