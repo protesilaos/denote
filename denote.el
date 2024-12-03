@@ -1261,7 +1261,7 @@ are not backups."
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
 
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only)
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1277,7 +1277,11 @@ With optional OMIT-CURRENT as a non-nil value, do not include the
 current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
-text files that satisfy `denote-filename-is-note-p'."
+text files that satisfy `denote-filename-is-note-p'.
+
+With optional EXCLUDE-REGEXP exclude the files that match the given
+regular expression.  This is done after FILES-MATCHING-REGEXP and
+OMIT-CURRENT have been applied."
   (let ((files (denote--directory-get-files)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
@@ -1288,7 +1292,12 @@ text files that satisfy `denote-filename-is-note-p'."
                    files)))
     (when text-only
       (setq files (seq-filter #'denote-filename-is-note-p files)))
-    files))
+    (if exclude-regexp
+        (seq-remove
+         (lambda (file)
+           (string-match-p exclude-regexp file))
+         files)
+      files)))
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
