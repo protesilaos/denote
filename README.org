@@ -3679,7 +3679,7 @@ The =denote-links= block can be inserted at point with the command
 ~denote-org-extras-dblock-insert-links~ or by manually including the
 following in an Org file:
 
-: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
+: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :not-regexp :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
 :
 : #+END:
 
@@ -3702,6 +3702,10 @@ line to update the block.
   you do not need to write an actual regular expression to get
   meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:not-regexp= parameter is optional. It is a regular expression
+  that applies after =:regexp= to filter out the matching files. [
+  Part of {{{development-version}}}. ]
 
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
@@ -3835,7 +3839,7 @@ or manually write the following block in an Org file and then type
  =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line to run it
 (do it again to recalculate the block):
 
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
+: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :not-regexp nil :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
 :
 : #+END:
 
@@ -3850,7 +3854,6 @@ Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
 To fully control the output, include these additional optional
 parameters, which are described further below:
 
-
 - The =:regexp= parameter is mandatory. Its value is a string,
   representing a regular expression to match Denote file names. Its
   value may also be an ~rx~ expression instead of a string, as noted
@@ -3858,6 +3861,10 @@ parameters, which are described further below:
   Note that you do not need to write an actual regular expression to
   get meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:not-regexp= parameter is optional. It is a regular expression
+  that applies after =:regexp= to filter out the matching files. [
+  Part of {{{development-version}}}. ]
 
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
@@ -3953,7 +3960,7 @@ In its simplest form, this dynamic block looks like this, with
 Though when you use the command ~denote-org-extras-dblock-insert-files-as-headings~
 you get all the parameters included:
 
-: #+BEGIN: denote-files-as-headings :regexp "YOUR REGEXP HERE" :excluded-dirs-regexp nil :sort-by-component title :reverse-sort nil :add-links t
+: #+BEGIN: denote-files-as-headings :regexp "YOUR REGEXP HERE" :not-regexp nil :excluded-dirs-regexp nil :sort-by-component title :reverse-sort nil :add-links t
 :
 : #+END:
 
@@ -3964,6 +3971,10 @@ you get all the parameters included:
   Note that you do not need to write an actual regular expression to
   get meaningful results: even something like =_journal= will work to
   include all files that have a =journal= keyword.
+
+- The =:not-regexp= parameter is optional. It is a regular expression
+  that applies after =:regexp= to filter out the matching files. [
+  Part of {{{development-version}}}. ]
 
 - The =:excluded-dirs-regexp= is a string that contains a word or
   regular expression that matches against directory files names
