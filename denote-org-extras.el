@@ -428,7 +428,7 @@ Also see `denote-org-extras-dblock--files'."
 (defun denote-org-extras--parse-rx (regexp)
   "Parse REGEXP as an `rx' argument or string and return string."
   (if (listp regexp)
-      (macroexpand `(rx ,regexp))
+      (rx-to-string regexp)
     regexp))
 
 ;;;###autoload
