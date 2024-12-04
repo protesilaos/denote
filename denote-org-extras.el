@@ -421,13 +421,22 @@ Also see `denote-org-extras-dblock--files'."
   '(progn
      (org-dynamic-block-define "denote-links" 'denote-org-extras-dblock-insert-links)))
 
+;; TODO 2024-12-04: Maybe we can do this for anything that deals with
+;; regular expressions that users provide?  I prefer not to do the
+;; work if nobody wants it, though I am mentioning this here just in
+;; case.
+(defun denote-org-extras--parse-rx (regexp)
+  "Parse REGEXP as an `rx' argument or string and return string."
+  (if (listp regexp)
+      (macroexpand `(rx ,regexp))
+    regexp))
+
 ;;;###autoload
 (defun org-dblock-write:denote-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (let* ((regexp (plist-get params :regexp))
-         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
-         (not-rx (plist-get params :not-regexp))
+  (let* ((rx (denote-org-extras--parse-rx (plist-get params :regexp)))
+         (not-rx (denote-org-extras--parse-rx (plist-get params :not-regexp)))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (include-date (plist-get params :include-date))
@@ -471,8 +480,7 @@ Used by `org-dblock-update' with PARAMS provided by the dynamic block."
 (defun org-dblock-write:denote-missing-links (params)
   "Function to update `denote-links' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (let* ((regexp (plist-get params :regexp))
-         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
+  (let* ((rx (denote-org-extras--parse-rx (plist-get params :regexp)))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (include-date (plist-get params :include-date))
@@ -649,9 +657,8 @@ among `denote-sort-components'."
 (defun org-dblock-write:denote-files (params)
   "Function to update `denote-files' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (let* ((regexp (plist-get params :regexp))
-         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
-         (not-rx (plist-get params :not-regexp))
+  (let* ((rx (denote-org-extras--parse-rx (plist-get params :regexp)))
+         (not-rx (denote-org-extras--parse-rx (plist-get params :not-regexp)))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
@@ -766,9 +773,8 @@ as its own heading."
 (defun org-dblock-write:denote-files-as-headings (params)
   "Function to update `denote-files' Org Dynamic blocks.
 Used by `org-dblock-update' with PARAMS provided by the dynamic block."
-  (let* ((regexp (plist-get params :regexp))
-         (rx (if (listp regexp) (macroexpand `(rx ,regexp)) regexp))
-         (not-rx (plist-get params :not-regexp))
+  (let* ((rx (denote-org-extras--parse-rx (plist-get params :regexp)))
+         (not-rx (denote-org-extras--parse-rx (plist-get params :not-regexp)))
          (sort (plist-get params :sort-by-component))
          (reverse (plist-get params :reverse-sort))
          (block-name (plist-get params :block-name))
