@@ -1,4 +1,4 @@
-;;; denote-sort.el ---  Sort Denote files based on a file name component -*- lexical-binding: t -*-
+;;; denote-sort.el --- Sort Denote files based on a file name component -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2023-2024  Free Software Foundation, Inc.
 
@@ -73,8 +73,14 @@ whether to sort by a given file name component and to then reverse the
 sort.
 
 The value is a list of symbols, which can include the symbols
-`sort-by-component' and `reverse-sort'.  The order is significant, with
-the leftmost symbol coming first.
+`sort-by-component', `reverse-sort', and `exclude-regexp'.  The order is
+significant, with the leftmost symbol coming first.
+
+These symbols correspond to the following:
+
+- A choice to select the file name component to sort by.
+- A yes or no prompt on whether to reverse the sorting.
+- A string (or regular expression) of files to be excluded from the results.
 
 If the value is nil, skip all prompts.  In this scenario, the sorting is
 done according to `denote-sort-dired-default-sort-component' and
@@ -82,8 +88,9 @@ done according to `denote-sort-dired-default-sort-component' and
   :type '(radio (const :tag "Do not prompt for anything" nil)
                 (set :tag "Available prompts" :greedy t
                      (const :tag "Sort by file name component" sort-by-component)
-                     (const :tag "Reverse the sort" reverse-sort)))
-  :package-version '(denote . "3.1.0")
+                     (const :tag "Reverse the sort" reverse-sort)
+                     (const :tag "Exclude files matching regexp" exclude-regexp)))
+  :package-version '(denote . "3.2.0")
   :group 'denote-sort)
 
 (defcustom denote-sort-dired-default-sort-component 'identifier
@@ -156,7 +163,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
         (reverse sorted-files)
       sorted-files)))
 
-(defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse omit-current)
+(defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse omit-current exclude-regexp)
   "Return sorted list of files in variable `denote-directory'.
 
 With FILES-MATCHING-REGEXP as a string limit files to those
@@ -169,13 +176,17 @@ name component.
 With optional REVERSE as a non-nil value, reverse the sort order.
 
 With optional OMIT-CURRENT, do not include the current file in
-the list."
+the list.
+
+With optional EXCLUDE-REGEXP exclude the files that match the given
+regular expression.  This is done after FILES-MATCHING-REGEXP and
+OMIT-CURRENT have been applied."
   (denote-sort-files
-   (denote-directory-files files-matching-regexp omit-current)
+   (denote-directory-files files-matching-regexp omit-current nil exclude-regexp)
    sort-by-component
    reverse))
 
-(defun denote-sort-get-links (files-matching-regexp sort-by-component current-file-type id-only &optional reverse)
+(defun denote-sort-get-links (files-matching-regexp sort-by-component current-file-type id-only &optional reverse exclude-regexp)
   "Return sorted typographic list of links for FILES-MATCHING-REGEXP.
 
 With FILES-MATCHING-REGEXP as a string, match files stored in the
@@ -194,9 +205,13 @@ unknown non-nil value, default to the Org notation.
 With ID-ONLY as a non-nil value, produce links that consist only
 of the identifier, thus deviating from CURRENT-FILE-TYPE.
 
-With optional REVERSE as a non-nil value, reverse the sort order."
+With optional REVERSE as a non-nil value, reverse the sort order.
+
+With optional EXCLUDE-REGEXP exclude the files that match the given
+regular expression.  This is done after FILES-MATCHING-REGEXP and
+OMIT-CURRENT have been applied."
   (denote-link--prepare-links
-   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse)
+   (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse exclude-regexp)
    current-file-type
    id-only))
 
@@ -215,24 +230,37 @@ With optional REVERSE as a non-nil value, reverse the sort order."
       denote-sort-components nil :require-match
       nil 'denote-sort-component-history default))))
 
+(defvar denote-sort-exclude-files-history nil
+  "Minibuffer history for `denote-sort-exclude-files-prompt'.")
+
+(defun denote-sort-exclude-files-prompt ()
+  "Prompt for regular expression of files to exclude."
+  ;; TODO 2024-12-03: Maybe use `read-regexp'?  We do not use it
+  ;; elsewhere, so maybe this is fine.
+  (let ((default (car denote-sort-exclude-files-history)))
+    (read-string
+     (format-prompt "Exclude files matching REGEXP" default)
+     default 'denote-sort-exclude-files-history)))
+
 (defvar-local denote-sort--dired-buffer nil
   "Buffer object of current `denote-sort-dired'.")
 
 (defun denote-sort-dired--prompts ()
   "Return list of prompts per `denote-sort-dired-extra-prompts'."
-  (let (sort-by-component reverse-sort)
+  (let (sort-by-component reverse-sort exclude-rx)
     (dolist (prompt denote-sort-dired-extra-prompts)
       (pcase prompt
         ('sort-by-component (setq sort-by-component (denote-sort-component-prompt)))
-        ('reverse-sort (setq reverse-sort (y-or-n-p "Reverse sort? ")))))
-    (list sort-by-component reverse-sort)))
+        ('reverse-sort (setq reverse-sort (y-or-n-p "Reverse sort? ")))
+        ('exclude-regexp (setq exclude-rx (denote-sort-exclude-files-prompt)))))
+    (list sort-by-component reverse-sort exclude-rx)))
 
 ;;;###autoload
-(defun denote-sort-dired (files-matching-regexp sort-by-component reverse)
+(defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
 When called interactively, prompt for FILES-MATCHING-REGEXP and,
 depending on the value of the user option `denote-sort-dired-extra-prompts',
-also prompt for SORT-BY-COMPONENT and REVERSE.
+also prompt for SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
 
 1. FILES-MATCHING-REGEXP limits the list of Denote files to
    those matching the provided regular expression.
@@ -248,6 +276,10 @@ also prompt for SORT-BY-COMPONENT and REVERSE.
    `denote-sort-dired-default-reverse-sort', falling back to
    nil (i.e. no reverse sort).
 
+4. EXCLUDE-REGEXP excludes the files that match the given regular
+   expression.  This is done after FILES-MATCHING-REGEXP and
+   OMIT-CURRENT have been applied.
+
 When called from Lisp, the arguments are a string, a symbol among
 `denote-sort-components', and a non-nil value, respectively."
   (interactive
@@ -257,9 +289,10 @@ When called from Lisp, the arguments are a string, a symbol among
                        'identifier))
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
-                          nil)))
+                          nil))
+        (exclude-rx (or exclude-regexp nil)))
     (if-let* ((default-directory (denote-directory))
-              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
+              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx))
               ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
               ;; buffer-name produces an error if the regexp contains a
               ;; wildcard for a directory. I can reproduce this in emacs
@@ -274,7 +307,7 @@ When called from Lisp, the arguments are a string, a symbol among
             (setq-local revert-buffer-function
                         (lambda (&rest _)
                           (kill-buffer dired-buffer)
-                          (denote-sort-dired files-matching-regexp component reverse-sort))))
+                          (denote-sort-dired files-matching-regexp component reverse-sort exclude-rx))))
           ;; Because of the above NOTE, I am printing a message.  Not
           ;; what I want, but it is better than nothing...
           (message denote-sort-dired-buffer-name))
