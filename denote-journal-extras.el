@@ -185,8 +185,13 @@ is internally processed by `denote-valid-date-p'."
 (defun denote-journal-extras--filename-date-regexp (&optional date)
   "Regular expression to match journal entries for today or optional DATE.
 DATE has the same format as that returned by `denote-valid-date-p'."
-  (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date))))
-    (concat "^" identifier "--.*__?.*" (denote-journal-extras--keyword-regex))))
+  (let* ((identifier (format "%sT[0-9]\\{6\\}" (format-time-string "%Y%m%d" date)))
+         (order denote-file-name-components-order)
+         (id-index (seq-position order 'identifier))
+         (kw-index (seq-position order 'keywords)))
+    (if (> kw-index id-index)
+        (format "%s.*?_%s" identifier (denote-journal-extras--keyword-regex))
+      (format "_%s.*?%s" (denote-journal-extras--keyword-regex) identifier))))
 
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
