@@ -46,7 +46,7 @@ a subdirectory of it.
 A value of nil means to use the variable `denote-directory'.
 Journal entries will thus be in a flat listing together with all
 other notes.  They can still be retrieved easily by searching for
-the `denote-journal-extras-keyword'."
+the variable `denote-journal-extras-keyword'."
   :group 'denote-journal-extras
   :type '(choice (directory :tag "Provide directory path (is created if missing)")
                  (const :tag "Use the `denote-directory'" nil)))
@@ -110,7 +110,7 @@ journal entry (refer to the `tmr' package on GNU ELPA)."
     (denote-directory)))
 
 (defun denote-journal-extras-keyword ()
-  "Return the value of `denote-journal-extras-keyword' as a list."
+  "Return the value of the variable `denote-journal-extras-keyword' as a list."
   (if (stringp denote-journal-extras-keyword)
       (list denote-journal-extras-keyword)
     denote-journal-extras-keyword))
@@ -161,8 +161,8 @@ Also see `denote-journal-extras-new-entry'."
 ;;;###autoload
 (defun denote-journal-extras-new-entry (&optional date)
   "Create a new journal entry in variable `denote-journal-extras-directory'.
-Use `denote-journal-extras-keyword' as a keyword for the newly
-created file.  Set the title of the new entry according to the
+Use the variable `denote-journal-extras-keyword' as a keyword for the
+newly created file.  Set the title of the new entry according to the
 value of the user option `denote-journal-extras-title-format'.
 
 With optional DATE as a prefix argument, prompt for a date.  If
@@ -230,8 +230,8 @@ there is no journal entry, create it."
 ;;;###autoload
 (defun denote-journal-extras-new-or-existing-entry (&optional date)
   "Locate an existing journal entry or create a new one.
-A journal entry is one that has `denote-journal-extras-keyword' as
-part of its file name.
+A journal entry is one that has the value of the variable
+`denote-journal-extras-keyword' as part of its file name.
 
 If there are multiple journal entries for the current date,
 prompt for one using minibuffer completion.  If there is only
@@ -254,8 +254,8 @@ It is internally processed by `denote-valid-date-p'."
 ;;;###autoload
 (defun denote-journal-extras-link-or-create-entry (&optional date id-only)
   "Use `denote-link' on journal entry, creating it if necessary.
-A journal entry is one that has `denote-journal-extras-keyword' as
-part of its file name.
+A journal entry is one that has the value of the variable
+`denote-journal-extras-keyword' as part of its file name.
 
 If there are multiple journal entries for the current date,
 prompt for one using minibuffer completion.  If there is only
