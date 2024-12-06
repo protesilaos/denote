@@ -36,7 +36,7 @@
 (defun denote-org-extras--get-outline (file)
   "Return `outline-regexp' headings and line numbers of FILE."
   (with-current-buffer (find-file-noselect file)
-    (let ((outline-regexp (format "^\\(?:%s\\)" (or (bound-and-true-p outline-regexp) "[*\^L]+")))
+    (let ((outline-regexp (format "^\\(?:%s\\)" (or (bound-and-true-p outline-regexp) "\\*+ ")))
           candidates)
       (save-excursion
         (goto-char (point-min))
