@@ -2145,13 +2145,16 @@ or `line', referring to what the function should retrieve."
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
 `denote-retrieve-filename-title'."
-  (if-let* (((denote-filename-is-note-p file))
-            (title (denote-retrieve-front-matter-title-value file type))
-            ((not (string-blank-p title))))
-      title
-    (or (denote-retrieve-filename-title file)
-        (and (not (denote-file-has-identifier-p file))
-             (file-name-base file)))))
+  (let ((has-denoted-filename (denote-file-has-denoted-filename-p file))
+        (has-supported-extension (denote-file-has-supported-extension-p file)))
+    (cond ((and has-denoted-filename has-supported-extension)
+           (or (denote-retrieve-front-matter-title-value file type)
+               (denote-retrieve-filename-title file)
+               ""))
+          (has-denoted-filename
+           (or (denote-retrieve-filename-title file) ""))
+          (t
+           (file-name-base file)))))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
