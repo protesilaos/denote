@@ -3678,12 +3678,10 @@ the changes made to the file: perform them outright (same as
 setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (let ((denote--used-ids)
+  (let ((denote--used-ids (denote--get-all-used-ids))
         (denote-rename-confirmations nil))
     (if-let* ((marks (dired-get-marked-files)))
         (progn
-          (unless (seq-every-p #'denote-file-has-identifier-p marks)
-            (setq denote--used-ids (denote--get-all-used-ids)))
           (dolist (file marks)
             (pcase-let ((`(,title ,keywords ,signature ,date)
                          (denote--rename-get-file-info-from-prompts-or-existing file)))
@@ -3723,8 +3721,7 @@ This function is an internal implementation function."
       (let ((denote-prompts '())
             (denote-rename-confirmations nil)
             (user-input-keywords (denote-keywords-prompt keywords-prompt))
-            (denote--used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
-                                (denote--get-all-used-ids))))
+            (denote--used-ids (denote--get-all-used-ids)))
         (dolist (file marks)
           (pcase-let* ((`(,title ,keywords ,signature ,date)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
@@ -3863,7 +3860,7 @@ they have front matter and what that may be."
                            (denote-file-is-writable-and-supported-p m)
                            (denote-file-has-identifier-p m)))
                     (dired-get-marked-files))))
-      (progn
+      (let ((denote--used-ids (denote--get-all-used-ids)))
         (dolist (file marks)
           (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))
