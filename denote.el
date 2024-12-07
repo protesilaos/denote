@@ -1190,6 +1190,31 @@ For our purposes, a note must satisfy `file-regular-p' and
 `denote-filename-is-note-p'."
   (and (file-regular-p file) (denote-filename-is-note-p file)))
 
+(defun denote-file-has-denoted-filename-p (file)
+  "Return non-nil if FILE respects the file-naming scheme of Denote.
+
+This tests the rules of Denote's file-naming scheme.  Sluggification is
+ignored.  It is done by removing all file name components and validating
+what remains."
+  (let ((filename (file-name-nondirectory file))
+        (title (denote-retrieve-filename-title file))
+        (keywords-string (denote-retrieve-filename-keywords file))
+        (signature (denote-retrieve-filename-signature file))
+        (identifier (denote-retrieve-filename-identifier file)))
+    (when title
+      (setq filename (replace-regexp-in-string (concat "\\(--" (regexp-quote title) "\\).*\\'") "" filename nil nil 1)))
+    (when keywords-string
+      (setq filename (replace-regexp-in-string (concat "\\(__" (regexp-quote keywords-string) "\\).*\\'") "" filename nil nil 1)))
+    (when signature
+      (setq filename (replace-regexp-in-string (concat "\\(==" (regexp-quote signature) "\\).*\\'") "" filename nil nil 1)))
+    (when identifier
+      (if (string-match-p "@@" filename)
+          (setq filename (replace-regexp-in-string (concat "\\(@@" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))
+        (setq filename (replace-regexp-in-string (concat "\\(" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))))
+    ;; What remains should be the empty string or the file extension.
+    (or (string-empty-p filename)
+        (string-prefix-p "." filename))))
+
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
   (denote-retrieve-filename-signature file))
