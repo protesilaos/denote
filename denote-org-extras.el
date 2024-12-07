@@ -427,9 +427,15 @@ Also see `denote-org-extras-dblock--files'."
 ;; case.
 (defun denote-org-extras--parse-rx (regexp)
   "Parse REGEXP as an `rx' argument or string and return string."
-  (if (listp regexp)
-      (rx-to-string regexp)
-    regexp))
+  (cond
+   ((null regexp)
+    "")
+   ((listp regexp)
+    (rx-to-string regexp))
+   ((stringp regexp)
+    regexp)
+   (t
+    (error "Regexp `%s' is neither a list nor a string" regexp))))
 
 ;;;###autoload
 (defun org-dblock-write:denote-links (params)
