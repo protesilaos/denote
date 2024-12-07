@@ -429,7 +429,7 @@ Also see `denote-org-extras-dblock--files'."
   "Parse REGEXP as an `rx' argument or string and return string."
   (cond
    ((null regexp)
-    "")
+    nil)
    ((listp regexp)
     (rx-to-string regexp))
    ((stringp regexp)
