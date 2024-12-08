@@ -3889,7 +3889,7 @@ relevant front matter.
    (let* ((file buffer-file-name)
           (default-title (or (denote-retrieve-filename-title file) ""))
           (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ","))
-          (default-signature (or (denote-retrieve-filename-keywords-as-list file) "")))
+          (default-signature (or (denote-retrieve-filename-signature file) "")))
      (list
       file
       (denote-title-prompt default-title "Add TITLE (empty to ignore)")
