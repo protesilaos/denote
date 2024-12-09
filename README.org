@@ -5574,6 +5574,13 @@ might change them without further notice.
 + Function ~denote-file-has-identifier-p~ :: Return non-nil if =FILE=
   has a Denote identifier.
 
+#+findex: denote-file-has-denoted-filename-p
++ Function ~denote-file-has-denoted-filename-p~ :: Return non-nil if
+  =FILE= respects the file-naming scheme of Denote. This tests the
+  rules of Denote's file-naming scheme. Sluggification is ignored. It
+  is done by removing all file name components and validating what
+  remains. [ This function is part of {{{development-version}}}. ]
+
 #+findex: denote-file-has-signature-p
 + Function ~denote-file-has-signature-p~ :: Return non-nil if =FILE=
   has a signature.
