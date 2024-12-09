@@ -5915,10 +5915,17 @@ might change them without further notice.
 
 #+findex: denote-date-prompt
 + Function ~denote-date-prompt~ :: Prompt for date, expecting
-  =YYYY-MM-DD= or that plus =HH:MM= (or even =HH:MM:SS=).  Use Org's
+  =YYYY-MM-DD= or that plus =HH:MM= (or even =HH:MM:SS=). Use Org's
   more advanced date selection utility if the user option
-  ~denote-date-prompt-use-org-read-date~ is non-nil.  It requires Org
-  ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]).
+  ~denote-date-prompt-use-org-read-date~ is non-nil. It requires Org
+  ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]). With optional
+  =INITIAL-DATE= use it as the initial minibuffer text. With optional
+  =PROMPT-TEXT= use it in the minibuffer instead of the default
+  prompt. When ~denote-date-prompt-use-org-read-date~ is non-nil, the
+  value of =INITIAL-DATE= is of the format understood by
+  ~org-read-date~. Otherwise, it is a string that can be processed by
+  ~denote-valid-date-p~. [ The =INITIAL-DATE= and =PROMPT-TEXT= are
+  part of {{{development-version}}}. ]
 
 #+findex: denote-command-prompt
 + Function ~denote-command-prompt~ ::  Prompt for command among
@@ -6885,9 +6892,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   maxbrieiev, mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
-  Schmitt, Aleksandr Vityazev, Alex Hirschfeld, Alexis Purslane,
-  Alfredo Borrás, Alp Eren Kose, Ashton Wiersdorf, Benjamin Kästner,
-  Claudio Migliorelli, Claudiu Tănăselia, Colin McLear,
+  Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
+  Purslane, Alfredo Borrás, Alp Eren Kose, Ashton Wiersdorf, Benjamin
+  Kästner, Claudio Migliorelli, Claudiu Tănăselia, Colin McLear,
   Cosmin-Octavian C, Damien Cassou, Elias Storms, Federico Stilman,
   Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
   Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty, Jay
