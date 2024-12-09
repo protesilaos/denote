@@ -1190,6 +1190,31 @@ For our purposes, a note must satisfy `file-regular-p' and
 `denote-filename-is-note-p'."
   (and (file-regular-p file) (denote-filename-is-note-p file)))
 
+(defun denote-file-has-denoted-filename-p (file)
+  "Return non-nil if FILE respects the file-naming scheme of Denote.
+
+This tests the rules of Denote's file-naming scheme.  Sluggification is
+ignored.  It is done by removing all file name components and validating
+what remains."
+  (let ((filename (file-name-nondirectory file))
+        (title (denote-retrieve-filename-title file))
+        (keywords-string (denote-retrieve-filename-keywords file))
+        (signature (denote-retrieve-filename-signature file))
+        (identifier (denote-retrieve-filename-identifier file)))
+    (when title
+      (setq filename (replace-regexp-in-string (concat "\\(--" (regexp-quote title) "\\).*\\'") "" filename nil nil 1)))
+    (when keywords-string
+      (setq filename (replace-regexp-in-string (concat "\\(__" (regexp-quote keywords-string) "\\).*\\'") "" filename nil nil 1)))
+    (when signature
+      (setq filename (replace-regexp-in-string (concat "\\(==" (regexp-quote signature) "\\).*\\'") "" filename nil nil 1)))
+    (when identifier
+      (if (string-match-p "@@" filename)
+          (setq filename (replace-regexp-in-string (concat "\\(@@" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))
+        (setq filename (replace-regexp-in-string (concat "\\(" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))))
+    ;; What remains should be the empty string or the file extension.
+    (or (string-empty-p filename)
+        (string-prefix-p "." filename))))
+
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
   (denote-retrieve-filename-signature file))
@@ -2120,13 +2145,16 @@ or `line', referring to what the function should retrieve."
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
 `denote-retrieve-filename-title'."
-  (if-let* (((denote-filename-is-note-p file))
-            (title (denote-retrieve-front-matter-title-value file type))
-            ((not (string-blank-p title))))
-      title
-    (or (denote-retrieve-filename-title file)
-        (and (not (denote-file-has-identifier-p file))
-             (file-name-base file)))))
+  (let ((has-denoted-filename (denote-file-has-denoted-filename-p file))
+        (has-supported-extension (denote-file-has-supported-extension-p file)))
+    (cond ((and has-denoted-filename has-supported-extension)
+           (or (denote-retrieve-front-matter-title-value file type)
+               (denote-retrieve-filename-title file)
+               ""))
+          (has-denoted-filename
+           (or (denote-retrieve-filename-title file) ""))
+          (t
+           (file-name-base file)))))
 
 (defun denote--retrieve-location-in-xrefs (identifier)
   "Return list of xrefs for IDENTIFIER with their respective location.
@@ -3686,12 +3714,10 @@ the changes made to the file: perform them outright (same as
 setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (let ((denote--used-ids)
+  (let ((denote--used-ids (denote--get-all-used-ids))
         (denote-rename-confirmations nil))
     (if-let* ((marks (dired-get-marked-files)))
         (progn
-          (unless (seq-every-p #'denote-file-has-identifier-p marks)
-            (setq denote--used-ids (denote--get-all-used-ids)))
           (dolist (file marks)
             (pcase-let ((`(,title ,keywords ,signature ,date)
                          (denote--rename-get-file-info-from-prompts-or-existing file)))
@@ -3731,8 +3757,7 @@ This function is an internal implementation function."
       (let ((denote-prompts '())
             (denote-rename-confirmations nil)
             (user-input-keywords (denote-keywords-prompt keywords-prompt))
-            (denote--used-ids (unless (seq-every-p #'denote-file-has-identifier-p marks)
-                                (denote--get-all-used-ids))))
+            (denote--used-ids (denote--get-all-used-ids)))
         (dolist (file marks)
           (pcase-let* ((`(,title ,keywords ,signature ,date)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
@@ -3871,7 +3896,7 @@ they have front matter and what that may be."
                            (denote-file-is-writable-and-supported-p m)
                            (denote-file-has-identifier-p m)))
                     (dired-get-marked-files))))
-      (progn
+      (let ((denote--used-ids (denote--get-all-used-ids)))
         (dolist (file marks)
           (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))
