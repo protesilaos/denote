@@ -191,7 +191,7 @@ DATE has the same format as that returned by `denote-valid-date-p'."
          (kw-index (seq-position order 'keywords)))
     (if (> kw-index id-index)
         (format "%s.*?_%s" identifier (denote-journal-extras--keyword-regex))
-      (format "_%s.*?%s" (denote-journal-extras--keyword-regex) identifier))))
+      (format "_%s.*?@@%s" (denote-journal-extras--keyword-regex) identifier))))
 
 (defun denote-journal-extras--entry-today (&optional date)
   "Return list of files matching a journal for today or optional DATE.
