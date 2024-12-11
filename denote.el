@@ -3948,7 +3948,8 @@ relevant front matter.
   2024-02-29 09:24 +0200. ]"
   (interactive
    (let* ((file buffer-file-name)
-          (default-title (or (denote-retrieve-filename-title file) ""))
+          (type (denote-filetype-heuristics file))
+          (default-title (or (denote-retrieve-title-or-filename file type) ""))
           (default-keywords (string-join (denote-retrieve-filename-keywords-as-list file) ","))
           (default-signature (or (denote-retrieve-filename-signature file) "")))
      (list
