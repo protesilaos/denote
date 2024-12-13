@@ -5975,6 +5975,13 @@ might change them without further notice.
 + Function ~denote-rename-file-and-buffer~ :: Rename file named
   =OLD-NAME= to =NEW-NAME=, updating buffer name.
 
+#+findex: denote-prepend-front-matter
++ Function ~denote-prepend-front-matter~ :: Prepend front matter to
+  =FILE=. The =TITLE=, =KEYWORDS=, =DATE=, =ID=, =SIGNATURE=, and
+  =FILE-TYPE= are passed from the renaming command and are used to
+  construct a new front matter block if appropriate. [ This function
+  is available as part of {{{development-version}}}. ]
+
 #+findex: denote-rewrite-front-matter
 + Function ~denote-rewrite-front-matter~ :: Rewrite front matter of
   note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,

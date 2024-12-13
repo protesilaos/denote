@@ -3101,11 +3101,16 @@ If a buffer is visiting the file, its name is updated."
       (with-current-buffer buffer
         (set-visited-file-name new-name nil t)))))
 
-(defun denote--add-front-matter (file title keywords signature date id file-type)
+(define-obsolete-function-alias
+  'denote--add-front-matter
+  'denote-prepend-front-matter
+  "3.2.0")
+
+(defun denote-prepend-front-matter (file title keywords signature date id file-type)
   "Prepend front matter to FILE.
-The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from the
-renaming command and are used to construct a new front matter block if
-appropriate."
+The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from
+the renaming command and are used to construct a new front matter block
+if appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
@@ -3462,7 +3467,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
         (if (denote--file-has-front-matter-p new-name file-type)
             (denote-rewrite-front-matter new-name title keywords signature date id file-type)
           (when (denote-add-front-matter-prompt new-name)
-            (denote--add-front-matter new-name title keywords signature date id file-type))))
+            (denote-prepend-front-matter new-name title keywords signature date id file-type))))
       (when (and denote--used-ids (not (string-empty-p id)))
         (puthash id t denote--used-ids))
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
@@ -4006,7 +4011,7 @@ Construct the file name in accordance with the user option
       (denote-update-dired-buffers)
       (when (and (denote-file-is-writable-and-supported-p new-name)
                  (denote-add-front-matter-prompt new-name))
-        (denote--add-front-matter new-name title keywords signature date id new-file-type)
+        (denote-prepend-front-matter new-name title keywords signature date id new-file-type)
         (denote--handle-save-and-kill-buffer 'rename new-name initial-state)))))
 
 ;;;; The Denote faces
