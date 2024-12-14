@@ -311,6 +311,14 @@ does not involve the time zone."
                    (denote--file-extension 'org)
                    ""))
 
+    (should-error (denote-format-file-name
+                   (denote-directory)
+                   ""
+                   nil
+                   ""
+                   (denote--file-extension 'org)
+                   ""))
+
     (should (equal (denote-format-file-name
                     (denote-directory)
                     nil
