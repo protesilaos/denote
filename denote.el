@@ -1196,11 +1196,12 @@ For our purposes, a note must satisfy `file-regular-p' and
 This tests the rules of Denote's file-naming scheme.  Sluggification is
 ignored.  It is done by removing all file name components and validating
 what remains."
-  (let ((filename (file-name-nondirectory file))
-        (title (denote-retrieve-filename-title file))
-        (keywords-string (denote-retrieve-filename-keywords file))
-        (signature (denote-retrieve-filename-signature file))
-        (identifier (denote-retrieve-filename-identifier file)))
+  (let* ((initial-filename (file-name-nondirectory file))
+         (filename initial-filename)
+         (title (denote-retrieve-filename-title file))
+         (keywords-string (denote-retrieve-filename-keywords file))
+         (signature (denote-retrieve-filename-signature file))
+         (identifier (denote-retrieve-filename-identifier file)))
     (when title
       (setq filename (replace-regexp-in-string (concat "\\(--" (regexp-quote title) "\\).*\\'") "" filename nil nil 1)))
     (when keywords-string
@@ -1212,8 +1213,9 @@ what remains."
           (setq filename (replace-regexp-in-string (concat "\\(@@" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))
         (setq filename (replace-regexp-in-string (concat "\\(" (regexp-quote identifier) "\\).*\\'") "" filename nil nil 1))))
     ;; What remains should be the empty string or the file extension.
-    (or (string-empty-p filename)
-        (string-prefix-p "." filename))))
+    (and (not (string-prefix-p "." initial-filename))
+         (or (string-empty-p filename)
+             (string-prefix-p "." filename)))))
 
 (defun denote-file-has-signature-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -2227,6 +2229,8 @@ which case it is not added to the base file name."
              (setq file-name (concat file-name "__" (denote-keywords-combine (denote-sluggify-keywords keywords)))))
             ((and (eq component 'signature) signature (not (string-empty-p signature)))
              (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))))
+    (when (string-empty-p file-name)
+      (error "There should be at least one file name component"))
     (setq file-name (concat file-name extension))
     ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
     (when (and (string-prefix-p "@@" file-name)
