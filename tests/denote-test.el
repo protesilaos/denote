@@ -179,13 +179,15 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
   "Test that `denote--format-front-matter' formats front matter correctly.
 To make the test reproducible, set `denote-date-format' to a value that
 does not involve the time zone."
-  (let ((denote-date-format "%Y-%m-%d"))
+  (let ((denote-date-format "%Y-%m-%d")
+        (denote-front-matter-components-present-even-if-empty-value '(title keywords signature date identifier)))
     (should (and (equal (denote--format-front-matter "" (date-to-time "20240101T120000") '("") "" "" 'text)
                         (mapconcat #'identity
                                    '("title:      "
                                      "date:       2024-01-01"
                                      "tags:       "
                                      "identifier: "
+                                     "signature:  "
                                      "---------------------------\n\n")
                                    "\n"))
 
@@ -198,6 +200,7 @@ does not involve the time zone."
                                "date:       2023-06-05"
                                "tags:       one  two"
                                "identifier: 20230605T102234"
+                               "signature:  sig"
                                "---------------------------\n\n")
                              "\n"))))
 
@@ -207,6 +210,7 @@ does not involve the time zone."
                                      "#+date:       2024-01-01"
                                      "#+filetags:   "
                                      "#+identifier: "
+                                     "#+signature:  "
                                      "\n")
                                    "\n"))
 
@@ -219,6 +223,7 @@ does not involve the time zone."
                                "#+date:       2023-06-05"
                                "#+filetags:   :one:two:"
                                "#+identifier: 20230605T102234"
+                               "#+signature:  sig"
                                "\n")
                              "\n"))))
 
@@ -229,6 +234,7 @@ does not involve the time zone."
                                      "date:       2024-01-01"
                                      "tags:       []"
                                      "identifier: \"\""
+                                     "signature:  \"\""
                                      "---"
                                      "\n")
                                    "\n"))
@@ -243,6 +249,7 @@ does not involve the time zone."
                                "date:       2023-06-05"
                                "tags:       [\"one\", \"two\"]"
                                "identifier: \"20230605T102234\""
+                               "signature:  \"sig\""
                                "---"
                                "\n")
                              "\n"))))
@@ -254,6 +261,7 @@ does not involve the time zone."
                                      "date       = 2024-01-01"
                                      "tags       = []"
                                      "identifier = \"\""
+                                     "signature  = \"\""
                                      "+++"
                                      "\n")
                                    "\n"))
@@ -268,6 +276,7 @@ does not involve the time zone."
                                "date       = 2023-06-05"
                                "tags       = [\"one\", \"two\"]"
                                "identifier = \"20230605T102234\""
+                               "signature  = \"sig\""
                                "+++"
                                "\n")
                              "\n"))))))
@@ -302,29 +311,32 @@ does not involve the time zone."
                    (denote--file-extension 'org)
                    ""))
 
-    (should-error (denote-format-file-name
-                   (denote-directory)
-                   nil
-                   kws
-                   title
-                   (denote--file-extension 'org)
-                   ""))
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    nil
+                    kws
+                    title
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/--some-test__one_two.org"))
 
-    (should-error (denote-format-file-name
-                   (denote-directory)
-                   ""
-                   kws
-                   title
-                   (denote--file-extension 'org)
-                   ""))
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    ""
+                    kws
+                    title
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/--some-test__one_two.org"))
 
-    (should-error (denote-format-file-name
-                   (denote-directory)
-                   "0123456"
-                   kws
-                   title
-                   (denote--file-extension 'org)
-                   ""))
+    (should (equal (denote-format-file-name
+                    (denote-directory)
+                    "0123456"
+                    kws
+                    title
+                    (denote--file-extension 'org)
+                    "")
+                   "/tmp/test-denote/@@0123456--some-test__one_two.org"))
 
     (should (equal (denote-format-file-name
                     (denote-directory)
