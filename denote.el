@@ -3412,6 +3412,16 @@ If `denote-rename-confirmations' does not contain
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
+(defun denote--generate-date-for-rename (file)
+  "Generate a date for FILE.
+
+Respect `denote-generate-identifier-automatically'."
+  (if (or (eq denote-generate-identifier-automatically t)
+          (eq denote-generate-identifier-automatically 'on-rename))
+      (or (file-attribute-modification-time (file-attributes file))
+          (current-time))
+    nil))
+
 (defun denote--rename-file (file title keywords signature date)
   "Rename FILE according to the other parameters.
 Parameters TITLE, KEYWORDS, SIGNATURE and DATE are as described
@@ -3431,12 +3441,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
-         ;; Handle nil date
-         (date (cond (date date)
-                     ((or (eq denote-generate-identifier-automatically t)
-                          (eq denote-generate-identifier-automatically 'on-rename))
-                      (or (file-attribute-modification-time (file-attributes file))
-                          (current-time)))))
+         (date (or date (denote--generate-date-for-rename file)))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
          (id (cond ((or (string-empty-p id) (string= old-id id))
@@ -3473,9 +3478,8 @@ It is meant to be combined with `denote--rename-file' to create
 renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
-         (date (denote-valid-date-p (or (denote-retrieve-filename-identifier file)
-                                        (file-attribute-modification-time (file-attributes file))
-                                        (current-time))))
+         (id (or (denote-retrieve-filename-identifier file) ""))
+         (date (or (denote-valid-date-p id) (denote--generate-date-for-rename file)))
          (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
