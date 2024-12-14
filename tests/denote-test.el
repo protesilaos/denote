@@ -527,15 +527,13 @@ does not involve the time zone."
            (equal (denote--date-convert '(26454 45206 461174 657000) :string)
                   "2024-12-09 10:55:50")
 
-           (equal (denote--date-convert "2024-12-09 10:55:50" :list)
-                  '(26454 45206))
+           (equal (denote--date-convert nil :string)
+                  "")
 
-           (equal (denote--date-convert "2024-12-09 10:55:50" :string)
-                  "2024-12-09 10:55:50")))
+           (equal (denote--date-convert nil :list)
+                  nil)))
   (should-error (denote--date-convert '(26454 45206 461174 657000) :not-valid-type))
-  (should-error (denote--date-convert "2024-12-09 10:55:50" :not-valid-type))
-  (should-error (denote--date-convert "Not right date" :list))
-  (should-error (denote--date-convert "Not right date" :string)))
+  (should-error (denote--date-convert nil :not-valid-type)))
 
 ;;;; denote-journal-extras.el
 

@@ -2741,20 +2741,12 @@ here for clarity."
 
 (defun denote--date-convert (date prefer-type)
   "Determine how to convert DATE to PREFER-TYPE `:list' or `:string'."
-  (let ((parsed-date (denote-valid-date-p date)))
-    (unless (memq prefer-type '(:list :string))
-      (error "The PREFER-TYPE must be either `:list' or `:string'"))
-    (cond
-     ((listp date)
-      (if (eq prefer-type :list)
-          parsed-date
-        (format-time-string "%F %T" date)))
-     ((stringp date)
-      (if (eq prefer-type :string)
-          date
-        parsed-date))
-     (t
-      (error "The `%s' is neither a list nor a string" date)))))
+  (unless (memq prefer-type '(:list :string))
+    (error "The PREFER-TYPE must be either `:list' or `:string'"))
+  (cond ((eq prefer-type :list)
+         date)
+        ((eq prefer-type :string)
+         (if date (format-time-string "%F %T" date) ""))))
 
 (defun denote-date-prompt (&optional initial-date prompt-text)
   "Prompt for date, expecting YYYY-MM-DD or that plus HH:MM.
@@ -2765,25 +2757,25 @@ With optional INITIAL-DATE use it as the initial minibuffer
 text.  With optional PROMPT-TEXT use it in the minibuffer instead
 of the default prompt.
 
-When `denote-date-prompt-use-org-read-date' is non-nil, the value of
-INITIAL-DATE is of the format understood by `org-read-date'.  Otherwise,
-it is a string that can be processed by `denote-valid-date-p'."
-  (if (and denote-date-prompt-use-org-read-date
-           (require 'org nil :no-error))
-      (let* ((time (org-read-date nil t nil prompt-text (denote--date-convert initial-date :list)))
-             (org-time-seconds (format-time-string "%S" time))
-             (cur-time-seconds (format-time-string "%S" (current-time))))
-        ;; When the user does not input a time, org-read-date defaults to 00 for seconds.
-        ;; When the seconds are 00, we add the current seconds to avoid identifier collisions.
-        (when (string-equal "00" org-time-seconds)
-          (setq time (time-add time (string-to-number cur-time-seconds))))
-        (format-time-string "%Y-%m-%d %H:%M:%S" time))
-    (read-string
-     (or
-      "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-      prompt-text)
-     (denote--date-convert initial-date :string)
-     'denote-date-history)))
+INITIAL-DATE is a string that can be processed by `denote-valid-date-p',
+a value that can be parsed by `decode-time' or nil."
+  (let ((initial-date (denote-valid-date-p initial-date)))
+    (if (and denote-date-prompt-use-org-read-date
+             (require 'org nil :no-error))
+        (let* ((time (org-read-date nil t nil prompt-text (denote--date-convert initial-date :list)))
+               (org-time-seconds (format-time-string "%S" time))
+               (cur-time-seconds (format-time-string "%S" (current-time))))
+          ;; When the user does not input a time, org-read-date defaults to 00 for seconds.
+          ;; When the seconds are 00, we add the current seconds to avoid identifier collisions.
+          (when (string-equal "00" org-time-seconds)
+            (setq time (time-add time (string-to-number cur-time-seconds))))
+          (format-time-string "%Y-%m-%d %H:%M:%S" time))
+      (read-string
+       (or
+        "DATE and TIME for note (e.g. 2022-06-16 14:30): "
+        prompt-text)
+       (denote--date-convert initial-date :string)
+       'denote-date-history))))
 
 (defun denote-prompt-for-date-return-id (&optional initial-date prompt-text)
   "Use `denote-date-prompt' and return it as `denote-id-format'.
@@ -2791,7 +2783,7 @@ Optional INITIAL-DATE and PROMPT-TEXT have the same meaning as
 `denote-date-prompt'."
   (denote-get-identifier
    (denote-valid-date-p
-    (denote-date-prompt initial-date prompt-text))))
+    (denote-date-prompt (denote-valid-date-p initial-date) prompt-text))))
 
 (defvar denote-subdirectory-history nil
   "Minibuffer history of `denote-subdirectory-prompt'.")
@@ -3424,6 +3416,16 @@ If `denote-rename-confirmations' does not contain
 (defvar denote-rename-max-mini-window-height 0.33
   "How much to enlarge `max-mini-window-height' for renaming operations.")
 
+(defun denote--generate-date-for-rename (file)
+  "Generate a date for FILE.
+
+Respect `denote-generate-identifier-automatically'."
+  (if (or (eq denote-generate-identifier-automatically t)
+          (eq denote-generate-identifier-automatically 'on-rename))
+      (or (file-attribute-modification-time (file-attributes file))
+          (current-time))
+    nil))
+
 (defun denote--rename-file (file title keywords signature date)
   "Rename FILE according to the other parameters.
 Parameters TITLE, KEYWORDS, SIGNATURE and DATE are as described
@@ -3443,12 +3445,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
          (extension (file-name-extension file :include-period))
-         ;; Handle nil date
-         (date (cond (date date)
-                     ((or (eq denote-generate-identifier-automatically t)
-                          (eq denote-generate-identifier-automatically 'on-rename))
-                      (or (file-attribute-modification-time (file-attributes file))
-                          (current-time)))))
+         (date (or date (denote--generate-date-for-rename file)))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
          (id (cond ((or (string-empty-p id) (string= old-id id))
@@ -3485,9 +3482,8 @@ It is meant to be combined with `denote--rename-file' to create
 renaming commands."
   (let* ((file-in-prompt (propertize (file-relative-name file) 'face 'denote-faces-prompt-current-name))
          (file-type (denote-filetype-heuristics file))
-         (date (denote-valid-date-p (or (denote-retrieve-filename-identifier file)
-                                        (file-attribute-modification-time (file-attributes file))
-                                        (current-time))))
+         (id (or (denote-retrieve-filename-identifier file) ""))
+         (date (or (denote-valid-date-p id) (denote--generate-date-for-rename file)))
          (title (or (denote-retrieve-title-or-filename file file-type) ""))
          (keywords (denote-extract-keywords-from-path file))
          (signature (or (denote-retrieve-filename-signature file) "")))
