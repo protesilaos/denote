@@ -5949,11 +5949,10 @@ might change them without further notice.
   ([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]]). With optional
   =INITIAL-DATE= use it as the initial minibuffer text. With optional
   =PROMPT-TEXT= use it in the minibuffer instead of the default
-  prompt. When ~denote-date-prompt-use-org-read-date~ is non-nil, the
-  value of =INITIAL-DATE= is of the format understood by
-  ~org-read-date~. Otherwise, it is a string that can be processed by
-  ~denote-valid-date-p~. [ The =INITIAL-DATE= and =PROMPT-TEXT= are
-  part of {{{development-version}}}. ]
+  prompt. =INITIAL-DATE= is a string that can be processed by
+  ~denote-valid-date-p~, a value that can be parsed by ~decode-time~
+  or nil. [ The =INITIAL-DATE= and =PROMPT-TEXT= are part of
+  {{{development-version}}}. ]
 
 #+findex: denote-command-prompt
 + Function ~denote-command-prompt~ ::  Prompt for command among
