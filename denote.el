@@ -1033,8 +1033,9 @@ always create an identifier automatically.
 
 Valid values are: t, nil, `on-creation', and `on-rename'.
 
-IMPORTANT: Some features are not working with notes that do not have an
-identifier.  Among them are the Dired fontification and linking (backlinks).")
+IMPORTANT: Some features may not work with notes that do not have an
+identifier.  For example, backlinks do not contain files without an
+identifier.")
 
 ;;;;; Sluggification functions
 
@@ -4140,7 +4141,7 @@ and seconds."
       (let ((saved-point (point)))
         (if (and (dired-move-to-filename)
                  (save-match-data
-                   (denote-file-has-identifier-p (buffer-substring (point) (line-end-position)))))
+                   (denote-file-has-denoted-filename-p (buffer-substring (point) (line-end-position)))))
             (setq line-found t)
           (goto-char saved-point))))
     (if line-found
