@@ -1320,12 +1320,12 @@ OMIT-CURRENT have been applied."
                    files)))
     (when text-only
       (setq files (seq-filter #'denote-filename-is-note-p files)))
-    (if exclude-regexp
-        (seq-remove
-         (lambda (file)
-           (string-match-p exclude-regexp file))
-         files)
-      files)))
+    (when exclude-regexp
+      (setq files (seq-remove
+                   (lambda (file)
+                     (string-match-p exclude-regexp file))
+                   files)))
+    files))
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
