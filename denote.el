@@ -2243,26 +2243,30 @@ which case it is not added to the base file name."
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote-date-rfc3339 (date)
   "Format DATE using the RFC3339 specification."
-  (replace-regexp-in-string
-   "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
-   (format-time-string "%FT%T%z" date)))
+  (if date
+      (replace-regexp-in-string
+       "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
+       (format-time-string "%FT%T%z" date))
+    ""))
 
 (defun denote-date-org-timestamp (date)
   "Format DATE using the Org inactive timestamp notation."
-  (format-time-string "[%F %a %R]" date))
+  (if date
+      (format-time-string "[%F %a %R]" date)
+    ""))
 
 (defun denote-date-iso-8601 (date)
   "Format DATE according to ISO 8601 standard."
-  (format-time-string "%F" date))
+  (if date
+      (format-time-string "%F" date)
+    ""))
 
 (defun denote--format-front-matter-date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
-     ((null date)
-      "")
      (format
-      (format-time-string format date))
+      (if date (format-time-string format date) ""))
      ((when-let* ((fn (denote--date-value-function file-type)))
         (funcall fn date)))
      (t
