@@ -1033,8 +1033,9 @@ always create an identifier automatically.
 
 Valid values are: t, nil, `on-creation', and `on-rename'.
 
-IMPORTANT: Some features are not working with notes that do not have an
-identifier.  Among them are the Dired fontification and linking (backlinks).")
+IMPORTANT: Some features may not work with notes that do not have an
+identifier.  For example, backlinks do not contain files without an
+identifier.")
 
 ;;;;; Sluggification functions
 
@@ -1175,12 +1176,16 @@ extensions are those implied by the variable `denote-file-type'."
               (string-suffix-p e file))
             (denote-file-type-extensions-with-encryption)))
 
+(defun denote-file-is-in-denote-directory-p (file)
+  "Return non-nil if FILE is in the variable `denote-directory'."
+  (string-prefix-p (denote-directory) (expand-file-name file)))
+
 (defun denote-filename-is-note-p (filename)
   "Return non-nil if FILENAME is a valid name for a Denote note.
 For our purposes, its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name, and
 use one of the extensions implied by the variable `denote-file-type'."
-  (and (string-prefix-p (denote-directory) (expand-file-name filename))
+  (and (denote-file-is-in-denote-directory-p filename)
        (denote-file-has-identifier-p filename)
        (denote-file-has-supported-extension-p filename)))
 
@@ -1304,7 +1309,7 @@ With optional OMIT-CURRENT as a non-nil value, do not include the
 current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
-text files that satisfy `denote-filename-is-note-p'.
+text files that satisfy `denote-file-has-supported-extension-p'.
 
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
@@ -1318,13 +1323,13 @@ OMIT-CURRENT have been applied."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-filename-is-note-p files)))
-    (if exclude-regexp
-        (seq-remove
-         (lambda (file)
-           (string-match-p exclude-regexp file))
-         files)
-      files)))
+      (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
+    (when exclude-regexp
+      (setq files (seq-remove
+                   (lambda (file)
+                     (string-match-p exclude-regexp file))
+                   files)))
+    files))
 
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
@@ -1387,7 +1392,7 @@ something like .org even if the actual file extension is
       (seq-find
        (lambda (file)
          (let ((file-extension (denote-get-file-extension file)))
-           (and (denote-filename-is-note-p file)
+           (and (denote-file-has-supported-extension-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
                     (string= ".org" file-extension)
@@ -2242,26 +2247,30 @@ which case it is not added to the base file name."
 ;; package: <https://github.com/kaushalmodi/ox-hugo>.
 (defun denote-date-rfc3339 (date)
   "Format DATE using the RFC3339 specification."
-  (replace-regexp-in-string
-   "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
-   (format-time-string "%FT%T%z" date)))
+  (if date
+      (replace-regexp-in-string
+       "\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)\\'" "\\1:\\2"
+       (format-time-string "%FT%T%z" date))
+    ""))
 
 (defun denote-date-org-timestamp (date)
   "Format DATE using the Org inactive timestamp notation."
-  (format-time-string "[%F %a %R]" date))
+  (if date
+      (format-time-string "[%F %a %R]" date)
+    ""))
 
 (defun denote-date-iso-8601 (date)
   "Format DATE according to ISO 8601 standard."
-  (format-time-string "%F" date))
+  (if date
+      (format-time-string "%F" date)
+    ""))
 
 (defun denote--format-front-matter-date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
   (let ((format denote-date-format))
     (cond
-     ((null date)
-      "")
      (format
-      (format-time-string format date))
+      (if date (format-time-string format date) ""))
      ((when-let* ((fn (denote--date-value-function file-type)))
         (funcall fn date)))
      (t
@@ -2376,7 +2385,7 @@ It checks files in variable `denote-directory' and active buffer files."
                       (denote-directory-files)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
-      (let ((id (denote-retrieve-filename-identifier name)))
+      (when-let* ((id (denote-retrieve-filename-identifier name)))
         (puthash id t ids)))
     ids))
 
@@ -3457,22 +3466,23 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (date (if (string-empty-p id) nil (date-to-time id)))
          (new-name (denote-format-file-name directory id keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    (when (file-regular-p new-name)
+    (when (and (file-regular-p new-name)
+               (not (string= (expand-file-name file) (expand-file-name new-name))))
       (user-error "The destination file `%s' already exists" new-name))
+    ;; Modify file name, buffer name, or both
     (when (denote-rename-file-prompt file new-name)
-      ;; Modify file name, buffer name, or both
-      (denote-rename-file-and-buffer file new-name)
-      ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
-      (when (and (denote-file-has-supported-extension-p file)
-                 (denote-file-is-writable-and-supported-p new-name))
-        (if (denote--file-has-front-matter-p new-name file-type)
-            (denote-rewrite-front-matter new-name title keywords signature date id file-type)
-          (when (denote-add-front-matter-prompt new-name)
-            (denote-prepend-front-matter new-name title keywords signature date id file-type))))
-      (when (and denote--used-ids (not (string-empty-p id)))
-        (puthash id t denote--used-ids))
-      (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
-      (run-hooks 'denote-after-rename-file-hook))
+      (denote-rename-file-and-buffer file new-name))
+    ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
+    (when (and (denote-file-has-supported-extension-p file)
+               (denote-file-is-writable-and-supported-p new-name))
+      (if (denote--file-has-front-matter-p new-name file-type)
+          (denote-rewrite-front-matter new-name title keywords signature date id file-type)
+        (when (denote-add-front-matter-prompt new-name)
+          (denote-prepend-front-matter new-name title keywords signature date id file-type))))
+    (when (and denote--used-ids (not (string-empty-p id)))
+      (puthash id t denote--used-ids))
+    (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
+    (run-hooks 'denote-after-rename-file-hook)
     new-name))
 
 (defun denote--rename-get-file-info-from-prompts-or-existing (file)
@@ -4139,7 +4149,7 @@ and seconds."
       (let ((saved-point (point)))
         (if (and (dired-move-to-filename)
                  (save-match-data
-                   (denote-file-has-identifier-p (buffer-substring (point) (line-end-position)))))
+                   (denote-file-has-denoted-filename-p (buffer-substring (point) (line-end-position)))))
             (setq line-found t)
           (goto-char saved-point))))
     (if line-found
