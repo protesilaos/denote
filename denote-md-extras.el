@@ -29,6 +29,21 @@
 
 (require 'denote)
 
+;;;; Register a new file type
+
+(add-to-list
+ 'denote-file-types
+ '(markdown-obsidian
+   :extension ".md"
+   :front-matter "# %s\n\n"
+   :title-key-regexp "^# "
+   :title-value-function identity
+   :title-value-reverse-function identity
+   :link denote-md-link-format
+   :link-in-context-regexp denote-md-link-in-context-regexp))
+
+;;;; Convert links
+
 (defun denote-md-extras--get-regexp (type)
   "Return regular expression to match link TYPE.
 TYPE is a symbol among `denote', `file', `obsidian', and `reverse-obsidian'."
