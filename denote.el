@@ -1309,7 +1309,7 @@ With optional OMIT-CURRENT as a non-nil value, do not include the
 current Denote file in the returned list.
 
 With optional TEXT-ONLY as a non-nil value, limit the results to
-text files that satisfy `denote-filename-is-note-p'.
+text files that satisfy `denote-file-has-supported-extension-p'.
 
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
@@ -1323,7 +1323,7 @@ OMIT-CURRENT have been applied."
                      (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
                    files)))
     (when text-only
-      (setq files (seq-filter #'denote-filename-is-note-p files)))
+      (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
     (when exclude-regexp
       (setq files (seq-remove
                    (lambda (file)
@@ -1392,7 +1392,7 @@ something like .org even if the actual file extension is
       (seq-find
        (lambda (file)
          (let ((file-extension (denote-get-file-extension file)))
-           (and (denote-filename-is-note-p file)
+           (and (denote-file-has-supported-extension-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
                     (string= ".org" file-extension)
