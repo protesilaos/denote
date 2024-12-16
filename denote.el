@@ -2385,7 +2385,7 @@ It checks files in variable `denote-directory' and active buffer files."
                       (denote-directory-files)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
-      (let ((id (denote-retrieve-filename-identifier name)))
+      (when-let* ((id (denote-retrieve-filename-identifier name)))
         (puthash id t ids)))
     ids))
 
