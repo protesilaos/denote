@@ -1176,12 +1176,16 @@ extensions are those implied by the variable `denote-file-type'."
               (string-suffix-p e file))
             (denote-file-type-extensions-with-encryption)))
 
+(defun denote-file-is-in-denote-directory-p (file)
+  "Return non-nil if FILE is in the variable `denote-directory'."
+  (string-prefix-p (denote-directory) (expand-file-name file)))
+
 (defun denote-filename-is-note-p (filename)
   "Return non-nil if FILENAME is a valid name for a Denote note.
 For our purposes, its path must be part of the variable
 `denote-directory', it must have a Denote identifier in its name, and
 use one of the extensions implied by the variable `denote-file-type'."
-  (and (string-prefix-p (denote-directory) (expand-file-name filename))
+  (and (denote-file-is-in-denote-directory-p filename)
        (denote-file-has-identifier-p filename)
        (denote-file-has-supported-extension-p filename)))
 
