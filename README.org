@@ -3250,6 +3250,26 @@ To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
 in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
 
+** Use the =markdown-obsidian= file type
+:PROPERTIES:
+:CUSTOM_ID: h:f0d0bb34-3ecf-4842-9941-3829e0f51143
+:END:
+
+[ This is part of {{{development-version}}}. ]
+
+The optional =denote-md-extras.el= file which is part of the Denote
+package includes features that are relevant for users of Markdown
+files. Among them is the ability to write files using the
+Obsidian-style front matter ([[#h:e01d6621-34e9-487d-8721-c4e42a6a286a][Convert =:denote= links to paths in Markdown or Obsidian style]]).
+This is a plain representation of the file's title as a top-level
+heading, without any further data.
+
+Include this in the Denote configuration:
+
+#+begin_src emacs-lisp
+(require 'denote-md-extras)
+#+end_src
+
 ** Convert =denote:= links to =file:= links in Org
 :PROPERTIES:
 :CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
@@ -3320,7 +3340,8 @@ All we can do is provide commands which convert links from the
 + Convert =denote:= links to Obsidian type :: The command
   ~denote-md-extras-convert-links-to-obsidian-type~ changes links from
   =[Test description](denote:20241026T051243)= becomes
-  =[20241026T051243--test-description__keyword1](20241026T051243--test-description__keyword1.md)=.
+  =[20241026T051243--test-description__keyword1](20241026T051243--test-description__keyword1.md)=
+  ([[#h:f0d0bb34-3ecf-4842-9941-3829e0f51143][Use the =markdown-obsidian= file type]]).
 
 #+findex: denote-md-extras-convert-obsidian-links-to-denote-type
 + Convert Obsidian style links to =denote:= type :: The command
