@@ -738,6 +738,56 @@ name matches the given regular expression."
                           files)))
     (insert (string-join files-contents))))
 
+(defvar denote-org-extras-not-ask-merge-delete t
+  "If non-nil, `denote-org-extras-merge-note-to-another' deletes
+without prompting. Otherwise, prompt for confirmation before
+deletion.")
+
+(defun denote-org-extras-merge-note-to-another (file)
+  "Merge the current note into another one"
+  (interactive (list (denote-file-prompt "\\.org\\'")))
+  (if (derived-mode-p 'org-mode)
+      (let* ((current-note buffer-file-name)
+             (current-note-title (denote-retrieve-front-matter-title-value current-note 'org))
+             (current-note-keywords (denote-extract-keywords-from-path current-note))
+             (current-note-content (condition-case nil ;; handling case when current note is empty
+                                       ;; NOTE 2024-06-26: Maybe we should rename that function,
+                                       ;; though it is okay as-is.
+                                       (denote-org-extras-dblock--get-file-contents current-note t)
+                                     (error "")))
+             (current-note-as-subtree (format "\n* %s\n%s" current-note-title (denote-org-extras--increase-headings-depth current-note-content)))
+             (other-note-keywords (denote-extract-keywords-from-path file))
+             (other-note-buffer (find-file-noselect file))
+             (other-note-title (denote-retrieve-front-matter-title-value file 'org))
+             (all-keywords (delete-dups (append current-note-keywords other-note-keywords))))
+        (with-current-buffer other-note-buffer
+          (goto-char (point-max))
+          (insert current-note-as-subtree))
+        (denote-org-extras--delete-note current-note)
+        (switch-to-buffer other-note-buffer)
+        (denote-rewrite-keywords file all-keywords 'org)
+        (denote-rename-file file other-note-title all-keywords nil nil) ;; FIXME: denote-slug-put-equals: Wrong type argument: arrayp, nil
+        (message "Merged current note into %s" (file-name-nondirectory file)))
+    (user-error "The current note is not an Org file")))
+
+(defun denote-org-extras--increase-headings-depth (string)
+  "Move all Org headings one level deeper in the INPUT-STRING."
+  (replace-regexp-in-string "^\\(*+\\) " "\\1* " string))
+
+(defun denote-org-extras--delete-note (file)
+  "Delete the file associated with FILE and kill its buffer."
+  (let* ((note (file-name-nondirectory file))
+         (msg (format "Deleted note: %s" note)))
+    (if denote-org-extras-not-ask-merge-delete
+        (progn
+          (kill-buffer (find-buffer-visiting file))
+          (delete-file file t)
+          (message msg))
+      (when (y-or-n-p (format "Delete this note: %s? " note))
+        (kill-buffer (find-buffer-visiting file))
+        (delete-file file t)
+        (message msg)))))
+
 ;;;###autoload
 (defun denote-org-extras-dblock-insert-files-as-headings (regexp sort-by-component)
   "Create Org dynamic block to insert Denote Org files matching REGEXP.
