@@ -2650,50 +2650,11 @@ we shall act accordingly.
 :CUSTOM_ID: h:54b48277-e0e5-4188-ad54-ef3db3b7e772
 :END:
 
-[ As part of {{{development-version}}}, the ~denote-add-front-matter~
-  is for interactive use only. It is no longer possible to call it
-  from Lisp with the arguments =FILE=, =TITLE=, =KEYWORDS=, and
-  =SIGNATURE=. For this purpose, use the functions
-  ~denote-prepend-front-matter~, ~denote-rewrite-front-matter~. ]
-
-#+findex: denote-add-front-matter
-Sometimes the user needs to produce new front matter for an existing
-note. Perhaps because they accidentally deleted a line and could not
-undo the operation. The command ~denote-add-front-matter~ can be used
-for this very purpose.
-
-It inserts front matter at the top of the current file if it is a
-Denote note.
-
-If front matter exists, fully or in part, it rewrites it. Else it
-prepends a new block to the current file.
-
-To prepare the new front matter, it prompts for title, keywords, and
-signature. It does so depending on if those are part of the current
-file ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). It thus skips the prompt for any
-missing file name component.
-
-At each prompt, it uses the current value of the given file name
-component as the default text in the minibuffer. For the title in
-particular, it reads from the existing front matter to get the
-human-readable version. Otherwise, it reads from the file name.
-
-It does not write the value of the given file name component if the
-minibuffer input is empty.
-
-Whatever the case, it does not rename the file upon completing the
-operation. This is the task of ~denote-rename-file~ or, more probably
-for this case, ~denote-rename-file-using-front-matter~, among others
-([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
-
-[ NOTE: Please check with your minibuffer user interface how to
-  provide an empty input. The Emacs default setup accepts the empty
-  minibuffer contents as they are, though popular packages like
-  ~vertico~ use the first available completion candidate instead. For
-  ~vertico~, the user must either move one up to select the prompt and
-  then type =RET= there with empty contents, or use the command
-  ~vertico-exit-input~ with empty contents. That Vertico command is
-  bound to =M-RET= as of this writing on 2024-02-29 09:24 +0200. ]
+As part of version 3.2.0 (currently {{{development-version}}}), the
+command ~denote-add-front-matter~ is superseded by
+~denote-rename-file~ and related ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]). Those commands will
+add missing front matter or rewrite the modified lines of existing
+front matter.
 
 * Linking notes
 :PROPERTIES:

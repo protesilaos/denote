@@ -3919,65 +3919,7 @@ they have front matter and what that may be."
 
 ;;;;; Creation of front matter
 
-;;;###autoload
-(defun denote-add-front-matter ()
-  "Insert front matter at the top of the current file if it is a Denote note.
-
-If front matter exists, fully or in part, rewrite it.  Else prepend a
-new block to the current file.
-
-To prepare the new front matter, prompt for title, keywords, and
-signature.  Do it depending on if those are part of the current file.
-Skip the prompt for any missing file name component.
-
-At each prompt, use the current value of the given file name component
-as the default text in the minibuffer.  For the title in particular,
-read from the existing front matter to get the human-readable version.
-Otherwise, read from the file name.
-
-Do not write the value of the given file name component if the
-minibuffer input is empty.
-
-Whatever the case, do not rename the file upon completing the operation.
-This is the task of `denote-rename-file' or, more probably for this
-case, `denote-rename-file-using-front-matter', among others.
-
-[ NOTE: Please check with your minibuffer user interface how to
-  provide an empty input.  The Emacs default setup accepts the
-  empty minibuffer contents as they are, though popular packages
-  like `vertico' use the first available completion candidate
-  instead.  For `vertico', the user must either move one up to
-  select the prompt and then type RET there with empty contents,
-  or use the command `vertico-exit-input' with empty contents.
-  That Vertico command is bound to M-RET as of this writing on
-  2024-02-29 09:24 +0200. ]"
-  (declare (advertised-calling-convention nil "3.1.0")
-           (interactive-only t))
-  (interactive nil text-mode)
-  (let* ((file buffer-file-name)
-         (titlep (denote-retrieve-filename-title file))
-         (keywordsp (denote-retrieve-filename-keywords file))
-         (signaturep (denote-retrieve-filename-signature file))
-         (file-type (denote-filetype-heuristics file))
-         (default-title (when titlep (or (denote-retrieve-title-value file file-type) titlep "")))
-         (default-keywords (when keywordsp (string-join (denote-retrieve-filename-keywords-as-list file) ",")))
-         (default-signature (or signaturep ""))
-         (title (if titlep
-                    (denote-title-prompt default-title "Add TITLE (empty to ignore)")
-                  ""))
-         (keywords (if keywordsp
-                       (denote-keywords-sort (denote-keywords-prompt "Add KEYWORDS (empty to ignore)" default-keywords))
-                     ""))
-         (signature (if signaturep
-                        (denote-signature-prompt default-signature "Add SIGNATURE (empty to ignore)")
-                      "")))
-    (when-let* ((denote-file-is-writable-and-supported-p file)
-                (id (denote-retrieve-filename-identifier file))
-                (date (date-to-time id)))
-      (if (denote--file-has-front-matter-p file file-type)
-          (denote-rewrite-front-matter file title keywords signature date id file-type)
-        (denote-prepend-front-matter file title keywords signature date id file-type)))))
-
+(make-obsolete 'denote-add-front-matter nil "Use `denote-rename-file' or related. Starting with version 3.2.0.")
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
