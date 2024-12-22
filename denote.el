@@ -3083,6 +3083,8 @@ variable `denote-directory'."
   (mapc #'denote--revert-dired (buffer-list)))
 
 (defvar denote-last-path nil "Store last path.")
+;; See `denote-org-capture-rename-file'.
+(defvar denote-last-path-after-rename nil "Store last renamed path.")
 
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name.
@@ -3094,7 +3096,7 @@ not exist yet.
 If a buffer is visiting the file, its name is updated."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
     (if (denote--file-type-org-extra-p)
-        (setq denote-last-path new-name)
+        (setq denote-last-path-after-rename new-name)
       (when (and (file-regular-p old-name)
                  (file-writable-p new-name))
         (cond
@@ -3645,7 +3647,7 @@ For a version of this command that works with multiple files
 one-by-one, use `denote-dired-rename-files'."
   (interactive
    (let* ((file (if (denote--file-type-org-extra-p)
-                    denote-last-path
+                    denote-last-path-after-rename
                   (denote--rename-dired-file-or-current-file-or-prompt))))
      (append (list file) (denote--rename-get-file-info-from-prompts-or-existing file))))
   (let* ((file-type (denote-filetype-heuristics file))
@@ -3879,7 +3881,7 @@ prompt for this if `denote-rename-confirmations' contains
 Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
   (interactive (list (if (denote--file-type-org-extra-p)
-                         denote-last-path
+                         denote-last-path-after-rename
                        (or (dired-get-filename nil t) buffer-file-name))))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
@@ -5506,6 +5508,7 @@ Consult the manual for template samples."
                                       (t (user-error "Invalid template")))))
     (setq denote-last-path
           (denote-format-file-name directory id keywords title ".org" signature))
+    (setq denote-last-path-after-rename denote-last-path)
     (when (file-regular-p denote-last-path)
       (user-error "A file named `%s' already exists" denote-last-path))
     (denote--keywords-add-to-history keywords)
@@ -5549,8 +5552,27 @@ option `denote-templates'."
   "Delete file if capture with `denote-org-capture' is aborted."
   (when-let* ((file denote-last-path)
               ((denote--file-empty-p file)))
-    (delete-file denote-last-path)))
+    (delete-file denote-last-path)
+    (setq denote-last-path nil)))
 
+;; The variable `denote-last-path' is used in `org-capture-templates',
+;; but a modified value is ignored after `denote-org-capture'
+;; completes.  The variable `denote-last-path-after-rename' is
+;; initially the same as `denote-last-path' but it is kept updated
+;; when a renaming command is used in the org capture buffer.  The
+;; destination file (with initial path `denote-last-path') is renamed
+;; here to its true destination path (`denote-last-path-after-rename')
+;; after `org-capture-finalize'.
+(defun denote-org-capture-rename-file ()
+  "Delete file if capture with `denote-org-capture' is aborted."
+  (when (and denote-last-path
+             denote-last-path-after-rename
+             (not (string= denote-last-path denote-last-path-after-rename)))
+    (denote-rename-file-and-buffer denote-last-path denote-last-path-after-rename))
+  (setq denote-last-path nil
+        denote-last-path-after-rename nil))
+
+(add-hook 'org-capture-after-finalize-hook #'denote-org-capture-rename-file) ; Must be inserted first (executed last).
 (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
 (provide 'denote)
