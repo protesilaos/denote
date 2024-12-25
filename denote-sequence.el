@@ -235,7 +235,6 @@ When called from Lisp, SEQUENCE is a string that conforms with `denote-sequence-
 ;;;###autoload
 (defun denote-sequence-new-sibling (sequence)
   "Convenience wrapper of `denote-sequence' to create new sibling of SEQUENCE."
-  (declare (interactive-only t))
   (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
   (let* ((new-sequence (denote-sequence-get 'sibling sequence))
          (denote-use-signature new-sequence))
@@ -244,7 +243,6 @@ When called from Lisp, SEQUENCE is a string that conforms with `denote-sequence-
 ;;;###autoload
 (defun denote-sequence-new-child (sequence)
   "Convenience wrapper of `denote-sequence' to create new child of SEQUENCE."
-  (declare (interactive-only t))
   (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
   (let* ((new-sequence (denote-sequence-get 'child sequence))
          (denote-use-signature new-sequence))
