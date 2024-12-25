@@ -6,7 +6,7 @@
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
 ;; Version: 0.0.0
-;; Package-Requires: ((emacs "28.1") (denote "3.2.0"))
+;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
