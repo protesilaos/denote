@@ -148,22 +148,22 @@ function `denote-sequence-get-all-sequences-with-prefix'."
   "Return a new sibling SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
-  (if-let* ((children-p (string-match-p "=" sequence))
-            (all (if children-p
-                     (denote-sequence-get-all-sequences-with-prefix sequence sequences)
-                   (denote-sequence-get-all-sequences)))
-            (largest (if children-p
-                         (denote-sequence--get-largest all 'sibling)
-                       (denote-sequence--get-largest all 'parent))))
-      (if children-p
-          (let* ((components (split-string largest "="))
-                 (butlast (butlast components))
-                 (last-component (car (nreverse components)))
-                 (current-number (string-to-number last-component))
-                 (new-number (number-to-string (+ current-number 1))))
-            (mapconcat #'identity (append butlast (list new-number)) "="))
-        (number-to-string (+ (string-to-number largest) 1)))
-    (error "Cannot find sequences given sequence `%s'" sequence)))
+  (let* ((children-p (string-match-p "=" sequence)))
+    (if-let* ((all (if children-p
+                       (denote-sequence-get-all-sequences-with-prefix sequence sequences)
+                     (denote-sequence-get-all-sequences)))
+              (largest (if children-p
+                           (denote-sequence--get-largest all 'sibling)
+                         (denote-sequence--get-largest all 'parent))))
+        (if children-p
+            (let* ((components (split-string largest "="))
+                   (butlast (butlast components))
+                   (last-component (car (nreverse components)))
+                   (current-number (string-to-number last-component))
+                   (new-number (number-to-string (+ current-number 1))))
+              (mapconcat #'identity (append butlast (list new-number)) "="))
+          (number-to-string (+ (string-to-number largest) 1)))
+      (error "Cannot find sequences given sequence `%s'" sequence))))
 
 (defun denote-sequence-get (type &optional sequence)
   "Return a sequence given TYPE among `denote-sequence-types'.
