@@ -40,6 +40,8 @@
 ;; since (i) it is simpler and (ii) we already have the field
 ;; separator to give a sufficient sense of place.
 
+(require 'denote)
+
 (defgroup denote-sequence ()
   "Sequence notes extension for denote."
   :group 'denote
