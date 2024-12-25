@@ -6914,15 +6914,15 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Cosmin-Octavian C, Damien Cassou, Elias Storms, Federico Stilman,
   Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
   Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty, Jay
-  Rajput, Jean-Charles Bagneris, Jens Östlund, Jeremy Friesen,
-  Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer, Jousimies,
-  Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi, Kolmas,
-  Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson, Mirko
-  Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter Prevos,
-  Peter Smith, Riccardo Giannitrapani, Samuel W. Flint, Sergio Rey,
-  Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven
-  Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C.
-  Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas,
+  Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
+  Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
+  Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
+  Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
+  Mirko Hernandez, Niall Dooley, Nick Bell, Paul van Gelder, Peter
+  Prevos, Peter Smith, Riccardo Giannitrapani, Samuel W. Flint, Sergio
+  Rey, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs,
+  Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet
+  C. Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas,
   babusri, coherentstate, doolio, duli, drcxd, elge70, fingerknight,
   hpgisler, hyperfocus1337, jtpavlock, juh, mentalisttraceur,
   pRot0ta1p, rbenit68, relict007, sarcom-sar, sienic, skissue, sundar
