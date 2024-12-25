@@ -42,11 +42,9 @@
 
 (defgroup denote-sequence ()
   "Sequence notes extension for denote."
-  :group 'files
   :group 'denote
   :link '(info-link "(denote) top")
   :link '(url-link :tag "homepage" "https://protesilaos.com/emacs/denote"))
-
 
 (defconst denote-sequence-regexp "=?[0-9]+"
   "Pattern of a sequence.")
