@@ -120,11 +120,12 @@ TYPE is a symbol among `denote-sequence-types'."
   "Return a new to increment largest among sequences.
 With optional SEQUENCES consider only those, otherwise operate on the
 return value of `denote-sequence-get-all-sequences'."
-  (let* ((all (or sequences (denote-sequence-get-all-sequences)))
-         (largest (denote-sequence--get-largest all 'parent))
-         (first-component (car (split-string largest "=")))
-         (current-number (string-to-number first-component)))
-    (number-to-string (+ current-number 1))))
+  (if-let* ((all (or sequences (denote-sequence-get-all-sequences))))
+      (let* ((largest (denote-sequence--get-largest all 'parent))
+             (first-component (car (split-string largest "=")))
+             (current-number (string-to-number first-component)))
+        (number-to-string (+ current-number 1)))
+    "1"))
 
 (defun denote-sequence--get-new-child (sequence &optional sequences)
   "Return a new child of SEQUENCE.
