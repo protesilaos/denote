@@ -214,7 +214,7 @@ If TYPE is either `child' or `sibling', then it is an extension of SEQUENCE.
 When called interactively, prompt for TYPE and, when necessary, for file
 whose SEQUENCE will be used to derive a new sequence.
 
-When called from Lisp, SEQUENCE is a string that conforms with `denote-sequence-p'."
+When called from Lisp, SEQUENCE is a string conforming with `denote-sequence-p'."
   (interactive
    (let ((selected-type (denote-sequence-type-prompt)))
      (list
