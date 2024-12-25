@@ -2042,21 +2042,23 @@ Also see `denote-extract-keywords-from-path' (alias
 (defun denote--file-with-temp-buffer-subr (file)
   "Return path to FILE or its buffer together with the appropriate function.
 Subroutine of `denote--file-with-temp-buffer'."
-  (let* ((buffer (get-file-buffer file))
-         (file-exists (file-exists-p file))
-         (buffer-modified (buffer-modified-p buffer)))
-    (cond
-     ((or (and file-exists
-               buffer
-               (not buffer-modified)
-               (not (eq buffer-modified 'autosaved)))
-          (and file-exists (not buffer)))
-      (cons #'insert-file-contents file))
-     (buffer
-      (cons #'insert-buffer buffer))
-     ;; (t
-     ;;  (error "Cannot find anything about file `%s'" file))
-     )))
+  (if (denote--file-type-org-extra-p)
+      (cons #'insert-buffer (current-buffer))
+    (let* ((buffer (get-file-buffer file))
+           (file-exists (file-exists-p file))
+           (buffer-modified (buffer-modified-p buffer)))
+      (cond
+       ((or (and file-exists
+                 buffer
+                 (not buffer-modified)
+                 (not (eq buffer-modified 'autosaved)))
+            (and file-exists (not buffer)))
+        (cons #'insert-file-contents file))
+       (buffer
+        (cons #'insert-buffer buffer))
+       ;; (t
+       ;;  (error "Cannot find anything about file `%s'" file))
+       ))))
 
 (defmacro denote--file-with-temp-buffer (file &rest body)
   "If FILE exists, insert its contents in a temp buffer and call BODY."
@@ -3080,6 +3082,10 @@ Also revert the current Dired buffer even if it is not inside the
 variable `denote-directory'."
   (mapc #'denote--revert-dired (buffer-list)))
 
+(defvar denote-last-path nil "Store last path.")
+;; See `denote-org-capture-rename-file'.
+(defvar denote-last-path-after-rename nil "Store last renamed path.")
+
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name.
 
@@ -3089,22 +3095,24 @@ not exist yet.
 
 If a buffer is visiting the file, its name is updated."
   (unless (string= (expand-file-name old-name) (expand-file-name new-name))
-    (when (and (file-regular-p old-name)
-               (file-writable-p new-name))
-      (cond
-       ((derived-mode-p 'dired-mode)
-        (dired-rename-file old-name new-name nil))
-       ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
-       ;; saved, but our convention is to not save the buffer after
-       ;; changing front matter unless we absolutely have to (allows
-       ;; users to do `diff-buffer-with-file', for example).
-       ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
-        (vc-rename-file old-name new-name))
-       (t
-        (rename-file old-name new-name nil))))
-    (when-let* ((buffer (find-buffer-visiting old-name)))
-      (with-current-buffer buffer
-        (set-visited-file-name new-name nil t)))))
+    (if (denote--file-type-org-extra-p)
+        (setq denote-last-path-after-rename new-name)
+      (when (and (file-regular-p old-name)
+                 (file-writable-p new-name))
+        (cond
+         ((derived-mode-p 'dired-mode)
+          (dired-rename-file old-name new-name nil))
+         ;; NOTE 2024-02-25: The `vc-rename-file' requires the file to be
+         ;; saved, but our convention is to not save the buffer after
+         ;; changing front matter unless we absolutely have to (allows
+         ;; users to do `diff-buffer-with-file', for example).
+         ((and denote-save-buffers (not (buffer-modified-p)) (vc-backend old-name))
+          (vc-rename-file old-name new-name))
+         (t
+          (rename-file old-name new-name nil))))
+      (when-let* ((buffer (find-buffer-visiting old-name)))
+        (with-current-buffer buffer
+          (set-visited-file-name new-name nil t))))))
 
 (define-obsolete-function-alias
   'denote--add-front-matter
@@ -3117,7 +3125,7 @@ The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from
 the renaming command and are used to construct a new front matter block
 if appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
-    (with-current-buffer (find-file-noselect file)
+    (denote--file-with-temp-buffer file
       (goto-char (point-min))
       (insert new-front-matter))))
 
@@ -3167,22 +3175,22 @@ identifier.  It also returns nil given a nil date or nil keywords."
     ('date (not (null value)))
     ('identifier (not (string-empty-p value)))))
 
-(defun denote--get-old-and-new-front-matter-lines (file new-front-matter file-type)
+(defun denote--get-old-and-new-front-matter-lines (file-content new-front-matter file-type)
   "Return an alist of the old and new front-matter lines for each component.
 
-The FILE contains the old front matter lines.
+The FILE-CONTENT contains the old front matter lines.
 
 NEW-FRONT-MATTER is a the front matter with the new values, with the
 format given by FILE-TYPE."
-  `((title . ((old . ,(denote-retrieve-front-matter-title-line file file-type))
+  `((title . ((old . ,(denote--retrieve-front-matter-title-line-from-content file-content file-type))
               (new . ,(denote--retrieve-front-matter-title-line-from-content new-front-matter file-type))))
-    (keywords . ((old . ,(denote-retrieve-front-matter-keywords-line file file-type))
+    (keywords . ((old . ,(denote--retrieve-front-matter-keywords-line-from-content file-content file-type))
                  (new . ,(denote--retrieve-front-matter-keywords-line-from-content new-front-matter file-type))))
-    (signature . ((old . ,(denote-retrieve-front-matter-signature-line file file-type))
+    (signature . ((old . ,(denote--retrieve-front-matter-signature-line-from-content file-content file-type))
                   (new . ,(denote--retrieve-front-matter-signature-line-from-content new-front-matter file-type))))
-    (date . ((old . ,(denote-retrieve-front-matter-date-line file file-type))
+    (date . ((old . ,(denote--retrieve-front-matter-date-line-from-content file-content file-type))
              (new . ,(denote--retrieve-front-matter-date-line-from-content new-front-matter file-type))))
-    (identifier . ((old . ,(denote-retrieve-front-matter-identifier-line file file-type))
+    (identifier . ((old . ,(denote--retrieve-front-matter-identifier-line-from-content file-content file-type))
                    (new . ,(denote--retrieve-front-matter-identifier-line-from-content new-front-matter file-type))))))
 
 (defun denote--get-front-matter-components-order (content file-type)
@@ -3219,7 +3227,7 @@ entire file content."
 This is checked against its front matter definition.  If the front matter
 definition has no lines, this function returns non-nil."
   (let* ((front-matter (denote--front-matter file-type))
-         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
+         (file-content (denote--file-with-temp-buffer file (buffer-string)))
          (components-in-template (denote--get-front-matter-components-order front-matter file-type))
          (components-in-file (denote--get-front-matter-components-order file-content file-type)))
     (or (null components-in-template)
@@ -3316,14 +3324,14 @@ matter values if appropriate.
 If `denote-rename-confirmations' contains `rewrite-front-matter',
 prompt to confirm the rewriting of the front matter."
   (let* ((front-matter (denote--front-matter file-type))
-         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
+         (file-content (denote--file-with-temp-buffer file (buffer-string)))
          (components-in-template (denote--get-front-matter-components-order front-matter file-type))
          (components-in-file (denote--get-front-matter-components-order file-content file-type))
          (components-to-add '())
          (components-to-remove '())
          (components-to-modify '())
          (new-front-matter (denote--format-front-matter title date keywords identifier signature file-type))
-         (old-and-new-front-matter-lines (denote--get-old-and-new-front-matter-lines file new-front-matter file-type)))
+         (old-and-new-front-matter-lines (denote--get-old-and-new-front-matter-lines file-content new-front-matter file-type)))
     ;; Build the lists of components to add, remove, modify.
     (dolist (component '(title keywords signature identifier date))
       ;; Ignore the component if it is not in the template.  It is not added, removed or modified.
@@ -3346,7 +3354,9 @@ prompt to confirm the rewriting of the front matter."
                (or components-to-add components-to-remove components-to-modify))
       (when-let* ((final-components (denote--get-final-components-for-rewrite
                                      components-in-file components-in-template components-to-add)))
-        (with-current-buffer (find-file-noselect file)
+        (with-current-buffer (if (denote--file-type-org-extra-p)
+                                 (current-buffer)
+                               (find-file-noselect file))
           (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
                     (y-or-n-p (denote--get-front-matter-rewrite-prompt
                                final-components
@@ -3481,7 +3491,8 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
           (denote-prepend-front-matter new-name title keywords signature date id file-type))))
     (when (and denote--used-ids (not (string-empty-p id)))
       (puthash id t denote--used-ids))
-    (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
+    (unless (denote--file-type-org-extra-p)
+      (denote--handle-save-and-kill-buffer 'rename new-name initial-state))
     (run-hooks 'denote-after-rename-file-hook)
     new-name))
 
@@ -3635,7 +3646,9 @@ file-naming scheme.
 For a version of this command that works with multiple files
 one-by-one, use `denote-dired-rename-files'."
   (interactive
-   (let* ((file (denote--rename-dired-file-or-current-file-or-prompt)))
+   (let* ((file (if (denote--file-type-org-extra-p)
+                    denote-last-path-after-rename
+                  (denote--rename-dired-file-or-current-file-or-prompt))))
      (append (list file) (denote--rename-get-file-info-from-prompts-or-existing file))))
   (let* ((file-type (denote-filetype-heuristics file))
          (title (if (eq title 'keep-current)
@@ -3867,7 +3880,9 @@ prompt for this if `denote-rename-confirmations' contains
 
 Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
-  (interactive (list (or (dired-get-filename nil t) buffer-file-name)))
+  (interactive (list (if (denote--file-type-org-extra-p)
+                         denote-last-path-after-rename
+                       (or (dired-get-filename nil t) buffer-file-name))))
   (unless (denote-file-is-writable-and-supported-p file)
     (user-error "The file is not writable or does not have a supported file extension"))
   (let ((file-type (denote-filetype-heuristics file)))
@@ -5466,8 +5481,6 @@ the standard front matter we define."
   (when (stringp denote-org-capture-specifiers)
     (string-match-p "%^?[aAlL]" denote-org-capture-specifiers)))
 
-(defvar denote-last-path nil "Store last path.")
-
 ;;;###autoload
 (defun denote-org-capture ()
   "Create new note through `org-capture-templates'.
@@ -5495,6 +5508,7 @@ Consult the manual for template samples."
                                       (t (user-error "Invalid template")))))
     (setq denote-last-path
           (denote-format-file-name directory id keywords title ".org" signature))
+    (setq denote-last-path-after-rename denote-last-path)
     (when (file-regular-p denote-last-path)
       (user-error "A file named `%s' already exists" denote-last-path))
     (denote--keywords-add-to-history keywords)
@@ -5538,8 +5552,27 @@ option `denote-templates'."
   "Delete file if capture with `denote-org-capture' is aborted."
   (when-let* ((file denote-last-path)
               ((denote--file-empty-p file)))
-    (delete-file denote-last-path)))
+    (delete-file denote-last-path)
+    (setq denote-last-path nil)))
 
+;; The variable `denote-last-path' is used in `org-capture-templates',
+;; but a modified value is ignored after `denote-org-capture'
+;; completes.  The variable `denote-last-path-after-rename' is
+;; initially the same as `denote-last-path' but it is kept updated
+;; when a renaming command is used in the org capture buffer.  The
+;; destination file (with initial path `denote-last-path') is renamed
+;; here to its true destination path (`denote-last-path-after-rename')
+;; after `org-capture-finalize'.
+(defun denote-org-capture-rename-file ()
+  "Delete file if capture with `denote-org-capture' is aborted."
+  (when (and denote-last-path
+             denote-last-path-after-rename
+             (not (string= denote-last-path denote-last-path-after-rename)))
+    (denote-rename-file-and-buffer denote-last-path denote-last-path-after-rename))
+  (setq denote-last-path nil
+        denote-last-path-after-rename nil))
+
+(add-hook 'org-capture-after-finalize-hook #'denote-org-capture-rename-file) ; Must be inserted first (executed last).
 (add-hook 'org-capture-after-finalize-hook #'denote-org-capture-delete-empty-file)
 
 (provide 'denote)
