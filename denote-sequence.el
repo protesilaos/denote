@@ -194,7 +194,7 @@ Return selected type as a symbol."
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
   (let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
                                  (denote-sequence-get-all-files)))
-         (prompt "Select FILE: ")
+         (prompt "Select FILE with sequence: ")
          (input (completing-read
                  prompt
                  (denote--completion-table 'file relative-files)
