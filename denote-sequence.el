@@ -193,15 +193,16 @@ Return selected type as a symbol."
 (defun denote-sequence-file-prompt ()
   "Prompt for file with sequence in variable `denote-directory'.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
-                                 (denote-sequence-get-all-files)))
-         (prompt "Select FILE with sequence: ")
-         (input (completing-read
-                 prompt
-                 (denote--completion-table 'file relative-files)
-                 nil :require-match
-                 nil 'denote-sequence-file-history)))
-    (concat (denote-directory) input)))
+  (if-let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
+                                      (denote-sequence-get-all-files)))
+              (prompt "Select FILE with sequence: ")
+              (input (completing-read
+                      prompt
+                      (denote--completion-table 'file relative-files)
+                      nil :require-match
+                      nil 'denote-sequence-file-history)))
+      (concat (denote-directory) input)
+    (error "There are no sequence notes in the `denote-directory'")))
 
 ;;;###autoload
 (defun denote-sequence (type &optional sequence)
