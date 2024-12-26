@@ -5185,7 +5185,7 @@ This command is meant to be used from a Dired buffer."
    (list
     (denote-link--map-over-notes)
     (let ((file-names (denote--buffer-file-names)))
-      (find-file
+      (find-buffer-visiting
        (cond
         ((null file-names)
          (user-error "No buffers visiting Denote notes"))
@@ -5197,15 +5197,23 @@ This command is meant to be used from a Dired buffer."
    dired-mode)
   (when (null files)
     (user-error "No note files to link to"))
-  (with-current-buffer buffer
-    (unless (or (denote--file-type-org-extra-p)
-                (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
-      (user-error "The buffer's file type is not recognized by Denote")))
-  (when (y-or-n-p (format "Create links at point in %s?" buffer))
-    (with-current-buffer buffer
-      (denote-link--insert-links files
-                                 (denote-filetype-heuristics (buffer-file-name))
-                                 id-only))))
+  (unless (buffer-live-p buffer)
+    (error "The buffer `%s' is not live" buffer))
+  (let ((body (lambda ()
+                (unless (or (denote--file-type-org-extra-p)
+                            (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
+                  (user-error "The target file's type is not recognized by Denote"))
+                (when (y-or-n-p (format "Create links at point in `%s'?" buffer))
+                  (denote-link--insert-links files (denote-filetype-heuristics buffer-file-name) id-only)
+                  (message "Added links to `%s'; displaying it now"
+                           ;; TODO 2024-12-26: Do we need our face here?  I think
+                           ;; not, but let me keep a note of it.
+                           (propertize (format "%s" buffer) 'face 'success))))))
+    (if-let* ((window (get-buffer-window buffer))
+              ((window-live-p window)))
+        (with-selected-window window (funcall body))
+      (with-current-buffer buffer (funcall body))
+      (display-buffer-below-selected buffer nil))))
 
 (defalias 'denote-dired-link-marked-notes 'denote-link-dired-marked-notes
   "Alias for `denote-link-dired-marked-notes' command.")
