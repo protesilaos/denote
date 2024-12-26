@@ -5159,7 +5159,7 @@ inserts links with just the identifier."
     (concat (denote-directory)
             (completing-read
              "Select note file buffer: "
-             (denote--completion-table 'buffer relative-buffer-file-names)
+             (denote--completion-table 'file relative-buffer-file-names)
              nil t))))
 
 (defun denote-link--map-over-notes ()
