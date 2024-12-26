@@ -5170,16 +5170,12 @@ inserts links with just the identifier."
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
   "Insert Dired marked FILES as links in BUFFER.
 
-FILES are Denote notes, meaning that they have our file-naming scheme,
-are writable/regular files, and use the appropriate file type
-extension (per the user option `denote-file-type').  Furthermore, the
-marked files need to be inside the variable `denote-directory' or one of
-its subdirectories.  No other file is recognised (the list of marked
-files ignores whatever does not count as a note for our purposes).
+FILES conform with the Denote file-naming scheme, such that they can be
+linked to using the `denote:' link type.
 
 The BUFFER is one which visits a Denote note file.  If there are
-multiple buffers, prompt with completion for one among them.  If
-there isn't one, throw an error.
+multiple BUFFER candidates in buffers, prompt with completion for
+one among them.  If there is none, throw an error.
 
 With optional ID-ONLY as a prefix argument, insert links with
 just the identifier (same principle as with `denote-link').
