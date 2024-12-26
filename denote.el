@@ -5158,7 +5158,7 @@ inserts links with just the identifier."
   (let ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)))
     (concat (denote-directory)
             (completing-read
-             "Select note file buffer: "
+             "Select open note to add links to: "
              (denote--completion-table 'file relative-buffer-file-names)
              nil t))))
 
