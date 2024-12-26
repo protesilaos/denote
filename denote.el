@@ -5211,7 +5211,7 @@ This command is meant to be used from a Dired buffer."
                                  (denote-filetype-heuristics (buffer-file-name))
                                  id-only))))
 
-(defalias 'denote-link-dired-marked-notes 'denote-dired-link-marked-notes
+(defalias 'denote-dired-link-marked-notes 'denote-link-dired-marked-notes
   "Alias for `denote-link-dired-marked-notes' command.")
 
 ;;;;; Define menu
