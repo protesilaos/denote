@@ -5182,18 +5182,20 @@ just the identifier (same principle as with `denote-link').
 
 This command is meant to be used from a Dired buffer."
   (interactive
-   (list
-    (denote-link--map-over-notes)
-    (let ((file-names (denote--buffer-file-names)))
-      (find-buffer-visiting
-       (cond
-        ((null file-names)
-         (user-error "No buffers visiting Denote notes"))
-        ((eq (length file-names) 1)
-         (car file-names))
-        (t
-         (denote-link--buffer-file-prompt file-names)))))
-    current-prefix-arg)
+   (if (derived-mode-p 'dired-mode)
+       (list
+        (denote-link--map-over-notes)
+        (let ((file-names (denote--buffer-file-names)))
+          (find-buffer-visiting
+           (cond
+            ((null file-names)
+             (user-error "No buffers visiting Denote notes"))
+            ((eq (length file-names) 1)
+             (car file-names))
+            (t
+             (denote-link--buffer-file-prompt file-names)))))
+        current-prefix-arg)
+     (user-error "This command only works inside a Dired buffer"))
    dired-mode)
   (when (null files)
     (user-error "No note files to link to"))
