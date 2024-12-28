@@ -150,7 +150,7 @@ Obligations, Tasks, and Engagements.
 #+findex: denote-subdirectory
 #+findex: denote-template
 #+findex: denote-signature
-There are five main ways to write a note with Denote: invoke the
+There are seven main ways to write a note with Denote: invoke the
 ~denote~, ~denote-type~, ~denote-date~, ~denote-subdirectory~,
 ~denote-template~, ~denote-signature~ commands, or leverage the
 ~org-capture-templates~ by setting up a template which calls the
@@ -159,7 +159,7 @@ subsequent sections.  Other more specialised commands exist as well,
 which one shall learn about as they read through this manual.  We do
 not want to overwhelm the user with options at this stage.
 
-All these commands constructs the file name in accordance with the user option
+All these commands construct the file name in accordance with the user option
 ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
 ** Standard note creation
