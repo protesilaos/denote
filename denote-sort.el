@@ -157,12 +157,11 @@ sorting which relies on the identifier of each file name.
 
 With optional REVERSE as a non-nil value, reverse the sort order."
   (let* ((files-to-sort (copy-sequence files))
-         (sort-fn (when component
-                    (pcase component
-                      ((pred functionp) component)
-                      ('title #'denote-sort-title-lessp)
-                      ('keywords #'denote-sort-keywords-lessp)
-                      ('signature #'denote-sort-signature-lessp))))
+         (sort-fn (pcase component
+                    ((pred functionp) component)
+                    ('title #'denote-sort-title-lessp)
+                    ('keywords #'denote-sort-keywords-lessp)
+                    ('signature #'denote-sort-signature-lessp)))
          (sorted-files (if sort-fn (sort files sort-fn) files-to-sort)))
     (if reverse
         (reverse sorted-files)
