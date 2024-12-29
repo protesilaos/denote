@@ -148,6 +148,10 @@ The `%s' performs the comparison."
 With COMPONENT as a symbol among `denote-sort-components',
 sort files based on the corresponding file name component.
 
+With COMPONENT as the symbol of a function, use it to perform the
+sorting.  In this case, the function is called with two arguments, as
+described by `sort'.
+
 With COMPONENT as a nil value keep the original date-based
 sorting which relies on the identifier of each file name.
 
@@ -155,6 +159,7 @@ With optional REVERSE as a non-nil value, reverse the sort order."
   (let* ((files-to-sort (copy-sequence files))
          (sort-fn (when component
                     (pcase component
+                      ((pred functionp) component)
                       ('title #'denote-sort-title-lessp)
                       ('keywords #'denote-sort-keywords-lessp)
                       ('signature #'denote-sort-signature-lessp))))
