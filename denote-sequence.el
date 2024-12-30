@@ -67,6 +67,12 @@ SEQUENCE conforms with `denote-sequence-p'."
   (if (denote-sequence-p sequence)
       (split-string sequence "=" t)
     (error "The sequence `%s' does not pass `denote-sequence-p'" sequence)))
+
+(defun denote-sequence-depth (sequence)
+  "Get the depth of SEQUENCE.
+For example, 1=2=1 is three levels deep."
+  (length (denote-sequence-split sequence)))
+
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
