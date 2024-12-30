@@ -61,6 +61,12 @@
              (not (string-suffix-p "=" sequence)))
     sequence))
 
+(defun denote-sequence-split (sequence)
+  "Split the SEQUENCE string into a list.
+SEQUENCE conforms with `denote-sequence-p'."
+  (if (denote-sequence-p sequence)
+      (split-string sequence "=" t)
+    (error "The sequence `%s' does not pass `denote-sequence-p'" sequence)))
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
