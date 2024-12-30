@@ -163,25 +163,27 @@ return value of `denote-sequence-get-all-sequences'."
   "Return a new child of SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
-  (let ((no-descendants (= (length sequence) 1)))
-    (if-let* ((depth (if no-descendants
-                         2
-                       (denote-sequence-depth sequence)))
-              (all-unfiltered (denote-sequence-get-all-sequences-with-prefix sequence sequences))
-              (all (or (denote-sequence-get-sequences-with-max-depth depth all-unfiltered)
-                       all-unfiltered))
-              (largest (denote-sequence--get-largest all 'child)))
-        (if (string-match-p "=" largest)
-            (let* ((components (denote-sequence-split largest))
-                   (butlast (when no-descendants (butlast components)))
-                   (last-component (car (nreverse components)))
-                   (current-number (string-to-number last-component))
-                   (new-number (number-to-string (+ current-number 1))))
-              (if butlast
-                  (mapconcat #'identity (append butlast (list new-number)) "=")
-                (mapconcat #'identity (list largest new-number) "=")))
-          (format "%s=1" largest))
-      (error "Cannot find sequences given sequence `%s'" sequence))))
+  (if-let* ((depth (+ (denote-sequence-depth sequence) 1))
+            (all-unfiltered (denote-sequence-get-all-sequences-with-prefix sequence sequences)))
+      (if (= (length all-unfiltered) 1)
+          (format "%s=1" (car all-unfiltered))
+        (let* ((all (cond
+                     ((= (length all-unfiltered) 1)
+                      all-unfiltered)
+                     ((denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+                     (t all-unfiltered)))
+               (largest (denote-sequence--get-largest all 'child)))
+          (if (string-match-p "=" largest)
+              (let* ((components (denote-sequence-split largest))
+                     (butlast (butlast components))
+                     (last-component (car (nreverse components)))
+                     (current-number (string-to-number last-component))
+                     (new-number (number-to-string (+ current-number 1))))
+                (if butlast
+                    (mapconcat #'identity (append butlast (list new-number)) "=")
+                  (mapconcat #'identity (list largest new-number) "=")))
+            (format "%s=1" largest))))
+    (error "Cannot find sequences given sequence `%s'" sequence)))
 
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
