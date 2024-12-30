@@ -242,21 +242,25 @@ A sequence is a Denote signature that conforms with `denote-sequence-p'."
     (error "There are no sequence notes in the `denote-directory'")))
 
 ;;;###autoload
-(defun denote-sequence (type &optional sequence)
+(defun denote-sequence (type &optional file-with-sequence)
   "Create a new sequence note of TYPE among `denote-sequence-types'.
 If TYPE is either `child' or `sibling', then it is an extension of SEQUENCE.
 
-When called interactively, prompt for TYPE and, when necessary, for file
-whose SEQUENCE will be used to derive a new sequence.
-
-When called from Lisp, SEQUENCE is a string conforming with `denote-sequence-p'."
+When called interactively, prompt for TYPE and, when necessary, for
+FILE-WITH-SEQUENCE whose sequence will be used to derive a new sequence.
+Files available at the minibuffer prompt are those returned by
+`denote-sequence-get-all-files'."
   (interactive
    (let ((selected-type (denote-sequence-type-prompt)))
      (list
       selected-type
       (when (memq selected-type (delq 'parent denote-sequence-types))
-        (denote-retrieve-filename-signature (denote-sequence-file-prompt))))))
-  (let* ((new-sequence (denote-sequence-get type sequence))
+        (denote-sequence-file-prompt)))))
+  ;; TODO 2024-12-30: Do we need to wrap this in the following?
+  ;;
+  ;; (cl-letf (((alist-get 'signature denote-file-name-slug-functions) #'denote-sluggify-signature))
+  (let* ((sequence (denote-retrieve-filename-signature file-with-sequence))
+         (new-sequence (denote-sequence-get type sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
