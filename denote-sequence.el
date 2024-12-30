@@ -220,11 +220,12 @@ Files available at the minibuffer prompt are those returned by
      (list
       selected-type
       (when (memq selected-type (delq 'parent denote-sequence-types))
-        (denote-retrieve-filename-signature (denote-sequence-file-prompt))))))
+        (denote-sequence-file-prompt)))))
   ;; TODO 2024-12-30: Do we need to wrap this in the following?
   ;;
   ;; (cl-letf (((alist-get 'signature denote-file-name-slug-functions) #'denote-sluggify-signature))
-  (let* ((new-sequence (denote-sequence-get type file-with-sequence))
+  (let* ((sequence (denote-retrieve-filename-signature file-with-sequence))
+         (new-sequence (denote-sequence-get type sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
