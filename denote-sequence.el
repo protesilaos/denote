@@ -101,15 +101,33 @@ With optional SEQUENCES operate on those, else use the return value of
      (string-prefix-p sequence string))
    (or sequences (denote-sequence-get-all-sequences))))
 
+(defun denote-sequence-get-sequences-with-max-depth (depth &optional sequences)
+  "Get sequences up to DEPTH (inclusive).
+With optional SEQUENCES operate on those, else use the return value of
+`denote-sequence-get-all-sequences'."
+  (let* ((strings (or sequences (denote-sequence-get-all-sequences)))
+         (lists-all (mapcar #'denote-sequence-split strings))
+         (lists (seq-filter (lambda (element) (>= (length element) depth)) lists-all)))
+    (delete-dups
+     (mapcar
+      (lambda (sequence)
+        (mapconcat #'identity (seq-take sequence depth) "="))
+      lists))))
+
 (defun denote-sequence--pad (sequence type)
   "Create a new SEQUENCE with padded spaces for TYPE.
 TYPE is a symbol among `denote-sequence-types'."
   (let* ((sequence-separator-p (string-match-p "=" sequence))
+         (split (denote-sequence-split sequence))
          (s (if sequence-separator-p
                 (pcase type
-                  ('parent (car (split-string sequence "=" t)))
-                  ('sibling (split-string sequence "=" t))
-                  (_ (butlast (split-string sequence "=" t))))
+                  ('parent (car split))
+                  ('sibling split)
+                  ('child (car (nreverse split)))
+                  ;; FIXME 2024-12-30: This is the last descendant. Do
+                  ;; we define a new `descendant' type or do we error
+                  ;; here?
+                  (_ (butlast split)))
               sequence)))
     (if (listp s)
         (combine-and-quote-strings
@@ -145,17 +163,22 @@ return value of `denote-sequence-get-all-sequences'."
   "Return a new child of SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
-  (if-let* ((all (denote-sequence-get-all-sequences-with-prefix sequence sequences))
-            (largest (denote-sequence--get-largest all 'child)))
-      (if (string-match-p "=" largest)
-          (let* ((components (split-string largest "="))
-                 (butlast (butlast components))
-                 (last-component (car (nreverse components)))
-                 (current-number (string-to-number last-component))
-                 (new-number (number-to-string (+ current-number 1))))
-            (mapconcat #'identity (append butlast (list new-number)) "="))
-        (concat largest "=" "1"))
-    (error "Cannot find sequences given sequence `%s'" sequence)))
+  (let* ((descendants-p (string-match-p "=" sequence)))
+    (if-let* ((depth (+ (denote-sequence-depth sequence) 1))
+              (all-unfiltered (if descendants-p
+                                  (denote-sequence-get-all-sequences-with-prefix sequence sequences)
+                                (denote-sequence-get-all-sequences)))
+              (all (denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+              (largest (denote-sequence--get-largest all 'child)))
+        (if descendants-p
+            (let* ((components (split-string largest "="))
+                   (butlast (butlast components))
+                   (last-component (car (nreverse components)))
+                   (current-number (string-to-number last-component))
+                   (new-number (number-to-string (+ current-number 1))))
+              (mapconcat #'identity (append butlast (list new-number)) "="))
+          (number-to-string (+ (string-to-number largest) 1)))
+      (error "Cannot find sequences given sequence `%s'" sequence))))
 
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
