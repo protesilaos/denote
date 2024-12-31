@@ -128,10 +128,7 @@ TYPE is a symbol among `denote-sequence-types'."
                   ('parent (car split))
                   ('sibling split)
                   ('child (car (nreverse split)))
-                  ;; FIXME 2024-12-30: This is the last descendant. Do
-                  ;; we define a new `descendant' type or do we error
-                  ;; here?
-                  (_ (butlast split)))
+                  (_ (error "The type `%s' is not among `denote-sequence-types'" type)))
               sequence)))
     (if (listp s)
         (combine-and-quote-strings
