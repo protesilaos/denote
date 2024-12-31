@@ -82,15 +82,17 @@ A sequence is a Denote signature that conforms with `denote-sequence-p'."
        (denote-sequence-p signature)))
    (denote-directory-files)))
 
-(defun denote-sequence-get-all-sequences ()
-  "Return all sequences in the variable `denote-directory'.
-A sequence is a Denote signature that conforms with `denote-sequence-p'."
+(defun denote-sequence-get-all-sequences (&optional files)
+  "Return all sequences in `denote-directory-files'.
+A sequence is a Denote signature that conforms with `denote-sequence-p'.
+
+With optional FILES return all sequences among them instead."
   (delq nil
         (mapcar
          (lambda (file)
            (when-let* ((signature (denote-retrieve-filename-signature file)))
              (denote-sequence-p signature)))
-         (denote-directory-files))))
+         (or files (denote-directory-files)))))
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.
