@@ -189,14 +189,24 @@ function `denote-sequence-get-all-sequences-with-prefix'."
             (format "%s=1" largest))))
     (error "Cannot find sequences given sequence `%s'" sequence)))
 
+(defun denote-sequence--get-prefix-for-siblings (sequence)
+  "Get the prefix of SEQUENCE such that it is possible to find its siblings."
+  (when (string-match-p "=" sequence)
+    (mapconcat #'identity (butlast (denote-sequence-split sequence)) "=")))
+
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
   (let* ((children-p (string-match-p "=" sequence)))
-    (if-let* ((all (if children-p
-                       (denote-sequence-get-all-sequences-with-prefix sequence sequences)
-                     (denote-sequence-get-all-sequences)))
+    (if-let* ((depth (denote-sequence-depth sequence))
+              (all-unfiltered (if children-p
+                                  (denote-sequence-get-all-sequences-with-prefix
+                                   (denote-sequence--get-prefix-for-siblings sequence)
+                                   sequences)
+                                (denote-sequence-get-all-sequences)))
+              (all (denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+              ((member sequence all))
               (largest (if children-p
                            (denote-sequence--get-largest all 'sibling)
                          (denote-sequence--get-largest all 'parent))))
