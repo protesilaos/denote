@@ -279,8 +279,7 @@ Files available at the minibuffer prompt are those returned by
 
 ;;;###autoload
 (defun denote-sequence-new-parent ()
-  "Convenience wrapper of `denote-sequence' to create new parent."
-  (declare (interactive-only t))
+  "Like `denote-sequence' to directly create new parent."
   (interactive)
   (let* ((new-sequence (denote-sequence-get 'parent))
          (denote-use-signature new-sequence))
