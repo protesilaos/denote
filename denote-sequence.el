@@ -287,7 +287,9 @@ Files available at the minibuffer prompt are those returned by
 
 ;;;###autoload
 (defun denote-sequence-new-sibling (sequence)
-  "Convenience wrapper of `denote-sequence' to create new sibling of SEQUENCE."
+  "Like `denote-sequence' to directly create new sibling of SEQUENCE.
+When called from Lisp, SEQUENCE is a string that conforms with
+`denote-sequence-p'."
   (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
   (let* ((new-sequence (denote-sequence-get 'sibling sequence))
          (denote-use-signature new-sequence))
