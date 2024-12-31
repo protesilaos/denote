@@ -583,6 +583,8 @@ does not involve the time zone."
 
 ;;;; denote-sequence.el
 
+;; TODO 2024-12-31: Maybe we can share some state between tests?  It
+;; is expensive to create those files over and over.
 (ert-deftest denote-test--denote-sequence--get-new-child ()
   "Make sure `denote-sequence--get-new-child' gets the child of a sequence."
   (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
