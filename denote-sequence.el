@@ -297,7 +297,9 @@ When called from Lisp, SEQUENCE is a string that conforms with
 
 ;;;###autoload
 (defun denote-sequence-new-child (sequence)
-  "Convenience wrapper of `denote-sequence' to create new child of SEQUENCE."
+  "Like `denote-sequence' to directly create new child of SEQUENCE.
+When called from Lisp, SEQUENCE is a string that conforms with
+`denote-sequence-p'."
   (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
   (let* ((new-sequence (denote-sequence-get 'child sequence))
          (denote-use-signature new-sequence))
