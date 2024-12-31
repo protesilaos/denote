@@ -61,6 +61,12 @@
              (not (string-suffix-p "=" sequence)))
     sequence))
 
+(defun denote-sequence-file-p (file)
+  "Return non-nil if Denote signature of FILE is a sequence.
+A sequence is string that matches `denote-sequence-regexp'."
+  (when-let* ((signature (denote-retrieve-filename-signature file)))
+    (denote-sequence-p signature)))
+
 (defun denote-sequence-split (sequence)
   "Split the SEQUENCE string into a list.
 SEQUENCE conforms with `denote-sequence-p'."
@@ -76,23 +82,14 @@ For example, 1=2=1 is three levels deep."
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (seq-filter
-   (lambda (file)
-     (when-let* ((signature (denote-retrieve-filename-signature file)))
-       (denote-sequence-p signature)))
-   (denote-directory-files)))
+  (seq-filter #'denote-sequence-file-p (denote-directory-files)))
 
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
 A sequence is a Denote signature that conforms with `denote-sequence-p'.
 
 With optional FILES return all sequences among them instead."
-  (delq nil
-        (mapcar
-         (lambda (file)
-           (when-let* ((signature (denote-retrieve-filename-signature file)))
-             (denote-sequence-p signature)))
-         (or files (denote-directory-files)))))
+  (delq nil (mapcar #'denote-sequence-file-p (or files (denote-directory-files)))))
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.
