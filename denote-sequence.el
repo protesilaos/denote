@@ -43,7 +43,7 @@
 (require 'denote)
 
 (defgroup denote-sequence ()
-  "Sequence notes extension for denote."
+  "Sequence notes extension for Denote."
   :group 'denote
   :link '(info-link "(denote) top")
   :link '(url-link :tag "homepage" "https://protesilaos.com/emacs/denote"))
