@@ -155,7 +155,7 @@ With optional SEQUENCES consider only those, otherwise operate on the
 return value of `denote-sequence-get-all-sequences'."
   (if-let* ((all (or sequences (denote-sequence-get-all-sequences))))
       (let* ((largest (denote-sequence--get-largest all 'parent))
-             (first-component (car (split-string largest "=")))
+             (first-component (car (denote-sequence-split largest)))
              (current-number (string-to-number first-component)))
         (number-to-string (+ current-number 1)))
     "1"))
@@ -208,7 +208,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                            (denote-sequence--get-largest all 'sibling)
                          (denote-sequence--get-largest all 'parent))))
         (if children-p
-            (let* ((components (split-string largest "="))
+            (let* ((components (denote-sequence-split largest))
                    (butlast (butlast components))
                    (last-component (car (nreverse components)))
                    (current-number (string-to-number last-component))
