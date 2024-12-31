@@ -305,5 +305,21 @@ When called from Lisp, SEQUENCE is a string that conforms with
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
+;;;###autoload
+(defun denote-sequence-link (file &optional id-only)
+  "Link to FILE with sequence.
+This is like the `denote-link' command but only accepts to link to a
+file that conforms with `denote-sequence-file-p'.  When called
+interactively, only relevant files are shown for minibuffer completion
+from the variable `denote-directory'.
+
+Optional ID-ONLY has the same meaning as the `denote-link' command."
+  (interactive (list (denote-sequence-file-prompt)))
+  (unless (denote-sequence-file-p file)
+    (error "Can only link to file with a sequence; else use `denote-link' and related"))
+  (let* ((type (denote-filetype-heuristics buffer-file-name))
+         (description (denote-get-link-description file)))
+    (denote-link file type description id-only)))
+
 (provide 'denote-sequence)
 ;;; denote-sequence.el ends here
