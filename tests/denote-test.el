@@ -23,75 +23,82 @@
 
 ;;; Commentary:
 
-;; Tests for Denote.
+;; Tests for Denote.  Note that we are using Shorthands in this file,
+;; so the "dt-" prefix really is "denote-test-".  Evaluate the
+;; following to learn more:
+;;
+;;    (info "(elisp) Shorthands")
 
 ;;; Code:
 
 (require 'ert)
+
+;;;; Tests for denote.el
+
 (require 'denote)
 
-(ert-deftest denote-test--denote--make-denote-directory ()
+(ert-deftest dt-denote--make-denote-directory ()
   "Test that `denote--make-denote-directory' creates the directory."
   (should (null (denote--make-denote-directory))))
 
-(ert-deftest denote-test--denote-directory ()
+(ert-deftest dt-denote-directory ()
   "Test that variable `denote-directory' returns an absolute directory name."
   (let ((path (denote-directory)))
     (should (and (file-directory-p path)
                  (file-name-absolute-p path)))))
 
-(ert-deftest denote-test--denote-sluggify-title ()
+(ert-deftest dt-denote-sluggify-title ()
   "Test that `denote-sluggify-title' removes punctuation from the string.
 Concretely, remove anything specified in `denote-sluggify-title'."
   (should (equal (denote-sluggify-title "this-is-!@#test")
                  "this-is-test")))
 
-(ert-deftest denote-test--denote-slug-keep-only-ascii ()
+(ert-deftest dt-denote-slug-keep-only-ascii ()
   "Test that `denote-slug-keep-only-ascii' removes non-ASCII characters."
   (should (equal
            (denote-slug-keep-only-ascii "There are no-ASCII ： characters ｜ here 😀")
            "There are no-ASCII   characters   here  ")))
 
-(ert-deftest denote-test--denote-slug-hyphenate ()
+(ert-deftest dt-denote-slug-hyphenate ()
   "Test that `denote-slug-hyphenate' hyphenates the string.
 Also replace multiple hyphens with a single one and remove any
 leading and trailing hyphen."
   (should (equal (denote-slug-hyphenate "__  This is   a    test  __  ")
                  "This-is-a-test")))
 
-(ert-deftest denote-test--denote-sluggify ()
+(ert-deftest dt-denote-sluggify ()
   "Test that `denote-sluggify' sluggifies the string.
 To sluggify is to (i) downcase, (ii) hyphenate, (iii) de-punctuate, and (iv) remove spaces from the string."
   (should (equal (denote-sluggify 'title " ___ !~!!$%^ This iS a tEsT ++ ?? ")
                  "this-is-a-test")))
 
-(ert-deftest denote-test-denote--slug-put-equals ()
+(ert-deftest Ddenote--slug-put-equals ()
   "Test that `denote-slug-put-equals' replaces spaces/underscores with =.
 Otherwise do the same as what is described in
-`denote-test--denote-slug-hyphenate'.
+`dt-denote-slug-hyphenate'.
 
 The use of the equals sign is for the SIGNATURE field of the
 Denote file name."
   (should (equal (denote-slug-put-equals "__  This is   a    test  __  ")
                  "This=is=a=test")))
 
-(ert-deftest denote-test--denote-sluggify-signature ()
+(ert-deftest dt-denote-sluggify-signature ()
   "Test that `denote-sluggify-signature' sluggifies the string for file signatures.
-This is like `denote-test--denote-sluggify', except that it also
-accounts for what we describe in `denote-test--denote-slug-put-equals'."
+This is like `dt-denote-sluggify', except that it also
+accounts for what we describe in `dt-denote-slug-put-equals'."
   (should (equal (denote-sluggify-signature "--- ___ !~!!$%^ This -iS- a tEsT ++ ?? ")
                  "this=is=a=test")))
 
-(ert-deftest denote-test--denote-sluggify-keyword ()
+(ert-deftest dt-denote-sluggify-keyword ()
   "Test that `denote-sluggify-keyword' sluggifies the string while joining words.
 In this context, to join words is to elimitate any space or
 delimiter between them.
 
-Otherwise, this is like `denote-test--denote-sluggify'."
+Otherwise, this is like `dt-denote-sluggify'."
   (should (equal (denote-sluggify-keyword "--- ___ !~!!$%^ This iS a - tEsT ++ ?? ")
                  "thisisatest")))
 
-(ert-deftest denote-test--denote-sluggify-keywords ()
+(ert-deftest dt-denote-sluggify-keywords ()
   "Test that `denote-sluggify-keywords' sluggifies a list of strings.
 The function also account for the value of the user option
 `denote-allow-multi-word-keywords'."
@@ -99,7 +106,7 @@ The function also account for the value of the user option
    (equal (denote-sluggify-keywords '("one !@# --- one" "   two" "__  three  __"))
           '("oneone" "two" "three"))))
 
-(ert-deftest denote-test--denote--file-empty-p ()
+(ert-deftest dt-denote--file-empty-p ()
   "Test that `denote--file-empty-p' returns non-nil on empty file."
   ;; (should (null (denote--file-empty-p user-init-file))
   (should (let ((file (make-temp-file "denote-test")))
@@ -107,7 +114,7 @@ The function also account for the value of the user option
                 (denote--file-empty-p file)
               (delete-file file)))))
 
-(ert-deftest denote-test--denote-file-is-note-p ()
+(ert-deftest dt-denote-file-is-note-p ()
   "Test that `denote-file-is-note-p' checks that files is a Denote note.
 For our purposes, a note must note be a directory, must satisfy
 `file-regular-p', its path must be part of the variable
@@ -122,17 +129,17 @@ and use one of the extensions implied by the variable `denote-file-type'."
                 (denote-file-is-note-p file)
               (delete-file file)))))
 
-(ert-deftest denote-test--denote-file-has-identifier-p ()
+(ert-deftest dt-denote-file-has-identifier-p ()
   "Test that `denote-file-has-identifier-p' checks for a Denote identifier."
   (should (denote-file-has-identifier-p "20230522T154900--test__keyword.txt"))
   (should (null (denote-file-has-identifier-p "T154900--test__keyword.txt"))))
 
-(ert-deftest denote-test--denote-file-has-signature-p ()
+(ert-deftest dt-denote-file-has-signature-p ()
   "Test that `denote-file-has-signature-p' checks for a Denote signature."
   (should (denote-file-has-signature-p "20230522T154900==sig--test__keyword.txt"))
   (should (null (denote-file-has-signature-p "20230522T154900--test__keyword.txt"))))
 
-(ert-deftest denote-test--denote-file-has-supported-extension-p ()
+(ert-deftest dt-denote-file-has-supported-extension-p ()
   "Test that `denote-file-has-supported-extension-p' matches a supported extension."
   (should
    (member
@@ -144,7 +151,7 @@ and use one of the extensions implied by the variable `denote-file-type'."
      (file-name-extension "20230522T154900==sig--test__keyword" :period)
      (denote-file-type-extensions-with-encryption)))))
 
-(ert-deftest denote-test--denote-file-type-extensions ()
+(ert-deftest dt-denote-file-type-extensions ()
   "Test that `denote-file-type-extensions' returns file extensions.
 We check for the common file type extensions, though the user can
 theoretically set `denote-file-types' to nil and handle things on
@@ -156,9 +163,9 @@ with regard to file types."
                 (member ".org" extensions)
                 (member ".txt" extensions)))))
 
-(ert-deftest denote-test--denote-file-type-extensions-with-encryption ()
+(ert-deftest dt-denote-file-type-extensions-with-encryption ()
   "Test that `denote-file-type-extensions-with-encryption' covers encryption.
-Extend what we do in `denote-test--denote-file-type-extensions'."
+Extend what we do in `dt-denote-file-type-extensions'."
   (let ((extensions (denote-file-type-extensions-with-encryption)))
     (should (or (member ".md" extensions)
                 (member ".org" extensions)
@@ -170,12 +177,12 @@ Extend what we do in `denote-test--denote-file-type-extensions'."
                 (member ".org.age" extensions)
                 (member ".txt.age" extensions)))))
 
-(ert-deftest denote-test--denote-surround-with-quotes ()
+(ert-deftest dt-denote-surround-with-quotes ()
   "Test that `denote-surround-with-quotes' returns a string in quotes."
   (should (and (equal (denote-surround-with-quotes "test") "\"test\"")
                (equal (denote-surround-with-quotes "") "\"\""))))
 
-(ert-deftest denote-test--denote--format-front-matter ()
+(ert-deftest dt-denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly.
 To make the test reproducible, set `denote-date-format' to a value that
 does not involve the time zone."
@@ -281,7 +288,7 @@ does not involve the time zone."
                                "\n")
                              "\n"))))))
 
-(ert-deftest denote-test--denote-format-file-name ()
+(ert-deftest dt-denote-format-file-name ()
   "Test that `denote-format-file-name' returns all expected paths."
   (let* ((title "Some test")
          (id (format-time-string denote-id-format (denote-valid-date-p "2023-11-28 05:53:11")))
@@ -382,21 +389,21 @@ does not involve the time zone."
                     "sig")
                    "/tmp/test-denote/20231128T055311==sig--some-test__one_two.org"))))
 
-(ert-deftest denote-test--denote-get-file-extension ()
+(ert-deftest dt-denote-get-file-extension ()
   "Test that `denote-get-file-extension' gets the correct file extension."
   (should (and (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing") "")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org") ".org")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.gpg") ".org.gpg")
                (equal (denote-get-file-extension "20231010T105034--some-test-file__denote_testing.org.age") ".org.age"))))
 
-(ert-deftest denote-test--denote-get-file-extension-sans-encryption ()
+(ert-deftest dt-denote-get-file-extension-sans-encryption ()
   "Test that `denote-get-file-extension-sans-encryption' gets the file extension without encryption."
   (should (and (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing") "")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org") ".org")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.gpg") ".org")
                (equal (denote-get-file-extension-sans-encryption "20231010T105034--some-test-file__denote_testing.org.age") ".org"))))
 
-(ert-deftest denote-test--denote-filetype-heuristics ()
+(ert-deftest dt-denote-filetype-heuristics ()
   "Test that `denote-filetype-heuristics' gets the correct file type."
   (should (and (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing") nil)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.org") 'org)
@@ -413,13 +420,13 @@ does not involve the time zone."
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.gpg") 'markdown-yaml)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.age") 'markdown-yaml))))
 
-(ert-deftest denote-test--denote-get-identifier ()
+(ert-deftest dt-denote-get-identifier ()
   "Test that `denote-get-identifier' returns an identifier."
   (should (and (equal (denote-get-identifier nil) "")
                (equal (denote-get-identifier 1705644188) "20240119T080308")
                (equal (denote-get-identifier '(26026 4251)) "20240119T080307"))))
 
-(ert-deftest denote-test--denote-retrieve-filename-identifier ()
+(ert-deftest dt-denote-retrieve-filename-identifier ()
   "Test that `denote-retrieve-filename-identifier' returns only the identifier."
   (should (and (null
                 (denote-retrieve-filename-identifier "/path/to/testing/--this-is-a-test-reordered__denote_testing.org"))
@@ -442,7 +449,7 @@ does not involve the time zone."
                 (denote-retrieve-filename-identifier "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "20240610T194654"))))
 
-(ert-deftest denote-test--denote-retrieve-filename-title ()
+(ert-deftest dt-denote-retrieve-filename-title ()
   "Test that `denote-retrieve-filename-title' returns only the title."
   (should (and (null
                 (denote-retrieve-filename-title "/path/to/testing/20240610T194654__denote_testing.org"))
@@ -465,7 +472,7 @@ does not involve the time zone."
                 (denote-retrieve-filename-title "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "this-is-a-test-reordered"))))
 
-(ert-deftest denote-test--denote-retrieve-filename-keywords ()
+(ert-deftest dt-denote-retrieve-filename-keywords ()
   "Test that `denote-retrieve-filename-keywords' returns only the keywords."
   (should (and (null
                 (denote-retrieve-filename-keywords "/path/to/testing/20240610T194654--this-is-a-test-reordered.org"))
@@ -488,7 +495,7 @@ does not involve the time zone."
                 (denote-retrieve-filename-keywords "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "denote_testing"))))
 
-(ert-deftest denote-test--denote-retrieve-filename-signature ()
+(ert-deftest dt-denote-retrieve-filename-signature ()
   "Test that `denote-retrieve-filename-signature' returns only the signature."
   (should (and (null
                 (denote-retrieve-filename-signature "/path/to/testing/20240610T194654--this-is-a-test-reordered__denote_testing.org"))
@@ -508,17 +515,17 @@ does not involve the time zone."
                 (denote-retrieve-filename-signature "/path/to/testing/==signature__denote_testing@@20240610T194654--this-is-a-test-reordered.org")
                 "signature"))))
 
-(ert-deftest denote-test--denote-identifier-p ()
+(ert-deftest dt-denote-identifier-p ()
   "Test that `denote-identifier-p' works for Denote identifiers."
   (should (and (denote-identifier-p "20240901T090910")
                (null (denote-identifier-p "20240901T090910-not-identifier-format")))))
 
-(ert-deftest denote-test--denote--id-to-date ()
+(ert-deftest dt-denote--id-to-date ()
   "Test that `denote--id-to-date' returns the date from an identifier."
   (should (equal (denote--id-to-date "20240901T090910") "2024-09-01"))
   (should-error (denote--id-to-date "20240901T090910-not-identifier-format")))
 
-(ert-deftest denote-test--denote--date-convert ()
+(ert-deftest dt-denote--date-convert ()
   "Test that `denote--date-convert' works with dates."
   (should (and
            (equal (denote--date-convert '(26454 45206 461174 657000) :list)
@@ -535,11 +542,11 @@ does not involve the time zone."
   (should-error (denote--date-convert '(26454 45206 461174 657000) :not-valid-type))
   (should-error (denote--date-convert nil :not-valid-type)))
 
-;;;; denote-journal-extras.el
+;;;; Tests for denote-journal-extras.el
 
 (require 'denote-journal-extras)
 
-(ert-deftest denote-test--denote-journal-extras-daily--title-format ()
+(ert-deftest dt-denote-journal-extras-daily--title-format ()
   "Make sure that `denote-journal-extras-daily--title-format' yields the desired format."
   (should (and
            ;; These three should prompt, but I am here treating the
@@ -581,11 +588,13 @@ does not involve the time zone."
             (let ((denote-journal-extras-title-format 'day-date-month-year-24h))
               (denote-journal-extras-daily--title-format))))))
 
-;;;; denote-sequence.el
+;;;; Tests for denote-sequence.el
+
+(require 'denote-sequence)
 
 ;; TODO 2024-12-31: Maybe we can share some state between tests?  It
 ;; is expensive to create those files over and over.
-(ert-deftest denote-test--denote-sequence--get-new-child ()
+(ert-deftest dt-denote-sequence--get-new-child ()
   "Make sure `denote-sequence--get-new-child' gets the child of a sequence."
   (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
@@ -617,7 +626,7 @@ does not involve the time zone."
     (should-error (denote-sequence--get-new-child "3" sequences))
     (delete-directory denote-directory :delete-contents-as-well)))
 
-(ert-deftest denote-test--denote-sequence--get-new-sibling ()
+(ert-deftest dt-denote-sequence--get-new-sibling ()
   "Make sure `denote-sequence--get-new-sibling' gets the sibling of a sequence."
   (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
@@ -652,3 +661,7 @@ does not involve the time zone."
                  
 (provide 'denote-test)
 ;;; denote-test.el ends here
+
+;; Local Variables:
+;; read-symbol-shorthands: (("?" . "denote-test-"))
+;; End:
