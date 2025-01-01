@@ -144,16 +144,21 @@ With optional SEQUENCES operate on those, else use the return value of
 
 (defun denote-sequence--pad (sequence type)
   "Create a new SEQUENCE with padded spaces for TYPE.
-TYPE is a symbol among `denote-sequence-types'."
+TYPE is a symbol among `denote-sequence-types'.  The special TYPE `all'
+means to pad the full length of the sequence."
   (let* ((sequence-separator-p (string-match-p "=" sequence))
          (split (denote-sequence-split sequence))
-         (s (if sequence-separator-p
-                (pcase type
-                  ('parent (car split))
-                  ('sibling split)
-                  ('child (car (nreverse split)))
-                  (_ (error "The type `%s' is not among `denote-sequence-types'" type)))
-              sequence)))
+         (s (cond
+             ((eq type 'all)
+              split)
+             (sequence-separator-p
+              (pcase type
+                ('parent (car split))
+                ('sibling split)
+                ('child (car (nreverse split)))
+                (_ (error "The type `%s' is not among `denote-sequence-types'" type))))
+             (t
+              sequence))))
     (if (listp s)
         (combine-and-quote-strings
          (mapcar
@@ -353,8 +358,8 @@ Optional ID-ONLY has the same meaning as the `denote-link' command."
   (let ((s1 (denote-retrieve-filename-signature file-with-sequence-1))
         (s2 (denote-retrieve-filename-signature file-with-sequence-2)))
     (string<
-     (denote-sequence--pad s1 'parent)
-     (denote-sequence--pad s2 'parent))))
+     (denote-sequence--pad s1 'all)
+     (denote-sequence--pad s2 'all))))
 
 (defvar denote-sequence-history nil
   "Minibuffer history of `denote-sequence-prompt'.")
