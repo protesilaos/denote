@@ -84,6 +84,20 @@ For example, 1=2=1 is three levels deep."
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
   (seq-filter #'denote-sequence-file-p (denote-directory-files)))
 
+(defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
+  "Return all files in variable `denote-directory' with prefix SEQUENCE.
+A sequence is a Denote signature that conforms with `denote-sequence-p'.
+
+With optional FILES, operate on them, else use the return value of
+`denote-directory-files'."
+  (delq nil
+        (mapcar
+         (lambda (file)
+           (when-let* ((file-sequence (denote-sequence-file-p file))
+                       ((string-match-p sequence file-sequence)))
+             file))
+         (or files (denote-directory-files)))))
+
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
 A sequence is a Denote signature that conforms with `denote-sequence-p'.
