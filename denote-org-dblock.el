@@ -1,6 +1,6 @@
 ;;; denote-org-dblock.el --- Compatibility alieases for Denote Org Dynamic blocks -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022-2024  Free Software Foundation, Inc.
+;; Copyright (C) 2022-2025  Free Software Foundation, Inc.
 
 ;; Authors: Elias Storms <elias.storms@gmail.com>,
 ;;          Protesilaos Stavrou <info@protesilaos.com>

@@ -1,6 +1,6 @@
 ;;; denote-md-extras.el --- Denote extensions for Markdown mode -*- lexical-binding: t -*-
 
-;; Copyright (C) 2024  Free Software Foundation, Inc.
+;; Copyright (C) 2024-2025  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
