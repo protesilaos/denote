@@ -348,5 +348,71 @@ Optional ID-ONLY has the same meaning as the `denote-link' command."
          (description (denote-get-link-description file)))
     (denote-link file type description id-only)))
 
+(defun denote-sequence-sort (file-with-sequence-1 file-with-sequence-2)
+  "Sort FILE-WITH-SEQUENCE-1 and FILE-WITH-SEQUENCE-2."
+  (let ((s1 (denote-retrieve-filename-signature file-with-sequence-1))
+        (s2 (denote-retrieve-filename-signature file-with-sequence-2)))
+    (string<
+     (denote-sequence--pad s1 'parent)
+     (denote-sequence--pad s2 'parent))))
+
+(defvar denote-sequence-history nil
+  "Minibuffer history of `denote-sequence-prompt'.")
+
+(defun denote-sequence-prompt (&optional prompt-text sequences)
+  "Prompt for a sequence.
+With optional PROMPT-TEXT use it instead of a generic prompt.
+
+With optional SEQUENCES as a list of strings, use them as completion
+candidates.  Else use the return value of `denote-sequence-get-all-sequences'.
+A sequence is a string conforming with `denote-sequence-p'.  Any other string
+is ignored."
+  (completing-read
+   (format-prompt (or prompt-text "Select an existing sequence (empty for all)") nil)
+   (or sequences (denote-sequence-get-all-sequences))
+   #'denote-sequence-p :require-match nil 'denote-sequence-history))
+
+(defun denote-sequence-depth-prompt ()
+  "Prompt for the depth of a sequence."
+  (read-number "Get sequences up to this depth: "))
+
+;;;###autoload
+(defun denote-sequence-dired (&optional prefix depth)
+  "Produce a Dired listing of all sequence notes.
+Sort sequences from smallest to largest.
+
+With optional PREFIX string, show only files whose sequence matches it.
+
+With optional DEPTH as a number, limit the list to files whose sequence
+is that many levels deep.  For example, 1=1=2 is three levels deep."
+  (interactive
+   (let ((arg (prefix-numeric-value current-prefix-arg)))
+     (cond
+      ((= arg 16)
+       (list
+        (denote-sequence-prompt)
+        (denote-sequence-depth-prompt)))
+      ((= arg 4)
+       (list
+        (denote-sequence-prompt)))
+      (t
+       nil))))
+  (if-let* ((default-directory (denote-directory))
+            (all (if prefix
+                     (denote-sequence-get-all-files-with-prefix prefix)
+                   (denote-sequence-get-all-files)))
+            (files-with-depth (if depth
+                                  (denote-sequence-get-all-files-with-max-depth depth all)
+                                all))
+            (files-sorted (sort files-with-depth :lessp #'denote-sequence-sort))
+            (buffer-name (format "Denote sequences at %s" (format-time-string "%T"))))
+      (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files-sorted)))))
+        (with-current-buffer dired-buffer
+          (setq-local revert-buffer-function
+                      (lambda (&rest _)
+                        (kill-buffer dired-buffer)
+                        (denote-sequence-dired)))))
+    (user-error "There are no files whose Denote signature conforms with `denote-sequence-p'")))
+
 (provide 'denote-sequence)
 ;;; denote-sequence.el ends here
