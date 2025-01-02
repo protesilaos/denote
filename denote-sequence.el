@@ -272,12 +272,17 @@ Return selected type as a symbol."
 (defvar denote-sequence-file-history nil
   "Minibuffer history for `denote-sequence-file-prompt'.")
 
-(defun denote-sequence-file-prompt ()
+(defun denote-sequence-file-prompt (&optional prompt-text files-with-sequences)
   "Prompt for file with sequence in variable `denote-directory'.
-A sequence is a Denote signature that conforms with `denote-sequence-p'."
+A sequence is a Denote signature that conforms with `denote-sequence-p'.
+
+With optional PROMPT-TEXT use it instead of a generic prompt.
+
+With optional FILES-WITH-SEQUENCES as a list of strings, use them as
+completion candidates.  Else use `denote-sequence-get-all-files'."
   (if-let* ((relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
-                                    (denote-sequence-get-all-files)))
-            (prompt "Select FILE with sequence: ")
+                                    (or files-with-sequences (denote-sequence-get-all-files))))
+            (prompt (format-prompt (or prompt-text "Select FILE with sequence") nil))
             (input (completing-read
                     prompt
                     (denote--completion-table 'file relative-files)
