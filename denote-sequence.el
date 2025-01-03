@@ -96,7 +96,7 @@ SEQUENCE conforms with `denote-sequence-p'."
 
 (defun denote-sequence-depth (sequence)
   "Get the depth of SEQUENCE.
-For example, 1=2=1 is three levels deep."
+For example, 1=2=1 is three levels of depth."
   (length (denote-sequence-split sequence)))
 
 (defun denote-sequence-get-all-files ()
