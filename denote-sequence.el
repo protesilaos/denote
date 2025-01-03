@@ -360,7 +360,10 @@ When called from Lisp, SEQUENCE is a string that conforms with
   "Like `denote-sequence' to directly create new child of SEQUENCE.
 When called from Lisp, SEQUENCE is a string that conforms with
 `denote-sequence-p'."
-  (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
+  (interactive
+   (list
+    (denote-retrieve-filename-signature
+     (denote-sequence-file-prompt "Make a new child of SEQUENCE"))))
   (let* ((new-sequence (denote-sequence-get 'child sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
