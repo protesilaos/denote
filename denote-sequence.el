@@ -427,7 +427,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
         (denote-sequence-depth-prompt)))
       ((= arg 4)
        (list
-        (denote-sequence-prompt)))
+        (denote-sequence-prompt "Limit to files that extend SEQUENCE (empty for all)")))
       (t
        nil))))
   (if-let* ((default-directory (denote-directory))
