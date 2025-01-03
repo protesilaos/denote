@@ -371,7 +371,7 @@ interactively, only relevant files are shown for minibuffer completion
 from the variable `denote-directory'.
 
 Optional ID-ONLY has the same meaning as the `denote-link' command."
-  (interactive (list (denote-sequence-file-prompt)))
+  (interactive (list (denote-sequence-file-prompt "Link to file with sequence")))
   (unless (denote-sequence-file-p file)
     (error "Can only link to file with a sequence; else use `denote-link' and related"))
   (let* ((type (denote-filetype-heuristics buffer-file-name))
