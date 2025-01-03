@@ -347,7 +347,10 @@ Files available at the minibuffer prompt are those returned by
   "Like `denote-sequence' to directly create new sibling of SEQUENCE.
 When called from Lisp, SEQUENCE is a string that conforms with
 `denote-sequence-p'."
-  (interactive (list (denote-retrieve-filename-signature (denote-sequence-file-prompt))))
+  (interactive
+   (list
+    (denote-retrieve-filename-signature
+     (denote-sequence-file-prompt "Make a new sibling of SEQUENCE"))))
   (let* ((new-sequence (denote-sequence-get 'sibling sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
