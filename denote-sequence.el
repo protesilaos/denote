@@ -404,7 +404,7 @@ is ignored."
 
 (defun denote-sequence-depth-prompt ()
   "Prompt for the depth of a sequence."
-  (read-number "Get sequences up to this depth: "))
+  (read-number "Get sequences up to this depth (e.g. `1=1=2' is `3' levels of depth): "))
 
 ;;;###autoload
 (defun denote-sequence-dired (&optional prefix depth)
