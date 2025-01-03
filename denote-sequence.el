@@ -420,7 +420,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
      (cond
       ((= arg 16)
        (list
-        (denote-sequence-prompt)
+        (denote-sequence-prompt "Limit to files that extend SEQUENCE (empty for all)")
         (denote-sequence-depth-prompt)))
       ((= arg 4)
        (list
