@@ -402,9 +402,12 @@ is ignored."
    (or sequences (denote-sequence-get-all-sequences))
    #'denote-sequence-p :require-match nil 'denote-sequence-history))
 
-(defun denote-sequence-depth-prompt ()
-  "Prompt for the depth of a sequence."
-  (read-number "Get sequences up to this depth (e.g. `1=1=2' is `3' levels of depth): "))
+(defun denote-sequence-depth-prompt (&optional prompt-text)
+  "Prompt for the depth of a sequence.
+With optional PROMPT-TEXT use it instead of the generic one."
+  (read-number
+   (or prompt-text
+       "Get sequences up to this depth (e.g. `1=1=2' is `3' levels of depth): ")))
 
 ;;;###autoload
 (defun denote-sequence-dired (&optional prefix depth)
