@@ -4017,6 +4017,105 @@ you get all the parameters included:
   processing using Org facilities (a feature that is outside Denote's
   purview).
 
+* Write sequence notes or "folgezettel"
+:PROPERTIES:
+:CUSTOM_ID: h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+This section is about the optional extension =denote-sequence.el=,
+which is part of the ~denote~ package.
+
+Denote defines an optional file name component called the =SIGNATURE=
+([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). This is a free form field that users can
+fill in with whatever text they want, such as to have a video split up
+into =part1= and =part2=, or to set some kind of priority like =a= and
+=b=, or even to have a special tag that stands out from the rest of
+the keywords.
+
+A more specialised use-case of the =SIGNATURE= is to define a
+hierarchical relationship between notes, such that the thoughts they
+expound on form sequences. For example, an article about the Labrador
+Retriever dog breed is a continuation of a thought process that
+extends something about dog breeds in general which, in turn, is a
+topic that belongs to the wider theme of dogs. A sequence, then, is a
+numeric representation of such relationships. A note with a
+=SIGNATURE= of ~1=1~ (the "=" is the field separator of signatures,
+per the Denote file-naming scheme) is thus the child of note =1= and
+the sibling of note ~1=2~. In this regard, something unrelated to dogs
+will be its own parent, such as =2=, and so on.
+
+A new sequence note can be of the type =parent=, =child=, and
+=sibling=.  For the convenience of the user, we provide commands to
+create such "sequence notes", link only between them (as opposed to
+a link to any other file with the Denote file-naming scheme ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]])), and
+re-parent them on demand.
+
+All the relevant functions we provide take care to automatically use
+the right number for a given sequence. If, for example, we create a
+new child for parent ~1=1~, we make sure that it is the new largest
+number among any existing children, so if ~1=1=1~ already exists we
+use ~1=1=2~, and the like.
+
+This optional extension is not necessary for such a workflow. Users
+can always define whatever =SIGNATURE= they want manually. The purpose
+of this extension is to streamline this work.
+
+Concretely, we provide the following commands:
+
+#+findex: denote-sequence
+- ~denote-sequence~ :: The most general way to create a new sequence
+  note. It prompts for a type of sequence among =parent=, =child=, and
+  =sibling= and the rest of the work accordingly. If the new sequence
+  is not a parent, it thus prompts for an existing file to extend
+  from. The rest of the interaction is that of all the usual Denote
+  commands, such as to prompt for a title and keywords ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+
+#+findex: denote-sequence-new-parent
+- ~denote-sequence-new-parent~ :: This is a convenience wrapper of
+  ~denote-sequence~ which directly creates a parent sequence.
+
+#+findex: denote-sequence-new-child
+- ~denote-sequence-new-child~ :: This is a convenience wrapper of
+  ~denote-sequence~ which directly creates a child of an existing
+  sequence, prompting for it using minibuffer completion.
+
+#+findex: denote-sequence-new-sibling
+- ~denote-sequence-new-sibling~ :: This is a convenience wrapper of
+  ~denote-sequence~ which directly creates a sibling of an existing
+  sequence, prompting for it using minibuffer completion.
+
+#+findex: denote-sequence-link
+- ~denote-sequence-link~ :: This is a variant of the standard
+  ~denote-link~ command which limits the list of files only to those
+  which contain a sequence.
+
+#+findex: denote-sequence-reparent
+- ~denote-sequence-reparent~ :: This is a command that can be used
+  from inside a file or for the file-at-point in Dired to make the
+  file a child of a given parent sequence, prompting for it using
+  minibuffer completion.
+
+#+findex: denote-sequence-dired
+- ~denote-sequence-dired~ :: This command produces a bespoke Dired
+  that contains all the sequences in their order (as opposed to a
+  regular Dired which sorts files using the =ls= flags). With an
+  optional =C-u= prefix argument, this command prompts for a prefix to
+  only show sequences that include it (e.g. only show notes with
+  ~1=1~, like ~1=1=1~ and ~1=1=2~ but not ~1=2~). With an optional
+  double prefix argument of =C-u C-u=, this command will prompt for
+  the prefix as well as the level of depth to limit the results to.
+  Here "depth" means how deep to go in a sequence where, for example,
+  ~1=1=2~ is three levels of depth. It is possible to use an empty
+  string at the prefix prompt to not limit the results to any prefix.
+
+Note that we do not use the Luhmann-style sequencing scheme of mixing
+numbers with letters. We only have numbers and rely on the field
+separator (the "=") to establish the kind of relationship between any
+two given notes. This greatly simplifies the code, plus it is easy to
+reason about and to document.
+
 * Sort files by component
 :PROPERTIES:
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
@@ -4134,6 +4233,10 @@ of those file name components can write their own sorting algorithms
 :CUSTOM_ID: h:95345870-4ccd-484f-9adf-de4747ad5760
 :END:
 
+[ As part of version =3.2.0= of Denote, we provide the optional
+  extension =denote-sequence.el= which covers this workflow and provides
+  several useful commands ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or folgezettel]]). ]
+
 Niklas Luhmann would edit notes to form sequences of thoughts with
 branching paths, such as =1.1=, =1.1a=, =1.2=, =1.2a=, =1.2b=, etc.
 With the Denote file-naming scheme, we make the word separator in each
@@ -4176,11 +4279,6 @@ Perform the comparison with `string<'."
 ;; Change the sorting function only when we sort by signature.
 (setq denote-sort-signature-comparison-function #'my-denote-sort-for-signatures)
 #+end_src
-
-DEVELOPMENT NOTE 2024-08-01 08:27 +0300: If you need to sort in a
-certain way but do not know how to write the relevant Elisp, please
-let me know. I am happy to help and we can then include our findings
-in the manual for the benefit of the community.
 
 * Keep a journal or diary
 :PROPERTIES:

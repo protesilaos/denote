@@ -23,11 +23,31 @@
 
 ;;; Commentary:
 
-;; WORK-IN-PROGRESS.  Sequence notes extension for Denote.
+;; Sequence notes extension for Denote.  It uses the SIGNATURE file
+;; name component of Denote to establish a hierarchy between notes.
+;; As such, note 1=1 is the child of the note 1.  The rest of the
+;; Denote file naming scheme continues to apply as described in the
+;; manual, as do all the other features of Denote.
+;;
+;; A new sequence note can be of the type `parent', `child', and
+;; `sibling'.  For the convenience of the user, we provide commands to
+;; create such "sequence notes", link only between them (as opposed to
+;; a link to any other file with the Denote file-naminng scheme), and
+;; re-parent them on demand.
+;;
+;; All the relevant functions we provide take care to automatically
+;; use the right number for a given sequence.  If, for example, we
+;; create a new child for parent 1=1, we make sure that it is the new
+;; largest number among any existing children, so if 1=1=1 already
+;; exists we use 1=1=2, and so on.
+;;
+;; This optional extension is not necessary for such a workflow.
+;; Users can always define whatever SIGNATURE they want manually.  The
+;; purpose of this extension is to streamline that work.
 
 ;;; Code:
 
-;; FIXME 2024-12-25: Right now I am hardcoding the = as a field
+;; NOTE 2024-12-25: Right now I am hardcoding the = as a field
 ;; separator inside of the Denote signature.  This is the default
 ;; behaviour, though we provide the `denote-file-name-slug-functions'
 ;; which, in principle, make the separator anything the user wants.
