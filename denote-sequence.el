@@ -114,7 +114,7 @@ With optional FILES, operate on them, else use the return value of
         (mapcar
          (lambda (file)
            (when-let* ((file-sequence (denote-sequence-file-p file))
-                       ((string-match-p sequence file-sequence)))
+                       ((string-prefix-p sequence file-sequence)))
              file))
          (or files (denote-directory-files)))))
 
