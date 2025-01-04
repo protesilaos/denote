@@ -43,11 +43,11 @@
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
 (defcustom denote-sort-identifier-comparison-function denote-sort-comparison-fallback-function
-  "Function to sort the SIGNATURE component in file names.
+  "Function to sort the DATE/IDENTIFIER component in file names.
 The function accepts two arguments and must return a non-nil value if
 the first argument is smaller than the second one."
   :type 'function
-  :package-version '(denote . "3.1.0")
+  :package-version '(denote . "3.2.0")
   :group 'denote-sort)
 
 (defcustom denote-sort-title-comparison-function denote-sort-comparison-fallback-function
