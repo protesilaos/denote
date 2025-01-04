@@ -463,7 +463,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
                       (lambda (&rest _)
                         (kill-buffer dired-buffer)
                         (denote-sequence-dired)))))
-    (user-error "There are no files whose Denote signature conforms with `denote-sequence-p'")))
+    (user-error "No Denote sequences matching those terms")))
 
 ;;;###autoload
 (defun denote-sequence-reparent (current-file file-with-sequence)
