@@ -462,7 +462,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
           (setq-local revert-buffer-function
                       (lambda (&rest _)
                         (kill-buffer dired-buffer)
-                        (denote-sequence-dired)))))
+                        (denote-sequence-dired prefix depth)))))
     (user-error "No Denote sequences matching those terms")))
 
 ;;;###autoload
