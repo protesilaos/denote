@@ -310,6 +310,10 @@ When called from Lisp, the arguments are a string, a symbol among
           (with-current-buffer dired-buffer
             (setq-local revert-buffer-function
                         (lambda (&rest _)
+                          ;; FIXME 2025-01-04: Killing the buffer has
+                          ;; the unintended side effect of affecting the
+                          ;; window configuration when we call
+                          ;; `denote-update-dired-buffers'.
                           (kill-buffer dired-buffer)
                           (denote-sort-dired files-matching-regexp component reverse-sort exclude-rx))))
           ;; Because of the above NOTE, I am printing a message.  Not
