@@ -5168,7 +5168,9 @@ inserts links with just the identifier."
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-has-denoted-filename-p' from Dired marked items."
-  (seq-filter #'denote-file-has-denoted-filename-p (dired-get-marked-files)))
+  (seq-filter (lambda (file) (and (denote-file-has-denoted-filename-p file)
+                                  (denote-file-has-identifier-p file)))
+              (dired-get-marked-files)))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
