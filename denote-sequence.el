@@ -383,13 +383,16 @@ Optional ID-ONLY has the same meaning as the `denote-link' command."
          (description (denote-get-link-description file)))
     (denote-link file type description id-only)))
 
-(defun denote-sequence-sort (file-with-sequence-1 file-with-sequence-2)
-  "Sort FILE-WITH-SEQUENCE-1 and FILE-WITH-SEQUENCE-2."
-  (let ((s1 (denote-retrieve-filename-signature file-with-sequence-1))
-        (s2 (denote-retrieve-filename-signature file-with-sequence-2)))
-    (string<
-     (denote-sequence--pad s1 'all)
-     (denote-sequence--pad s2 'all))))
+(defun denote-sequence-sort-files (files-with-sequence)
+  "Sort FILES-WITH-SEQUENCE according to their sequence."
+  (sort
+   files-with-sequence
+   (lambda (file-with-sequence-1 file-with-sequence-2)
+     (let ((s1 (denote-retrieve-filename-signature file-with-sequence-1))
+           (s2 (denote-retrieve-filename-signature file-with-sequence-2)))
+       (string<
+        (denote-sequence--pad s1 'all)
+        (denote-sequence--pad s2 'all))))))
 
 (defvar denote-sequence-history nil
   "Minibuffer history of `denote-sequence-prompt'.")
@@ -454,7 +457,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
             (files-with-depth (if depth
                                   (denote-sequence-get-all-files-with-max-depth depth all)
                                 all))
-            (files-sorted (sort files-with-depth :lessp #'denote-sequence-sort))
+            (files-sorted (denote-sequence-sort-files files-with-depth))
             (buffer-name (denote-sequence--get-dired-buffer-name prefix depth)))
       (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files-sorted)))))
         (with-current-buffer dired-buffer
