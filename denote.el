@@ -3663,8 +3663,10 @@ one-by-one, use `denote-dired-rename-files'."
                         (or (denote-retrieve-filename-signature file) "")
                       signature))
          (date (if (eq date 'keep-current)
-                   (denote-valid-date-p (denote-retrieve-filename-identifier file))
+                   (denote-retrieve-filename-identifier file)
                  date))
+         ;; Make the data valid
+         (date (denote-valid-date-p date))
          (new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
