@@ -415,6 +415,18 @@ With optional PROMPT-TEXT use it instead of the generic one."
    (or prompt-text
        "Get sequences up to this depth (e.g. `1=1=2' is `3' levels of depth): ")))
 
+(defun denote-sequence--get-dired-buffer-name (&optional prefix depth)
+  "Return a string for `denote-sequence-dired' buffer.
+Use optional PREFIX and DEPTH to format the string accordingly."
+  (let ((time (format-time-string "%F %T")))
+    (cond
+     ((and prefix depth)
+      (format "*Denote sequences of prefix `%s' and depth `%s', %s*" prefix depth time))
+     ((and prefix (not (string-empty-p prefix)))
+      (format "*Denote sequences of prefix `%s', %s*" prefix time))
+     (t
+      (format "*Denote sequences, %s*" time)))))
+
 ;;;###autoload
 (defun denote-sequence-dired (&optional prefix depth)
   "Produce a Dired listing of all sequence notes.
@@ -444,7 +456,7 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
                                   (denote-sequence-get-all-files-with-max-depth depth all)
                                 all))
             (files-sorted (sort files-with-depth :lessp #'denote-sequence-sort))
-            (buffer-name (format "Denote sequences at %s" (format-time-string "%T"))))
+            (buffer-name (denote-sequence--get-dired-buffer-name prefix depth)))
       (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files-sorted)))))
         (with-current-buffer dired-buffer
           (setq-local revert-buffer-function
