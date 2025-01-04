@@ -4214,6 +4214,10 @@ When sorting by =title=, =keywords=, or =signature= with the
 function that is specific to each component. These are subject to user
 configuration:
 
+#+vindex: denote-sort-identifier-comparison-function
+- ~denote-sort-identifier-comparison-function~ [ This one was missing
+  is older versions and is now added as part of {{{development-version}}}. ]
+
 #+vindex: denote-sort-title-comparison-function
 - ~denote-sort-title-comparison-function~
 
@@ -6998,13 +7002,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Szczerbowski, Jean-Charles Bagneris, Jean-Philippe Gagné Guay,
   Jianwei Hou, Joseph Turner, Jürgen Hötzel, Kaushal Modi, Kai von
   Fintel, Kostas Andreadis, Kristoffer Balintona, Kyle Meyer, Laurent
-  Gatto, Marc Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid
-  Behrnd, Octavian, Peter Prevos, Philip Kaludercic, Quiliro Ordóñez,
-  Stephen R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut Benjamin,
-  Tomasz Hołubowicz, Vedang Manerikar, Wesley Harvey, Zhenxu Xu,
-  arsaber101, bryanrinders, ezchi, jarofromel, leinfink (Henrik),
-  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
-  pmenair, relict007, skissue.
+  Gatto, Maikol Solis, Marc Fargas, Matthew Lemon, Noboru Ota
+  (nobiot), Norwid Behrnd, Octavian, Peter Prevos, Philip Kaludercic,
+  Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing,
+  Thibaut Benjamin, Tomasz Hołubowicz, Vedang Manerikar, Wesley
+  Harvey, Zhenxu Xu, arsaber101, bryanrinders, ezchi, jarofromel,
+  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
+  mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
