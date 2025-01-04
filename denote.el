@@ -3663,8 +3663,10 @@ one-by-one, use `denote-dired-rename-files'."
                         (or (denote-retrieve-filename-signature file) "")
                       signature))
          (date (if (eq date 'keep-current)
-                   (denote-valid-date-p (denote-retrieve-filename-identifier file))
+                   (denote-retrieve-filename-identifier file)
                  date))
+         ;; Make the data valid
+         (date (denote-valid-date-p date))
          (new-name (denote--rename-file file title keywords signature date)))
     (denote-update-dired-buffers)
     new-name))
@@ -5166,7 +5168,9 @@ inserts links with just the identifier."
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-has-denoted-filename-p' from Dired marked items."
-  (seq-filter #'denote-file-has-denoted-filename-p (dired-get-marked-files)))
+  (seq-filter (lambda (file) (and (denote-file-has-denoted-filename-p file)
+                                  (denote-file-has-identifier-p file)))
+              (dired-get-marked-files)))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
