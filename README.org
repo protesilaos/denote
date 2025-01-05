@@ -4082,10 +4082,22 @@ Concretely, we provide the following commands:
   ~denote-sequence~ which directly creates a child of an existing
   sequence, prompting for it using minibuffer completion.
 
+#+findex: denote-sequence-new-child-of-current
+- ~denote-sequence-new-child-of-current~ :: This will create a new
+  child of the current file's sequence. If the current file does not
+  have such a sequence, then the command behaves the same as the
+  aforementioned ~denote-sequence-new-child~.
+
 #+findex: denote-sequence-new-sibling
 - ~denote-sequence-new-sibling~ :: This is a convenience wrapper of
   ~denote-sequence~ which directly creates a sibling of an existing
   sequence, prompting for it using minibuffer completion.
+
+#+findex: denote-sequence-new-sibling-of-current
+- ~denote-sequence-new-sibling-of-current~ :: This will create a new
+  sibling of the current file's sequence. If the current file does not
+  have such a sequence, then the command behaves the same as the
+  aforementioned ~denote-sequence-new-sibling~.
 
 #+findex: denote-sequence-link
 - ~denote-sequence-link~ :: This is a variant of the standard
