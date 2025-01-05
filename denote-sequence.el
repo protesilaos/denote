@@ -191,11 +191,13 @@ means to pad the full length of the sequence."
 (defun denote-sequence--get-largest (sequences type)
   "Return largest sequence in SEQUENCES given TYPE.
 TYPE is a symbol among `denote-sequence-types'."
-  (car (sort sequences
-             (lambda (s1 s2)
-               (string<
-                (denote-sequence--pad s1 type)
-                (denote-sequence--pad s2 type))))))
+  (car
+   (reverse
+    (sort sequences
+          (lambda (s1 s2)
+            (string<
+             (denote-sequence--pad s1 type)
+             (denote-sequence--pad s2 type)))))))
 
 (defun denote-sequence--get-new-parent (&optional sequences)
   "Return a new to increment largest among sequences.
