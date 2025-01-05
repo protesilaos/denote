@@ -346,7 +346,7 @@ Files available at the minibuffer prompt are those returned by
 ;;;###autoload
 (defun denote-sequence-new-sibling (sequence)
   "Like `denote-sequence' to directly create new sibling of SEQUENCE.
-When called interactively, SEQUENE is a file among files in the variable
+When called interactively, SEQUENCE is a file among files in the variable
 `denote-directory' that have a sequence (per `denote-sequence-file-p').
 
 When called from Lisp, SEQUENCE is a string that conforms with
@@ -362,7 +362,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
 ;;;###autoload
 (defun denote-sequence-new-child (sequence)
   "Like `denote-sequence' to directly create new child of SEQUENCE.
-When called interactively, SEQUENE is a file among files in the variable
+When called interactively, SEQUENCE is a file among files in the variable
 `denote-directory' that have a sequence (per `denote-sequence-file-p').
 
 When called from Lisp, SEQUENCE is a string that conforms with
