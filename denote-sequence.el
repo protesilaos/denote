@@ -170,16 +170,14 @@ means to pad the full length of the sequence."
   (let* ((sequence-separator-p (string-match-p "=" sequence))
          (split (denote-sequence-split sequence))
          (s (cond
-             ((eq type 'all)
-              split)
+             ((eq type 'all) split)
              (sequence-separator-p
               (pcase type
                 ('parent (car split))
                 ('sibling split)
                 ('child (car (nreverse split)))
                 (_ (error "The type `%s' is not among `denote-sequence-types'" type))))
-             (t
-              sequence))))
+             (t sequence))))
     (if (listp s)
         (combine-and-quote-strings
          (mapcar
