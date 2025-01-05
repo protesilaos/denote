@@ -390,6 +390,20 @@ When called from Lisp, SEQUENCE is a string that conforms with
     (call-interactively 'denote)))
 
 ;;;###autoload
+(defun denote-sequence-new-child-of-current (sequence)
+  "Create a new child sequence of the current file with SEQUENCE.
+If the current file does not have a sequence, then behave exactly like
+`denote-sequence-new-child'."
+  (interactive
+   (list
+    (or (denote-sequence-file-p buffer-file-name)
+        (denote-retrieve-filename-signature
+         (denote-sequence-file-prompt "Make a new child of SEQUENCE")))))
+  (let* ((new-sequence (denote-sequence-get 'child sequence))
+         (denote-use-signature new-sequence))
+    (call-interactively 'denote)))
+
+;;;###autoload
 (defun denote-sequence-link (file &optional id-only)
   "Link to FILE with sequence.
 This is like the `denote-link' command but only accepts to link to a
