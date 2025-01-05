@@ -66,6 +66,7 @@
   "Sequence notes extension for Denote."
   :group 'denote
   :link '(info-link "(denote) top")
+  :link '(info-link "(denote) Sequence notes")
   :link '(url-link :tag "homepage" "https://protesilaos.com/emacs/denote"))
 
 (defconst denote-sequence-regexp "=?[0-9]+"

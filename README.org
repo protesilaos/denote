@@ -4020,6 +4020,7 @@ you get all the parameters included:
 * Write sequence notes or "folgezettel"
 :PROPERTIES:
 :CUSTOM_ID: h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f
+:ALT_TITLE: Sequence notes
 :END:
 
 [ The =denote-sequence.el= is part of {{{development-version}}}. ]
