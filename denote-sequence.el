@@ -360,6 +360,20 @@ When called from Lisp, SEQUENCE is a string that conforms with
     (call-interactively 'denote)))
 
 ;;;###autoload
+(defun denote-sequence-new-sibling-of-current (sequence)
+  "Create a new sibling sequence of the current file with SEQUENCE.
+If the current file does not have a sequence, then behave exactly like
+`denote-sequence-new-sibling'."
+  (interactive
+   (list
+    (or (denote-sequence-file-p buffer-file-name)
+        (denote-retrieve-filename-signature
+         (denote-sequence-file-prompt "Make a new sibling of SEQUENCE")))))
+  (let* ((new-sequence (denote-sequence-get 'sibling sequence))
+         (denote-use-signature new-sequence))
+    (call-interactively 'denote)))
+
+;;;###autoload
 (defun denote-sequence-new-child (sequence)
   "Like `denote-sequence' to directly create new child of SEQUENCE.
 When called interactively, SEQUENCE is a file among files in the variable
