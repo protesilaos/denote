@@ -219,8 +219,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
       (if (= (length all-unfiltered) 1)
           (format "%s=1" (car all-unfiltered))
         (let* ((all (cond
-                     ((= (length all-unfiltered) 1)
-                      all-unfiltered)
+                     ((= (length all-unfiltered) 1) all-unfiltered)
                      ((denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
                      (t all-unfiltered)))
                (largest (denote-sequence--get-largest all 'child)))
