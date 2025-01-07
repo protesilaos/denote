@@ -4518,6 +4518,24 @@ uses the same presentation of data in the minibuffer to stay in sync
 with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
 It also only works with Denote.
 
+** Use the ~denote-search~ package as a search interface
+:PROPERTIES:
+:CUSTOM_ID: h:c905b733-e959-4aa4-8f2c-0ed9eba459df
+:END:
+
+The ~denote-search~ package by Lucas Quintana provides a search
+utility for Denote: <https://github.com/lmq-10/denote-search>.
+
+It allows you to search for a regular expression in the content of
+your notes. Its main advantages over other similar tools are the
+possibility of filtering the results by file name and doing further
+searches in the files matched previously. This allows for advanced
+usage (think about finding a note with two or three specific words in
+different lines and with a specific keyword). More features are
+described in its comprehensive manual. ~denote-search~ builds upon
+standard Emacs libraries, namely Xref, and so it doesn't have external
+dependencies other than Denote itself.
+
 ** Use the ~denote-explore~ package to explore your notes
 :PROPERTIES:
 :CUSTOM_ID: h:110ae3a4-5fc6-45da-b9bb-0e294bd12981
