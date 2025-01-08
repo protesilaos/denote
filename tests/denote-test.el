@@ -613,7 +613,9 @@ does not involve the time zone."
              "20241230T075023==1=1=2--test__testing.txt"
              "20241230T075023==1=2--test__testing.txt"
              "20241230T075023==1=2=1--test__testing.txt"
-             "20241230T075023==2--test__testing.txt")))
+             "20241230T075023==2--test__testing.txt"
+             "20241230T075023==45--test__testing.txt"
+             "20241230T075023==45=1--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
     (should
      (and
@@ -622,7 +624,8 @@ does not involve the time zone."
       (equal (denote-sequence--get-new-child "1=1=2" sequences) "1=1=2=1")
       (equal (denote-sequence--get-new-child "1=2" sequences) "1=2=2")
       (equal (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=1")
-      (equal (denote-sequence--get-new-child "2" sequences) "2=1")))
+      (equal (denote-sequence--get-new-child "2" sequences) "2=1")
+      (equal (denote-sequence--get-new-child "45" sequences) "45=2")))
     (should-error (denote-sequence--get-new-child "3" sequences))
     (delete-directory denote-directory :delete-contents-as-well)))
 
