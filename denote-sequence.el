@@ -88,6 +88,10 @@ A sequence is string that matches `denote-sequence-regexp'."
   (when-let* ((signature (denote-retrieve-filename-signature file)))
     (denote-sequence-p signature)))
 
+(defun denote-sequence--children-p (sequence)
+  "Return non-nil if SEQUENCE has children."
+  (string-match-p "=" sequence))
+
 (defun denote-sequence-split (sequence)
   "Split the SEQUENCE string into a list.
 SEQUENCE conforms with `denote-sequence-p'."
@@ -167,7 +171,7 @@ With optional SEQUENCES operate on those, else use the return value of
   "Create a new SEQUENCE with padded spaces for TYPE.
 TYPE is a symbol among `denote-sequence-types'.  The special TYPE `all'
 means to pad the full length of the sequence."
-  (let* ((sequence-separator-p (string-match-p "=" sequence))
+  (let* ((sequence-separator-p (denote-sequence--children-p sequence))
          (split (denote-sequence-split sequence))
          (s (cond
              ((eq type 'all)
@@ -224,7 +228,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                      ((denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
                      (t all-unfiltered)))
                (largest (denote-sequence--get-largest all 'child)))
-          (if (string-match-p "=" largest)
+          (if (denote-sequence--children-p largest)
               (let* ((components (denote-sequence-split largest))
                      (butlast (butlast components))
                      (last-component (car (nreverse components)))
@@ -238,14 +242,14 @@ function `denote-sequence-get-all-sequences-with-prefix'."
 
 (defun denote-sequence--get-prefix-for-siblings (sequence)
   "Get the prefix of SEQUENCE such that it is possible to find its siblings."
-  (when (string-match-p "=" sequence)
+  (when (denote-sequence--children-p sequence)
     (mapconcat #'identity (butlast (denote-sequence-split sequence)) "=")))
 
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
-  (let* ((children-p (string-match-p "=" sequence)))
+  (let* ((children-p (denote-sequence--children-p sequence)))
     (if-let* ((depth (denote-sequence-depth sequence))
               (all-unfiltered (if children-p
                                   (denote-sequence-get-all-sequences-with-prefix
