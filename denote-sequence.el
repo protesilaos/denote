@@ -107,6 +107,18 @@ Return sequence if it conforms with `denote-sequence-p'."
     (mapconcat #'identity list-of-strings "=")
     (denote-sequence-with-error-p)))
 
+(defun denote-sequence--get-parent (sequence)
+  "Return implied parent of SEQUENCE, else nil.
+Produce an error if SEQUENCE does not conform with `denote-sequence-p'.
+The implied check here has the same meaning as described in
+`denote-sequence--children-implied-p'."
+  (when (and (denote-sequence-with-error-p sequence)
+             (denote-sequence--children-implied-p sequence))
+    (thread-last
+      (denote-sequence-split sequence)
+      (butlast)
+      (denote-sequence--join))))
+
 (defun denote-sequence-split (sequence)
   "Split the SEQUENCE string into a list.
 SEQUENCE conforms with `denote-sequence-p'."
