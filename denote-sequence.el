@@ -174,16 +174,14 @@ means to pad the full length of the sequence."
   (let* ((sequence-separator-p (denote-sequence--children-p sequence))
          (split (denote-sequence-split sequence))
          (s (cond
-             ((eq type 'all)
-              split)
+             ((eq type 'all) split)
              (sequence-separator-p
               (pcase type
                 ('parent (car split))
                 ('sibling split)
                 ('child (car (nreverse split)))
                 (_ (error "The type `%s' is not among `denote-sequence-types'" type))))
-             (t
-              sequence))))
+             (t sequence))))
     (if (listp s)
         (combine-and-quote-strings
          (mapcar
@@ -463,9 +461,9 @@ Use optional PREFIX and DEPTH to format the string accordingly."
   (let ((time (format-time-string "%F %T")))
     (cond
      ((and prefix depth)
-      (format "*Denote sequences of prefix `%s' and depth `%s', %s*" prefix depth time))
+      (format-message "*Denote sequences of prefix `%s' and depth `%s', %s*" prefix depth time))
      ((and prefix (not (string-empty-p prefix)))
-      (format "*Denote sequences of prefix `%s', %s*" prefix time))
+      (format-message "*Denote sequences of prefix `%s', %s*" prefix time))
      (t
       (format "*Denote sequences, %s*" time)))))
 
