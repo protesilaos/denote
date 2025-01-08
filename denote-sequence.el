@@ -82,6 +82,11 @@
              (not (string-suffix-p "=" sequence)))
     sequence))
 
+(defun denote-sequence-with-error-p (sequence)
+  "Return SEQUENCE string if it matches `denote-sequence-regexp'."
+  (or (denote-sequence-p sequence)
+      (error "The sequence `%s' does not pass `denote-sequence-p'" sequence)))
+
 (defun denote-sequence-file-p (file)
   "Return non-nil if Denote signature of FILE is a sequence.
 A sequence is string that matches `denote-sequence-regexp'."
@@ -100,14 +105,13 @@ that its depth is greater than 1."
 Return sequence if it conforms with `denote-sequence-p'."
   (thread-last
     (mapconcat #'identity list-of-strings "=")
-    (denote-sequence-p)))
+    (denote-sequence-with-error-p)))
 
 (defun denote-sequence-split (sequence)
   "Split the SEQUENCE string into a list.
 SEQUENCE conforms with `denote-sequence-p'."
-  (if (denote-sequence-p sequence)
-      (split-string sequence "=" t)
-    (error "The sequence `%s' does not pass `denote-sequence-p'" sequence)))
+  (when (denote-sequence-with-error-p sequence)
+    (split-string sequence "=" t)))
 
 (defun denote-sequence-depth (sequence)
   "Get the depth of SEQUENCE.
