@@ -60,6 +60,9 @@
 ;; since (i) it is simpler and (ii) we already have the field
 ;; separator to give a sufficient sense of place.
 
+;; TODO 2025-01-08: Test whether the built-in hierarchy.el can be used
+;; to present the sequences in a nice way.  What do we need and how
+;; exactly do we use that library.
 (require 'denote)
 
 (defgroup denote-sequence ()
