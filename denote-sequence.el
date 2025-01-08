@@ -95,6 +95,13 @@ This does not actually check if there are children in the variable
 that its depth is greater than 1."
   (string-match-p "=" sequence))
 
+(defun denote-sequence--join (list-of-strings)
+  "Join LIST-OF-STRINGS to form a sequence.
+Return sequence if it conforms with `denote-sequence-p'."
+  (thread-last
+    (mapconcat #'identity list-of-strings "=")
+    (denote-sequence-p)))
+
 (defun denote-sequence-split (sequence)
   "Split the SEQUENCE string into a list.
 SEQUENCE conforms with `denote-sequence-p'."
@@ -167,7 +174,7 @@ With optional SEQUENCES operate on those, else use the return value of
     (delete-dups
      (mapcar
       (lambda (sequence)
-        (mapconcat #'identity (seq-take sequence depth) "="))
+        (denote-sequence--join (seq-take sequence depth)))
       lists))))
 
 (defun denote-sequence--pad (sequence type)
@@ -235,16 +242,17 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                      (last-component (car (nreverse components)))
                      (current-number (string-to-number last-component))
                      (new-number (number-to-string (+ current-number 1))))
-                (if butlast
-                    (mapconcat #'identity (append butlast (list new-number)) "=")
-                  (mapconcat #'identity (list largest new-number) "=")))
+                (denote-sequence--join
+                 (if butlast
+                     (append butlast (list new-number))
+                   (list largest new-number))))
             (format "%s=1" largest))))
     (error "Cannot find sequences given sequence `%s'" sequence)))
 
 (defun denote-sequence--get-prefix-for-siblings (sequence)
   "Get the prefix of SEQUENCE such that it is possible to find its siblings."
   (when (denote-sequence--children-implied-p sequence)
-    (mapconcat #'identity (butlast (denote-sequence-split sequence)) "=")))
+    (denote-sequence--join (butlast (denote-sequence-split sequence)))))
 
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
@@ -268,7 +276,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                    (last-component (car (nreverse components)))
                    (current-number (string-to-number last-component))
                    (new-number (number-to-string (+ current-number 1))))
-              (mapconcat #'identity (append butlast (list new-number)) "="))
+              (denote-sequence--join (append butlast (list new-number))))
           (number-to-string (+ (string-to-number largest) 1)))
       (error "Cannot find sequences given sequence `%s'" sequence))))
 
