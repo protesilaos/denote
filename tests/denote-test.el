@@ -661,7 +661,39 @@ does not involve the time zone."
       (equal (denote-sequence--get-new-sibling "2" sequences) "3")))
     (should-error (denote-sequence--get-new-sibling "4" sequences))
     (delete-directory denote-directory :delete-contents-as-well)))
-                 
+
+(ert-deftest dt-denote-sequence-split ()
+  "Test that `denote-sequence-split' splits a sequence correctly."
+  (should (and (equal (denote-sequence-split "1") '("1"))
+               (equal (denote-sequence-split "1=1=2") '("1" "1" "2"))
+               (equal (denote-sequence-split "1za5zx") '("1" "za" "5" "zx")))))
+
+(ert-deftest dt-denote-sequence-convert ()
+  "Test that `denote-sequence-convert' converts from alpha to numeric and vice versa."
+  (should (and (string= (denote-sequence-convert "3") "c")
+               (string= (denote-sequence-convert "18") "r")
+               (string= (denote-sequence-convert "26") "z")
+               (string= (denote-sequence-convert "27") "za")
+               (string= (denote-sequence-convert "130") "zzzzz")
+               (string= (denote-sequence-convert "131") "zzzzza")
+               (string= (denote-sequence-convert "c") "3")
+               (string= (denote-sequence-convert "r") "18")
+               (string= (denote-sequence-convert "z") "26")
+               (string= (denote-sequence-convert "za") "27")
+               (string= (denote-sequence-convert "zzzzz") "130")
+               (string= (denote-sequence-convert "zzzzza") "131")))
+  (should-error (denote-sequence-convert "1a2")))
+
+(ert-deftest dt-denote-sequence-increment ()
+  "Test that `denote-sequence-increment' works with numbers and letters."
+  (should (and (string= (denote-sequence-increment "z") "za")
+               (string= (denote-sequence-increment "ab") "ac")
+               (string= (denote-sequence-increment "az") "aza")
+               (string= (denote-sequence-increment "bbcz") "bbcza")))
+  (should (and (string= (denote-sequence-increment "1") "2")
+               (string= (denote-sequence-increment "10") "11")))
+  (should-error (denote-sequence-increment "1=a")))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 
