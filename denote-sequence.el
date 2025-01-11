@@ -575,5 +575,39 @@ the target sequence."
          (new-sequence (denote-sequence--get-new-child target-sequence)))
     (denote-rename-file current-file 'keep-current 'keep-current new-sequence 'keep-current)))
 
+(defun denote-sequence--adopt-file (file)
+  "Add Denote FILE as new parent or add as child or sibling or existing sequence.
+Three options:
+- parent: Add a root sequence to the Denote file
+- child: Add the Denote file as a child of chosen sequence
+- sibling: Add the Denote file as a sibling of chosen sequence"
+  (let* ((file-type (denote-filetype-heuristics file))
+         (selected-type (denote-sequence-type-prompt))
+         (relative (when (not (equal selected-type 'parent))
+                     (denote-sequence-file-prompt "Adopt current buffer into SEQUENCE")))
+         (sequence (when relative (denote-retrieve-filename-signature relative)))
+         (signature
+          (if (equal selected-type 'parent)
+              (denote-sequence-get 'parent)
+            (denote-sequence-get selected-type sequence))))
+    (denote-rename-file file
+                        (denote-retrieve-title-or-filename file file-type)
+                        (split-string (denote-retrieve-filename-keywords file) "_")
+                        signature)))
+
+;;;###autoload
+(defun denote-sequence-adopt ()
+  "Adopt the current Denote buffer as part of a sequence family.
+If the current buffer has no valid sequence, either create or adopt a parent
+from the existing sequences, else evoke `denote-sequence-reparent'."
+  (interactive)
+  (if-let* ((file (buffer-file-name))
+            (denote-p (denote-file-is-writable-and-supported-p file))
+            (sequence (denote-sequence-file-p file)))
+      (call-interactively #'denote-sequence-reparent)
+    (if denote-p
+        (denote-sequence--adopt-file file)
+      (message "The current buffer is not a Denote file"))))
+
 (provide 'denote-sequence)
 ;;; denote-sequence.el ends here
