@@ -666,5 +666,5 @@ does not involve the time zone."
 ;;; denote-test.el ends here
 
 ;; Local Variables:
-;; read-symbol-shorthands: (("?" . "denote-test-"))
+;; read-symbol-shorthands: (("dt" . "denote-test-"))
 ;; End:
