@@ -136,7 +136,9 @@ For example, 1=2=1 is three levels of depth."
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (seq-filter #'denote-sequence-file-p (denote-directory-files)))
+  (seq-filter
+   #'denote-sequence-file-p
+   (append (denote--buffer-file-names) (denote-directory-files))))
 
 (defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
   "Return all files in variable `denote-directory' with prefix SEQUENCE.
@@ -150,7 +152,7 @@ With optional FILES, operate on them, else use the return value of
            (when-let* ((file-sequence (denote-sequence-file-p file))
                        ((string-prefix-p sequence file-sequence)))
              file))
-         (or files (denote-directory-files)))))
+         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
 
 (defun denote-sequence-get-all-files-with-max-depth (depth &optional files)
   "Return all files with sequence depth up to DEPTH (inclusive).
@@ -163,14 +165,17 @@ With optional FILES, operate on them, else use the return value of
                        (components (denote-sequence-split sequence))
                        ((>= depth (length components))))
              file))
-         (or files (denote-sequence-get-all-files)))))
+         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
 
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
 A sequence is a Denote signature that conforms with `denote-sequence-p'.
 
 With optional FILES return all sequences among them instead."
-  (delq nil (mapcar #'denote-sequence-file-p (or files (denote-directory-files)))))
+  (delq nil
+        (mapcar
+         #'denote-sequence-file-p
+         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.

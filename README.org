@@ -7058,8 +7058,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
   Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot,
   atanasj, azegas, babusri, coherentstate, doolio, duli, drcxd,
-  elge70, fingerknight, hpgisler, hyperfocus1337, jtpavlock, juh,
-  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sarcom-sar,
+  elge70, elliottw, fingerknight, hpgisler, hyperfocus1337, jtpavlock,
+  juh, mentalisttraceur, pRot0ta1p, rbenit68, relict007, sarcom-sar,
   sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
