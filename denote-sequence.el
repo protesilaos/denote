@@ -194,7 +194,7 @@ With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'."
   (let* ((strings (or sequences (denote-sequence-get-all-sequences)))
          (lists-all (mapcar #'denote-sequence-split strings))
-         (lists (seq-filter (lambda (element) (>= (length element) depth)) lists-all)))
+         (lists (seq-filter (lambda (element) (>= depth (length element))) lists-all)))
     (delete-dups
      (mapcar
       (lambda (sequence)
