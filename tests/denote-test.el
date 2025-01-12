@@ -594,8 +594,9 @@ does not involve the time zone."
 
 ;; TODO 2024-12-31: Maybe we can share some state between tests?  It
 ;; is expensive to create those files over and over.
-(ert-deftest dt-denote-sequence--get-new-child ()
-  "Make sure `denote-sequence--get-new-child' gets the child of a sequence."
+(ert-deftest dt-denote-sequence--get-new-child-numeric ()
+  "Make sure `denote-sequence--get-new-child' gets the child of a sequence.
+This is done using the numeric `denote-sequence-scheme'."
   (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
           (mapcar
@@ -613,24 +614,57 @@ does not involve the time zone."
              "20241230T075023==1=1=2--test__testing.txt"
              "20241230T075023==1=2--test__testing.txt"
              "20241230T075023==1=2=1--test__testing.txt"
-             "20241230T075023==2--test__testing.txt"
-             "20241230T075023==45--test__testing.txt"
-             "20241230T075023==45=1--test__testing.txt")))
+             "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
-    (should
-     (and
-      (equal (denote-sequence--get-new-child "1" sequences) "1=3")
-      (equal (denote-sequence--get-new-child "1=1" sequences) "1=1=3")
-      (equal (denote-sequence--get-new-child "1=1=2" sequences) "1=1=2=1")
-      (equal (denote-sequence--get-new-child "1=2" sequences) "1=2=2")
-      (equal (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=1")
-      (equal (denote-sequence--get-new-child "2" sequences) "2=1")
-      (equal (denote-sequence--get-new-child "45" sequences) "45=2")))
-    (should-error (denote-sequence--get-new-child "3" sequences))
+    (let ((denote-sequence-scheme 'numeric))
+      (should
+       (and
+        (equal (denote-sequence--get-new-child "1" sequences) "1=3")
+        (equal (denote-sequence--get-new-child "1=1" sequences) "1=1=3")
+        (equal (denote-sequence--get-new-child "1=1=2" sequences) "1=1=2=1")
+        (equal (denote-sequence--get-new-child "1=2" sequences) "1=2=2")
+        (equal (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=1")
+        (equal (denote-sequence--get-new-child "2" sequences) "2=1")))
+      (should-error (denote-sequence--get-new-child "3" sequences)))
     (delete-directory denote-directory :delete-contents-as-well)))
 
-(ert-deftest dt-denote-sequence--get-new-sibling ()
-  "Make sure `denote-sequence--get-new-sibling' gets the sibling of a sequence."
+(ert-deftest dt-denote-sequence--get-new-child-alphanumeric ()
+  "Make sure `denote-sequence--get-new-child' gets the child of a sequence.
+This is done using the alphanumeric `denote-sequence-scheme'."
+  (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
+         (files
+          (mapcar
+           (lambda (file)
+             (let ((path (expand-file-name file (denote-directory))))
+               (if (file-exists-p path)
+                   path
+                 (with-current-buffer (find-file-noselect path)
+                   (save-buffer)
+                   (kill-buffer (current-buffer)))
+                 path)))
+           '("20241230T075004==1--some-new-title__testing.txt"
+             "20241230T075023==1a--child-of-note__testing.txt"
+             "20241230T075023==1a1--test__testing.txt"
+             "20241230T075023==1a2--test__testing.txt"
+             "20241230T075023==1b--test__testing.txt"
+             "20241230T075023==1b1--test__testing.txt"
+             "20241230T075023==2--test__testing.txt")))
+         (sequences (denote-sequence-get-all-sequences files)))
+    (let ((denote-sequence-scheme 'alphanumeric))
+      (should
+       (and
+        (equal (denote-sequence--get-new-child "1" sequences) "1c")
+        (equal (denote-sequence--get-new-child "1a" sequences) "1a3")
+        (equal (denote-sequence--get-new-child "1a2" sequences) "1a2a")
+        (equal (denote-sequence--get-new-child "1b" sequences) "1b2")
+        (equal (denote-sequence--get-new-child "1b1" sequences) "1b1a")
+        (equal (denote-sequence--get-new-child "2" sequences) "2a")))
+      (should-error (denote-sequence--get-new-child "3" sequences)))
+    (delete-directory denote-directory :delete-contents-as-well)))
+
+(ert-deftest dt-denote-sequence--get-new-sibling-numeric ()
+  "Make sure `denote-sequence--get-new-sibling' gets the sibling of a sequence.
+This is done using the numeric `denote-sequence-scheme'."
   (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
           (mapcar
@@ -650,18 +684,93 @@ does not involve the time zone."
              "20241230T075023==1=2=1--test__testing.txt"
              "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
-    (should
-     (and
-      (equal (denote-sequence--get-new-sibling "1" sequences) "3")
-      (equal (denote-sequence--get-new-sibling "1=1" sequences) "1=3")
-      (equal (denote-sequence--get-new-sibling "1=1=1" sequences) "1=1=3")
-      (equal (denote-sequence--get-new-sibling "1=1=2" sequences) "1=1=3")
-      (equal (denote-sequence--get-new-sibling "1=2" sequences) "1=3")
-      (equal (denote-sequence--get-new-sibling "1=2=1" sequences) "1=2=2")
-      (equal (denote-sequence--get-new-sibling "2" sequences) "3")))
-    (should-error (denote-sequence--get-new-sibling "4" sequences))
+    (let ((denote-sequence-scheme 'numeric))
+      (should
+       (and
+        (equal (denote-sequence--get-new-sibling "1" sequences) "3")
+        (equal (denote-sequence--get-new-sibling "1=1" sequences) "1=3")
+        (equal (denote-sequence--get-new-sibling "1=1=1" sequences) "1=1=3")
+        (equal (denote-sequence--get-new-sibling "1=1=2" sequences) "1=1=3")
+        (equal (denote-sequence--get-new-sibling "1=2" sequences) "1=3")
+        (equal (denote-sequence--get-new-sibling "1=2=1" sequences) "1=2=2")
+        (equal (denote-sequence--get-new-sibling "2" sequences) "3")))
+      (should-error (denote-sequence--get-new-sibling "4" sequences)))
     (delete-directory denote-directory :delete-contents-as-well)))
-                 
+
+(ert-deftest dt-denote-sequence--get-new-sibling-alphanumeric ()
+  "Make sure `denote-sequence--get-new-sibling' gets the sibling of a sequence.
+This is done using the alphanumeric `denote-sequence-scheme'."
+  (let* ((denote-directory (expand-file-name "denote-test" temporary-file-directory))
+         (files
+          (mapcar
+           (lambda (file)
+             (let ((path (expand-file-name file (denote-directory))))
+               (if (file-exists-p path)
+                   path
+                 (with-current-buffer (find-file-noselect path)
+                   (save-buffer)
+                   (kill-buffer (current-buffer)))
+                 path)))
+           '("20241230T075004==1--some-new-title__testing.txt"
+             "20241230T075023==1a--sibling-of-note__testing.txt"
+             "20241230T075023==1a1--test__testing.txt"
+             "20241230T075023==1a2--test__testing.txt"
+             "20241230T075023==1b--test__testing.txt"
+             "20241230T075023==1b1--test__testing.txt"
+             "20241230T075023==2--test__testing.txt")))
+         (sequences (denote-sequence-get-all-sequences files)))
+    (let ((denote-sequence-scheme 'alphanumeric))
+      (should
+       (and
+        (equal (denote-sequence--get-new-sibling "1" sequences) "3")
+        (equal (denote-sequence--get-new-sibling "1a" sequences) "1c")
+        (equal (denote-sequence--get-new-sibling "1a1" sequences) "1a3")
+        (equal (denote-sequence--get-new-sibling "1a2" sequences) "1a3")
+        (equal (denote-sequence--get-new-sibling "1b" sequences) "1c")
+        (equal (denote-sequence--get-new-sibling "1b1" sequences) "1b2")
+        (equal (denote-sequence--get-new-sibling "2" sequences) "3")))
+      (should-error (denote-sequence--get-new-sibling "4" sequences)))
+    (delete-directory denote-directory :delete-contents-as-well)))
+
+(ert-deftest dt-denote-sequence-split ()
+  "Test that `denote-sequence-split' splits a sequence correctly."
+  (should (and (equal (denote-sequence-split "1") '("1"))
+               (equal (denote-sequence-split "1=1=2") '("1" "1" "2"))
+               (equal (denote-sequence-split "1za5zx") '("1" "za" "5" "zx")))))
+
+(ert-deftest dt-denote-sequence-convert ()
+  "Test that `denote-sequence-convert' converts from alpha to numeric and vice versa."
+  (should (and (string= (denote-sequence-convert "3") "c")
+               (string= (denote-sequence-convert "18") "r")
+               (string= (denote-sequence-convert "26") "z")
+               (string= (denote-sequence-convert "27") "za")
+               (string= (denote-sequence-convert "130") "zzzzz")
+               (string= (denote-sequence-convert "131") "zzzzza")
+               (string= (denote-sequence-convert "c") "3")
+               (string= (denote-sequence-convert "r") "18")
+               (string= (denote-sequence-convert "z") "26")
+               (string= (denote-sequence-convert "za") "27")
+               (string= (denote-sequence-convert "zzzzz") "130")
+               (string= (denote-sequence-convert "zzzzza") "131")))
+  (should (and (string= (denote-sequence-convert "1=1=2" :string-is-sequence) "1a2")
+               (string= (denote-sequence-convert "1a2" :string-is-sequence) "1=1=2")
+               (string= (denote-sequence-convert "1=27=2=55" :string-is-sequence) "1za2zzc")
+               (string= (denote-sequence-convert "1za2zzc" :string-is-sequence) "1=27=2=55")
+               (string= (denote-sequence-convert "1=1=2=2=4=1" :string-is-sequence) "1a2b4a")
+               (string= (denote-sequence-convert "1a2b4a" :string-is-sequence) "1=1=2=2=4=1")))
+  (should-error (denote-sequence-convert "111=a" :string-is-sequence))
+  (should-error (denote-sequence-convert "a1" :string-is-sequence)))
+
+(ert-deftest dt-denote-sequence-increment ()
+  "Test that `denote-sequence-increment' works with numbers and letters."
+  (should (and (string= (denote-sequence-increment "z") "za")
+               (string= (denote-sequence-increment "ab") "ac")
+               (string= (denote-sequence-increment "az") "aza")
+               (string= (denote-sequence-increment "bbcz") "bbcza")))
+  (should (and (string= (denote-sequence-increment "1") "2")
+               (string= (denote-sequence-increment "10") "11")))
+  (should-error (denote-sequence-increment "1=a")))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 

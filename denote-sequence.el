@@ -47,19 +47,6 @@
 
 ;;; Code:
 
-;; NOTE 2024-12-25: Right now I am hardcoding the = as a field
-;; separator inside of the Denote signature.  This is the default
-;; behaviour, though we provide the `denote-file-name-slug-functions'
-;; which, in principle, make the separator anything the user wants.
-;; If we can accommodate such open-endedness, then I am happy to make
-;; the relevant changes, but I prefer to keep it restricted at this
-;; early stage.
-;;
-;; Similarly, I am not giving the option for Luhmann-style sequences
-;; that include numbers and letters.  Ours consist only of numbers,
-;; since (i) it is simpler and (ii) we already have the field
-;; separator to give a sufficient sense of place.
-
 ;; TODO 2025-01-08: Test whether the built-in hierarchy.el can be used
 ;; to present the sequences in a nice way.  What do we need and how
 ;; exactly do we use that library.
@@ -72,66 +59,272 @@
   :link '(info-link "(denote) Sequence notes")
   :link '(url-link :tag "homepage" "https://protesilaos.com/emacs/denote"))
 
-(defconst denote-sequence-regexp "=?[0-9]+"
-  "Pattern of a sequence.")
+(defconst denote-sequence-schemes '(numeric alphanumeric)
+  "Symbols representing sequence schemes.")
+
+(defcustom denote-sequence-scheme 'numeric
+  "Sequencing scheme to establish file hierarchies.
+The value is the symbol `numeric' or `alphanumeric'.
+
+Numeric sequences (the default) are the easier to understand but also
+are the longest.  Each level of depth in the hierarchy is delimited by
+an equals sign: the 1=1=2 thus refers to the second child of the first
+child of parent 1.  Each level of depth can be a number of any length,
+like 1=40=2=20.
+
+Alphanumeric sequences are more compact than numeric ones.  Their depth
+is derived via the alternation from numbers to latin characters, such
+that 1a2 refers to the second child of the first child of parent 1.
+Because they alternate between numbers and letters, they do not use the
+equals sign.  When a number cannot be represented by a single letter,
+two or more are used instead, such as the number 51 corresponding to
+zx (z is 26 and x is 25)."
+  :group 'denote-sequence
+  :type '(choice (const :tag "Numeric like 1=1=2" numeric)
+                 (const :tag "Alphanumeric like 1a2" alphanumeric)))
+
+(defconst denote-sequence-numeric-regexp "=?[0-9]+"
+  "Pattern of a numeric sequence.")
+
+(defconst denote-sequence-alphanumeric-regexp "\\([0-9]+\\)\\([[:alpha:]]+\\)?"
+  "Pattern of an alphanumeric sequence.")
 
 (defconst denote-sequence-types '(parent child sibling)
   "Types of sequence.")
 
-(defun denote-sequence-p (sequence)
-  "Return SEQUENCE string if it matches `denote-sequence-regexp'."
-  (when (and (string-match-p denote-sequence-regexp sequence)
+(defun denote-sequence-numeric-p (sequence)
+  "Return SEQUENCE if it is numeric per `denote-sequence-scheme'."
+  (when (and (string-match-p denote-sequence-numeric-regexp sequence)
              (not (string-match-p "[a-zA-Z]" sequence))
              (not (string-suffix-p "=" sequence)))
     sequence))
 
+(defun denote-sequence-alphanumeric-p (sequence)
+  "Return SEQUENCE if it is alphanumeric per `denote-sequence-scheme'."
+  (when (and (string-match-p denote-sequence-alphanumeric-regexp sequence)
+             (string-match-p "\\`[0-9]+" sequence)
+             (not (string-match-p "=" sequence)))
+    sequence))
+
+(defun denote-sequence-p (sequence)
+  "Return SEQUENCE string is of a supported scheme.
+Also see `denote-sequence-numeric-p' and `denote-sequence-alphanumeric-p'."
+  (when (or (denote-sequence-numeric-p sequence)
+            (denote-sequence-alphanumeric-p sequence))
+    sequence))
+
 (defun denote-sequence-with-error-p (sequence)
-  "Return SEQUENCE string if it matches `denote-sequence-regexp'."
+  "Return SEQUENCE string if it matches `denote-sequence-numeric-regexp'."
   (or (denote-sequence-p sequence)
       (error "The sequence `%s' does not pass `denote-sequence-p'" sequence)))
 
+(defun denote-sequence--numeric-partial-p (string)
+  "Return non-nil if STRING likely is part of a numeric sequence."
+  (and (string-match-p "[0-9]+" string)
+       (not (string-match-p "[[:alpha:][:punct:]]" string))))
+
+(defun denote-sequence--alphanumeric-partial-p (string)
+  "Return non-nil if STRING likely is part of an alphanumeric sequence."
+  (and (string-match-p "[a-z]+" string)
+       (not (string-match-p "[0-9[:punct:]]+" string))))
+
+(defun denote-sequence-and-scheme-p (sequence &optional partial)
+  "Return the sequencing scheme of SEQUENCE, per `denote-sequence-scheme'.
+Return a cons cell of the form (sequence . scheme), where the `car' is
+SEQUENCE and the `cdr' is its sequencing scheme as a symbol among
+`denote-sequence-schemes'.
+
+With optional PARTIAL as a non-nil value, assume SEQUENCE to be a string
+that only represents part of a sequence, which itself consists entirely
+of numbers or letters.
+
+Produce an error if the sequencing scheme cannot be established."
+  (cond
+   ((or (and partial (denote-sequence--alphanumeric-partial-p sequence))
+        (denote-sequence-alphanumeric-p sequence))
+    (cons sequence 'alphanumeric))
+   ((or (and partial (denote-sequence--numeric-partial-p sequence))
+        (denote-sequence-numeric-p sequence))
+    (cons sequence 'numeric))
+   (t (error "The sequence `%s' does not pass `denote-sequence-p'" sequence))))
+
+(defun denote-sequence--scheme-of-strings (strings)
+  "Return the sequencing scheme of STRINGS, per `denote-sequence-scheme'."
+  (if (seq-find (lambda (string) (string-match-p "[[:alpha:]]" string)) strings)
+      'alphanumeric
+    'numeric))
+
 (defun denote-sequence-file-p (file)
   "Return non-nil if Denote signature of FILE is a sequence.
-A sequence is string that matches `denote-sequence-regexp'."
+A sequence is string that matches `denote-sequence-numeric-regexp'."
   (when-let* ((signature (denote-retrieve-filename-signature file)))
     (denote-sequence-p signature)))
+
+(defun denote-sequence-join (strings scheme)
+  "Join STRINGS to form a sequence according to SCHEME.
+SCHEME is a symbol among `denote-sequence-schemes'.  Return resulting
+sequence if it conforms with `denote-sequence-p'."
+  (pcase scheme
+    ('numeric (mapconcat #'identity strings "="))
+    ('alphanumeric (apply #'concat strings))))
+
+(defun denote-sequence-split (sequence &optional partial)
+  "Split the SEQUENCE string into a list.
+SEQUENCE conforms with `denote-sequence-p'.  If PARTIAL is non-nil, it
+has the same meaning as in `denote-sequence-and-scheme-p'."
+  (pcase-let* ((`(,sequence . ,scheme) (denote-sequence-and-scheme-p sequence partial)))
+    (pcase scheme
+      ('numeric
+       (split-string sequence "=" t))
+      ('alphanumeric
+       (let ((strings nil)
+             (start 0))
+         (while (string-match denote-sequence-alphanumeric-regexp sequence start)
+           (push (match-string 1 sequence) strings)
+           (when-let* ((two (match-string 2 sequence)))
+             (push two strings)
+             (setq start (match-end 2)))
+           (setq start (match-end 1)))
+         (if strings
+             (nreverse strings)
+           (split-string sequence "" :omit-nulls)))))))
+
+(defun denote-sequence--alpha-to-number (string)
+  "Convert STRING of alphabetic characters to its numeric equivalent."
+  (let* ((strings (denote-sequence-split string :partial))
+         (numbers (mapcar
+                   (lambda (string)
+                     (let ((num (- (string-to-char string) 96)))
+                       (cond
+                        ((and (> num 0) (<= num 26))
+                         num)
+                        (t
+                         (let ((times (/ num 26)))
+                           (if-let* ((mod (% num 26))
+                                     ((> mod 0))
+                                     (suffix (+ mod 96)))
+                               (list (* times 26) suffix)
+                             (list (* times 26))))))))
+                   strings)))
+    (format "%s" (apply #'+ numbers))))
+
+(defun denote-sequence--number-to-alpha (string)
+  "Convert STRING of numbers to its alphabetic equivalent."
+  (let ((num (string-to-number string)))
+    (cond
+     ((= num 0)
+      (char-to-string (+ num 97)))
+     ((and (> num 0) (<= num 26))
+      (char-to-string (+ num 96)))
+     (t
+      (let ((times (/ num 26)))
+        (if-let* ((mod (% num 26))
+                  ((> mod 0))
+                  (prefix (make-string times ?z))
+                  (suffix (char-to-string (+ mod 96))))
+            (concat prefix suffix)
+          (make-string times ?z)))))))
+
+(defun denote-sequence--alpha-to-number-complete (sequence)
+  "Like `denote-sequence--alpha-to-number' but for the complete SEQUENCE."
+  (if (denote-sequence-numeric-p sequence)
+      sequence
+    (let* ((parts (denote-sequence-split sequence))
+           (converted-parts (mapcar
+                             (lambda (string)
+                               (if (denote-sequence--numeric-partial-p string)
+                                   string
+                                 (denote-sequence--alpha-to-number string)))
+                             parts)))
+      (denote-sequence-join converted-parts 'numeric))))
+
+(defun denote-sequence--number-to-alpha-complete (sequence)
+  "Like `denote-sequence--number-to-alpha' but for the complete SEQUENCE."
+  (if (denote-sequence-alphanumeric-p sequence)
+      sequence
+    (let* ((parts (denote-sequence-split sequence))
+           (odd-is-numeric 0)
+           (converted-parts (mapcar
+                             (lambda (string)
+                               (setq odd-is-numeric (+ odd-is-numeric 1))
+                               (cond
+                                ((= (% odd-is-numeric 2) 1)
+                                 string)
+                                ((denote-sequence--alphanumeric-partial-p string)
+                                 string)
+                                (t
+                                 (denote-sequence--number-to-alpha string))))
+                             parts)))
+      (denote-sequence-join converted-parts 'alphanumeric))))
+
+(defun denote-sequence-convert (string &optional string-is-sequence)
+  "Convert STRING to its counterpart sequencing scheme.
+If STRING-IS-SEQUENCE then assume STRING to be a complete sequence, in
+which case convert the entirety of it.  Also see `denote-sequence-scheme'."
+  (cond
+   ((and string-is-sequence (denote-sequence-alphanumeric-p string))
+    (denote-sequence--alpha-to-number-complete string))
+   ((and string-is-sequence (denote-sequence-numeric-p string))
+    (denote-sequence--number-to-alpha-complete string))
+   ((denote-sequence--alphanumeric-partial-p string)
+    (denote-sequence--alpha-to-number string))
+   ((denote-sequence--numeric-partial-p string)
+    (denote-sequence--number-to-alpha string))
+   (t
+    (if string-is-sequence
+        (error "String `%s' did not pass `denote-sequence-p'" string)
+      (error "The `%s' must not contain both numbers and letters" string)))))
+
+(defun denote-sequence-increment (string)
+  "Increment number represented by STRING and return it as a string.
+STRING is part of a sequence, not the entirety of it."
+  (cond
+   ((denote-sequence--numeric-partial-p string)
+    (number-to-string (+ (string-to-number string) 1)))
+   ((denote-sequence--alphanumeric-partial-p string)
+    (let* ((letters (split-string string "" :omit-nulls))
+           (length-1 (= (length letters) 1))
+           (first (car letters))
+           (reverse (nreverse (copy-sequence letters)))
+           (last (car reverse)))
+      (cond
+       ((and length-1 (string= "z" first))
+        "za")
+       (length-1
+        (char-to-string (+ (string-to-char first) 1)))
+       ((string= "z" last)
+        (apply #'concat (append letters (list "a"))))
+       (t
+        (let ((last last))
+          (apply #'concat
+                 (append (butlast letters)
+                         (list (char-to-string (+ (string-to-char last) 1))))))))))
+   (t
+    (error "The string `%s' must contain only numbers or letters" string))))
+
+(defun denote-sequence-depth (sequence)
+  "Get the depth of SEQUENCE.
+For example, 1=2=1 and 1b1 are three levels of depth."
+  (length (denote-sequence-split sequence)))
 
 (defun denote-sequence--children-implied-p (sequence)
   "Return non-nil if SEQUENCE implies children.
 This does not actually check if there are children in the variable
-`denote-directory', but only that SEQUENCE contains a =, which means
-that its depth is greater than 1."
-  (string-match-p "=" sequence))
-
-(defun denote-sequence--join (list-of-strings)
-  "Join LIST-OF-STRINGS to form a sequence.
-Return sequence if it conforms with `denote-sequence-p'."
-  (thread-last
-    (mapconcat #'identity list-of-strings "=")
-    (denote-sequence-with-error-p)))
+`denote-directory', but only that SEQUENCE is greater than 1."
+  (> (denote-sequence-depth sequence) 1))
 
 (defun denote-sequence--get-parent (sequence)
   "Return implied parent of SEQUENCE, else nil.
 Produce an error if SEQUENCE does not conform with `denote-sequence-p'.
 The implied check here has the same meaning as described in
 `denote-sequence--children-implied-p'."
-  (when (and (denote-sequence-with-error-p sequence)
-             (denote-sequence--children-implied-p sequence))
-    (thread-last
-      (denote-sequence-split sequence)
-      (butlast)
-      (denote-sequence--join))))
-
-(defun denote-sequence-split (sequence)
-  "Split the SEQUENCE string into a list.
-SEQUENCE conforms with `denote-sequence-p'."
-  (when (denote-sequence-with-error-p sequence)
-    (split-string sequence "=" t)))
-
-(defun denote-sequence-depth (sequence)
-  "Get the depth of SEQUENCE.
-For example, 1=2=1 is three levels of depth."
-  (length (denote-sequence-split sequence)))
+  (pcase-let* ((`(,sequence . ,scheme) (denote-sequence-and-scheme-p sequence)))
+    (when (and (denote-sequence-with-error-p sequence)
+               (denote-sequence--children-implied-p sequence))
+      (let ((strings (thread-last
+                       (denote-sequence-split sequence)
+                       (butlast))))
+        (denote-sequence-join strings scheme)))))
 
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
@@ -188,7 +381,7 @@ With optional SEQUENCES operate on those, else use the return value of
      (string-prefix-p sequence string))
    (or sequences (denote-sequence-get-all-sequences))))
 
-(defun denote-sequence-get-sequences-with-max-depth (depth &optional sequences)
+(defun denote-sequence-get-all-sequences-with-max-depth (depth &optional sequences)
   "Get sequences up to DEPTH (inclusive).
 With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'."
@@ -197,8 +390,8 @@ With optional SEQUENCES operate on those, else use the return value of
          (lists (seq-filter (lambda (element) (>= depth (length element))) lists-all)))
     (delete-dups
      (mapcar
-      (lambda (sequence)
-        (denote-sequence--join (seq-take sequence depth)))
+      (lambda (strings)
+        (denote-sequence-join (seq-take strings depth) (denote-sequence--scheme-of-strings strings)))
       lists))))
 
 (defun denote-sequence--pad (sequence type)
@@ -236,6 +429,23 @@ TYPE is a symbol among `denote-sequence-types'."
              (denote-sequence--pad s1 type)
              (denote-sequence--pad s2 type)))))))
 
+(defun denote-sequence--tail-alphanumeric-p (sequence)
+  "Return non-nil if the last character of SEQUENCE is alphanumeric.
+This is for use in `denote-sequence--get-start'."
+  (denote-sequence--alphanumeric-partial-p (substring sequence -1)))
+
+(defun denote-sequence--get-start (&optional sequence prepend-delimiter)
+  "Return the start of a new sequence.
+With optional SEQUENCE, do so based on the final level of depth therein.
+This is usefule only for the alphanumeric `denote-sequence-scheme'.  If
+optional PREPEND-DELIMITER is non-nil, prepend the equals sign to the
+number if `denote-sequence-scheme' is numeric."
+  (pcase denote-sequence-scheme
+    ('numeric (if prepend-delimiter "=1" "1"))
+    ('alphanumeric (if (denote-sequence--tail-alphanumeric-p sequence)
+                       "1"
+                     "a"))))
+
 (defun denote-sequence--get-new-parent (&optional sequences)
   "Return a new to increment largest among sequences.
 With optional SEQUENCES consider only those, otherwise operate on the
@@ -245,38 +455,50 @@ return value of `denote-sequence-get-all-sequences'."
              (first-component (car (denote-sequence-split largest)))
              (current-number (string-to-number first-component)))
         (number-to-string (+ current-number 1)))
-    "1"))
+    (denote-sequence--get-start)))
+
+(defun denote-sequence-filter-scheme (sequences &optional scheme)
+  "Return list of SEQUENCES that are `denote-sequence-scheme' or SCHEME."
+  (let ((predicate (pcase (or scheme denote-sequence-scheme)
+                     ('alphanumeric #'denote-sequence-alphanumeric-p)
+                     ('numeric #'denote-sequence-numeric-p))))
+    (seq-filter predicate sequences)))
 
 (defun denote-sequence--get-new-child (sequence &optional sequences)
   "Return a new child of SEQUENCE.
 Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
   (if-let* ((depth (+ (denote-sequence-depth sequence) 1))
-            (all-unfiltered (denote-sequence-get-all-sequences-with-prefix sequence sequences)))
+            (all-unfiltered (denote-sequence-get-all-sequences-with-prefix sequence sequences))
+            (start-child (denote-sequence--get-start sequence :prepend-delimiter)))
       (if (= (length all-unfiltered) 1)
-          (format "%s=1" (car all-unfiltered))
-        (let* ((all (cond
-                     ((= (length all-unfiltered) 1) all-unfiltered)
-                     ((denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
-                     (t all-unfiltered)))
-               (largest (denote-sequence--get-largest all 'child)))
-          (if (denote-sequence--children-implied-p largest)
-              (let* ((components (denote-sequence-split largest))
-                     (butlast (butlast components))
-                     (last-component (car (nreverse components)))
-                     (current-number (string-to-number last-component))
-                     (new-number (number-to-string (+ current-number 1))))
-                (denote-sequence--join
-                 (if butlast
-                     (append butlast (list new-number))
-                   (list largest new-number))))
-            (format "%s=1" largest))))
-    (error "Cannot find sequences given sequence `%s'" sequence)))
+          (format "%s%s" (car all-unfiltered) start-child)
+        (if-let* ((all-schemeless (cond
+                                   ((= (length all-unfiltered) 1) all-unfiltered)
+                                   ((denote-sequence-get-all-sequences-with-max-depth depth all-unfiltered))
+                                   (t all-unfiltered)))
+                  (all (denote-sequence-filter-scheme all-schemeless))
+                  (largest (denote-sequence--get-largest all 'child)))
+            (if (denote-sequence--children-implied-p largest)
+                (pcase-let* ((`(,largest . ,scheme) (denote-sequence-and-scheme-p largest))
+                             (components (denote-sequence-split largest))
+                             (butlast (butlast components))
+                             (last-component (car (nreverse components)))
+                             (new-number (denote-sequence-increment last-component)))
+                  (denote-sequence-join
+                   (if butlast
+                       (append butlast (list new-number))
+                     (list largest new-number))
+                   scheme))
+              (format "%s%s" largest start-child))
+          (format "%s%s" sequence start-child)))
+    (error "Cannot find sequences given sequence `%s' using scheme `%s'" sequence denote-sequence-scheme)))
 
 (defun denote-sequence--get-prefix-for-siblings (sequence)
   "Get the prefix of SEQUENCE such that it is possible to find its siblings."
-  (when (denote-sequence--children-implied-p sequence)
-    (denote-sequence--join (butlast (denote-sequence-split sequence)))))
+  (pcase-let ((`(,sequence . ,scheme) (denote-sequence-and-scheme-p sequence)))
+    (when (denote-sequence--children-implied-p sequence)
+      (denote-sequence-join (butlast (denote-sequence-split sequence)) scheme))))
 
 (defun denote-sequence--get-new-sibling (sequence &optional sequences)
   "Return a new sibling SEQUENCE.
@@ -289,20 +511,21 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                                    (denote-sequence--get-prefix-for-siblings sequence)
                                    sequences)
                                 (denote-sequence-get-all-sequences)))
-              (all (denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+              (all-schemeless (denote-sequence-get-all-sequences-with-max-depth depth all-unfiltered))
+              (all (denote-sequence-filter-scheme all-schemeless))
               ((member sequence all))
               (largest (if children-p
                            (denote-sequence--get-largest all 'sibling)
                          (denote-sequence--get-largest all 'parent))))
         (if children-p
-            (let* ((components (denote-sequence-split largest))
-                   (butlast (butlast components))
-                   (last-component (car (nreverse components)))
-                   (current-number (string-to-number last-component))
-                   (new-number (number-to-string (+ current-number 1))))
-              (denote-sequence--join (append butlast (list new-number))))
+            (pcase-let* ((`(,largest . ,scheme) (denote-sequence-and-scheme-p largest))
+                         (components (denote-sequence-split largest))
+                         (butlast (butlast components))
+                         (last-component (car (nreverse components)))
+                         (new-number (denote-sequence-increment last-component)))
+              (denote-sequence-join (append butlast (list new-number)) scheme))
           (number-to-string (+ (string-to-number largest) 1)))
-      (error "Cannot find sequences given sequence `%s'" sequence))))
+      (error "Cannot find sequences given sequence `%s' using scheme `%s'" sequence denote-sequence-scheme))))
 
 (defun denote-sequence-get (type &optional sequence)
   "Return a sequence given TYPE among `denote-sequence-types'.
@@ -488,7 +711,10 @@ is ignored."
 With optional PROMPT-TEXT use it instead of the generic one."
   (read-number
    (or prompt-text
-       "Get sequences up to this depth (e.g. `1=1=2' is `3' levels of depth): ")))
+       (format "Get sequences up to this depth %s: "
+               (if (eq denote-sequence-scheme 'alphanumeric)
+                   "(e.g. `1a2' is `3' levels of depth)"
+                 "(e.g. `1=1=2' is `3' levels of depth)")))))
 
 (defun denote-sequence--get-dired-buffer-name (&optional prefix depth)
   "Return a string for `denote-sequence-dired' buffer.
