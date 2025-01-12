@@ -4048,27 +4048,68 @@ expound on form sequences. For example, an article about the Labrador
 Retriever dog breed is a continuation of a thought process that
 extends something about dog breeds in general which, in turn, is a
 topic that belongs to the wider theme of dogs. A sequence, then, is a
-numeric representation of such relationships. A note with a
-=SIGNATURE= of ~1=1~ (the "=" is the field separator of signatures,
-per the Denote file-naming scheme) is thus the child of note =1= and
-the sibling of note ~1=2~. In this regard, something unrelated to dogs
+representation of such relationships. A note with a =SIGNATURE= of
+~1=1~ (the ~=~ is the field separator of signatures, per the Denote
+file-naming scheme) is thus the first child of note =1= and the
+sibling of note ~1=2~. In this regard, something unrelated to dogs
 will be its own parent, such as =2=, and so on.
+
+All the relevant functions we provide take care to automatically use
+the right number for a given sequence ([[#h:6293ec17-05ef-4e41-9ae3-25df2ad86303][Create parent, child, or sibling sequence notes]]).
+If, for example, we create a new child of parent ~1=1~, we make sure
+that it is the largest number among any existing children, so if
+~1=1=1~ already exists we use ~1=1=2~, and the like.
+
+The =denote-sequence.el= optional extension is not necessary for such
+a workflow. Users can always define whatever =SIGNATURE= they want
+manually. The purpose of this extension is to streamline this work.
+
+** Select a sequencing scheme for ~denote-sequence-scheme~
+:PROPERTIES:
+:CUSTOM_ID: h:8c682f08-f162-4ddd-be03-805e87737d55
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+#+vindex: denote-sequence-scheme
+The user option ~denote-sequence-scheme~ allows users to select either
+the =numeric= scheme, which is like ~1=1=2~ or the =alphanumeric=
+scheme, which is =1a2= for the same sequence:
+
+- Numeric sequencing scheme :: A numeric sequence consists only of
+  numbers. The level of depth is derived from the number of fields in
+  the sequence, separated by the equals sign. Thus, the sequence
+  ~1=1=2~ consists of three levels of depth. For deeper sequences, the
+  numeric scheme will get longer, which some users may consider
+  unwieldy. The upside, however, is that is easier to reason about
+  larger numbers, such as ~1=100=2=50~.
+
+- Alphanumeric sequencing scheme :: An alphanumeric sequence combines
+  numbers and letters. The level of depth is undestand by the
+  alteration from numbers to letters and vice versa. As such, the
+  sequence =1a2= has three levels of depth. This scheme is more
+  compact, which users may like but can be harder to reason about
+  large numbers, such as =1zzzv2zx= corresponding to the numeric
+  ~1=100=2=50~ (this is because the number 26 is z, 27 is za, 52 is
+  zz, and so on). In practice, large numbers may not be a problem,
+  though this is something to keep in mind.
+
+** Create parent, child, or sibling sequence notes
+:PROPERTIES:
+:CUSTOM_ID: h:6293ec17-05ef-4e41-9ae3-25df2ad86303
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+[ In the interest of simplicity, here we provide examples using the
+  =numeric= value of ~denote-sequence-scheme~, though the =alphanumeric=
+  will work as well ([[#h:8c682f08-f162-4ddd-be03-805e87737d55][Select a sequencing scheme for ~denote-sequence-scheme~]]). ]
 
 A new sequence note can be of the type =parent=, =child=, and
 =sibling=.  For the convenience of the user, we provide commands to
 create such "sequence notes", link only between them (as opposed to
 a link to any other file with the Denote file-naming scheme ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]])), and
 re-parent them on demand.
-
-All the relevant functions we provide take care to automatically use
-the right number for a given sequence. If, for example, we create a
-new child for parent ~1=1~, we make sure that it is the new largest
-number among any existing children, so if ~1=1=1~ already exists we
-use ~1=1=2~, and the like.
-
-This optional extension is not necessary for such a workflow. Users
-can always define whatever =SIGNATURE= they want manually. The purpose
-of this extension is to streamline this work.
 
 Concretely, we provide the following commands:
 
@@ -4106,35 +4147,63 @@ Concretely, we provide the following commands:
   have such a sequence, then the command behaves the same as the
   aforementioned ~denote-sequence-new-sibling~.
 
+** Link only to sequences
+:PROPERTIES:
+:CUSTOM_ID: h:e83902ff-4594-494b-88cd-722f6b4fb0b7
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
 #+findex: denote-sequence-link
-- ~denote-sequence-link~ :: This is a variant of the standard
-  ~denote-link~ command which limits the list of files only to those
-  which contain a sequence.
+The command ~denote-sequence-link~ is a variant of the standard
+~denote-link~ command which limits the list of files only to those
+which contain a sequence ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Consider it a convenience to
+link to sequence notes more quickly. It is by no means necessary
+though, as the regular linking commands will work as expected with any
+Denote file, including those which contain a sequence as their file
+name =SIGNATURE= ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
+
+** Re-parent a file to extend a given sequence
+:PROPERTIES:
+:CUSTOM_ID: h:98eb8ee5-93c4-49ba-9092-65a3b61c69c6
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
 
 #+findex: denote-sequence-reparent
-- ~denote-sequence-reparent~ :: This is a command that can be used
-  from inside a file or for the file-at-point in Dired to make the
-  file a child of a given parent sequence, prompting for it using
-  minibuffer completion.
+The command ~denote-sequence-reparent~ can be used from inside a file
+or for the file-at-point in Dired to make that file a child of a given
+sequence. It does so by prompting for the target file using minibuffer
+completion. Files available at this prompt are only those which
+contain a sequence as their file name =SIGNATURE= ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
+
+** Show all or some sequences in a Dired buffer
+:PROPERTIES:
+:CUSTOM_ID: h:7811300e-5758-4b86-89bf-1d904bf1598a
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+[ In the interest of simplicity, here we provide examples using the
+  =numeric= value of ~denote-sequence-scheme~, though the =alphanumeric=
+  will work as well ([[#h:8c682f08-f162-4ddd-be03-805e87737d55][Select a sequencing scheme for ~denote-sequence-scheme~]]). ]
 
 #+findex: denote-sequence-dired
-- ~denote-sequence-dired~ :: This command produces a bespoke Dired
-  that contains all the sequences in their order (as opposed to a
-  regular Dired which sorts files using the =ls= flags). With an
-  optional =C-u= prefix argument, this command prompts for a prefix to
-  only show sequences that include it (e.g. only show notes with
-  ~1=1~, like ~1=1=1~ and ~1=1=2~ but not ~1=2~). With an optional
-  double prefix argument of =C-u C-u=, this command will prompt for
-  the prefix as well as the level of depth to limit the results to.
-  Here "depth" means how deep to go in a sequence where, for example,
-  ~1=1=2~ is three levels of depth. It is possible to use an empty
-  string at the prefix prompt to not limit the results to any prefix.
+The command ~denote-sequence-dired~ produces a bespoke and fully
+fledged Dired buffers that contains all the sequences in their order
+(as opposed to a regular Dired which sorts files using the =ls=
+flags).
 
-Note that we do not use the Luhmann-style sequencing scheme of mixing
-numbers with letters. We only have numbers and rely on the field
-separator (the "=") to establish the kind of relationship between any
-two given notes. This greatly simplifies the code, plus it is easy to
-reason about and to document.
+With an optional =C-u= prefix argument, this command prompts for a
+prefix to only show sequences that include it (e.g. only show notes
+with ~1=1~, like ~1=1=1~ and ~1=1=2~ but not ~1=2~).
+
+With an optional double prefix argument of =C-u C-u=, this command
+will prompt for the prefix as well as the level of depth to limit the
+results to. Here "depth" means how deep to go in a sequence where, for
+example, ~1=1=2~ is three levels of depth. It is possible to use an
+empty string at the prefix prompt to not limit the results to any
+prefix.
 
 * Sort files by component
 :PROPERTIES:
