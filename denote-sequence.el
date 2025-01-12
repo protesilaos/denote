@@ -384,15 +384,23 @@ TYPE is a symbol among `denote-sequence-types'."
              (denote-sequence--pad s1 type)
              (denote-sequence--pad s2 type)))))))
 
-(defun denote-sequence--get-start (&optional prepend-delimiter)
+(defun denote-sequence--tail-alphanumeric-p (sequence)
+  "Return non-nil if the last character of SEQUENCE is alphanumeric.
+This is for use in `denote-sequence--get-start'."
+  (denote-sequence--alphanumeric-partial-p (substring sequence -1)))
+
+(defun denote-sequence--get-start (&optional sequence prepend-delimiter)
   "Return the start of a new sequence.
-If optional PREPEND-DELIMITER is non-nil, prepend the equals sign to the
+With optional SEQUENCE, do so based on the final level of depth therein.
+This is usefule only for the alphanumeric `denote-sequence-scheme'.  If
+optional PREPEND-DELIMITER is non-nil, prepend the equals sign to the
 number if `denote-sequence-scheme' is numeric."
   (pcase denote-sequence-scheme
     ('numeric (if prepend-delimiter "=1" "1"))
-    ('alphanumeric "a")))
+    ('alphanumeric (if (denote-sequence--tail-alphanumeric-p sequence)
+                       "1"
+                     "a"))))
 
-;; FIXME 2025-01-11: Abstract these to work with alphanumeric as well.
 (defun denote-sequence--get-new-parent (&optional sequences)
   "Return a new to increment largest among sequences.
 With optional SEQUENCES consider only those, otherwise operate on the
@@ -417,7 +425,7 @@ Optional SEQUENCES has the same meaning as that specified in the
 function `denote-sequence-get-all-sequences-with-prefix'."
   (if-let* ((depth (+ (denote-sequence-depth sequence) 1))
             (all-unfiltered (denote-sequence-get-all-sequences-with-prefix sequence sequences))
-            (start-child (denote-sequence--get-start :prepend-delimiter)))
+            (start-child (denote-sequence--get-start sequence :prepend-delimiter)))
       (if (= (length all-unfiltered) 1)
           (format "%s%s" (car all-unfiltered) start-child)
         (if-let* ((all-schemeless (cond
