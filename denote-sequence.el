@@ -102,6 +102,7 @@ zx (z is 26 and x is 25)."
 (defun denote-sequence-alphanumeric-p (sequence)
   "Return SEQUENCE if it is alphanumeric per `denote-sequence-scheme'."
   (when (and (string-match-p denote-sequence-alphanumeric-regexp sequence)
+             (string-match-p "\\`[0-9]+" sequence)
              (not (string-match-p "=" sequence)))
     sequence))
 
