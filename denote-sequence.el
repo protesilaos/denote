@@ -225,16 +225,55 @@ has the same meaning as in `denote-sequence-and-scheme-p'."
             (concat prefix suffix)
           (make-string times ?z)))))))
 
-(defun denote-sequence-convert (string)
+(defun denote-sequence--alpha-to-number-complete (sequence)
+  "Like `denote-sequence--alpha-to-number' but for the complete SEQUENCE."
+  (if (denote-sequence-numeric-p sequence)
+      sequence
+    (let* ((parts (denote-sequence-split sequence))
+           (converted-parts (mapcar
+                             (lambda (string)
+                               (if (denote-sequence--numeric-partial-p string)
+                                   string
+                                 (denote-sequence--alpha-to-number string)))
+                             parts)))
+      (denote-sequence-join converted-parts 'numeric))))
+
+(defun denote-sequence--number-to-alpha-complete (sequence)
+  "Like `denote-sequence--number-to-alpha' but for the complete SEQUENCE."
+  (if (denote-sequence-alphanumeric-p sequence)
+      sequence
+    (let* ((parts (denote-sequence-split sequence))
+           (odd-is-numeric 0)
+           (converted-parts (mapcar
+                             (lambda (string)
+                               (setq odd-is-numeric (+ odd-is-numeric 1))
+                               (cond
+                                ((= (% odd-is-numeric 2) 1)
+                                 string)
+                                ((denote-sequence--alphanumeric-partial-p string)
+                                 string)
+                                (t
+                                 (denote-sequence--number-to-alpha string))))
+                             parts)))
+      (denote-sequence-join converted-parts 'alphanumeric))))
+
+(defun denote-sequence-convert (string &optional string-is-sequence)
   "Convert STRING to its counterpart sequencing scheme.
-Also see `denote-sequence-scheme'."
+If STRING-IS-SEQUENCE then assume STRING to be a complete sequence, in
+which case convert the entirety of it.  Also see `denote-sequence-scheme'."
   (cond
+   ((and string-is-sequence (denote-sequence-alphanumeric-p string))
+    (denote-sequence--alpha-to-number-complete string))
+   ((and string-is-sequence (denote-sequence-numeric-p string))
+    (denote-sequence--number-to-alpha-complete string))
    ((denote-sequence--alphanumeric-partial-p string)
     (denote-sequence--alpha-to-number string))
    ((denote-sequence--numeric-partial-p string)
     (denote-sequence--number-to-alpha string))
    (t
-    (error "The `%s' must not contain both numbers and letters" string))))
+    (if string-is-sequence
+        (error "String `%s' did not pass `denote-sequence-p'" string)
+      (error "The `%s' must not contain both numbers and letters" string)))))
 
 (defun denote-sequence-increment (string)
   "Increment number represented by STRING and return it as a string.

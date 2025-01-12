@@ -752,7 +752,14 @@ This is done using the alphanumeric `denote-sequence-scheme'."
                (string= (denote-sequence-convert "za") "27")
                (string= (denote-sequence-convert "zzzzz") "130")
                (string= (denote-sequence-convert "zzzzza") "131")))
-  (should-error (denote-sequence-convert "1a2")))
+  (should (and (string= (denote-sequence-convert "1=1=2" :string-is-sequence) "1a2")
+               (string= (denote-sequence-convert "1a2" :string-is-sequence) "1=1=2")
+               (string= (denote-sequence-convert "1=27=2=55" :string-is-sequence) "1za2zzc")
+               (string= (denote-sequence-convert "1za2zzc" :string-is-sequence) "1=27=2=55")
+               (string= (denote-sequence-convert "1=1=2=2=4=1" :string-is-sequence) "1a2b4a")
+               (string= (denote-sequence-convert "1a2b4a" :string-is-sequence) "1=1=2=2=4=1")))
+  (should-error (denote-sequence-convert "111=a" :string-is-sequence))
+  (should-error (denote-sequence-convert "a1" :string-is-sequence)))
 
 (ert-deftest dt-denote-sequence-increment ()
   "Test that `denote-sequence-increment' works with numbers and letters."
