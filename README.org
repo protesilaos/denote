@@ -4026,7 +4026,14 @@ you get all the parameters included:
 [ The =denote-sequence.el= is part of {{{development-version}}}. ]
 
 This section is about the optional extension =denote-sequence.el=,
-which is part of the ~denote~ package.
+which is part of the ~denote~ package. Its commands are autoloaded, so
+they are avaialble in the =M-x= interface at the outset and will load
+their file when they are invoked. Though users can explicitly load
+the file on demand with:
+
+#+begin_src emacs-lisp
+(require 'denote-sequence)
+#+end_src
 
 Denote defines an optional file name component called the =SIGNATURE=
 ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). This is a free form field that users can
