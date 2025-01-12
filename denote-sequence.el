@@ -336,7 +336,7 @@ With optional SEQUENCES operate on those, else use the return value of
      (string-prefix-p sequence string))
    (or sequences (denote-sequence-get-all-sequences))))
 
-(defun denote-sequence-get-sequences-with-max-depth (depth &optional sequences)
+(defun denote-sequence-get-all-sequences-with-max-depth (depth &optional sequences)
   "Get sequences up to DEPTH (inclusive).
 With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'."
@@ -422,7 +422,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
           (format "%s%s" (car all-unfiltered) start-child)
         (if-let* ((all-schemeless (cond
                                    ((= (length all-unfiltered) 1) all-unfiltered)
-                                   ((denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+                                   ((denote-sequence-get-all-sequences-with-max-depth depth all-unfiltered))
                                    (t all-unfiltered)))
                   (all (denote-sequence-filter-scheme all-schemeless))
                   (largest (denote-sequence--get-largest all 'child)))
@@ -458,7 +458,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
                                    (denote-sequence--get-prefix-for-siblings sequence)
                                    sequences)
                                 (denote-sequence-get-all-sequences)))
-              (all-schemeless (denote-sequence-get-sequences-with-max-depth depth all-unfiltered))
+              (all-schemeless (denote-sequence-get-all-sequences-with-max-depth depth all-unfiltered))
               (all (denote-sequence-filter-scheme all-schemeless))
               ((member sequence all))
               (largest (if children-p
