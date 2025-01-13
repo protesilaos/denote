@@ -418,9 +418,8 @@ means to pad the full length of the sequence."
          "=")
       (string-pad s 32 32 :pad-from-start))))
 
-(defun denote-sequence--get-largest (sequences type)
-  "Return largest sequence in SEQUENCES given TYPE.
-TYPE is a symbol among `denote-sequence-types'."
+(defun denote-sequence--get-largest-by-order (sequences type)
+  "Sort SEQUENCES of TYPE to get largest in order, using `denote-sequence--pad'."
   (car
    (reverse
     (sort sequences
@@ -428,6 +427,38 @@ TYPE is a symbol among `denote-sequence-types'."
             (string<
              (denote-sequence--pad s1 type)
              (denote-sequence--pad s2 type)))))))
+
+(defun denote-sequence--string-length-sans-delimiter (string)
+  "Return length of STRING without the equals sign."
+  (if (eq denote-sequence-scheme 'numeric)
+      (length (replace-regexp-in-string "=" "" string))
+    (length string)))
+
+(defun denote-sequence--get-largest-by-length (sequences)
+  "Compare length of SEQUENCES to determine the largest among them.
+If there are more than one sequences of equal length, return them."
+  (let* ((seqs-with-length (mapcar (lambda (sequence)
+                                     (cons (denote-sequence--string-length-sans-delimiter sequence) sequence))
+                                   sequences))
+         (longest (apply #'max (mapcar #'car seqs-with-length)))
+         (largest-sequence (delq nil
+                                 (mapcar (lambda (element)
+                                     (unless (< (car element) longest)
+                                       (cdr element)))
+                                   seqs-with-length))))
+    (if (= (length largest-sequence) 1)
+        (car largest-sequence)
+      largest-sequence)))
+
+(defun denote-sequence--get-largest (sequences type)
+  "Return largest sequence in SEQUENCES given TYPE.
+TYPE is a symbol among `denote-sequence-types'."
+  (if (eq type 'child)
+      (let ((largest (denote-sequence--get-largest-by-length sequences)))
+        (if (listp largest)
+            (denote-sequence--get-largest-by-order largest type)
+          largest))
+    (denote-sequence--get-largest-by-order sequences type)))
 
 (defun denote-sequence--tail-alphanumeric-p (sequence)
   "Return non-nil if the last character of SEQUENCE is alphanumeric.

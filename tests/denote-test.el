@@ -614,6 +614,7 @@ This is done using the numeric `denote-sequence-scheme'."
              "20241230T075023==1=1=2--test__testing.txt"
              "20241230T075023==1=2--test__testing.txt"
              "20241230T075023==1=2=1--test__testing.txt"
+             "20241230T075023==1=2=1=1--test__testing.txt"
              "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
     (let ((denote-sequence-scheme 'numeric))
@@ -623,7 +624,7 @@ This is done using the numeric `denote-sequence-scheme'."
         (equal (denote-sequence--get-new-child "1=1" sequences) "1=1=3")
         (equal (denote-sequence--get-new-child "1=1=2" sequences) "1=1=2=1")
         (equal (denote-sequence--get-new-child "1=2" sequences) "1=2=2")
-        (equal (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=1")
+        (equal (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=2")
         (equal (denote-sequence--get-new-child "2" sequences) "2=1")))
       (should-error (denote-sequence--get-new-child "3" sequences)))
     (delete-directory denote-directory :delete-contents-as-well)))
@@ -648,6 +649,7 @@ This is done using the alphanumeric `denote-sequence-scheme'."
              "20241230T075023==1a2--test__testing.txt"
              "20241230T075023==1b--test__testing.txt"
              "20241230T075023==1b1--test__testing.txt"
+             "20241230T075023==1b1a--test__testing.txt"
              "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
     (let ((denote-sequence-scheme 'alphanumeric))
@@ -657,7 +659,7 @@ This is done using the alphanumeric `denote-sequence-scheme'."
         (equal (denote-sequence--get-new-child "1a" sequences) "1a3")
         (equal (denote-sequence--get-new-child "1a2" sequences) "1a2a")
         (equal (denote-sequence--get-new-child "1b" sequences) "1b2")
-        (equal (denote-sequence--get-new-child "1b1" sequences) "1b1a")
+        (equal (denote-sequence--get-new-child "1b1" sequences) "1b1b")
         (equal (denote-sequence--get-new-child "2" sequences) "2a")))
       (should-error (denote-sequence--get-new-child "3" sequences)))
     (delete-directory denote-directory :delete-contents-as-well)))
