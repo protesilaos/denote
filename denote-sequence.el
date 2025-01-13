@@ -474,7 +474,6 @@ function `denote-sequence-get-all-sequences-with-prefix'."
       (if (= (length all-unfiltered) 1)
           (format "%s%s" (car all-unfiltered) start-child)
         (if-let* ((all-schemeless (cond
-                                   ((= (length all-unfiltered) 1) all-unfiltered)
                                    ((denote-sequence-get-all-sequences-with-max-depth depth all-unfiltered))
                                    (t all-unfiltered)))
                   (all (denote-sequence-filter-scheme all-schemeless))
