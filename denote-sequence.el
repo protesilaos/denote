@@ -155,8 +155,8 @@ Produce an error if the sequencing scheme cannot be established."
     'numeric))
 
 (defun denote-sequence-file-p (file)
-  "Return non-nil if Denote signature of FILE is a sequence.
-A sequence is string that matches `denote-sequence-numeric-regexp'."
+  "Return the sequence if Denote signature of FILE is a sequence.
+A sequence is string that conforms with `denote-sequence-p'."
   (when-let* ((signature (denote-retrieve-filename-signature file)))
     (denote-sequence-p signature)))
 
