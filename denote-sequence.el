@@ -647,7 +647,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
   (cond
    ((when-let* (((derived-mode-p 'dired-mode))
                 (file-at-point (dired-get-filename nil t)))
-      (denote-sequence-file-p file-at-point))
+      (denote-sequence-file-p file-at-point)))
    ((and buffer-file-name (denote-sequence-file-p buffer-file-name)))
    (t
     (denote-retrieve-filename-signature (denote-sequence-file-prompt prompt-text)))))
