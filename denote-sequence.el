@@ -613,9 +613,6 @@ Files available at the minibuffer prompt are those returned by
       selected-type
       (when (memq selected-type (delq 'parent denote-sequence-types))
         (denote-sequence-file-prompt (format "Make a new %s of SEQUENCE" selected-type))))))
-  ;; TODO 2024-12-30: Do we need to wrap this in the following?
-  ;;
-  ;; (cl-letf (((alist-get 'signature denote-file-name-slug-functions) #'denote-sluggify-signature))
   (let* ((sequence (when file-with-sequence (denote-retrieve-filename-signature file-with-sequence)))
          (new-sequence (denote-sequence-get type sequence))
          (denote-use-signature new-sequence))
