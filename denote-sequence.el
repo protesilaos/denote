@@ -600,7 +600,8 @@ completion candidates.  Else use `denote-sequence-get-all-files'."
 ;;;###autoload
 (defun denote-sequence (type &optional file-with-sequence)
   "Create a new sequence note of TYPE among `denote-sequence-types'.
-If TYPE is either `child' or `sibling', then it is an extension of SEQUENCE.
+If TYPE is either `child' or `sibling', then it is an extension of
+FILE-WITH-SEQUENCE.
 
 When called interactively, prompt for TYPE and, when necessary, for
 FILE-WITH-SEQUENCE whose sequence will be used to derive a new sequence.
