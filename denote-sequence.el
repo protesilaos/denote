@@ -460,11 +460,6 @@ TYPE is a symbol among `denote-sequence-types'."
           largest))
     (denote-sequence--get-largest-by-order sequences type)))
 
-(defun denote-sequence--tail-alphanumeric-p (sequence)
-  "Return non-nil if the last character of SEQUENCE is alphanumeric.
-This is for use in `denote-sequence--get-start'."
-  (denote-sequence--alphanumeric-partial-p (substring sequence -1)))
-
 (defun denote-sequence--get-start (&optional sequence prepend-delimiter)
   "Return the start of a new sequence.
 With optional SEQUENCE, do so based on the final level of depth therein.
@@ -473,7 +468,7 @@ optional PREPEND-DELIMITER is non-nil, prepend the equals sign to the
 number if `denote-sequence-scheme' is numeric."
   (pcase denote-sequence-scheme
     ('numeric (if prepend-delimiter "=1" "1"))
-    ('alphanumeric (if (denote-sequence--tail-alphanumeric-p sequence)
+    ('alphanumeric (if (denote-sequence--alphanumeric-partial-p (substring sequence -1))
                        "1"
                      "a"))))
 
