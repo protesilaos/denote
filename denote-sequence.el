@@ -362,9 +362,9 @@ With optional FILES, operate on them, else use the return value of
 
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
-A sequence is a Denote signature that conforms with `denote-sequence-p'.
+With optional FILES return all sequences among them instead.
 
-With optional FILES return all sequences among them instead."
+A sequence is a Denote signature that conforms with `denote-sequence-p'."
   (delq nil
         (mapcar
          #'denote-sequence-file-p
