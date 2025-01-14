@@ -372,10 +372,10 @@ A sequence is a Denote signature that conforms with `denote-sequence-p'."
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.
-A sequence is a Denote signature that conforms with `denote-sequence-p'.
-
 With optional SEQUENCES operate on those, else use the return value of
-`denote-sequence-get-all-sequences'."
+`denote-sequence-get-all-sequences'.
+
+A sequence is a Denote signature that conforms with `denote-sequence-p'."
   (seq-filter
    (lambda (string)
      (string-prefix-p sequence string))
