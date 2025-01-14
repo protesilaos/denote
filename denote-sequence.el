@@ -95,7 +95,7 @@ zx (z is 26 and x is 25)."
 (defun denote-sequence-numeric-p (sequence)
   "Return SEQUENCE if it is numeric per `denote-sequence-scheme'."
   (when (and (string-match-p denote-sequence-numeric-regexp sequence)
-             (not (string-match-p "[a-zA-Z]" sequence))
+             (not (string-match-p "[[:alpha:]]" sequence))
              (not (string-suffix-p "=" sequence)))
     sequence))
 
@@ -125,7 +125,7 @@ Also see `denote-sequence-numeric-p' and `denote-sequence-alphanumeric-p'."
 
 (defun denote-sequence--alphanumeric-partial-p (string)
   "Return non-nil if STRING likely is part of an alphanumeric sequence."
-  (and (string-match-p "[a-z]+" string)
+  (and (string-match-p "[[:alpha:]]+" string)
        (not (string-match-p "[0-9[:punct:]]+" string))))
 
 (defun denote-sequence-and-scheme-p (sequence &optional partial)
