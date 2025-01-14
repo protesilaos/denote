@@ -793,6 +793,10 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
                         (denote-sequence-dired prefix depth)))))
     (user-error "No Denote sequences matching those terms")))
 
+;; TODO 2025-01-14: We need to have an operation that reparents
+;; recursively.  This can be done inside of the `denote-sequence-reparent',
+;; where if it finds that the current file has children, it prompts
+;; for a confirmation and then continues to reparent all of them.
 ;;;###autoload
 (defun denote-sequence-reparent (current-file file-with-sequence)
   "Re-parent the CURRENT-FILE to be a child of FILE-WITH-SEQUENCE.
