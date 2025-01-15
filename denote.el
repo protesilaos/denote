@@ -4380,8 +4380,10 @@ argument.
 Also see `denote-id-only-link-in-context-regexp'.")
 
 (defvar denote-org-link-in-context-regexp
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]" "\\["
-          "\\(?2:" ".*?" "\\)" "]]")
+  (concat "\\[\\[" "denote:"
+          "\\(?1:" denote-id-regexp "\\)"
+          "\\(?:::.*\\)?" "]"
+          "\\[" "\\(?2:" ".*?" "\\)" "]]")
   "Regexp to match an Org link in its context.
 The format of such links is `denote-org-link-format'.")
 
