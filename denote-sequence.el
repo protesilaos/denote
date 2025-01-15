@@ -25,21 +25,25 @@
 
 ;; Sequence notes extension for Denote.  It uses the SIGNATURE file
 ;; name component of Denote to establish a hierarchy between notes.
-;; As such, note 1=1 is the child of the note 1.  The rest of the
-;; Denote file naming scheme continues to apply as described in the
-;; manual, as do all the other features of Denote.
+;; As such, with the default numeric `denote-sequence-scheme', note
+;; 1=1=2 is the second child of the first child of note 1.  While with
+;; the alphanumeric scheme, note 1a2 is the equivalent.  The rest of
+;; the Denote file naming scheme continues to apply as described in
+;; the manual, as do all the other features of Denote.
 ;;
 ;; A new sequence note can be of the type `parent', `child', and
 ;; `sibling'.  For the convenience of the user, we provide commands to
 ;; create such "sequence notes", link only between them (as opposed to
 ;; a link to any other file with the Denote file-naminng scheme), and
-;; re-parent them on demand.
+;; re-parent them on demand, as well as display them in a Dired buffer
+;; in accordance with their inherent order.
 ;;
 ;; All the relevant functions we provide take care to automatically
-;; use the right number for a given sequence.  If, for example, we
-;; create a new child for parent 1=1, we make sure that it is the new
-;; largest number among any existing children, so if 1=1=1 already
-;; exists we use 1=1=2, and so on.
+;; use the right number for a given sequence, per the user option
+;; `denote-sequence-scheme'.  If, for example, we create a new child
+;; for parent 1=1, we make sure that it is the new largest number
+;; among any existing children, so if 1=1=1 already exists we use
+;; 1=1=2, and so on.
 ;;
 ;; This optional extension is not necessary for such a workflow.
 ;; Users can always define whatever SIGNATURE they want manually.  The
