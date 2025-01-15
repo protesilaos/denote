@@ -326,12 +326,15 @@ The implied check here has the same meaning as described in
                        (butlast))))
         (denote-sequence-join strings scheme)))))
 
+(defun denote-sequence--get-files (&optional files)
+  "Return list of files or buffers in the variable `denote-directory'.
+With optional FILES only consider those, otherwise use `denote-directory-files'."
+  (delete-dups (append (denote--buffer-file-names) (or files (denote-directory-files)))))
+
 (defun denote-sequence-get-all-files ()
   "Return all files in variable `denote-directory' with a sequence.
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (seq-filter
-   #'denote-sequence-file-p
-   (append (denote--buffer-file-names) (denote-directory-files))))
+  (seq-filter #'denote-sequence-file-p (denote-sequence--get-files)))
 
 (defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
   "Return all files in variable `denote-directory' with prefix SEQUENCE.
@@ -345,7 +348,7 @@ With optional FILES, operate on them, else use the return value of
            (when-let* ((file-sequence (denote-sequence-file-p file))
                        ((string-prefix-p sequence file-sequence)))
              file))
-         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
+         (denote-sequence--get-files files))))
 
 (defun denote-sequence-get-all-files-with-max-depth (depth &optional files)
   "Return all files with sequence depth up to DEPTH (inclusive).
@@ -358,17 +361,14 @@ With optional FILES, operate on them, else use the return value of
                        (components (denote-sequence-split sequence))
                        ((>= depth (length components))))
              file))
-         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
+         (denote-sequence--get-files files))))
 
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
 With optional FILES return all sequences among them instead.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (delq nil
-        (mapcar
-         #'denote-sequence-file-p
-         (append (denote--buffer-file-names) (or files (denote-directory-files))))))
+  (delq nil (mapcar #'denote-sequence-file-p (denote-sequence--get-files files))))
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.
