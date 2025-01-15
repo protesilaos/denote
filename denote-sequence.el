@@ -258,7 +258,7 @@ has the same meaning as in `denote-sequence-and-scheme-p'."
                              parts)))
       (denote-sequence-join converted-parts 'alphanumeric))))
 
-(defun denote-sequence-convert (string &optional string-is-sequence)
+(defun denote-sequence-make-conversion (string &optional string-is-sequence)
   "Convert STRING to its counterpart sequencing scheme.
 If STRING-IS-SEQUENCE then assume STRING to be a complete sequence, in
 which case convert the entirety of it.  Also see `denote-sequence-scheme'."
