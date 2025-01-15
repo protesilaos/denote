@@ -836,5 +836,33 @@ the target sequence."
          (new-sequence (denote-sequence--get-new-child target-sequence)))
     (denote-rename-file current-file 'keep-current 'keep-current new-sequence 'keep-current)))
 
+;;;###autoload
+(defun denote-sequence-convert (files)
+  "Convert the sequence scheme of FILES to match `denote-sequence-scheme'.
+When called from inside a Denote file, FILES is just the current file.
+When called from a Dired buffer, FILES are the marked files.  If no
+files are marked, then the one at point is considered.
+
+Do not make any changes if the file among the FILES has no sequence or
+if it already matches the value of `denote-sequence-scheme'.  A file has
+a sequence when it conforms with `denote-sequence-file-p'.
+
+This command is for users who once used a `denote-sequence-scheme' and
+have since decided to switch to another.  IT DOES NOT REPARENT OR ANYHOW
+CHECK THE RESULTING SEQUENCES FOR DUPLICATES."
+  (interactive
+   (list
+    (if (derived-mode-p 'dired-mode)
+        (dired-get-marked-files)
+      buffer-file-name))
+   dired-mode)
+  (unless (listp files)
+    (setq files (list files)))
+  (dolist (file files)
+    (when-let* ((old-sequence (denote-sequence-file-p file))
+                (new-sequence (denote-sequence-make-conversion old-sequence :is-complete-sequence)))
+      (denote-rename-file file 'keep-current 'keep-current new-sequence 'keep-current)))
+  (denote-update-dired-buffers))
+
 (provide 'denote-sequence)
 ;;; denote-sequence.el ends here
