@@ -673,7 +673,8 @@ Use the functions `denote-sequence--get-new-child' and
                    (string= (denote-sequence--get-new-sibling "2" sequences) "3")))
       (should-error (denote-sequence--get-new-sibling "4" sequences)))
 
-    (delete-directory denote-directory :delete-contents-as-well)))
+    (let ((delete-by-moving-to-trash t))
+      (delete-directory denote-directory :delete-contents-as-well :use-system-trash))))
 
 (ert-deftest dt-denote-sequence-split ()
   "Test that `denote-sequence-split' splits a sequence correctly."
