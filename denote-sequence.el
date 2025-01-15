@@ -63,9 +63,6 @@
   :link '(info-link "(denote) Sequence notes")
   :link '(url-link :tag "homepage" "https://protesilaos.com/emacs/denote"))
 
-(defconst denote-sequence-schemes '(numeric alphanumeric)
-  "Symbols representing sequence schemes.")
-
 (defcustom denote-sequence-scheme 'numeric
   "Sequencing scheme to establish file hierarchies.
 The value is the symbol `numeric' or `alphanumeric'.
@@ -135,8 +132,8 @@ Also see `denote-sequence-numeric-p' and `denote-sequence-alphanumeric-p'."
 (defun denote-sequence-and-scheme-p (sequence &optional partial)
   "Return the sequencing scheme of SEQUENCE, per `denote-sequence-scheme'.
 Return a cons cell of the form (sequence . scheme), where the `car' is
-SEQUENCE and the `cdr' is its sequencing scheme as a symbol among
-`denote-sequence-schemes'.
+SEQUENCE and the `cdr' is its sequencing scheme as a symbol among those
+mentioned in `denote-sequence-scheme'.
 
 With optional PARTIAL as a non-nil value, assume SEQUENCE to be a string
 that only represents part of a sequence, which itself consists entirely
@@ -166,8 +163,8 @@ A sequence is string that conforms with `denote-sequence-p'."
 
 (defun denote-sequence-join (strings scheme)
   "Join STRINGS to form a sequence according to SCHEME.
-SCHEME is a symbol among `denote-sequence-schemes'.  Return resulting
-sequence if it conforms with `denote-sequence-p'."
+SCHEME is a symbol among those mentioned in `denote-sequence-scheme'.
+Return resulting sequence if it conforms with `denote-sequence-p'."
   (pcase scheme
     ('numeric (mapconcat #'identity strings "="))
     ('alphanumeric (apply #'concat strings))))
