@@ -4074,7 +4074,7 @@ manually. The purpose of this extension is to streamline this work.
 #+vindex: denote-sequence-scheme
 The user option ~denote-sequence-scheme~ allows users to select either
 the =numeric= scheme, which is like ~1=1=2~ or the =alphanumeric=
-scheme, which is =1a2= for the same sequence:
+scheme, which is =1a2= for the same sequence ([[#h:373710df-a62e-4400-961c-87fac019b0a0][Convert from one sequencing scheme to another]]):
 
 - Numeric sequencing scheme :: A numeric sequence consists only of
   numbers. The level of depth is derived from the number of fields in
@@ -4093,6 +4093,31 @@ scheme, which is =1a2= for the same sequence:
   ~1=100=2=50~ (this is because the number 26 is z, 27 is za, 52 is
   zz, and so on). In practice, large numbers may not be a problem,
   though this is something to keep in mind.
+
+*** Convert from one sequencing scheme to another
+:PROPERTIES:
+:CUSTOM_ID: h:373710df-a62e-4400-961c-87fac019b0a0
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+The decision on the desired ~denote-sequence-scheme~ wil affect new
+notes long-term ([[#h:8c682f08-f162-4ddd-be03-805e87737d55][Select a sequencing scheme for ~denote-sequence-scheme~]]).
+It thus is important to think through your needs and proceed accordingly.
+
+#+findex: denote-sequence-convert
+Still, one cannot be sure which scheme they prefer until they
+experiment with it. It then is inconvenient to manually revert to the
+alternative scheme. To this end, we provide the command
+~denote-sequence-convert~. It convers one or more files from their
+current scheme to its counterpart.
+
+When called from inside a Denote file, it converts that file. When
+called from a Dired buffer, it operates on the marked files. If no
+files are marked, it works with the Dired file at point.
+
+Note that ~denote-sequence-convert~ DOES NOT REPARENT OR ANYHOW CHECK
+THE RESULTING SEQUENCES FOR DUPLICATES ([[#h:98eb8ee5-93c4-49ba-9092-65a3b61c69c6][Re-parent a file to extend a given sequence]]).
 
 ** Create parent, child, or sibling sequence notes
 :PROPERTIES:
