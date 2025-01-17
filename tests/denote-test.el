@@ -593,9 +593,10 @@ does not involve the time zone."
 (require 'denote-sequence)
 
 (ert-deftest dt-denote-sequence--get-new-exhaustive ()
-  "Test whether we get the correct parent, child, or sibling of a sequence.
+  "Test if we get the correct parent, child, sibling, or relatives of a sequence.
 Use the function `denote-sequence-get-new' for child and sibling with
-the numeric and alphanumeric `denote-sequence-scheme'."
+the numeric and alphanumeric `denote-sequence-scheme', as well as the
+function `denote-sequence-get-relative'."
   (let* ((denote-sequence-scheme 'numeric)
          (denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
@@ -608,8 +609,8 @@ the numeric and alphanumeric `denote-sequence-scheme'."
                    (save-buffer)
                    (kill-buffer (current-buffer)))
                  path)))
-           '("20241230T075004==1--some-new-title__testing.txt"
-             "20241230T075023==1=1--child-of-note__testing.txt"
+           '("20241230T075023==1--test__testing.txt"
+             "20241230T075023==1=1--test__testing.txt"
              "20241230T075023==1=1=1--test__testing.txt"
              "20241230T075023==1=1=2--test__testing.txt"
              "20241230T075023==1=2--test__testing.txt"
@@ -636,6 +637,20 @@ the numeric and alphanumeric `denote-sequence-scheme'."
                  (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
     (should-error (denote-sequence-get-new 'sibling "4" sequences))
 
+    (should (equal (denote-sequence-get-relative "1=2=1=1" 'parent files)
+                   (list
+                    (expand-file-name "20241230T075023==1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1=2--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1=2=1--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "1=1" 'sibling files)
+                   (list
+                    (expand-file-name "20241230T075023==1=1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1=2--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "1=1" 'child files)
+                   (list
+                    (expand-file-name "20241230T075023==1=1=1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1=1=2--test__testing.txt" denote-directory)))))
+
     (let* ((denote-sequence-scheme 'alphanumeric)
            (denote-directory (expand-file-name "denote-test" temporary-file-directory))
            (files
@@ -648,8 +663,8 @@ the numeric and alphanumeric `denote-sequence-scheme'."
                      (save-buffer)
                      (kill-buffer (current-buffer)))
                    path)))
-             '("20241230T075004==1--some-new-title__testing.txt"
-               "20241230T075023==1a--child-of-note__testing.txt"
+             '("20241230T075023==1--test__testing.txt"
+               "20241230T075023==1a--test__testing.txt"
                "20241230T075023==1a1--test__testing.txt"
                "20241230T075023==1a2--test__testing.txt"
                "20241230T075023==1b--test__testing.txt"
@@ -674,10 +689,21 @@ the numeric and alphanumeric `denote-sequence-scheme'."
                    (string= (denote-sequence-get-new 'sibling "1b" sequences) "1c")
                    (string= (denote-sequence-get-new 'sibling "1b1" sequences) "1b2")
                    (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
-      (should-error (denote-sequence-get-new 'sibling "4" sequences)))
+      (should-error (denote-sequence-get-new 'sibling "4" sequences))
 
-    (let ((delete-by-moving-to-trash t))
-      (delete-directory denote-directory :delete-contents-as-well :use-system-trash))))
+      (should (equal (denote-sequence-get-relative "1b1a" 'parent files)
+                     (list
+                      (expand-file-name "20241230T075023==1--test__testing.txt" denote-directory)
+                      (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory)
+                      (expand-file-name "20241230T075023==1b1--test__testing.txt" denote-directory))))
+      (should (equal (denote-sequence-get-relative "1a" 'sibling files)
+                     (list
+                      (expand-file-name "20241230T075023==1a--test__testing.txt" denote-directory)
+                      (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory))))
+      (should (equal (denote-sequence-get-relative "1a" 'child files)
+                     (list
+                      (expand-file-name "20241230T075023==1a1--test__testing.txt" denote-directory)
+                      (expand-file-name "20241230T075023==1a2--test__testing.txt" denote-directory))))))
 
 (ert-deftest dt-denote-sequence-split ()
   "Test that `denote-sequence-split' splits a sequence correctly."
