@@ -574,21 +574,26 @@ return value of `denote-sequence-get-all-sequences'."
 With optional FILES consider only those, otherwise operate on all files
 returned by `denote-sequence-get-all-files'."
   (let* ((depth (denote-sequence-depth sequence))
+         (scheme (cdr (denote-sequence-and-scheme-p sequence)))
          (components (denote-sequence-split sequence))
          (filter-common (lambda (comparison prefix)
-                   (seq-filter
-                    (lambda (file)
-                      (funcall comparison (denote-sequence-depth (denote-retrieve-filename-signature file)) depth))
-                    (denote-sequence-get-all-files-with-prefix prefix files)))))
+                          (seq-filter
+                           (lambda (file)
+                             (funcall comparison (denote-sequence-depth (denote-retrieve-filename-signature file)) depth))
+                           (denote-sequence-get-all-files-with-prefix prefix files)))))
     (pcase type
       ('parent (let ((parents nil)
                      (butlast (butlast components)))
                  (while (>= (length butlast) 1)
-                   (let ((prefix (denote-sequence-join butlast (cdr (denote-sequence-and-scheme-p sequence)))))
-                     (push (car (denote-sequence-get-all-files-with-prefix prefix files)) parents))
-                   (setq butlast (butlast butlast)))
+                   (when-let* ((prefix (denote-sequence-join butlast scheme))
+                               (parent (seq-find
+                                        (lambda (file)
+                                          (string= (denote-retrieve-filename-signature file) prefix))
+                                        (denote-sequence-get-all-files files))))
+                     (push parent parents)
+                     (setq butlast (butlast butlast))))
                  parents))
-      ('sibling (funcall filter-common '= (denote-sequence-join (butlast components) (cdr (denote-sequence-and-scheme-p sequence)))))
+      ('sibling (funcall filter-common '= (denote-sequence-join (butlast components) scheme)))
       ('child (funcall filter-common '> sequence))
       (_ (error "The type `%s' is not among the `denote-sequence-types'" type)))))
 
