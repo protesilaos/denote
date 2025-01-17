@@ -352,7 +352,7 @@ With optional FILES, operate on them, else use the return value of
            (when-let* ((file-sequence (denote-sequence-file-p file))
                        ((string-prefix-p sequence file-sequence)))
              file))
-         (denote-sequence--get-files files))))
+         (denote-sequence-get-all-files files))))
 
 (defun denote-sequence-get-all-files-with-max-depth (depth &optional files)
   "Return all files with sequence depth up to DEPTH (inclusive).
@@ -365,14 +365,14 @@ With optional FILES, operate on them, else use the return value of
                        (components (denote-sequence-split sequence))
                        ((>= depth (length components))))
              file))
-         (denote-sequence--get-files files))))
+         (denote-sequence-get-all-files files))))
 
 (defun denote-sequence-get-all-sequences (&optional files)
   "Return all sequences in `denote-directory-files'.
 With optional FILES return all sequences among them instead.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (delq nil (mapcar #'denote-sequence-file-p (denote-sequence--get-files files))))
+  (delq nil (mapcar #'denote-sequence-file-p (denote-sequence-get-all-files files))))
 
 (defun denote-sequence-get-all-sequences-with-prefix (sequence &optional sequences)
   "Get all sequences which extend SEQUENCE.
