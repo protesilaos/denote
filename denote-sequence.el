@@ -831,7 +831,9 @@ Sort sequences from smallest to largest.
 With optional PREFIX string, show only files whose sequence matches it.
 
 With optional DEPTH as a number, limit the list to files whose sequence
-is that many levels deep.  For example, 1=1=2 is three levels deep."
+is that many levels deep.  For example, 1=1=2 is three levels deep.
+
+For a more specialised case, see `denote-sequence-find-relatives-dired'."
   (interactive
    (let ((arg (prefix-numeric-value current-prefix-arg)))
      (cond
@@ -864,6 +866,20 @@ is that many levels deep.  For example, 1=1=2 is three levels deep."
                         (kill-buffer dired-buffer)
                         (denote-sequence-dired prefix depth)))))
     (user-error "No Denote sequences matching those terms")))
+
+;;;###autoload
+(defun denote-sequence-find-relatives-dired (type)
+  "Like `denote-sequence-find' for TYPE but put the matching files in Dired.
+Also see `denote-sequence-dired'."
+  (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
+  (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
+      (if-let* ((default-directory (denote-directory))
+                (relatives (delete buffer-file-name (denote-sequence-get-relative sequence type)))
+                (files-sorted (denote-sequence-sort-files relatives)))
+          (dired (cons (format-message "*`%s' type relatives of `%s'" type sequence)
+                       (mapcar #'file-relative-name files-sorted)))
+        (user-error "The sequence `%s' has no relatives of type `%s'" sequence type))
+    (user-error "The current file has no sequence")))
 
 ;; TODO 2025-01-14: We need to have an operation that reparents
 ;; recursively.  This can be done inside of the `denote-sequence-reparent',
