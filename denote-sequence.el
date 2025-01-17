@@ -726,6 +726,39 @@ If the current file does not have a sequence, then behave exactly like
     (call-interactively 'denote)))
 
 ;;;###autoload
+(defun denote-sequence-find (type)
+  "Find relatives of the given TYPE using the current file's sequence.
+Prompt for TYPE among `denote-sequence-types' and then prompt for a file
+among the matching files."
+  (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
+  (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
+      (if-let* ((relatives (delete buffer-file-name (denote-sequence-get-relative sequence type))))
+          (find-file (denote-sequence-file-prompt "Select a relative" relatives))
+        (user-error "The sequence `%s' has no relatives of type `%s'" sequence type))
+    (user-error "The current file has no sequence")))
+
+;;;###autoload
+(defun denote-sequence-find-parent ()
+  "Convenience wrapper of `denote-sequence-find' to select a parent."
+  (declare (interactive-only t))
+  (interactive)
+  (denote-sequence-find 'parent))
+
+;;;###autoload
+(defun denote-sequence-find-sibling ()
+  "Convenience wrapper of `denote-sequence-find' to select a sibling."
+  (declare (interactive-only t))
+  (interactive)
+  (denote-sequence-find 'sibling))
+
+;;;###autoload
+(defun denote-sequence-find-child ()
+  "Convenience wrapper of `denote-sequence-find' to select a child."
+  (declare (interactive-only t))
+  (interactive)
+  (denote-sequence-find 'child))
+
+;;;###autoload
 (defun denote-sequence-link (file &optional id-only)
   "Link to FILE with sequence.
 This is like the `denote-link' command but only accepts to link to a
