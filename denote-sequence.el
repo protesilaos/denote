@@ -575,15 +575,21 @@ With optional FILES consider only those, otherwise operate on all files
 returned by `denote-sequence-get-all-files'."
   (let* ((depth (denote-sequence-depth sequence))
          (components (denote-sequence-split sequence))
-         (filter (lambda (comparison prefix)
+         (filter-common (lambda (comparison prefix)
                    (seq-filter
                     (lambda (file)
                       (funcall comparison (denote-sequence-depth (denote-retrieve-filename-signature file)) depth))
                     (denote-sequence-get-all-files-with-prefix prefix files)))))
     (pcase type
-      ('parent (funcall filter '< (car components)))
-      ('sibling (funcall filter '= (denote-sequence-join (butlast components) (cdr (denote-sequence-and-scheme-p sequence)))))
-      ('child (funcall filter '> sequence))
+      ('parent (let ((parents nil)
+                     (butlast (butlast components)))
+                 (while (>= (length butlast) 1)
+                   (let ((prefix (denote-sequence-join butlast (cdr (denote-sequence-and-scheme-p sequence)))))
+                     (push (car (denote-sequence-get-all-files-with-prefix prefix files)) parents))
+                   (setq butlast (butlast butlast)))
+                 parents))
+      ('sibling (funcall filter-common '= (denote-sequence-join (butlast components) (cdr (denote-sequence-and-scheme-p sequence)))))
+      ('child (funcall filter-common '> sequence))
       (_ (error "The type `%s' is not among the `denote-sequence-types'" type)))))
 
 (defvar denote-sequence-type-history nil
