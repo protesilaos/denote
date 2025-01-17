@@ -332,10 +332,13 @@ The implied check here has the same meaning as described in
 With optional FILES only consider those, otherwise use `denote-directory-files'."
   (delete-dups (append (denote--buffer-file-names) (or files (denote-directory-files)))))
 
-(defun denote-sequence-get-all-files ()
+(defun denote-sequence-get-all-files (&optional files)
   "Return all files in variable `denote-directory' with a sequence.
-A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (seq-filter #'denote-sequence-file-p (denote-sequence--get-files)))
+A sequence is a Denote signature that conforms with `denote-sequence-p'.
+
+With optional FILES consider only those, otherwise use the return value
+of `denote-directory-files'."
+  (seq-filter #'denote-sequence-file-p (denote-sequence--get-files files)))
 
 (defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
   "Return all files in variable `denote-directory' with prefix SEQUENCE.
