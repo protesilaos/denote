@@ -592,8 +592,8 @@ does not involve the time zone."
 
 (require 'denote-sequence)
 
-(ert-deftest dt-denote-sequence--get-new-child-and-sibling ()
-  "Test whether we get the correct child or sibling of a sequence.
+(ert-deftest dt-denote-sequence--get-new-exhaustive ()
+  "Test whether we get the correct parent, child, or sibling of a sequence.
 Use the function `denote-sequence-get-new' for child and sibling with
 the numeric and alphanumeric `denote-sequence-scheme'."
   (let* ((denote-sequence-scheme 'numeric)
@@ -617,6 +617,8 @@ the numeric and alphanumeric `denote-sequence-scheme'."
              "20241230T075023==1=2=1=1--test__testing.txt"
              "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
+    (should (string= (denote-sequence-get-new 'parent) "3"))
+
     (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1=3")
                  (string= (denote-sequence-get-new 'child "1=1" sequences) "1=1=3")
                  (string= (denote-sequence-get-new 'child "1=1=2" sequences) "1=1=2=1")
@@ -655,6 +657,8 @@ the numeric and alphanumeric `denote-sequence-scheme'."
                "20241230T075023==1b1a--test__testing.txt"
                "20241230T075023==2--test__testing.txt")))
            (sequences (denote-sequence-get-all-sequences files)))
+      (should (string= (denote-sequence-get-new 'parent) "3"))
+
       (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1c")
                    (string= (denote-sequence-get-new 'child "1a" sequences) "1a3")
                    (string= (denote-sequence-get-new 'child "1a2" sequences) "1a2a")
