@@ -4172,6 +4172,30 @@ Concretely, we provide the following commands:
   have such a sequence, then the command behaves the same as the
   aforementioned ~denote-sequence-new-sibling~.
 
+** Find a relative of the current sequence
+:PROPERTIES:
+:CUSTOM_ID: h:8ec774f4-4154-4599-b8cf-fa767e18d22d
+:END:
+
+[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+
+#+findex: denote-sequence-find
+While reading a file with a sequence, you may want to find what its
+relatives are about. To this end, the command ~denote-sequence-find~
+prompts for a type among =parent=, =sibling=, =child=, and then asks
+to select a file among those matching the given type. It then visits
+the file.
+
+For convenience, the following commands do the same as ~denote-sequence-find~
+without prompting for the type of relative:
+
+#+findex: denote-sequence-find-parent
+- ~denote-sequence-find-parent~
+#+findex: denote-sequence-find-sibling
+- ~denote-sequence-find-sibling~
+#+findex: denote-sequence-find-child
+- ~denote-sequence-find-child~
+
 ** Link only to sequences
 :PROPERTIES:
 :CUSTOM_ID: h:e83902ff-4594-494b-88cd-722f6b4fb0b7
