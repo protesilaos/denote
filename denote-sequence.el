@@ -556,14 +556,17 @@ function `denote-sequence-get-all-sequences-with-prefix'."
           (number-to-string (+ (string-to-number largest) 1)))
       (error "Cannot find sequences given sequence `%s' using scheme `%s'" sequence denote-sequence-scheme))))
 
-(defun denote-sequence-get-new (type &optional sequence)
+(defun denote-sequence-get-new (type &optional sequence sequences)
   "Return a sequence given TYPE among `denote-sequence-types'.
 If TYPE is either `child' or `sibling', then optional SEQUENCE must be
-non-nil and conform with `denote-sequence-p'."
+non-nil and conform with `denote-sequence-p'.
+
+With optional SEQUENCES consider only those, otherwise operate on the
+return value of `denote-sequence-get-all-sequences'."
   (pcase type
-    ('parent (denote-sequence--get-new-parent))
-    ('child (denote-sequence--get-new-child sequence))
-    ('sibling (denote-sequence--get-new-sibling sequence))
+    ('parent (denote-sequence--get-new-parent sequences))
+    ('child (denote-sequence--get-new-child sequence sequences))
+    ('sibling (denote-sequence--get-new-sibling sequence sequences))
     (_ (error "The type `%s' is not among `denote-sequence-types'" type))))
 
 (defvar denote-sequence-type-history nil
