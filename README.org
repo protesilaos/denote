@@ -4196,6 +4196,10 @@ without prompting for the type of relative:
 #+findex: denote-sequence-find-child
 - ~denote-sequence-find-child~
 
+#+findex: denote-sequence-find-relatives-dired
+Instead of selecting a single file, the command ~denote-sequence-find-relatives-dired~
+puts all the matching files in a bespoke Dired buffer ([[#h:7811300e-5758-4b86-89bf-1d904bf1598a][Show all or some sequences in a Dired buffer]]).
+
 ** Link only to sequences
 :PROPERTIES:
 :CUSTOM_ID: h:e83902ff-4594-494b-88cd-722f6b4fb0b7
@@ -4253,6 +4257,9 @@ results to. Here "depth" means how deep to go in a sequence where, for
 example, ~1=1=2~ is three levels of depth. It is possible to use an
 empty string at the prefix prompt to not limit the results to any
 prefix.
+
+A more specialised alternative for only relatives of a given sequence
+is also available ([[#h:8ec774f4-4154-4599-b8cf-fa767e18d22d][Find a relative of the current sequence]]).
 
 * Sort files by component
 :PROPERTIES:
