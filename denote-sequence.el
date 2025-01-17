@@ -595,13 +595,15 @@ returned by `denote-sequence-get-all-files'."
 (defvar denote-sequence-type-history nil
   "Minibuffer history of `denote-sequence-type-prompt'.")
 
-(defun denote-sequence-type-prompt ()
+(defun denote-sequence-type-prompt (&optional prompt-text)
   "Prompt for sequence type among `denote-sequence-types'.
-Return selected type as a symbol."
+Return selected type as a symbol.
+
+With optional PROMPT-TEXT use it instead of the generic prompt."
   (let ((default (car denote-sequence-type-history)))
     (intern
      (completing-read
-      (format-prompt "Select sequence type" default)
+      (format-prompt (or prompt-text "Select sequence type") default)
       denote-sequence-types nil :require-match nil
       'denote-sequence-type-history default))))
 
