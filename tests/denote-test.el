@@ -594,9 +594,8 @@ does not involve the time zone."
 
 (ert-deftest dt-denote-sequence--get-new-child-and-sibling ()
   "Test whether we get the correct child or sibling of a sequence.
-Use the functions `denote-sequence--get-new-child' and
-`denote-sequence--get-new-sibling' with the numeric and alphanumeric
-`denote-sequence-scheme'."
+Use the function `denote-sequence-get-new' for child and sibling with
+the numeric and alphanumeric `denote-sequence-scheme'."
   (let* ((denote-sequence-scheme 'numeric)
          (denote-directory (expand-file-name "denote-test" temporary-file-directory))
          (files
@@ -618,22 +617,22 @@ Use the functions `denote-sequence--get-new-child' and
              "20241230T075023==1=2=1=1--test__testing.txt"
              "20241230T075023==2--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
-    (should (and (string= (denote-sequence--get-new-child "1" sequences) "1=3")
-                 (string= (denote-sequence--get-new-child "1=1" sequences) "1=1=3")
-                 (string= (denote-sequence--get-new-child "1=1=2" sequences) "1=1=2=1")
-                 (string= (denote-sequence--get-new-child "1=2" sequences) "1=2=2")
-                 (string= (denote-sequence--get-new-child "1=2=1" sequences) "1=2=1=2")
-                 (string= (denote-sequence--get-new-child "2" sequences) "2=1")))
-    (should-error (denote-sequence--get-new-child "3" sequences))
+    (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1=3")
+                 (string= (denote-sequence-get-new 'child "1=1" sequences) "1=1=3")
+                 (string= (denote-sequence-get-new 'child "1=1=2" sequences) "1=1=2=1")
+                 (string= (denote-sequence-get-new 'child "1=2" sequences) "1=2=2")
+                 (string= (denote-sequence-get-new 'child "1=2=1" sequences) "1=2=1=2")
+                 (string= (denote-sequence-get-new 'child "2" sequences) "2=1")))
+    (should-error (denote-sequence-get-new 'child "3" sequences))
 
-    (should (and (string= (denote-sequence--get-new-sibling "1" sequences) "3")
-                 (string= (denote-sequence--get-new-sibling "1=1" sequences) "1=3")
-                 (string= (denote-sequence--get-new-sibling "1=1=1" sequences) "1=1=3")
-                 (string= (denote-sequence--get-new-sibling "1=1=2" sequences) "1=1=3")
-                 (string= (denote-sequence--get-new-sibling "1=2" sequences) "1=3")
-                 (string= (denote-sequence--get-new-sibling "1=2=1" sequences) "1=2=2")
-                 (string= (denote-sequence--get-new-sibling "2" sequences) "3")))
-    (should-error (denote-sequence--get-new-sibling "4" sequences))
+    (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "3")
+                 (string= (denote-sequence-get-new 'sibling "1=1" sequences) "1=3")
+                 (string= (denote-sequence-get-new 'sibling "1=1=1" sequences) "1=1=3")
+                 (string= (denote-sequence-get-new 'sibling "1=1=2" sequences) "1=1=3")
+                 (string= (denote-sequence-get-new 'sibling "1=2" sequences) "1=3")
+                 (string= (denote-sequence-get-new 'sibling "1=2=1" sequences) "1=2=2")
+                 (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
+    (should-error (denote-sequence-get-new 'sibling "4" sequences))
 
     (let* ((denote-sequence-scheme 'alphanumeric)
            (denote-directory (expand-file-name "denote-test" temporary-file-directory))
@@ -656,22 +655,22 @@ Use the functions `denote-sequence--get-new-child' and
                "20241230T075023==1b1a--test__testing.txt"
                "20241230T075023==2--test__testing.txt")))
            (sequences (denote-sequence-get-all-sequences files)))
-      (should (and (string= (denote-sequence--get-new-child "1" sequences) "1c")
-                   (string= (denote-sequence--get-new-child "1a" sequences) "1a3")
-                   (string= (denote-sequence--get-new-child "1a2" sequences) "1a2a")
-                   (string= (denote-sequence--get-new-child "1b" sequences) "1b2")
-                   (string= (denote-sequence--get-new-child "1b1" sequences) "1b1b")
-                   (string= (denote-sequence--get-new-child "2" sequences) "2a")))
-      (should-error (denote-sequence--get-new-child "3" sequences))
+      (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1c")
+                   (string= (denote-sequence-get-new 'child "1a" sequences) "1a3")
+                   (string= (denote-sequence-get-new 'child "1a2" sequences) "1a2a")
+                   (string= (denote-sequence-get-new 'child "1b" sequences) "1b2")
+                   (string= (denote-sequence-get-new 'child "1b1" sequences) "1b1b")
+                   (string= (denote-sequence-get-new 'child "2" sequences) "2a")))
+      (should-error (denote-sequence-get-new 'child "3" sequences))
 
-      (should (and (string= (denote-sequence--get-new-sibling "1" sequences) "3")
-                   (string= (denote-sequence--get-new-sibling "1a" sequences) "1c")
-                   (string= (denote-sequence--get-new-sibling "1a1" sequences) "1a3")
-                   (string= (denote-sequence--get-new-sibling "1a2" sequences) "1a3")
-                   (string= (denote-sequence--get-new-sibling "1b" sequences) "1c")
-                   (string= (denote-sequence--get-new-sibling "1b1" sequences) "1b2")
-                   (string= (denote-sequence--get-new-sibling "2" sequences) "3")))
-      (should-error (denote-sequence--get-new-sibling "4" sequences)))
+      (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "3")
+                   (string= (denote-sequence-get-new 'sibling "1a" sequences) "1c")
+                   (string= (denote-sequence-get-new 'sibling "1a1" sequences) "1a3")
+                   (string= (denote-sequence-get-new 'sibling "1a2" sequences) "1a3")
+                   (string= (denote-sequence-get-new 'sibling "1b" sequences) "1c")
+                   (string= (denote-sequence-get-new 'sibling "1b1" sequences) "1b2")
+                   (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
+      (should-error (denote-sequence-get-new 'sibling "4" sequences)))
 
     (let ((delete-by-moving-to-trash t))
       (delete-directory denote-directory :delete-contents-as-well :use-system-trash))))
