@@ -553,7 +553,7 @@ function `denote-sequence-get-all-sequences-with-prefix'."
           (number-to-string (+ (string-to-number largest) 1)))
       (error "Cannot find sequences given sequence `%s' using scheme `%s'" sequence denote-sequence-scheme))))
 
-(defun denote-sequence-get (type &optional sequence)
+(defun denote-sequence-get-new (type &optional sequence)
   "Return a sequence given TYPE among `denote-sequence-types'.
 If TYPE is either `child' or `sibling', then optional SEQUENCE must be
 non-nil and conform with `denote-sequence-p'."
@@ -615,7 +615,7 @@ Files available at the minibuffer prompt are those returned by
       (when (memq selected-type (delq 'parent denote-sequence-types))
         (denote-sequence-file-prompt (format "Make a new %s of SEQUENCE" selected-type))))))
   (let* ((sequence (when file-with-sequence (denote-retrieve-filename-signature file-with-sequence)))
-         (new-sequence (denote-sequence-get type sequence))
+         (new-sequence (denote-sequence-get-new type sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
@@ -623,7 +623,7 @@ Files available at the minibuffer prompt are those returned by
 (defun denote-sequence-new-parent ()
   "Like `denote-sequence' to directly create new parent."
   (interactive)
-  (let* ((new-sequence (denote-sequence-get 'parent))
+  (let* ((new-sequence (denote-sequence-get-new 'parent))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
@@ -639,7 +639,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
    (list
     (denote-retrieve-filename-signature
      (denote-sequence-file-prompt "Make a new sibling of SEQUENCE"))))
-  (let* ((new-sequence (denote-sequence-get 'sibling sequence))
+  (let* ((new-sequence (denote-sequence-get-new 'sibling sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
@@ -659,7 +659,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
 If the current file does not have a sequence, then behave exactly like
 `denote-sequence-new-sibling'."
   (interactive (list (denote-sequence--get-file-in-dired-or-prompt "Make a new sibling of SEQUENCE")))
-  (let* ((new-sequence (denote-sequence-get 'sibling sequence))
+  (let* ((new-sequence (denote-sequence-get-new 'sibling sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
@@ -675,7 +675,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
    (list
     (denote-retrieve-filename-signature
      (denote-sequence-file-prompt "Make a new child of SEQUENCE"))))
-  (let* ((new-sequence (denote-sequence-get 'child sequence))
+  (let* ((new-sequence (denote-sequence-get-new 'child sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
@@ -685,7 +685,7 @@ When called from Lisp, SEQUENCE is a string that conforms with
 If the current file does not have a sequence, then behave exactly like
 `denote-sequence-new-child'."
   (interactive (list (denote-sequence--get-file-in-dired-or-prompt "Make a new child of SEQUENCE")))
-  (let* ((new-sequence (denote-sequence-get 'child sequence))
+  (let* ((new-sequence (denote-sequence-get-new 'child sequence))
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
