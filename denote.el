@@ -5324,7 +5324,7 @@ This command is meant to be used from a Dired buffer."
         (define-key menu (vector (car item)) (cdr item)))))
   menu)
 
-;;;;; Register `denote:' custom Org hyperlink
+;;;; Register `denote:' custom Org hyperlink
 
 (declare-function org-link-open-as-file "ol" (path arg))
 
