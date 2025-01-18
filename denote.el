@@ -900,9 +900,6 @@ documentation of the `org-open-at-point' command."
   'denote-link-description-format
   "3.2.0")
 
-;; FIXME 2024-11-03: This breaks `denote-link-with-signature'.  Check
-;; the FIXME above that function to decide how best to proceed.
-
 (defcustom denote-link-description-format #'denote-link-description-with-signature-and-title
   "The format of a link description text.
 This determines how `denote-link' and related functions create a link
@@ -4526,9 +4523,7 @@ If the DESCRIPTION is empty, format the link the same as with ID-ONLY.
 When called from Lisp, FILE is a string representing a full file system
 path.  FILE-TYPE is a symbol as described in the user option
 `denote-file-type'.  DESCRIPTION is a string.  Whether the caller treats
-the active region specially, is up to it.
-
-Also see `denote-link-with-signature'."
+the active region specially, is up to it."
   (interactive
    (let* ((file (denote-file-prompt nil "Link to FILE"))
           (file-type (denote-filetype-heuristics buffer-file-name))
@@ -4546,26 +4541,7 @@ Also see `denote-link-with-signature'."
 (defalias 'denote-insert-link 'denote-link
   "Alias for `denote-link' command.")
 
-;;;###autoload
-(defun denote-link-with-signature ()
-  "Insert link to file with signature.
-Prompt for file using minibuffer completion, limiting the list of
-candidates to files with a signature in their file name.
-
-By default, the description of the link includes the signature,
-if present, followed by the file's title, if any.
-
-For more advanced uses with Lisp, refer to the `denote-link'
-function."
-  (declare (interactive-only t))
-  (interactive)
-  (unless (or (denote--file-type-org-extra-p)
-              (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
-    (user-error "The current file type is not recognized by Denote"))
-  (let* ((file (denote-file-prompt "="))
-         (type (denote-filetype-heuristics (buffer-file-name)))
-         (description (denote-get-link-description file)))
-    (denote-link file type description)))
+(make-obsolete 'denote-link-with-signature nil " 3.2.0: Use the `denote-link-description-format'.")
 
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."

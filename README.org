@@ -2917,24 +2917,6 @@ above is for interactive usage.
 Links are created only for files which qualify as a "note" for our
 purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
-** Insert link to file with signature
-:PROPERTIES:
-:CUSTOM_ID: h:066e5221-9844-474b-8858-398398646f86
-:END:
-
-#+findex: denote-link-with-signature
-The command ~denote-link-with-signature~ prompts for a file among
-those that contain a ===SIGNATURE= and inserts a link to it.  The
-description of the link includes the text of the signature and that of
-the file's title, if any.  For example, a link to the following file:
-
-: 20230925T144303==abc--my-first-signature-note__denote_testing.txt
-
-will get this link: =[[denote:20230925T144303][abc My first signature note]]=.
-
-For more advanced uses, refer to the doc string of the ~denote-link~
-function ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
-
 ** Insert links from marked files in Dired
 :PROPERTIES:
 :CUSTOM_ID: h:9cbb692e-5d8a-44a6-9193-899a07872a07
