@@ -192,7 +192,7 @@ The keywords' prompt supports minibuffer completion.  Available
 candidates are those defined in the user option ~denote-known-keywords~.
 More candidates can be inferred from the names of existing notes, by
 setting ~denote-infer-keywords~ to non-nil (which is the case by
-default).
+default) ([[#h:c0fb477f-4f99-4d76-9cce-132bcfcb351d][Create a controlled vocabulary for keywords]]).
 
 #+vindex: denote-sort-keywords
 Multiple keywords can be inserted by separating them with a comma (or
@@ -1559,6 +1559,33 @@ as completion candidates when the user option ~denote-infer-keywords~
 is non-nil.
 
 The match is performed with ~string-match-p~.
+
+** Create a controlled vocabulary for keywords
+:PROPERTIES:
+:CUSTOM_ID: h:c0fb477f-4f99-4d76-9cce-132bcfcb351d
+:END:
+
+Denote has two ways to know about keywords: the predefined list of
+strings specified in the user option ~denote-known-keywords~ as well
+as all the keywords it finds in the files of the ~denote-directory~
+when the user option ~denote-infer-keywords~ is set to a non-nil value
+([[#h:69e518ee-ed43-40ab-a5f4-c780a23e5358][Exclude certain keywords from being inferred]]).
+
+While this is a viable setup, users may prefer to implement a
+"controlled vocabulary". This is a predefined set of keywords whose
+purpose is to avoid the creation of overly specific or inconsistent
+keywords.
+
+To establish such a controlled vocabulary, users need only have
+something like this in their configuration:
+
+#+begin_src emacs-lisp
+;; Do not read keywords from files.  The only source is the `denote-known-keywords'.
+(setq denote-infer-keywords nil)
+
+;; Define the list of keywords.  Each keyword is a string.
+(setq denote-known-keywords (list "politics" "economics" "emacs" "philosophy"))
+#+end_src
 
 ** Use Denote commands from the menu bar or context menu
 :PROPERTIES:
