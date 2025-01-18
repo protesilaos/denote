@@ -2133,15 +2133,18 @@ hour-minute-second notation.  The presentation is compact:
 =20220531T091625=.  The =DATE= serves as the unique identifier of each
 note and, as such, is also known as the file's ID or identifier.
 
-File names can include a string of alphanumeric characters in the
-=SIGNATURE= field. Signatures have no clearly defined purpose and are up
-to the user to define. One use-case is to use them to establish
-sequential relations between files (e.g. 1, 1a, 1b, 1b1, 1b2, ...).
-
+File names can include an arbitrary string of alphanumeric characters
+in the =SIGNATURE= field. Signatures have no clearly defined purpose
+and are up to the user to define. They can serve as special labels,
+such as =part1= and =part2= of a large file, or as priority indicators
+like =a=, =b=, =c=, or even context/scope specifiers like =home= and
+=work=. Another use-case is to write sequences of thoughts, such that
+notes form a hierarchy, something we support with the optional and
+comprehensive extension =denote-sequence.el= ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
 Signatures are an optional extension to Denote's file-naming scheme.
-They can be added to newly created files on demand, with the command
-~denote-signature~, or by modifying the value of the user option
-~denote-prompts~.
+In the simplest form, they can be added to newly created files on
+demand, with the command ~denote-signature~, or by modifying the value
+of the user option ~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
 
 The =TITLE= field is the title of the note, as provided by the user.
 It automatically gets downcased by default and is also hyphenated
