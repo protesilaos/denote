@@ -6436,10 +6436,6 @@ might change them without further notice.
 + Function ~denote-link-return-backlinks~ :: Return list of backlinks
   in current or optional =FILE=.  Also see ~denote-link-return-links~.
 
-#+vindex: denote-link-signature-format
-+ Variable ~denote-link-signature-format~ :: Format of link
-  description for ~denote-link-with-signature~.
-
 #+findex: denote-link-description-with-signature-and-title
 + Function ~denote-link-description-with-signature-and-title~ :: Return
   link description for =FILE=.  Produce a description as follows:
