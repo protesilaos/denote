@@ -5229,7 +5229,7 @@ This command is meant to be used from a Dired buffer."
 (defalias 'denote-dired-link-marked-notes 'denote-link-dired-marked-notes
   "Alias for `denote-link-dired-marked-notes' command.")
 
-;;;;; Define menu
+;;;; Define menu
 
 (defvar denote--menu-contents
   '(["Create a note" denote
