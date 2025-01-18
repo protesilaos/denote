@@ -5020,10 +5020,10 @@ non-nil value."
          (file (buffer-file-name))
          (backlinks-buffer (or buffer-name (format "Backlinks for '%s'" query)))
          ;; We retrieve results in absolute form and change the
-         ;; absolute path to a relative path a few lines below. We
-         ;; could add a suitable function and the results would be
-         ;; automatically in relative form, but eventually notes may
-         ;; not be all under a common directory (or project).
+         ;; absolute path to a relative path below. We could add a
+         ;; suitable function and the results would be automatically
+         ;; in relative form, but eventually notes may not be all
+         ;; under a common directory (or project).
          (xref-file-name-display 'abs)
          (xref-alist (xref--analyze
                       (xref-matches-in-files
@@ -5032,10 +5032,6 @@ non-nil value."
          (dir (denote-directory)))
     (unless xref-alist
       (error "No backlinks for query `%s'" query))
-    ;; Change the GROUP of each item in xref-alist to a relative path
-    (mapc (lambda (x)
-            (setf (car x) (denote-get-file-name-relative-to-denote-directory (car x))))
-          xref-alist)
     (with-current-buffer (get-buffer-create backlinks-buffer)
       (erase-buffer)
       (denote-backlinks-mode)
@@ -5049,11 +5045,10 @@ non-nil value."
       (goto-char (point-min))
       (if (or show-context denote-backlinks-show-context)
           (xref--insert-xrefs xref-alist)
-        (mapc (lambda (x)
-                (insert (car x))
-                (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
-                (newline))
-              xref-alist)
+        (dolist (element xref-alist)
+          (insert (denote-get-file-name-relative-to-denote-directory (car element)))
+          (make-button (line-beginning-position) (line-end-position) :type 'denote-link-backlink-button)
+          (insert "\n"))
         (font-lock-add-keywords nil denote-faces-file-name-keywords-for-backlinks t))
       (goto-char (point-min))
       (setq-local revert-buffer-function
