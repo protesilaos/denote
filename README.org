@@ -262,16 +262,14 @@ of the following:
   of that KEY is used to populate the new note with content, which is
   added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
 
-- =signature=: - Prompts for an arbitrary string that can be used to
-  establish a sequential relationship between files (e.g. 1, 1a, 1b,
-  1b1, 1b2, ...).  Signatures have no strictly defined function and
-  are up to the user to apply as they see fit.  One use-case is to
-  implement Niklas Luhmann's Zettelkasten system for a sequence of
-  notes (Folgezettel).  Signatures are not included in a file's front
-  matter.  They are reserved solely for creating a sequence in a file
-  listing, at least for the time being.  To insert a link that
-  includes the signature, use the command ~denote-link-with-signature~
-  ([[#h:066e5221-9844-474b-8858-398398646f86][Insert link to file with signature]]).
+- =signature=: - Prompts for an arbitrary string that can be used for
+  any kind of workflow, such as a special tag to label the =part1= and
+  =part2= of a large file that is split in half, or to add special
+  contexts like =home= and =work=, or even priorities like =a=, =b=,
+  =c=. One other use-case is to implement a sequencing scheme that
+  makes notes have hierarchical relationships. This is handled by our
+  optional extension =denote-sequence.el=, which is part of the
+  ~denote~ package ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
 
 The prompts occur in the given order.
 
