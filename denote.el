@@ -4507,7 +4507,7 @@ determine the format of the link.
 
 Return the DESCRIPTION of the link in the format specified by
 `denote-link-description-format'.  The default is to return the text of
-the active region or the title of the note (with the signature if
+the active region or the title of the note (plus the signature if
 present).
 
 With optional ID-ONLY as a non-nil argument, such as with a universal

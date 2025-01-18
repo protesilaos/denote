@@ -2697,8 +2697,9 @@ By default, the description of the link is determined thus:
   and so the link is formatted the same way as if using the =C-u=
   prefix argument.
 - If there is no region active, the description consists of the target
-  file's signature and title ([[#h:066e5221-9844-474b-8858-398398646f86][Insert link to file with signature]]). The
-  title is retrieved either from the front matter or the file name.
+  file's signature and title, using the former only if it is present.
+  The title is retrieved either from the front matter or the file
+  name.
 - If the target file has no signature, the title is used.
 
 Links are created only for files which qualify as a "note" for our
