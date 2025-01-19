@@ -600,16 +600,32 @@ returned by `denote-sequence-get-all-files'."
 (defvar denote-sequence-type-history nil
   "Minibuffer history of `denote-sequence-type-prompt'.")
 
-(defun denote-sequence-type-prompt (&optional prompt-text)
+(defun denote-sequence-annotate-types (type)
+  "Annotate completion candidate of TYPE for `denote-sequence-type-prompt'."
+  (when-let* ((text (pcase type
+                      ("parent" "Parent sequence")
+                      ("sibling" "Sibling of another sequence")
+                      ("child" "Child of another sequence"))))
+    (format " -- %s" (propertize text 'face 'completions-annotations))))
+
+(defun denote-sequence-type-prompt (&optional prompt-text types annotation-fn)
   "Prompt for sequence type among `denote-sequence-types'.
 Return selected type as a symbol.
 
-With optional PROMPT-TEXT use it instead of the generic prompt."
-  (let ((default (car denote-sequence-type-history)))
+With optional PROMPT-TEXT use it instead of the generic prompt.
+
+With optional TYPES use those instead of the `denote-sequence-types'.
+
+With optional ANNOTATION-FN use it to annotate the completion candidates
+instead of the default `denote-sequence-annotate-types'."
+  (let ((default (car denote-sequence-type-history))
+        (completion-extra-properties
+         (list :annotation-function (or annotation-fn #'denote-sequence-annotate-types))))
     (intern
      (completing-read
       (format-prompt (or prompt-text "Select sequence type") default)
-      denote-sequence-types nil :require-match nil
+      (denote--completion-table 'denote-sequence-type (or types denote-sequence-types))
+      nil :require-match nil
       'denote-sequence-type-history default))))
 
 (defvar denote-sequence-file-history nil
