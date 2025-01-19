@@ -727,12 +727,13 @@ If the current file does not have a sequence, then behave exactly like
 
 ;;;###autoload
 (defun denote-sequence-find (type)
-  "Find relatives of the given TYPE using the current file's sequence.
+  "Find all relatives of the given TYPE using the current file's sequence.
 Prompt for TYPE among `denote-sequence-types' and then prompt for a file
 among the matching files."
   (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
   (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
-      (if-let* ((relatives (delete buffer-file-name (denote-sequence-get-relative sequence type))))
+      (if-let* ((matches (denote-sequence-get-relative sequence type))
+                (relatives (delete buffer-file-name matches)))
           (find-file (denote-sequence-file-prompt "Select a relative" relatives))
         (user-error "The sequence `%s' has no relatives of type `%s'" sequence type))
     (user-error "The current file has no sequence")))
