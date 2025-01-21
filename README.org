@@ -4198,7 +4198,7 @@ to select a file among those matching the given type. It then visits
 the file.
 
 #+findex: denote-sequence-find-dired
-Instead of selecting a single file, the command ~denote-sequence-find-relatives-dired~
+Instead of selecting a single file, the command ~denote-sequence-find-dired~
 puts all the matching files in a bespoke Dired buffer ([[#h:7811300e-5758-4b86-89bf-1d904bf1598a][Show all or some sequences in a Dired buffer]]).
 
 ** Link only to sequences
