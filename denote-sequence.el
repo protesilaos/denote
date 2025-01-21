@@ -582,19 +582,28 @@ returned by `denote-sequence-get-all-files'."
                              (funcall comparison (denote-sequence-depth (denote-retrieve-filename-signature file)) depth))
                            (denote-sequence-get-all-files-with-prefix prefix files)))))
     (pcase type
-      ('parent (let ((parents nil)
-                     (butlast (butlast components)))
-                 (while (>= (length butlast) 1)
-                   (when-let* ((prefix (denote-sequence-join butlast scheme))
-                               (parent (seq-find
-                                        (lambda (file)
-                                          (string= (denote-retrieve-filename-signature file) prefix))
-                                        (denote-sequence-get-all-files files))))
-                     (push parent parents)
-                     (setq butlast (butlast butlast))))
-                 parents))
-      ('sibling (funcall filter-common '= (denote-sequence-join (butlast components) scheme)))
-      ('child (funcall filter-common '> sequence))
+      ('all-parents (let ((parents nil)
+                          (butlast (butlast components)))
+                      (while (>= (length butlast) 1)
+                        (when-let* ((prefix (denote-sequence-join butlast scheme))
+                                    (parent (seq-find
+                                             (lambda (file)
+                                               (string= (denote-retrieve-filename-signature file) prefix))
+                                             (denote-sequence-get-all-files files))))
+                          (push parent parents)
+                          (setq butlast (butlast butlast))))
+                      parents))
+      ('parent (let ((butlast (denote-sequence-join (butlast components) scheme)))
+                 (seq-find
+                  (lambda (file)
+                    (string= (denote-retrieve-filename-signature file) butlast))
+                  (denote-sequence-get-all-files files))))
+      ('siblings (funcall filter-common '= (denote-sequence-join (butlast components) scheme)))
+      ('all-children (funcall filter-common '> sequence))
+      ('children (seq-filter
+                  (lambda (file)
+                    (= (denote-sequence-depth (denote-sequence-file-p file)) (+ depth 1)))
+                  (funcall filter-common '> sequence)))
       (_ (error "The type `%s' is not among the `denote-sequence-types'" type)))))
 
 (defvar denote-sequence-type-history nil
@@ -741,16 +750,36 @@ If the current file does not have a sequence, then behave exactly like
          (denote-use-signature new-sequence))
     (call-interactively 'denote)))
 
+(defvar denote-sequence-relative-types
+  '(all-parents parent siblings children all-children)
+  "Types of sequence relatives.")
+
+(defun denote-sequence-annotate-relative-types (type)
+  "Annotate completion candidate of TYPE for `denote-sequence-type-prompt'."
+  (when-let* ((text (pcase type
+                      ("all-parents" "All parent sequences")
+                      ("parent" "Immediate parent")
+                      ("siblings" "All siblings")
+                      ("all-children" "All children")
+                      ("children" "Immediate children"))))
+    (format " -- %s" (propertize text 'face 'completions-annotations))))
+
 ;;;###autoload
 (defun denote-sequence-find (type)
   "Find all relatives of the given TYPE using the current file's sequence.
-Prompt for TYPE among `denote-sequence-types' and then prompt for a file
-among the matching files."
-  (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
+Prompt for TYPE among `denote-sequence-relative-types' and then prompt
+for a file among the matching files."
+  (interactive
+   (list
+    (denote-sequence-type-prompt "Find relatives of TYPE"
+                                 '(all-parents parent siblings children all-children)
+                                 #'denote-sequence-annotate-relative-types)))
   (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
       (if-let* ((matches (denote-sequence-get-relative sequence type))
                 (relatives (delete buffer-file-name matches)))
-          (find-file (denote-sequence-file-prompt "Select a relative" relatives))
+          (find-file (if (stringp relatives)
+                         relatives
+                       (denote-sequence-file-prompt "Select a relative" relatives)))
         (user-error "The sequence `%s' has no relatives of type `%s'" sequence type))
     (user-error "The current file has no sequence")))
 
