@@ -447,9 +447,9 @@ If there are more than one sequences of equal length, return them."
          (longest (apply #'max (mapcar #'car seqs-with-length)))
          (largest-sequence (delq nil
                                  (mapcar (lambda (element)
-                                     (unless (< (car element) longest)
-                                       (cdr element)))
-                                   seqs-with-length))))
+                                           (unless (< (car element) longest)
+                                             (cdr element)))
+                                         seqs-with-length))))
     (if (= (length largest-sequence) 1)
         (car largest-sequence)
       largest-sequence)))
