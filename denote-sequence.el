@@ -755,27 +755,6 @@ among the matching files."
     (user-error "The current file has no sequence")))
 
 ;;;###autoload
-(defun denote-sequence-find-parent ()
-  "Convenience wrapper of `denote-sequence-find' to select a parent."
-  (declare (interactive-only t))
-  (interactive)
-  (denote-sequence-find 'parent))
-
-;;;###autoload
-(defun denote-sequence-find-sibling ()
-  "Convenience wrapper of `denote-sequence-find' to select a sibling."
-  (declare (interactive-only t))
-  (interactive)
-  (denote-sequence-find 'sibling))
-
-;;;###autoload
-(defun denote-sequence-find-child ()
-  "Convenience wrapper of `denote-sequence-find' to select a child."
-  (declare (interactive-only t))
-  (interactive)
-  (denote-sequence-find 'child))
-
-;;;###autoload
 (defun denote-sequence-link (file &optional id-only)
   "Link to FILE with sequence.
 This is like the `denote-link' command but only accepts to link to a

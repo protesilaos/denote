@@ -4197,16 +4197,6 @@ prompts for a type among =parent=, =sibling=, =child=, and then asks
 to select a file among those matching the given type. It then visits
 the file.
 
-For convenience, the following commands do the same as ~denote-sequence-find~
-without prompting for the type of relative:
-
-#+findex: denote-sequence-find-parent
-- ~denote-sequence-find-parent~
-#+findex: denote-sequence-find-sibling
-- ~denote-sequence-find-sibling~
-#+findex: denote-sequence-find-child
-- ~denote-sequence-find-child~
-
 #+findex: denote-sequence-find-relatives-dired
 Instead of selecting a single file, the command ~denote-sequence-find-relatives-dired~
 puts all the matching files in a bespoke Dired buffer ([[#h:7811300e-5758-4b86-89bf-1d904bf1598a][Show all or some sequences in a Dired buffer]]).
