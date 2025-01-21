@@ -893,7 +893,7 @@ For a more specialised case, see `denote-sequence-find-relatives-dired'."
     (user-error "No Denote sequences matching those terms")))
 
 ;;;###autoload
-(defun denote-sequence-find-relatives-dired (type)
+(defun denote-sequence-find-dired (type)
   "Like `denote-sequence-find' for TYPE but put the matching files in Dired.
 Also see `denote-sequence-dired'."
   (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
