@@ -615,7 +615,9 @@ returned by `denote-sequence-get-all-files'."
                       ("parent" "Parent sequence")
                       ("sibling" "Sibling of another sequence")
                       ("child" "Child of another sequence"))))
-    (format " -- %s" (propertize text 'face 'completions-annotations))))
+    (format "%s-- %s"
+            (propertize " " 'display '(space :align-to 10))
+            (propertize text 'face 'completions-annotations))))
 
 (defun denote-sequence-type-prompt (&optional prompt-text types annotation-fn)
   "Prompt for sequence type among `denote-sequence-types'.
@@ -762,7 +764,9 @@ If the current file does not have a sequence, then behave exactly like
                       ("siblings" "All siblings")
                       ("all-children" "All children")
                       ("children" "Immediate children"))))
-    (format " -- %s" (propertize text 'face 'completions-annotations))))
+    (format "%s-- %s"
+            (propertize " " 'display '(space :align-to 15))
+            (propertize text 'face 'completions-annotations))))
 
 ;;;###autoload
 (defun denote-sequence-find (type)
