@@ -1410,6 +1410,11 @@ The path is relative to DIRECTORY (default: ‘default-directory’)."
 This is used for retrieving a value that is used to set a new default at
 the title prompt of `denote-open-or-create' and related commands.")
 
+(defvar denote-file-prompt-use-files-matching-regexp nil
+  "The `denote-file-prompt' FILES-MATCHING-REGEXP value.
+Only ever `let' bind this, otherwise the restriction will always be
+there.")
+
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match)
   "Prompt for file in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
@@ -1425,8 +1430,11 @@ With optional NO-REQUIRE-MATCH, accept the given input as-is.
 
 Return the absolute path to the matching file."
   (let* ((default-directory (denote-directory))
-         (relative-files (mapcar #'denote-get-file-name-relative-to-denote-directory
-                                 (denote-directory-files files-matching-regexp :omit-current)))
+         (relative-files (mapcar
+                          #'denote-get-file-name-relative-to-denote-directory
+                          (denote-directory-files
+                           (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
+                           :omit-current)))
          (prompt (format "%s in %s: "
                          (or prompt-text "Select FILE")
                          (propertize (denote-directory) 'face 'denote-faces-prompt-current-name)))
