@@ -176,12 +176,13 @@ explained: [[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file naming scheme]]
 
 #+vindex: denote-after-new-note-hook
 The ~denote~ command runs the hook ~denote-after-new-note-hook~ after
-creating the new note. When called from Lisp, it returns the path it
-generates. Before returning the path, it decides what to do with the
-buffer of the note, in accordance with the user option
-~denote-kill-buffers~ ([[#h:c8fd826f-3ac9-4820-9709-4375603f8865][The ~denote-kill-buffers~ option]]). [ As part of
-{{{development-version}}}, the ~denote~ command runs the hook and then
-kills the buffer, whereas it was the other way around before. ]
+creating the new note ([[#h:a947908e-1847-4471-ba07-377ee2f4b36c][Access the data of the latest note]]). When
+called from Lisp, it returns the path it generates. Before returning
+the path, it decides what to do with the buffer of the note, in
+accordance with the user option ~denote-kill-buffers~ ([[#h:c8fd826f-3ac9-4820-9709-4375603f8865][The ~denote-kill-buffers~ option]]).
+
+[ As part of {{{development-version}}}, the ~denote~ command runs the
+  hook and then kills the buffer, whereas it was the other way around before. ]
 
 The file type of the new note is determined by the user option
 ~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
@@ -1637,8 +1638,9 @@ mechanisms to facilitate the task of renaming them.
 
 #+vindex: denote-after-rename-file-hook
 All renaming commands run the ~denote-after-rename-file-hook~ after a
-succesful operation. They also construct the file name in accordance
-with the user option ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
+succesful operation ([[#h:a947908e-1847-4471-ba07-377ee2f4b36c][Access the data of the latest note]]). They also
+construct the file name in accordance with the user option
+~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
 Apart from renaming files, Denote can also rename only the buffer.
 The idea is that the underlying file name is correct but it can be
@@ -1753,7 +1755,7 @@ the buffer if ~denote-save-buffers~ is non-nil ([[#h:bf80f4cd-6f56-4f7c-a991-857
 Construct the file name in accordance with the user option
 ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
-Run the ~denote-after-rename-file-hook~ after renaming =FILE=.
+Run the ~denote-after-rename-file-hook~ after renaming =FILE= ([[#h:a947908e-1847-4471-ba07-377ee2f4b36c][Access the data of the latest note]]).
 
 This command is intended to (i) rename Denote files, (ii) convert
 existing supported file types to Denote notes, and (ii) rename
@@ -4784,6 +4786,24 @@ them, based on the aforementioned file-naming scheme. For other common
 operations the user is advised to rely on standard Emacs facilities or
 specialised third-party packages ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]]). This
 section covers the details.
+
+** Access the data of the latest note
+:PROPERTIES:
+:CUSTOM_ID: h:a947908e-1847-4471-ba07-377ee2f4b36c
+:END:
+
+#+vindex: denote-current-data
+The variable ~denote-current-data~ is updated each time a new note is
+created as well as after a rename operation.
+
+This is an alist where each ~car~ is one among ~title~, ~keywords~,
+~signature~, ~directory~, ~date~, ~id~, ~file-type~, ~template~. The
+value each of them contains is the unprocessed input (e.g. the title
+before it is sluggified).
+
+Users who need to access this data as part of their custom code can
+rely on the hooks ~denote-after-new-note-hook~ and
+~denote-after-rename-file-hook~.
 
 ** Create a new note in any directory
 :PROPERTIES:

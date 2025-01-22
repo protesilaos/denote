@@ -2516,12 +2516,15 @@ no matter the value of `denote-save-buffers'."
       (when do-save-buffer (with-current-buffer buffer (save-buffer)))
       (when do-kill-buffer (kill-buffer buffer)))))
 
-(defvar denote-current-title nil
-  "Store the current non-sluggified title.
+(defvar denote-current-data nil
+  "Store the current unprocessed data passed to `denote'.
+This is an alist where each `car' is one among `title', `keywords',
+`signature', `directory', `date', `id', `file-type', `template'.  The
+value each of them contains is the unprocessed input (e.g. the title
+before it is sluggified).
 
 This may be used by the hooks `denote-after-new-note-hook' and
-`denote-after-rename-file-hook' to access the current non-sluggified
-title, even if there is no front matter present.")
+`denote-after-rename-file-hook' to access the relevant data.")
 
 (defvar denote-use-title nil
   "The title to be used in a note creation command.
@@ -2692,7 +2695,16 @@ When called from Lisp, all arguments are optional.
                 (denote--creation-prepare-note-data title keywords file-type directory date template signature))
                (note-path (denote--prepare-note title keywords date id directory file-type template signature)))
     (denote--keywords-add-to-history keywords)
-    (setq denote-current-title title)
+    (setq denote-current-data
+          (list
+           (cons 'title title)
+           (cons 'keywords keywords)
+           (cons 'signature signature)
+           (cons 'directory directory)
+           (cons 'date date)
+           (cons 'id id)
+           (cons 'file-type file-type)
+           (cons 'template template)))
     (run-hooks 'denote-after-new-note-hook)
     (denote--handle-save-and-kill-buffer 'creation note-path nil)
     note-path))
@@ -3506,7 +3518,16 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
       (puthash id t denote--used-ids))
     (unless (denote--file-type-org-extra-p)
       (denote--handle-save-and-kill-buffer 'rename new-name initial-state))
-    (setq denote-current-title title)
+    (setq denote-current-data
+          (list
+           (cons 'title title)
+           (cons 'keywords keywords)
+           (cons 'signature signature)
+           (cons 'directory directory)
+           (cons 'date date)
+           (cons 'id id)
+           (cons 'file-type file-type)
+           (cons 'template "")))
     (run-hooks 'denote-after-rename-file-hook)
     new-name))
 
