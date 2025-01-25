@@ -637,9 +637,14 @@ the left of the Emacs frame:
 
 See Info node `(elisp) Displaying Buffers' for more details
 and/or the documentation string of `display-buffer'."
-  :type '(cons (choice (function :tag "Display Function")
-                       (repeat :tag "Display Functions" function))
-               alist)
+  :risky t
+  :type `(choice
+          (alist :key-type
+                 (choice :tag "Condition"
+                         regexp
+                         (function :tag "Matcher function"))
+                 :value-type ,display-buffer--action-custom-type)
+          (function :tag "Custom function to return an action alist"))
   :package-version '(denote . "3.1.0")
   :group 'denote)
 
