@@ -1051,6 +1051,11 @@ This is useful as a helper function to construct
          (characters (seq-filter #'characterp ascii-range)))
     (mapconcat #'string characters)))
 
+(define-obsolete-function-alias
+  'denote--slug-hyphenate
+  'denote-slug-hyphenate
+  "3.2.0")
+
 (defun denote-slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
