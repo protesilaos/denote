@@ -380,10 +380,18 @@ With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (seq-filter
-   (lambda (string)
-     (string-prefix-p sequence string))
-   (or sequences (denote-sequence-get-all-sequences))))
+  (let* ((prefix (denote-sequence-split sequence))
+         (depth (length prefix)))
+    (seq-filter
+     (lambda (string)
+       (let ((value (denote-sequence-split string))
+             (matched 0))
+         (while (and value
+                     (< matched depth)
+                     (string-equal (pop value) (nth matched prefix)))
+           (setq matched (1+ matched)))
+         (= matched depth)))
+     (or sequences (denote-sequence-get-all-sequences)))))
 
 (defun denote-sequence-get-all-sequences-with-max-depth (depth &optional sequences)
   "Get sequences up to DEPTH (inclusive).
