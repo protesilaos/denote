@@ -621,7 +621,7 @@ returned by `denote-sequence-get-all-files'."
                   (lambda (file)
                     (= (denote-sequence-depth (denote-sequence-file-p file)) (+ depth 1)))
                   (funcall filter-common '> sequence)))
-      (_ (error "The type `%s' is not among the `denote-sequence-types'" type)))))
+      (_ (error "The type `%s' is not among the allowed types" type)))))
 
 (defvar denote-sequence-type-history nil
   "Minibuffer history of `denote-sequence-type-prompt'.")
@@ -917,7 +917,13 @@ For a more specialised case, see `denote-sequence-find-relatives-dired'."
 (defun denote-sequence-find-dired (type)
   "Like `denote-sequence-find' for TYPE but put the matching files in Dired.
 Also see `denote-sequence-dired'."
-  (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
+  (interactive
+   (list (denote-sequence-type-prompt "Find relatives of TYPE"
+                                      '(all-parents
+                                        parent
+                                        siblings
+                                        all-children
+                                        children))))
   (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
       (if-let* ((default-directory (denote-directory))
                 (relatives (delete buffer-file-name (denote-sequence-get-relative sequence type)))
