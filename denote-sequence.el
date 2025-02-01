@@ -363,7 +363,8 @@ A sequence is a Denote signature that conforms with `denote-sequence-p'.
 
 With optional FILES, operate on them, else use the return value of
 `denote-directory-files'."
-  (let ((prefix (denote-sequence-split sequence)))
+  (when-let* (((not (string-empty-p sequence)))
+              (prefix (denote-sequence-split sequence)))
     (seq-filter
      (lambda (file)
        (when-let* ((file-sequence (denote-sequence-file-p file)))
@@ -396,7 +397,8 @@ With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (let ((prefix (denote-sequence-split sequence)))
+  (when-let* (((not (string-empty-p sequence)))
+              (prefix (denote-sequence-split sequence)))
     (seq-filter
      (lambda (string)
        (denote-sequence--sequence-prefix-p prefix string))
