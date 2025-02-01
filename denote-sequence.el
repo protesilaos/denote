@@ -340,19 +340,35 @@ With optional FILES consider only those, otherwise use the return value
 of `denote-directory-files'."
   (seq-filter #'denote-sequence-file-p (denote-sequence--get-files files)))
 
+(defun denote-sequence--sequence-prefix-p (prefix sequence)
+  "Return non-nil if SEQUENCE has prefix sequence PREFIX.
+
+SEQUENCE is a Denote signatures that conforms with `denote-sequence-p'.
+PREFIX is a list of strings containing the components of the prefix
+sequence, as is returned by `denote-sequence-split'.
+
+If PREFIX is nil, return non-nil as if the SEQUENCE has PREFIX."
+  (let ((value (denote-sequence-split sequence))
+        (depth (length prefix))
+        (matched 0))
+    (while (and value
+                (< matched depth)
+                (string-equal (pop value) (nth matched prefix)))
+      (setq matched (1+ matched)))
+    (= matched depth)))
+
 (defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
   "Return all files in variable `denote-directory' with prefix SEQUENCE.
 A sequence is a Denote signature that conforms with `denote-sequence-p'.
 
 With optional FILES, operate on them, else use the return value of
 `denote-directory-files'."
-  (delq nil
-        (mapcar
-         (lambda (file)
-           (when-let* ((file-sequence (denote-sequence-file-p file))
-                       ((string-prefix-p sequence file-sequence)))
-             file))
-         (denote-sequence-get-all-files files))))
+  (let ((prefix (denote-sequence-split sequence)))
+    (seq-filter
+     (lambda (file)
+       (when-let* ((file-sequence (denote-sequence-file-p file)))
+         (denote-sequence--sequence-prefix-p prefix file-sequence)))
+     (denote-sequence-get-all-files files))))
 
 (defun denote-sequence-get-all-files-with-max-depth (depth &optional files)
   "Return all files with sequence depth up to DEPTH (inclusive).
@@ -380,17 +396,10 @@ With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (let* ((prefix (denote-sequence-split sequence))
-         (depth (length prefix)))
+  (let ((prefix (denote-sequence-split sequence)))
     (seq-filter
      (lambda (string)
-       (let ((value (denote-sequence-split string))
-             (matched 0))
-         (while (and value
-                     (< matched depth)
-                     (string-equal (pop value) (nth matched prefix)))
-           (setq matched (1+ matched)))
-         (= matched depth)))
+       (denote-sequence--sequence-prefix-p prefix string))
      (or sequences (denote-sequence-get-all-sequences)))))
 
 (defun denote-sequence-get-all-sequences-with-max-depth (depth &optional sequences)
