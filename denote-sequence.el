@@ -928,7 +928,9 @@ Also see `denote-sequence-dired'."
                                         children))))
   (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
       (if-let* ((default-directory (denote-directory))
-                (relatives (delete buffer-file-name (denote-sequence-get-relative sequence type)))
+                (relatives (delete buffer-file-name
+                                   (ensure-list
+                                    (denote-sequence-get-relative sequence type))))
                 (files-sorted (denote-sequence-sort-files relatives)))
           (dired (cons (format-message "*`%s' type relatives of `%s'" type sequence)
                        (mapcar #'file-relative-name files-sorted)))
