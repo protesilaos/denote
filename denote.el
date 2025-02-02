@@ -1116,9 +1116,7 @@ they are used as the keywords separator in file names."
          (str-slug (cond ((eq component 'title)
                           (funcall (or slug-function #'denote-sluggify-title) str))
                          ((eq component 'keyword)
-                          (replace-regexp-in-string
-                           "_" ""
-                           (funcall (or slug-function #'denote-sluggify-keyword) str)))
+                          (funcall (or slug-function #'denote-sluggify-keyword) str))
                          ((eq component 'signature)
                           (funcall (or slug-function #'denote-sluggify-signature) str)))))
     (denote--trim-right-token-characters
@@ -1142,10 +1140,12 @@ they are used as the keywords separator in file names."
    (denote-slug-put-equals
     (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/-]*" "" str))))
 
+(defvar denote-keyword-word-separator "_" "Separating character for multi-word keyword.")
+
 (defun denote-sluggify-keyword (str)
   "Sluggify STR while joining separate words."
   (downcase
-   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" "" str)))
+   (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]+" denote-keyword-word-separator str)))
 
 (make-obsolete
  'denote-sluggify-and-join
