@@ -616,9 +616,15 @@ function `denote-sequence-get-relative'."
              "20241230T075023==1=2--test__testing.txt"
              "20241230T075023==1=2=1--test__testing.txt"
              "20241230T075023==1=2=1=1--test__testing.txt"
-             "20241230T075023==2--test__testing.txt")))
+             "20241230T075023==2--test__testing.txt"
+             "20241230T075023==10--test__testing.txt"
+             "20241230T075023==10=1--test__testing.txt"
+             "20241230T075023==10=1=1--test__testing.txt"
+             "20241230T075023==10=2--test__testing.txt"
+             "20241230T075023==10=10--test__testing.txt"
+             "20241230T075023==10=10=1--test__testing.txt")))
          (sequences (denote-sequence-get-all-sequences files)))
-    (should (string= (denote-sequence-get-new 'parent) "3"))
+    (should (string= (denote-sequence-get-new 'parent) "11"))
 
     (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1=3")
                  (string= (denote-sequence-get-new 'child "1=1" sequences) "1=1=3")
@@ -626,96 +632,131 @@ function `denote-sequence-get-relative'."
                  (string= (denote-sequence-get-new 'child "1=2" sequences) "1=2=2")
                  (string= (denote-sequence-get-new 'child "1=2=1" sequences) "1=2=1=2")
                  (string= (denote-sequence-get-new 'child "2" sequences) "2=1")))
-    (should-error (denote-sequence-get-new 'child "3" sequences))
+    (should-error (denote-sequence-get-new 'child "11" sequences))
 
-    (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "3")
+    (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "11")
                  (string= (denote-sequence-get-new 'sibling "1=1" sequences) "1=3")
                  (string= (denote-sequence-get-new 'sibling "1=1=1" sequences) "1=1=3")
                  (string= (denote-sequence-get-new 'sibling "1=1=2" sequences) "1=1=3")
                  (string= (denote-sequence-get-new 'sibling "1=2" sequences) "1=3")
                  (string= (denote-sequence-get-new 'sibling "1=2=1" sequences) "1=2=2")
-                 (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
-    (should-error (denote-sequence-get-new 'sibling "4" sequences))
+                 (string= (denote-sequence-get-new 'sibling "2" sequences) "11")))
+    (should-error (denote-sequence-get-new 'sibling "12" sequences))
 
     (should (string= (denote-sequence-get-relative "1=2=1=1" 'parent files)
                      (expand-file-name "20241230T075023==1=2=1--test__testing.txt" denote-directory)))
+    (should (string= (denote-sequence-get-relative "10=1=1" 'parent files)
+                     (expand-file-name "20241230T075023==10=1--test__testing.txt" denote-directory)))
+    (should (string= (denote-sequence-get-relative "10=10=1" 'parent files)
+                     (expand-file-name "20241230T075023==10=10--test__testing.txt" denote-directory)))
     (should (equal (denote-sequence-get-relative "1=2=1=1" 'all-parents files)
                    (list
                     (expand-file-name "20241230T075023==1--test__testing.txt" denote-directory)
                     (expand-file-name "20241230T075023==1=2--test__testing.txt" denote-directory)
                     (expand-file-name "20241230T075023==1=2=1--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10=1=1" 'all-parents files)
+                   (list
+                    (expand-file-name "20241230T075023==10--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=1--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10=10=1" 'all-parents files)
+                   (list
+                    (expand-file-name "20241230T075023==10--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=10--test__testing.txt" denote-directory))))
     (should (equal (denote-sequence-get-relative "1=1" 'siblings files)
                    (list
                     (expand-file-name "20241230T075023==1=1--test__testing.txt" denote-directory)
                     (expand-file-name "20241230T075023==1=2--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10=1" 'siblings files)
+                   (list
+                    (expand-file-name "20241230T075023==10=1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=2--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=10--test__testing.txt" denote-directory))))
     (should (equal (denote-sequence-get-relative "1" 'children files)
                    (list
                     (expand-file-name "20241230T075023==1=1--test__testing.txt" denote-directory)
                     (expand-file-name "20241230T075023==1=2--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10" 'children files)
+                   (list
+                    (expand-file-name "20241230T075023==10=1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=2--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10=10--test__testing.txt" denote-directory))))
     (should (equal (denote-sequence-get-relative "1=1" 'all-children files)
                    (list
                     (expand-file-name "20241230T075023==1=1=1--test__testing.txt" denote-directory)
                     (expand-file-name "20241230T075023==1=1=2--test__testing.txt" denote-directory)))))
 
-    (let* ((denote-sequence-scheme 'alphanumeric)
-           (denote-directory (expand-file-name "denote-test" temporary-file-directory))
-           (files
-            (mapcar
-             (lambda (file)
-               (let ((path (expand-file-name file (denote-directory))))
-                 (if (file-exists-p path)
-                     path
-                   (with-current-buffer (find-file-noselect path)
-                     (save-buffer)
-                     (kill-buffer (current-buffer)))
-                   path)))
-             '("20241230T075023==1--test__testing.txt"
-               "20241230T075023==1a--test__testing.txt"
-               "20241230T075023==1a1--test__testing.txt"
-               "20241230T075023==1a2--test__testing.txt"
-               "20241230T075023==1b--test__testing.txt"
-               "20241230T075023==1b1--test__testing.txt"
-               "20241230T075023==1b1a--test__testing.txt"
-               "20241230T075023==2--test__testing.txt")))
-           (sequences (denote-sequence-get-all-sequences files)))
-      (should (string= (denote-sequence-get-new 'parent) "3"))
+  (let* ((denote-sequence-scheme 'alphanumeric)
+         (denote-directory (expand-file-name "denote-test" temporary-file-directory))
+         (files
+          (mapcar
+           (lambda (file)
+             (let ((path (expand-file-name file (denote-directory))))
+               (if (file-exists-p path)
+                   path
+                 (with-current-buffer (find-file-noselect path)
+                   (save-buffer)
+                   (kill-buffer (current-buffer)))
+                 path)))
+           '("20241230T075023==1--test__testing.txt"
+             "20241230T075023==1a--test__testing.txt"
+             "20241230T075023==1a1--test__testing.txt"
+             "20241230T075023==1a2--test__testing.txt"
+             "20241230T075023==1b--test__testing.txt"
+             "20241230T075023==1b1--test__testing.txt"
+             "20241230T075023==1b1a--test__testing.txt"
+             "20241230T075023==2--test__testing.txt"
+             "20241230T075023==10--test__testing.txt"
+             "20241230T075023==10a--test__testing.txt"
+             "20241230T075023==10b--test__testing.txt")))
+         (sequences (denote-sequence-get-all-sequences files)))
+    (should (string= (denote-sequence-get-new 'parent) "11"))
 
-      (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1c")
-                   (string= (denote-sequence-get-new 'child "1a" sequences) "1a3")
-                   (string= (denote-sequence-get-new 'child "1a2" sequences) "1a2a")
-                   (string= (denote-sequence-get-new 'child "1b" sequences) "1b2")
-                   (string= (denote-sequence-get-new 'child "1b1" sequences) "1b1b")
-                   (string= (denote-sequence-get-new 'child "2" sequences) "2a")))
-      (should-error (denote-sequence-get-new 'child "3" sequences))
+    (should (and (string= (denote-sequence-get-new 'child "1" sequences) "1c")
+                 (string= (denote-sequence-get-new 'child "1a" sequences) "1a3")
+                 (string= (denote-sequence-get-new 'child "1a2" sequences) "1a2a")
+                 (string= (denote-sequence-get-new 'child "1b" sequences) "1b2")
+                 (string= (denote-sequence-get-new 'child "1b1" sequences) "1b1b")
+                 (string= (denote-sequence-get-new 'child "2" sequences) "2a")))
+    (should-error (denote-sequence-get-new 'child "11" sequences))
 
-      (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "3")
-                   (string= (denote-sequence-get-new 'sibling "1a" sequences) "1c")
-                   (string= (denote-sequence-get-new 'sibling "1a1" sequences) "1a3")
-                   (string= (denote-sequence-get-new 'sibling "1a2" sequences) "1a3")
-                   (string= (denote-sequence-get-new 'sibling "1b" sequences) "1c")
-                   (string= (denote-sequence-get-new 'sibling "1b1" sequences) "1b2")
-                   (string= (denote-sequence-get-new 'sibling "2" sequences) "3")))
-      (should-error (denote-sequence-get-new 'sibling "4" sequences))
+    (should (and (string= (denote-sequence-get-new 'sibling "1" sequences) "11")
+                 (string= (denote-sequence-get-new 'sibling "1a" sequences) "1c")
+                 (string= (denote-sequence-get-new 'sibling "1a1" sequences) "1a3")
+                 (string= (denote-sequence-get-new 'sibling "1a2" sequences) "1a3")
+                 (string= (denote-sequence-get-new 'sibling "1b" sequences) "1c")
+                 (string= (denote-sequence-get-new 'sibling "1b1" sequences) "1b2")
+                 (string= (denote-sequence-get-new 'sibling "2" sequences) "11")))
+    (should-error (denote-sequence-get-new 'sibling "12" sequences))
 
-      (should (string= (denote-sequence-get-relative "1b1a" 'parent files)
-                       (expand-file-name "20241230T075023==1b1--test__testing.txt" denote-directory)))
-      (should (equal (denote-sequence-get-relative "1b1a" 'all-parents files)
-                     (list
-                      (expand-file-name "20241230T075023==1--test__testing.txt" denote-directory)
-                      (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory)
-                      (expand-file-name "20241230T075023==1b1--test__testing.txt" denote-directory))))
-      (should (equal (denote-sequence-get-relative "1a" 'siblings files)
-                     (list
-                      (expand-file-name "20241230T075023==1a--test__testing.txt" denote-directory)
-                      (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory))))
-      (should (equal (denote-sequence-get-relative "1" 'children files)
-                     (list
-                      (expand-file-name "20241230T075023==1a--test__testing.txt" denote-directory)
-                      (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory))))
-      (should (equal (denote-sequence-get-relative "1a" 'all-children files)
-                     (list
-                      (expand-file-name "20241230T075023==1a1--test__testing.txt" denote-directory)
-                      (expand-file-name "20241230T075023==1a2--test__testing.txt" denote-directory))))))
+    (should (string= (denote-sequence-get-relative "1b1a" 'parent files)
+                     (expand-file-name "20241230T075023==1b1--test__testing.txt" denote-directory)))
+    (should (string= (denote-sequence-get-relative "10a" 'parent files)
+                     (expand-file-name "20241230T075023==10--test__testing.txt" denote-directory)))
+    (should (equal (denote-sequence-get-relative "1b1a" 'all-parents files)
+                   (list
+                    (expand-file-name "20241230T075023==1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1b1--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "1a" 'siblings files)
+                   (list
+                    (expand-file-name "20241230T075023==1a--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10a" 'siblings files)
+                   (list
+                    (expand-file-name "20241230T075023==10a--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10b--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "1" 'children files)
+                   (list
+                    (expand-file-name "20241230T075023==1a--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1b--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "10" 'children files)
+                   (list
+                    (expand-file-name "20241230T075023==10a--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==10b--test__testing.txt" denote-directory))))
+    (should (equal (denote-sequence-get-relative "1a" 'all-children files)
+                   (list
+                    (expand-file-name "20241230T075023==1a1--test__testing.txt" denote-directory)
+                    (expand-file-name "20241230T075023==1a2--test__testing.txt" denote-directory))))))
 
 (ert-deftest dt-denote-sequence-split ()
   "Test that `denote-sequence-split' splits a sequence correctly."

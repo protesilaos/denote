@@ -340,19 +340,36 @@ With optional FILES consider only those, otherwise use the return value
 of `denote-directory-files'."
   (seq-filter #'denote-sequence-file-p (denote-sequence--get-files files)))
 
+(defun denote-sequence--sequence-prefix-p (prefix sequence)
+  "Return non-nil if SEQUENCE has prefix sequence PREFIX.
+
+SEQUENCE is a Denote signatures that conforms with `denote-sequence-p'.
+PREFIX is a list of strings containing the components of the prefix
+sequence, as is returned by `denote-sequence-split'.
+
+If PREFIX is nil, return non-nil as if the SEQUENCE has PREFIX."
+  (let ((value (denote-sequence-split sequence))
+        (depth (length prefix))
+        (matched 0))
+    (while (and value
+                (< matched depth)
+                (string-equal (pop value) (nth matched prefix)))
+      (setq matched (1+ matched)))
+    (= matched depth)))
+
 (defun denote-sequence-get-all-files-with-prefix (sequence &optional files)
   "Return all files in variable `denote-directory' with prefix SEQUENCE.
 A sequence is a Denote signature that conforms with `denote-sequence-p'.
 
 With optional FILES, operate on them, else use the return value of
 `denote-directory-files'."
-  (delq nil
-        (mapcar
-         (lambda (file)
-           (when-let* ((file-sequence (denote-sequence-file-p file))
-                       ((string-prefix-p sequence file-sequence)))
-             file))
-         (denote-sequence-get-all-files files))))
+  (when-let* (((not (string-empty-p sequence)))
+              (prefix (denote-sequence-split sequence)))
+    (seq-filter
+     (lambda (file)
+       (when-let* ((file-sequence (denote-sequence-file-p file)))
+         (denote-sequence--sequence-prefix-p prefix file-sequence)))
+     (denote-sequence-get-all-files files))))
 
 (defun denote-sequence-get-all-files-with-max-depth (depth &optional files)
   "Return all files with sequence depth up to DEPTH (inclusive).
@@ -380,17 +397,11 @@ With optional SEQUENCES operate on those, else use the return value of
 `denote-sequence-get-all-sequences'.
 
 A sequence is a Denote signature that conforms with `denote-sequence-p'."
-  (let* ((prefix (denote-sequence-split sequence))
-         (depth (length prefix)))
+  (when-let* (((not (string-empty-p sequence)))
+              (prefix (denote-sequence-split sequence)))
     (seq-filter
      (lambda (string)
-       (let ((value (denote-sequence-split string))
-             (matched 0))
-         (while (and value
-                     (< matched depth)
-                     (string-equal (pop value) (nth matched prefix)))
-           (setq matched (1+ matched)))
-         (= matched depth)))
+       (denote-sequence--sequence-prefix-p prefix string))
      (or sequences (denote-sequence-get-all-sequences)))))
 
 (defun denote-sequence-get-all-sequences-with-max-depth (depth &optional sequences)
@@ -612,7 +623,7 @@ returned by `denote-sequence-get-all-files'."
                   (lambda (file)
                     (= (denote-sequence-depth (denote-sequence-file-p file)) (+ depth 1)))
                   (funcall filter-common '> sequence)))
-      (_ (error "The type `%s' is not among the `denote-sequence-types'" type)))))
+      (_ (error "The type `%s' is not among the allowed types" type)))))
 
 (defvar denote-sequence-type-history nil
   "Minibuffer history of `denote-sequence-type-prompt'.")
@@ -908,10 +919,18 @@ For a more specialised case, see `denote-sequence-find-relatives-dired'."
 (defun denote-sequence-find-dired (type)
   "Like `denote-sequence-find' for TYPE but put the matching files in Dired.
 Also see `denote-sequence-dired'."
-  (interactive (list (denote-sequence-type-prompt "Find relatives of TYPE")))
+  (interactive
+   (list (denote-sequence-type-prompt "Find relatives of TYPE"
+                                      '(all-parents
+                                        parent
+                                        siblings
+                                        all-children
+                                        children))))
   (if-let* ((sequence (denote-sequence-file-p buffer-file-name)))
       (if-let* ((default-directory (denote-directory))
-                (relatives (delete buffer-file-name (denote-sequence-get-relative sequence type)))
+                (relatives (delete buffer-file-name
+                                   (ensure-list
+                                    (denote-sequence-get-relative sequence type))))
                 (files-sorted (denote-sequence-sort-files relatives)))
           (dired (cons (format-message "*`%s' type relatives of `%s'" type sequence)
                        (mapcar #'file-relative-name files-sorted)))
