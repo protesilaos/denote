@@ -3046,13 +3046,6 @@ this end, Denote provides two convenience commands:
   This command has the alias ~denote-link-to-existing-or-new-note~,
   which helps with discoverability.
 
-#+findex: denote-link-or-create-with-command
-+ ~denote-link-or-create-with-command~ :: This is like the above,
-  except when it is about to create the new note it first prompts for
-  the specific file-creating command to use ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]). For
-  example, the user may want to specify a signature for this new file,
-  so they can select the ~denote-signature~ command.
-
 In all of the above, an optional prefix argument (=C-u= by default)
 creates a link that consists of just the identifier.  This has the
 same meaning as in the regular ~denote-link~ command.

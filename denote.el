@@ -5294,9 +5294,6 @@ This command is meant to be used from a Dired buffer."
     ["Link to existing note or newly created one" denote-link-or-create
      :help "Insert a link to an existing file, else create it and link to it"
      :enable (derived-mode-p 'text-mode)]
-    ["Link to existing note or newly created one with the chosen command" denote-link-or-create-with-command
-     :help "Insert a link to an existing file, else create it with the given command and link to it"
-     :enable (derived-mode-p 'text-mode)]
     ["Create note in the background and link to it directly" denote-link-after-creating
      :help "Create new note and link to it from the current file"
      :enable (derived-mode-p 'text-mode)]
