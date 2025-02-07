@@ -3538,6 +3538,9 @@ its standand attachments' facility).
 :CUSTOM_ID: h:3ca4db16-8f26-4d7d-b748-bac48ae32d69
 :END:
 
+[ As part of {{{development-version}}}, the code of =denote-rename-buffer.el=
+  is now part of =denote.el= as part of a wider reorganisation of the project. ]
+
 #+findex: denote-rename-buffer-mode
 The minor mode ~denote-rename-buffer-mode~ provides the means to
 automatically rename the buffer of a Denote file upon visiting the
