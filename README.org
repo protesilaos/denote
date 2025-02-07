@@ -4262,16 +4262,20 @@ is also available ([[#h:8ec774f4-4154-4599-b8cf-fa767e18d22d][Find a relative of
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
 :END:
 
-The =denote-sort.el= file is an optional extension to the core
-functionality of Denote, which empowers users to sort files by the
-given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+[ As part of {{{development-version}}}, the code of =denote-sort.el=
+  is merged into =denote.el= as part of a wider reorganisation of the
+  project. ]
+
+The =denote.el= file contains functions which empowers user or
+developers to sort files by the given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+findex: denote-sort-dired
-The command ~denote-sort-dired~ produces a Dired file listing with a
-flat, filtered, and sorted set of files from the ~denote-directory~
-([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It does so by a series of
-prompts, which can be configured by the user option
-~denote-sort-dired-extra-prompts~ ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
+#+findex: denote-dired
+The command ~denote-sort-dired~ (alias ~denote-dired~) produces a
+Dired file listing with a flat, filtered, and sorted set of files from
+the ~denote-directory~ ([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It
+does so by a series of prompts, which can be configured by the user
+option ~denote-sort-dired-extra-prompts~ ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
 
 The out-of-the-box behaviour of ~denote-sort-dired~ is as follows:
 
@@ -4289,8 +4293,10 @@ The out-of-the-box behaviour of ~denote-sort-dired~ is as follows:
 The resulting Dired listing is a regular Dired buffer, unlike that of
 ~dired-virtual-mode~ ([[#h:d35d8d41-f51b-4139-af8f-9c8cc508e35b][Use ~dired-virtual-mode~ for arbitrary file listings]]).
 
+#+findex: denote-sort-files
 The dynamic Org blocks that Denote defines to insert file contents
-also use this feature ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
+also use this feature internally by means of the non-interactive
+function ~denote-sort-files~ ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
 
 ** Configure what extra prompts ~denote-sort-dired~ issues
 :PROPERTIES:
