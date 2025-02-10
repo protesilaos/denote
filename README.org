@@ -4032,7 +4032,8 @@ you get all the parameters included:
 :ALT_TITLE: Sequence notes
 :END:
 
-[ The =denote-sequence.el= is part of {{{development-version}}}. ]
+[ The =denote-sequence.el= is part of {{{development-version}}} and
+  will be available when the new Denote version is. ]
 
 This section is about the external package ~denote-sequence~ (by
 Protesilaos). The original idea was to include the code as part of the
