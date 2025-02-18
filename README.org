@@ -5788,14 +5788,14 @@ might change them without further notice.
 + Function ~denote-link-description-with-signature-and-title~ :: Return
   link description for =FILE=.  Produce a description as follows:
 
-- If the region is active, use it as the description.
+  - If the region is active, use it as the description.
 
-- If =FILE= as a signature, then use the
-  ~denote-link-signature-format~.  By default, this looks like
-  "signature title".
+  - If =FILE= as a signature, then use the
+    ~denote-link-signature-format~.  By default, this looks like
+    "signature title".
 
-- If =FILE= does not have a signature, then use its title as the
-  description.
+  - If =FILE= does not have a signature, then use its title as the
+    description.
 
 #+vindex: denote-link-description-function
 + Variable ~denote-link-description-function~ :: Function to use to
