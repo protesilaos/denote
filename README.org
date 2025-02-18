@@ -665,57 +665,6 @@ Users who want to benefit from the more advanced date selection method
 that is common in interactions with Org mode, can set the user option
 ~denote-date-prompt-use-org-read-date~ to a non-nil value.
 
-** Create a note from the current Org subtree
-:PROPERTIES:
-:CUSTOM_ID: h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd
-:END:
-
-In Org parlance, an entry with all its subheadings and other contents
-is a "subtree". Denote can operate on the subtree to extract it from
-the current file and create a new file out of it. One such workflow is
-to collect thoughts in a single document and produce longer standalone
-notes out of them upon review.
-
-#+findex: denote-org-extras-extract-org-subtree
-The command ~denote-org-extras-extract-org-subtree~ is used for this
-purpose. It creates a new Denote note using the current Org subtree.
-In doing so, it removes the subtree from its current file and moves
-its contents into a new file. This command is part of the optional
-=denote-org-extras.el= extension, which is part of the ~denote~
-package. It is loaded automatically as soon as one of its commands is
-invoked.
-
-The text of the subtree's heading becomes the =#+title= of the new
-note. Everything else is inserted as-is.
-
-If the heading has any tags, they are used as the keywords of the new
-note. If the Org file has any =#+filetags= they are taken as well
-(Org's =#+filetags= are inherited by the headings). If none of these
-are true and the user option ~denote-prompts~ includes an entry for
-keywords, then ~denote-org-extras-extract-org-subtree~ prompts for
-keywords. Else the new note has no keywords ([[#h:ad4dde4a-8e88-470a-97ae-e7b9d4b41fb4][Add or remove keywords interactively]]).
-
-If the heading has a =PROPERTIES= drawer, it is retained for further
-review.
-
-If the heading's =PROPERTIES= drawer includes a =DATE= or =CREATED=
-property, or there exists a =CLOSED= statement with a timestamp value,
-use that to derive the date (or date and time) of the new note (if
-there is only a date, the time is taken as 00:00). If more than one of
-these is present, the order of preference is =DATE=, then =CREATED=,
-then =CLOSED=. If none of these is present, the current time is used.
-If the ~denote-prompts~ includes an entry for a date, then the command
-prompts for a date at this stage (also see ~denote-date-prompt-use-org-read-date~).
-
-For the rest, it consults the value of the user option
-~denote-prompts~ in the following scenaria:
-
-- To optionally prompt for a subdirectory, otherwise it produces the
-  new note in the ~denote-directory~.
-- To optionally prompt for a file signature, otherwise to not use any.
-
-The new note is an Org file regardless of the user option
-~denote-file-type~.
 
 ** Create note using Org capture
 :PROPERTIES:
@@ -2853,39 +2802,6 @@ navigates to that heading.
   invoked in one such file, it captures only the Denote identifier of
   the file, even if this user option is set to a non-nil value. ]
 
-Note that the optional extension =denote-org-extras.el= defines the command
-~denote-org-extras-link-to-heading~, which always links to a file+heading
-regardless of the aforementioned user option ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
-
-** Insert link to an Org file with a further pointer to a heading
-:PROPERTIES:
-:CUSTOM_ID: h:fc1ad245-ec08-41be-8d1e-7153d99daf02
-:END:
-
-#+findex: denote-org-extras-link-to-heading
-As part of the optional =denote-org-extras.el= extension, the command
-~denote-org-extras-link-to-heading~ prompts for a link to an Org file
-and then asks for a heading therein, using minibuffer completion. Once
-the user provides input at the two prompts, the command inserts a link
-at point which has the following pattern: =[[denote:IDENTIFIER::#ORG-HEADING-CUSTOM-ID]][Description::Heading text]]=.
-
-Because only Org files can have links to individual headings, the
-command ~denote-org-extras-link-to-heading~ prompts only for Org files
-(i.e. files which include the =.org= extension). Remember that Denote
-works with many file types ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
-
-This feature is similar to the concept of the user option ~denote-org-store-link-to-heading~
-([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]). It is, however,
-interactive and differs in the directionality of the action. With that
-user option, the command ~org-store-link~ will generate a =CUSTOM_ID=
-for the current heading (or capture the value of one as-is), giving
-the user the option to then call ~org-insert-link~ wherever they see
-fit. By contrast, the command ~denote-org-extras-link-to-heading~
-prompts for a file, then a heading, and inserts the link at point.
-
-Just as with files, it is possible to show backlinks for the given
-heading ([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]).
-
 ** Insert links matching a regexp
 :PROPERTIES:
 :CUSTOM_ID: h:9bec2c83-36ca-4951-aefc-7187c5463f90
@@ -3144,19 +3060,6 @@ instead. Reproducing it here for the sake of convenience:
         (preserve-size . (t . t))))
 #+end_src
 
-*** Backlinks for Org headings
-:PROPERTIES:
-:CUSTOM_ID: h:604bf92a-908a-485c-98b8-37ccae559afd
-:END:
-
-The optional =denote-org-extras.el= can generate Denote links to
-individual headings ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
-It is then possible to produce a corresponding backlinks buffer with
-the command ~denote-org-extras-backlinks-for-heading~. The resulting
-buffer behaves the same way as the standard backlinks buffer we
-provide ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]). An Org dynamic block with backlinks
-to the current heading is also an option ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]).
-
 ** Writing metanotes
 :PROPERTIES:
 :CUSTOM_ID: h:6060a7e6-f179-4d42-a9de-a9968aaebecc
@@ -3236,37 +3139,6 @@ Include this in the Denote configuration:
 #+begin_src emacs-lisp
 (require 'denote-md-extras)
 #+end_src
-
-** Convert =denote:= links to =file:= links in Org
-:PROPERTIES:
-:CUSTOM_ID: h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f
-:END:
-
-[ Also: [[#h:e01d6621-34e9-487d-8721-c4e42a6a286a][Convert =:denote= links to paths in Markdown]]. ]
-
-Sometimes the user needs to translate all =denote:= link types to
-their =file:= equivalent. This may be because some other tool does not
-recognise =denote:= links (or other custom links types---which are a
-standard feature of Org, by the way). The user thus needs to (i)
-either make a copy of their Denote note or edit the existing one, and
-(ii) convert all links to the generic =file:= link type that
-external/other programs understand.
-
-The optional extension =denote-org-extras.el= contains two commands
-that are relevant for this use-case:
-
-#+findex: denote-org-extras-convert-links-to-file-type
-+ Convert =denote:= links to =file:= links :: The command ~denote-org-extras-convert-links-to-file-type~
-  goes through the buffer to find all =denote:= links. It gets the
-  identifier of the link and resolves it to the actual file system
-  path. It then replaces the match so that the link is written with
-  the =file:= type and then the file system path. The optional search
-  terms and/or link description are preserved ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
-
-#+findex: denote-org-extras-convert-links-to-denote-type
-+ Convert =file:= links to =denote:= links :: The command ~denote-org-extras-convert-links-to-denote-type~
-  behaves like the one above. The difference is that it finds the file
-  system path and converts it into its identifier.
 
 ** Convert =:denote= links to paths in Markdown or Obsidian style
 :PROPERTIES:
@@ -3637,394 +3509,28 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ As part of version 2.3.0, all dynamic blocks are defined in the file
-  =denote-org-extras.el=. The file which was once called
-  =denote-org-dblock.el= contains aliases for the new function names
-  and displays a warning about its deprecation. There is no need to
-  ~require~ the ~denote-org-extras~ feature because all of Denote's
-  Org dynamic blocks are autoloaded (meaning that they work as soon as
-  they are used). For backward compatibility, all dynamic blocks
-  retain their original names as an alias for the newer one. ]
+[ The ~denote-org~ package is developed in tandem with ~denote~
+  {{{development-version}}} and will be available when the new Denote
+  version is published. ]
+
+This section is about the external package ~denote-org~ (by
+Protesilaos). The code of ~denote-org~ used to be available as part of
+the main ~denote~ package, but we decided to keep each optional
+extension as a separate package to make things easier to maintain and
+to understand.
 
 Denote can optionally integrate with Org mode's "dynamic blocks"
 facility. This means that it can use special blocks that are evaluated
 with =C-c C-x C-u= (~org-dblock-update~) to generate their contents.
-The following subsections describe the types of Org dynamic blocks
-provided by Denote.
-
-- [[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]
-- [[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]
-
-A dynamic block gets its contents by evaluating a function that
-corresponds to the type of block. The block type and its parameters
-are stated in the opening =#+BEGIN= line. Typing =C-c C-x C-u=
-(~org-dblock-update~) with point on that line runs (or re-runs) the
-associated function with the given parameters and populates the
-block's contents accordingly.
 
 Dynamic blocks are particularly useful for metanote entries that
-reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]).
-
-The Org manual describes the technicalities of Dynamic Blocks.
-Evaluate:
-
-#+begin_src emacs-lisp
-(info "(org) Dynamic Blocks")
-#+end_src
-
-** Org dynamic blocks to insert links
-:PROPERTIES:
-:CUSTOM_ID: h:50160fae-6515-4d7d-9737-995ad925e64b
-:END:
-
-[ As part of version 2.3.0, all dynamic blocks are defined in the file
-  =denote-org-extras.el=. The file which was once called
-  =denote-org-dblock.el= contains aliases for the new function names
-  and displays a warning about its deprecation. There is no need to
-  ~require~ the ~denote-org-extras~ feature because all of Denote's
-  Org dynamic blocks are autoloaded (meaning that they work as soon as
-  they are used). For backward compatibility, all dynamic blocks
-  retain their original names as an alias for the newer one. ]
-
-#+findex: denote-org-extras-dblock-insert-links
-The =denote-links= block can be inserted at point with the command
-~denote-org-extras-dblock-insert-links~ or by manually including the
-following in an Org file:
-
-: #+BEGIN: denote-links :regexp "YOUR REGEXP HERE" :not-regexp :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
-:
-: #+END:
-
-All the parameters except for =:regexp= are optional.
-
-The =denote-links= block is also registered as an option for the
-command ~org-dynamic-block-insert-dblock~.
-
-Type =C-c C-x C-u= (~org-dblock-update~) with point on the =#+BEGIN=
-line to update the block.
-
-- The =:regexp= parameter is mandatory. Its value is a string and its
-  behaviour is the same as that of the ~denote-add-links~ command
-  ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]). Concretely, it produces a
-  typographic list of links to files matching the giving regular
-  expression. The value of the =:regexp= parameter may also be of the
-  form read by the ~rx~ macro (Lisp notation instead of a string), as
-  explained in the Emacs Lisp Reference Manual (evaluate this code to
-  read the documentation: =(info "(elisp) Rx Notation")=). Note that
-  you do not need to write an actual regular expression to get
-  meaningful results: even something like =_journal= will work to
-  include all files that have a =journal= keyword.
-
-- The =:not-regexp= parameter is optional. It is a regular expression
-  that applies after =:regexp= to filter out the matching files. [
-  Part of {{{development-version}}}. ]
-
-- The =:excluded-dirs-regexp= is a string that contains a word or
-  regular expression that matches against directory files names
-  to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-directories-regexp~ user option
-  ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
-  has a global effect, which is overridden locally in the dynamic
-  block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-directories-regexp~ is used
-  (which is also nil by default, meaning that all directories are
-  included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-directories-regexp~ is
-  ignored altogether. This is useful in the scenario where the user
-  option is set to exclude some directories but the dynamic blocks
-  wants to lift that restriction.
-
-- The =:sort-by-component= parameter is optional. It sorts the files
-  by the given Denote file name component. The value it accepts is an
-  unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
-  When using the command ~denote-org-extras-dblock-insert-files~, this
-  parameter is automatically inserted together with the (=:regexp=
-  parameter) and the user is prompted for a file name component.
-
-- The =:reverse-sort= parameter is optional. It reverses the order in
-  which files appear in. This is meaningful even without the presence
-  of the parameter =:sort-by-component=, though it also combines with
-  it.
-
-- The =:id-only= parameter is optional. It accepts a ~t~ value, in
-  which case links are inserted without a description text but only
-  with the identifier of the given file. This has the same meaning as
-  with the ~denote-link~ command and related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
-
-- The =:include-date= parameter controls whether to display the date
-  of the file name after the title. This is done when its value is
-  ~t~. By default (a nil value), no date is shown.
-
-- An optional =:block-name= parameter can be specified with a string
-  value to add a =#+name= to the results. This is useful for further
-  processing using Org facilities (a feature that is outside Denote's
-  purview).
-
-In some workflows, users may want to have a separate block to see what
-other links they are missing since they last updated the dynamic
-block. We cover that case as well ([[#h:1a81e255-0510-4ee0-bc3a-374de048ef46][The Org dynamic block to insert missing links only]]).
-
-** The Org dynamic block to insert missing links only
-:PROPERTIES:
-:CUSTOM_ID: h:1a81e255-0510-4ee0-bc3a-374de048ef46
-:END:
-
-#+findex: denote-org-extras-dblock-insert-missing-links
-The =denote-missing-links= block is available with the command
-~denote-org-extras-dblock-insert-missing-links~. It is like the
-aforementioned =denote-links= block, except it only lists links to
-files that are not present in the current buffer ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links]]).
-The parameters are otherwise the same and are all optional except for
-=:regexp=:
-
-: #+BEGIN: denote-missing-links :regexp "YOUR REGEXP HERE" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
-:
-: #+END:
-
-The =denote-missing-links= block is also registered as an option for the
-command ~org-dynamic-block-insert-dblock~.
-
-Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
-=#+BEGIN= line to update the block.
-
-** The Org dynamic block to insert backlinks
-:PROPERTIES:
-:CUSTOM_ID: h:f9a97859-1deb-47dd-bdae-52f8b424ff46
-:END:
-
-#+findex: denote-org-extras-dblock-insert-backlinks
-Apart from links to files matching a regular expression, we can also
-produce a list of backlinks to the current file. The dynamic block can
-be inserted at point with the command ~denote-org-extras-dblock-insert-backlinks~
-or by manually writing this in an Org file:
-
-: #+BEGIN: denote-backlinks :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :this-heading-only nil :include-date nil
-:
-: #+END:
-
-The =denote-backlinks= block is also registered as an option for the
-command ~org-dynamic-block-insert-dblock~.
-
-Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
-=#+BEGIN= line to update the block.
-
-The parameters recognised by this dynamic block are almost the same as
-that for inserting links ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links]]). They
-are all optional in this case and there is no parameter expecting a
-regular expression for matching files to link to.
-
-Additionally, the ~denote-backlinks~ block also recognises the
-=:this-heading-only= parameter. It determines if the backlinks are
-about the file or the heading under which the dynamic block is inserted
-([[#h:604bf92a-908a-485c-98b8-37ccae559afd][Backlinks for Org headings]]). When this parameter is omitted or nil
-(the default), then the backlinks are about the whole file, but if
-this parameter has a ~t~ value then the backlinks are specifically for
-the heading ([[#h:fc1ad245-ec08-41be-8d1e-7153d99daf02][Insert link to an Org file with a further pointer to a heading]]).
-
-** Org dynamic block to insert file contents
-:PROPERTIES:
-:CUSTOM_ID: h:f15fa143-5036-416f-9bff-1bcabbb03456
-:END:
-
-[ As part of version 2.3.0, all dynamic blocks are defined in the file
-  =denote-org-extras.el=. The file which was once called
-  =denote-org-dblock.el= contains aliases for the new function names
-  and displays a warning about its deprecation. There is no need to
-  ~require~ the ~denote-org-extras~ feature because all of Denote's
-  Org dynamic blocks are autoloaded (meaning that they work as soon as
-  they are used). For backward compatibility, all dynamic blocks
-  retain their original names as an alias for the newer one. ]
-
-Denote can optionally use Org's dynamic blocks facility to produce a
-section that lists entire file contents ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]]).
-This works by instructing Org to match a regular expression of Denote
-files, the same way we do with Denote links ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links matching a regexp]]).
-
-This is useful to, for example, compile a dynamically concatenated
-list of scattered thoughts on a given topic, like =^2023.*_emacs= for
-a long entry that incorporates all the notes written in 2023 with the
-keyword =emacs=.
-
-#+findex: denote-org-extras-dblock-insert-files
-To produce such a block, call the command ~denote-org-extras-dblock-insert-files~
-or manually write the following block in an Org file and then type
- =C-c C-x C-u= (~org-dblock-update~) on the =#+BEGIN= line to run it
-(do it again to recalculate the block):
-
-: #+BEGIN: denote-files :regexp "YOUR REGEXP HERE" :not-regexp nil :sort-by-component nil :reverse-sort nil :no-front-matter nil :file-separator nil :add-links nil
-:
-: #+END:
-
-All parameters are optional except for =:regexp=.
-
-The =denote-files= block is also registered as an option for the
-command ~org-dynamic-block-insert-dblock~.
-
-Remember to type =C-c C-x C-u= (~org-dblock-update~) with point on the
-=#+BEGIN= line to update the block.
-
-To fully control the output, include these additional optional
-parameters, which are described further below:
-
-- The =:regexp= parameter is mandatory. Its value is a string,
-  representing a regular expression to match Denote file names. Its
-  value may also be an ~rx~ expression instead of a string, as noted
-  in the previous section ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]).
-  Note that you do not need to write an actual regular expression to
-  get meaningful results: even something like =_journal= will work to
-  include all files that have a =journal= keyword.
-
-- The =:not-regexp= parameter is optional. It is a regular expression
-  that applies after =:regexp= to filter out the matching files. [
-  Part of {{{development-version}}}. ]
-
-- The =:excluded-dirs-regexp= is a string that contains a word or
-  regular expression that matches against directory files names
-  to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-directories-regexp~ user option
-  ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
-  has a global effect, which is overridden locally in the dynamic
-  block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-directories-regexp~ is used
-  (which is also nil by default, meaning that all directories are
-  included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-directories-regexp~ is
-  ignored altogether. This is useful in the scenario where the user
-  option is set to exclude some directories but the dynamic blocks
-  wants to lift that restriction.
-
-- The =:sort-by-component= parameter is optional. It sorts the files
-  by the given Denote file name component. The value it accepts is an
-  unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
-  When using the command ~denote-org-extras-dblock-insert-files~, this
-  parameter is automatically inserted together with the (=:regexp=
-  parameter) and the user is prompted for a file name component.
-
-- The =:reverse-sort= parameter is optional. It reverses the order in
-  which files appear in. This is meaningful even without the presence
-  of the parameter =:sort-by-component=, though it also combines with
-  it.
-
-#+vindex: denote-org-extras-dblock-file-contents-separator
-- The =:file-separator= parameter is optional. If it is omitted, then
-  Denote will use no separator between the files it inserts. If the
-  value is ~t~ the ~denote-org-extras-dblock-file-contents-separator~ is
-  applied at the end of each file: it introduces some empty lines and
-  a horizontal rule between them to visually distinguish individual
-  files. If the =:file-separator= value is a string, it is used as the
-  file separator (e.g. use ="\n"= to insert just one empty new line).
-
-- The =:no-front-matter= parameter is optional. When set to a ~t~
-  value, Denote tries to remove front matter from the files it is
-  inserting in the dynamic block. The technique used to perform this
-  operation is by removing all lines from the top of the file until
-  the first empty line. This works with the default front matter that
-  Denote adds, but is not 100% reliable with all sorts of user-level
-  modifications and edits to the file. When the =:no-front-matter= is
-  set to a natural number, Denote will omit that many lines from the
-  top of the file.
-
-- The =:add-links= parameter is optional. When it is set to a ~t~
-  value, all files are inserted as a typographic list and are indented
-  accordingly. The first line in each list item is a link to the file
-  whose contents are inserted in the following lines. When the value
-  is =id-only=, then links are inserted without a description text but
-  only with the identifier of the given file. This has the same
-  meaning as with the ~denote-link~ command and related facilities
-  ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Remember that Org can fold the items in a
-  typographic list the same way it does with headings. So even long
-  files can be presented in this format without much trouble.
-
-- An optional =:block-name= parameter can be specified with a string
-  value to add a =#+name= to the results. This is useful for further
-  processing using Org facilities (a feature that is outside Denote's
-  purview).
-
-** Org dynamic block to insert Org files as headings
-:PROPERTIES:
-:CUSTOM_ID: h:d6254a12-b762-4096-a5de-66a0d423e204
-:END:
-
-[ IMPORTANT NOTE: This dynamic block only works with Org files,
-  because it has to assume the Org notation in order to insert each
-  file's contents as its own heading. ]
-
-#+findex: denote-org-extras-dblock-insert-files-as-headings
-As a variation of the previously covered block that inserts file
-contents, we have the ~denote-org-extras-dblock-insert-files-as-headings~
-command ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]). It Turn the
-=#+title= of each file into a top-level heading. Then it increments
-all original headings in the file by one, so that they become
-subheadings of what once was the =#+title=. Similarly, the
-=#+filetags= of each file as tags for the top-level heading
-(what was the =#+title=).
-
-Because of how it is meant to work, this dynamic block only works with
-Org files.
-
-In its simplest form, this dynamic block looks like this, with
-=:regexp= as the only mandatory parameter:
-
-: #+BEGIN: denote-files-as-headings :regexp "YOUR REGEXP HERE"
-:
-: #+END:
-
-Though when you use the command ~denote-org-extras-dblock-insert-files-as-headings~
-you get all the parameters included:
-
-: #+BEGIN: denote-files-as-headings :regexp "YOUR REGEXP HERE" :not-regexp nil :excluded-dirs-regexp nil :sort-by-component title :reverse-sort nil :add-links t
-:
-: #+END:
-
-- The =:regexp= parameter is mandatory. Its value is a string,
-  representing a regular expression to match Denote file names. Its
-  value may also be an ~rx~ expression instead of a string, as noted
-  in the previous section ([[#h:50160fae-6515-4d7d-9737-995ad925e64b][Org dynamic blocks to insert links or backlinks]]).
-  Note that you do not need to write an actual regular expression to
-  get meaningful results: even something like =_journal= will work to
-  include all files that have a =journal= keyword.
-
-- The =:not-regexp= parameter is optional. It is a regular expression
-  that applies after =:regexp= to filter out the matching files. [
-  Part of {{{development-version}}}. ]
-
-- The =:excluded-dirs-regexp= is a string that contains a word or
-  regular expression that matches against directory files names
-  to-be-excluded from the results. This has the same meaning as
-  setting the ~denote-excluded-directories-regexp~ user option
-  ([[#h:8458f716-f9c2-4888-824b-2bf01cc5850a][Exclude certain directories from all operations]]). The user option
-  has a global effect, which is overridden locally in the dynamic
-  block. When the value of =:excluded-dirs-regexp= is nil (the
-  default), the value of ~denote-excluded-directories-regexp~ is used
-  (which is also nil by default, meaning that all directories are
-  included). When the value of =excluded-dirs-regexp= is ~t~ or some
-  other symbol, then the ~denote-excluded-directories-regexp~ is
-  ignored altogether. This is useful in the scenario where the user
-  option is set to exclude some directories but the dynamic blocks
-  wants to lift that restriction.
-
-- The =:sort-by-component= parameter is optional. It sorts the files
-  by the given Denote file name component. The value it accepts is an
-  unquoted symbol among =title=, =keywords=, =signature=, =identifier=.
-  When using the command ~denote-org-extras-dblock-insert-files~, this
-  parameter is automatically inserted together with the (=:regexp=
-  parameter) and the user is prompted for a file name component.
-
-- The =:reverse-sort= parameter is optional. It reverses the order in
-  which files appear in. This is meaningful even without the presence
-  of the parameter =:sort-by-component=, though it also combines with
-  it.
-
-- The =:add-links= parameter is optional. When it is set to a ~t~
-  value, all the top-level headings (those that were the =#+title= of
-  each file) are generated as links, pointing to the original file.
-  This has the same meaning as with the ~denote-link~ command and
-  related facilities ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
-
-- An optional =:block-name= parameter can be specified with a string
-  value to add a =#+name= to the results. This is useful for further
-  processing using Org facilities (a feature that is outside Denote's
-  purview).
+reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]). The
+~denote-org~ package defines many of these Org dynamic blocks.
+
++ Package name (GNU ELPA): ~denote-org~ (⚠️ Not available yet)
++ Official manual: <https://protesilaos.com/emacs/denote-org>
++ Git repository: <https://github.com/protesilaos/denote-org>
++ Backronym: Denote... Ordinarily Restricts Gyrations.
 
 * Write sequence notes or "folgezettel"
 :PROPERTIES:
