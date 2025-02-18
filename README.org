@@ -1275,11 +1275,6 @@ Note that =let= binding ~denote-directory~ can be used in custom
 commands and other wrapper functions to override the global default
 value of ~denote-directory~ to select silos.
 
-To see another example of a wrapper function that =let= binds
-~denote-directory~, see:
-
-[[#h:d0c7cb79-21e5-4176-a6af-f4f68578c8dd][Extending Denote: Split an Org subtree into its own note]].
-
 *** The =denote-silo-extras.el=
 :PROPERTIES:
 :CUSTOM_ID: h:e43baf95-f201-4fec-8620-c0eb5eaa1c85
@@ -3145,8 +3140,6 @@ Include this in the Denote configuration:
 :CUSTOM_ID: h:e01d6621-34e9-487d-8721-c4e42a6a286a
 :END:
 
-[ Also: [[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links in Org]]. ]
-
 [ These commands are part of {{{development-version}}}. ]
 
 Although Markdown is a ubiquitous file format, there is no
@@ -3603,9 +3596,9 @@ The resulting Dired listing is a regular Dired buffer, unlike that of
 ~dired-virtual-mode~ ([[#h:d35d8d41-f51b-4139-af8f-9c8cc508e35b][Use ~dired-virtual-mode~ for arbitrary file listings]]).
 
 #+findex: denote-sort-files
-The dynamic Org blocks that Denote defines to insert file contents
-also use this feature internally by means of the non-interactive
-function ~denote-sort-files~ ([[#h:f15fa143-5036-416f-9bff-1bcabbb03456][Org dynamic block to insert file contents]]).
+As an example, the dynamic Org blocks that the ~denote-org~ package
+(by Protesilaos) defines also use this feature internally by means of
+the non-interactive function ~denote-sort-files~.
 
 ** Configure what extra prompts ~denote-sort-dired~ issues
 :PROPERTIES:
@@ -4761,9 +4754,9 @@ Org Mode has a built-in configurable export engine.  You can prevent
 duplicate identifiers when exporting manually for each exported file
 or by advising the Org export function.
 
-Denote also provides commands to convert =denote:= links to their
-=file:= equivalent, in case this is a required pre-processing step for
-export purposes ([[#h:ed220cac-7dcb-4bb7-9243-1bb85e452e5f][Convert =denote:= links to =file:= links]]).
+The ~denote-org~ package (by Protesilaos) also provides commands to
+convert =denote:= links to their =file:= equivalent, in case this is a
+required pre-processing step for export purposes.
 
 **** Manually configure Org export
 :PROPERTIES:
