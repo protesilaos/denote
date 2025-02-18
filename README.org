@@ -4032,13 +4032,10 @@ you get all the parameters included:
 :ALT_TITLE: Sequence notes
 :END:
 
-[ The =denote-sequence.el= is part of {{{development-version}}} and
-  will be available when the new Denote version is. ]
-
 This section is about the external package ~denote-sequence~ (by
 Protesilaos). The original idea was to include the code as part of the
 ~denote~ package, but we decided to keep each optional extension as a
-separate package.
+separate package to make things easier to maintain and to understand.
 
 Denote defines an optional file name component called the =SIGNATURE=
 ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). This is a free-form field that users can
@@ -4057,7 +4054,7 @@ topic that belongs to the wider theme of dogs.
 The ~denote-sequence~ package has a manual that explains these
 concepts and relevant commands in further detail:
 
-+ Package name (GNU ELPA): ~denote-sequence~
++ Package name (GNU ELPA): ~denote-sequence~ (⚠️ Not available yet)
 + Official manual: <https://protesilaos.com/emacs/denote-sequence>
 + Git repository: <https://github.com/protesilaos/denote-sequence>
 + Backronym: Denote... Sequences Efficiently Queue Unsorted Entries
