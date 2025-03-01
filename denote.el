@@ -1530,7 +1530,7 @@ initial input."
     (format-prompt (or prompt "New file KEYWORDS") nil)
     keywords nil nil initial 'denote-keyword-history)))
 
-(defun denote-keywords-prompt(&optional prompt-text initial-keywords infer-from-files-matching-regexp)
+(defun denote-keywords-prompt (&optional prompt-text initial-keywords infer-from-files-matching-regexp)
   "Prompt for one or more keywords.
 Read entries as separate when they are demarcated by the
 `crm-separator', which typically is a comma.
