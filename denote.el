@@ -1480,26 +1480,33 @@ Also see `denote-retrieve-filename-keywords'."
 (defalias 'denote-retrieve-filename-keywords-as-list 'denote-extract-keywords-from-path
   "Alias for the function `denote-extract-keywords-from-path'")
 
-(defun denote--inferred-keywords ()
+(defun denote--inferred-keywords (&optional files-matching-regexp)
   "Extract keywords from `denote-directory-files'.
+With optional FILES-MATCHING-REGEXP, only extract keywords from the
+matching files.  Otherwise, do it for all files.
+
 This function returns duplicates.  The `denote-keywords' is the
 one that doesn't."
-  (let ((kw (mapcan #'denote-extract-keywords-from-path (denote-directory-files))))
+  (let ((kw (mapcan #'denote-extract-keywords-from-path (denote-directory-files files-matching-regexp))))
     (if-let* ((regexp denote-excluded-keywords-regexp))
         (seq-remove (apply-partially #'string-match-p regexp) kw)
       kw)))
 
-(defun denote-keywords ()
+(defun denote-keywords (&optional files-matching-regexp)
   "Return appropriate list of keyword candidates.
 If `denote-infer-keywords' is non-nil, infer keywords from
 existing notes and combine them into a list with
 `denote-known-keywords'.  Else use only the latter.
 
+In the case of keyword inferrence, use optional FILES-MATCHING-REGEXP,
+to extract keywords only from the matching files.  Otherwise, do it for
+all files.
+
 Inferred keywords are filtered by the user option
 `denote-excluded-keywords-regexp'."
   (delete-dups
    (if denote-infer-keywords
-       (append (denote--inferred-keywords) denote-known-keywords)
+       (append (denote--inferred-keywords files-matching-regexp) denote-known-keywords)
      denote-known-keywords)))
 
 (defvar denote-keyword-history nil
@@ -1523,17 +1530,21 @@ initial input."
     (format-prompt (or prompt "New file KEYWORDS") nil)
     keywords nil nil initial 'denote-keyword-history)))
 
-(defun denote-keywords-prompt (&optional prompt-text initial-keywords)
+(defun denote-keywords-prompt(&optional prompt-text initial-keywords infer-from-files-matching-regexp)
   "Prompt for one or more keywords.
 Read entries as separate when they are demarcated by the
 `crm-separator', which typically is a comma.
 
-With optional PROMPT-TEXT, use it to prompt the user for
-keywords.  Else use a generic prompt.  With optional
-INITIAL-KEYWORDS use them as the initial minibuffer text.
+With optional PROMPT-TEXT, use it to prompt the user for keywords.  Else
+use a generic prompt.  With optional INITIAL-KEYWORDS use them as the
+initial minibuffer text.
+
+With optional INFER-FROM-FILES-MATCHING-REGEXP, only infer keywords from
+files that match the given regular expression, per the function
+`denote-keywords'.
 
 Return an empty list if the minibuffer input is empty."
-  (denote--keywords-crm (denote-keywords) prompt-text initial-keywords))
+  (denote--keywords-crm (denote-keywords infer-from-files-matching-regexp) prompt-text initial-keywords))
 
 (defun denote-keywords-sort (keywords)
   "Sort KEYWORDS if `denote-sort-keywords' is non-nil.
