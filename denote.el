@@ -5409,7 +5409,7 @@ create a new one."
   (format "%s::%s" file-text heading-text))
 
 ;;;###autoload
-(defun denote-link-ol-store ()
+(defun denote-link-ol-store (&rest _)
   "Handler for `org-store-link' adding support for denote: links.
 Also see the user option `denote-org-store-link-to-heading'."
   (when-let* ((file (buffer-file-name))
