@@ -5420,34 +5420,37 @@ create a new one."
   (format "%s::%s" file-text heading-text))
 
 ;;;###autoload
-(defun denote-link-ol-store (&rest _)
+(defun denote-link-ol-store (&optional interactive?)
   "Handler for `org-store-link' adding support for denote: links.
+Optional INTERACTIVE? is used by `org-store-link'.
+
 Also see the user option `denote-org-store-link-to-heading'."
-  (when-let* ((file (buffer-file-name))
-              ((denote-file-is-note-p file))
-              (file-id (denote-retrieve-filename-identifier file))
-              (description (denote-get-link-description file)))
-    (let ((heading-links (and denote-org-store-link-to-heading
-                              (derived-mode-p 'org-mode)
-                              (denote--org-capture-link-specifiers-p)))
-          (heading (denote-link-ol-get-heading)))
-      (org-link-store-props
-       :type "denote"
-       :description (if (and heading-links heading)
-                        (denote-link-format-heading-description
-                         description
-                         heading)
-                      description)
-       :link (cond
-              ((when-let* ((id (org-entry-get (point) "CUSTOM_ID")))
-                 (format "denote:%s::#%s" file-id id)))
-              ((and heading-links (eq denote-org-store-link-to-heading 'context) heading)
-               (format "denote:%s::*%s" file-id heading))
-              ((and heading-links heading)
-               (format "denote:%s::#%s" file-id (denote-link-ol-get-id)))
-              (t
-               (concat "denote:" file-id))))
-      org-store-link-plist)))
+  (when interactive?
+    (when-let* ((file (buffer-file-name))
+                ((denote-file-is-note-p file))
+                (file-id (denote-retrieve-filename-identifier file))
+                (description (denote-get-link-description file)))
+      (let ((heading-links (and denote-org-store-link-to-heading
+                                (derived-mode-p 'org-mode)
+                                (denote--org-capture-link-specifiers-p)))
+            (heading (denote-link-ol-get-heading)))
+        (org-link-store-props
+         :type "denote"
+         :description (if (and heading-links heading)
+                          (denote-link-format-heading-description
+                           description
+                           heading)
+                        description)
+         :link (cond
+                ((when-let* ((id (org-entry-get (point) "CUSTOM_ID")))
+                   (format "denote:%s::#%s" file-id id)))
+                ((and heading-links (eq denote-org-store-link-to-heading 'context) heading)
+                 (format "denote:%s::*%s" file-id heading))
+                ((and heading-links heading)
+                 (format "denote:%s::#%s" file-id (denote-link-ol-get-id)))
+                (t
+                 (concat "denote:" file-id))))
+        org-store-link-plist))))
 
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
