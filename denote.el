@@ -1017,7 +1017,12 @@ to override what this function returns."
   ;; though, as it will break existing configurations.
   (if-let* (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
             (silo-dir (denote--default-directory-is-silo-p)))
-      silo-dir
+      (progn
+        (display-warning
+         'denote
+         "Silo value must be a string; `local' or `default-directory'are obsolete"
+         :error)
+        silo-dir)
     (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
       (denote--make-denote-directory)
       denote-directory)))
