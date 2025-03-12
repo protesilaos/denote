@@ -895,38 +895,6 @@ how we can affect the behaviour of the underlying ~denote~ command by
 ~let~ binding variables that affect every aspect of its behaviour
 ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]).
 
-** Create a journal entry using Org capture
-:PROPERTIES:
-:CUSTOM_ID: h:14d2430e-d60f-4c66-9229-bec2098039d2
-:END:
-
-[ What we document here uses the ~denote-journal-extras-path-to-new-or-existing-entry~
-  which is modified as part of {{{development-version}}}. ]
-
-Denote can be used for a free-form journaling out-of-the-box. We also
-provide the =denote-journal-extras.el= file, which contains extensions
-for a more streamlined workflow ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]).
-
-One of the features of those extras is the ability to create a Denote
-file for a given day, if there is none, but revisit the file if it
-exists. Users can thus leverage this to set up a workflow where they
-quickly add a new heading to their daily journal file via the command
-~org-capture~:
-
-#+begin_src emacs-lisp
-(with-eval-after-load 'org-capture
-  (add-to-list 'org-capture-templates
-               '("j" "Journal" entry
-                 (file denote-journal-extras-path-to-new-or-existing-entry)
-                 "* %U %?\n%i\n%a"
-                 :kill-buffer t
-                 :empty-lines 1)))
-#+end_src
-
-Using the above, is the same as calling the command
-~denote-journal-extras-new-or-existing-entry~ and then manually
-appending a heading with a timestamp. The template can be modified
-accordingly, in accordance with the documentation of ~org-capture-templates~.
 
 ** Create a note with the region's contents
 :PROPERTIES:
@@ -3738,165 +3706,23 @@ Perform the comparison with `string<'."
 :CUSTOM_ID: h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92
 :END:
 
-Denote provides a general-purpose mechanism to create new files that
-broadly count as "notes" ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  Such files can be daily
-entries in a journal.  While it is possible to use the generic
-~denote~ command to maintain a journal, we provide an optional set of
-convenience options and commands as part of =denote-journal-extras.el=.
-To use those, add the following the Denote configuration:
+The ~denote-journal~ package (by Protesilaos) makes it easier to use
+Denote for journaling. While it is possible to use the generic
+~denote~ command (and related) to maintain a journal, this package
+defines extra functionality to streamline the journaling workflow.
 
-#+begin_src emacs-lisp
-(require 'denote-journal-extras)
-#+end_src
+The code of ~denote-journal~ used to be bundled up with the ~denote~
+package before version =4.0.0= of the latter and was available in the
+file =denote-journal-extras.el=. Users of the old code will need to
+adapt their setup to use the ~denote-journal~ package. This can be
+done by replacing all instances of =denote-journal-extras= with
+=denote-journal= across their configuration.
 
-#+findex: denote-journal-extras-new-entry
-#+vindex: denote-journal-extras-keyword
-#+vindex: denote-journal-extras-directory
-The command ~denote-journal-extras-new-entry~ creates a new entry in
-the journal. Such a file has the ~denote-journal-extras-keyword~,
-which is =journal= by default ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). The user can
-set this keyword to an arbitrary string (single word is preferred) or
-a list of string (the support for a list of strings is part of
-{{{development-version}}}). New journal entries can be stored in the
-~denote-directory~ or subdirectory thereof. To make it easier for the
-user, the new journal entry will be placed in ~denote-journal-extras-directory~,
-which defaults to a subdirectory of ~denote-directory~ called =journal=.
-
-If ~denote-journal-extras-directory~ is nil, the ~denote-directory~ is
-used.  Journal entries will thus be in a flat listing together with
-all other notes.  They can still be retrieved easily by searching for
-the ~denote-journal-extras-keyword~ ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]).
-
-#+vindex: denote-journal-extras-title-format
-Furthermore, the command ~denote-journal-extras-new-entry~ will use
-the current date as the title of the new entry.  The exact format is
-controlled by the user option ~denote-journal-extras-title-format~.
-Acceptable values for ~denote-journal-extras-title-format~ and their
-corresponding styles are:
-
-| Symbol                  | Style                             |
-|-------------------------+-----------------------------------|
-| day                     | Monday                            |
-| day-date-month-year     | Monday 19 September 2023          |
-| day-date-month-year-24h | Monday 19 September 2023 20:49    |
-| day-date-month-year-12h | Monday 19 September 2023 08:49 PM |
-
-For example:
-
-#+begin_src emacs-lisp
-(setq denote-journal-extras-title-format 'day-date-month-year)
-#+end_src
-
-If the value of this user option is ~nil~, then
-~denote-journal-extras-new-entry~ will prompt for a title.
-
-The ~denote-journal-extras-new-entry~ command also accepts an optional
-=DATE= argument. When called internactively, this is a universal
-prefix (e.g. =C-u= with the default key bindings). With =DATE=, it
-prompts for a date to create a new journal entry for. The date prompt
-can optionally use the Org date+calendar selection interface
-([[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The ~denote-date-prompt-use-org-read-date~ option]]).
-
-In terms of workflow, using the current date as the title is better
-for maintaining a daily journal.  A prompt for an arbitrary title is
-more suitable for those who like to keep a record of something like a
-thought or event (though this can also be achieved by the regular
-~denote~ command or maybe ~denote-subdirectory~).
-
-#+vindex: denote-journal-extras-hook
-The ~denote-journal-extras-new-entry~ command calls the normal hook
-~denote-journal-extras-hook~ after it is done.  The user can leverage
-this to produce consequences therefrom, such as to set a timer with
-the ~tmr~ package from GNU ELPA ([[#h:4af1f81e-e93a-43cc-b344-960032a16d42][Journaling with a timer]]).
-
-#+findex: denote-journal-extras-new-or-existing-entry
-The command ~denote-journal-extras-new-or-existing-entry~ locates an
-existing journal entry or creates a new one. A journal entry is one
-that has ~denote-journal-extras-keyword~ as part of its file name. If
-there are multiple journal entries for the current date, it prompts
-for one among them using minibuffer completion. If there is only one,
-it visits it outright. If there is no journal entry, it creates one by
-calling ~denote-journal-extra-new-entry~ (as described above).
-Depending on one's workflow, this can be done via ~org-capture~
-([[#h:14d2430e-d60f-4c66-9229-bec2098039d2][Create a journal entry using Org capture]]).
-
-#+findex: denote-journal-extras-link-or-create-entry
-The command ~denote-journal-extras-link-or-create-entry~ links to the
-journal entry for today or creates it in the background, if missing,
-and then links to it from the current file. If there are multiple
-journal entries for the same day, it prompts to select one among them
-and then links to it. When called with an optional prefix argument
-(such as =C-u= with default key bindings), the command prompts for a
-date and then performs the aforementioned. With a double prefix
-argument (=C-u C-u=), it also produces a link whose description
-includes just the file's identifier.
-
-** Journaling with a timer
-:PROPERTIES:
-:CUSTOM_ID: h:4af1f81e-e93a-43cc-b344-960032a16d42
-:END:
-
-[ Revised as part of version 2.1.0 to conform with how we
-  now tend to the needs of users who use Denote for journaling
-  purposes ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]). ]
-
-Sometimes journaling is done with the intent to hone one's writing
-skills.  Perhaps you are learning a new language or wish to communicate
-your ideas with greater clarity and precision.  As with everything that
-requires a degree of sophistication, you have to work for it---write,
-write, write!
-
-One way to test your progress is to set a timer.  It helps you gauge
-your output and its quality.  To use a timer with Emacs, consider the
-~tmr~ package.  A new timer can be set with something like this:
-
-#+begin_src emacs-lisp
-;; Set 10 minute timer with the given description
-(tmr "10" "Practice writing in my journal")
-#+end_src
-
-To make this timer start as soon as a new journal entry is created
-with the command ~denote-journal-extras-new-entry~, add a function to
-the ~denote-journal-extras-hook~.  For example:
-
-#+begin_src emacs-lisp
-;; Add an anonymous function, which is more difficult to modify after
-;; the fact:
-(add-hook 'denote-journal-extras-hook (lambda ()
-                                        (tmr "10" "Practice writing in my journal")))
-
-;; Or write a small function that you can then modify without
-;; revaluating the hook:
-(defun my-denote-tmr ()
-  (tmr "10" "Practice writing in my journal"))
-
-(add-hook 'denote-journal-extras-hook 'my-denote-tmr)
-
-;; Or to make it fully featured, define variables for the duration and
-;; the description and set it up so that you only need to modify
-;; those:
-(defvar my-denote-tmr-duration "10")
-
-(defvar my-denote-tmr-description "Practice writing in my journal")
-
-(defun my-denote-tmr ()
-  (tmr my-denote-tmr-duration my-denote-tmr-description))
-
-(add-hook 'denote-journal-extras-hook 'my-denote-tmr)
-#+end_src
-
-Once the timer elapses, stop writing and review your performance.
-Practice makes perfect!
-
-Sources for ~tmr~:
-
-+ Package name (GNU ELPA): ~tmr~
-+ Official manual: <https://protesilaos.com/emacs/tmr>
-+ Change log: <https://protesilaos.com/emacs/tmr-changelog>
-+ Git repositories:
-  + GitHub: <https://github.com/protesilaos/tmr>
-  + GitLab: <https://gitlab.com/protesilaos/tmr>
-+ Backronym: TMR May Ring; Timer Must Run.
++ Package name (GNU ELPA): ~denote-journal~ (⚠️ Not available yet)
++ Official manual: <https://protesilaos.com/emacs/denote-journal>
++ Git repository: <https://github.com/protesilaos/denote-journal>
++ Backronym: Denote... Journaling Obviously Utilises Reasonableness
+  Notwithstanding Affectionate Longing.
 
 * Minibuffer histories
 :PROPERTIES:
