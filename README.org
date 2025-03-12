@@ -3296,40 +3296,6 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 + Git repository: <https://github.com/protesilaos/denote-org>
 + Backronym: Denote... Ordinarily Restricts Gyrations.
 
-* Write sequence notes or "folgezettel"
-:PROPERTIES:
-:CUSTOM_ID: h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f
-:ALT_TITLE: Sequence notes
-:END:
-
-This section is about the external package ~denote-sequence~ (by
-Protesilaos). The original idea was to include the code as part of the
-~denote~ package, but we decided to keep each optional extension as a
-separate package to make things easier to maintain and to understand.
-
-Denote defines an optional file name component called the =SIGNATURE=
-([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). This is a free-form field that users can
-fill in with whatever text they want, such as to have a video split up
-into =part1= and =part2=, or to set some kind of priority like =a= and
-=b=, or even to have a special tag that stands out from the rest of
-the keywords.
-
-A more specialised use-case of the =SIGNATURE= is to define a
-hierarchical relationship between notes, such that the thoughts they
-expound on form sequences. For example, an article about the Labrador
-Retriever dog breed is a continuation of a thought process that
-extends something about dog breeds in general which, in turn, is a
-topic that belongs to the wider theme of dogs.
-
-The ~denote-sequence~ package has a manual that explains these
-concepts and relevant commands in further detail:
-
-+ Package name (GNU ELPA): ~denote-sequence~ (⚠️ Not available yet)
-+ Official manual: <https://protesilaos.com/emacs/denote-sequence>
-+ Git repository: <https://github.com/protesilaos/denote-sequence>
-+ Backronym: Denote... Sequences Efficiently Queue Unsorted Entries
-  Notwithstanding Curation Efforts.
-
 * Sort files by component
 :PROPERTIES:
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
@@ -3559,6 +3525,40 @@ Unlike the ~consult-notes~ package by Colin McLear, ~consult-denote~
 uses the same presentation of data in the minibuffer to stay in sync
 with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
 It also only works with Denote.
+
+** Use the ~denote-sequence~ package to write sequence notes or "folgezettel"
+:PROPERTIES:
+:CUSTOM_ID: h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f
+:ALT_TITLE: Sequence notes
+:END:
+
+This section is about the external package ~denote-sequence~ (by
+Protesilaos). The original idea was to include the code as part of the
+~denote~ package, but we decided to keep each optional extension as a
+separate package to make things easier to maintain and to understand.
+
+Denote defines an optional file name component called the =SIGNATURE=
+([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). This is a free-form field that users can
+fill in with whatever text they want, such as to have a video split up
+into =part1= and =part2=, or to set some kind of priority like =a= and
+=b=, or even to have a special tag that stands out from the rest of
+the keywords.
+
+A more specialised use-case of the =SIGNATURE= is to define a
+hierarchical relationship between notes, such that the thoughts they
+expound on form sequences. For example, an article about the Labrador
+Retriever dog breed is a continuation of a thought process that
+extends something about dog breeds in general which, in turn, is a
+topic that belongs to the wider theme of dogs.
+
+The ~denote-sequence~ package has a manual that explains these
+concepts and relevant commands in further detail:
+
++ Package name (GNU ELPA): ~denote-sequence~ (⚠️ Not available yet)
++ Official manual: <https://protesilaos.com/emacs/denote-sequence>
++ Git repository: <https://github.com/protesilaos/denote-sequence>
++ Backronym: Denote... Sequences Efficiently Queue Unsorted Entries
+  Notwithstanding Curation Efforts.
 
 ** Use the ~denote-journal~ package which was formerly =denote-journal-extras.el=
 :PROPERTIES:
