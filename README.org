@@ -1049,18 +1049,18 @@ or creating a new one ([[#h:b6056e6b-93df-4e6b-a778-eebd105bac46][Link to a note
 #+cindex: Note silos
 
 The user option ~denote-directory~ accepts a value that represents the
-path to a directory, such as =~/Documents/notes=.  Normally, the user
-will have one place where they store all their notes, in which case this
-arrangement shall suffice.
+path to a directory, such as =~/Documents/notes=. Normally, the user
+will have one place where they store all their notes, in which case
+this arrangement shall suffice.
 
 There is, however, the possibility to maintain separate directories of
-notes.  By "separate", we mean that they do not communicate with each
-other: no linking between them, no common keywords, nothing.  Think of
+notes. By "separate", we mean that they do not communicate with each
+other: no linking between them, no common keywords, nothing. Think of
 the scenario where one set of notes is for private use and another is
-for an employer.  We call these separate directories "silos".
+for an employer. We call these separate directories "silos".
 
 To create silos, the user must specify a local variable at the root of
-the desired directory.  This is done by creating a =.dir-locals.el=
+the desired directory. This is done by creating a =.dir-locals.el=
 file, with the following contents:
 
 #+begin_src emacs-lisp
@@ -1074,11 +1074,9 @@ file, with the following contents:
 When inside the directory that contains this =.dir-locals.el= file,
 all Denote commands/functions for note creation, linking, the
 inference of available keywords, et cetera will use the silo as their
-point of reference ([[#h:e0d60749-194d-4677-b943-5e98fbf9ad1d][How to switch a silo]]). They will not read the
-global value of ~denote-directory~. The global value of
-~denote-directory~ is read everywhere else except the silos.
-
-[[#h:0f72e6ea-97f0-42e1-8fd4-0684af0422e0][Use custom commands to select a silo]].
+point of reference ([[#h:e43baf95-f201-4fec-8620-c0eb5eaa1c85][The ~denote-silo~ package which formerly was =denote-silo-extras.el=]]).
+They will not read the global value of ~denote-directory~. The global
+value of ~denote-directory~ is read everywhere else except the silos.
 
 In concrete terms, this is a representation of the directory structures
 (notice the =.dir-locals.el= file is needed only for the silos):
@@ -1160,162 +1158,6 @@ to experiment with the best setup for their workflow.
 Feel welcome to ask for help if the information provided herein is not
 sufficient.  The manual shall be expanded accordingly.
 
-*** How to switch a silo
-:PROPERTIES:
-:CUSTOM_ID: h:e0d60749-194d-4677-b943-5e98fbf9ad1d
-:END:
-
-Switching to a silo directory will make all Denote commands use the
-silo's path as the ~denote-directory~, instead of the global value of
-that variable ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]). There are
-three ways to switch to a silo:
-
-1. Visit a file inside of that directory.
-2. Use the ~dired~ command to open the directory in a buffer.
-3. Use the command ~cd~ to select the directory without moving away
-   from the current buffer.
-
-*** Use custom commands to select a silo
-:PROPERTIES:
-:CUSTOM_ID: h:0f72e6ea-97f0-42e1-8fd4-0684af0422e0
-:END:
-
-[ As part of version 2.1.0, the contents of this section
-  are formally provided in the file =denote-silo-extras.el=.  We keep
-  this here for existing users.  Otherwise consult the new entry in
-  the manual ([[#h:e43baf95-f201-4fec-8620-c0eb5eaa1c85][The =denote-silo-extras.el=]]). ]
-
-We implement silos as directory-local values of the user option
-~denote-directory~.  This means that all Denote commands read from the
-local value if they are invoked from that context.  For example, if
-=~/Videos/recordings= is a silo and =~/Documents/notes= is the
-default/global value of ~denote-directory~ all Denote commands will
-read the video's path when called from there (e.g. by using Emacs'
-~dired~); any other context reads the global value.
-
-[[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]].
-
-There are cases where the user (i) wants to maintain multiple silos
-and (ii) prefers an interactive way to switch between them without
-going through Dired.  Since this is specific to the user's workflow,
-it is easier to have some custom code for it.  The following should be
-added to the user's Denote configuration:
-
-#+begin_src emacs-lisp
-(defvar my-denote-silo-directories
-  `("/home/prot/Videos/recordings"
-    "/home/prot/Documents/books"
-    ;; You don't actually need to include the `denote-directory' here
-    ;; if you use the regular commands in their global context.  I am
-    ;; including it for completeness.
-    ,denote-directory)
-  "List of file paths pointing to my Denote silos.
-  This is a list of strings.")
-
-(defvar my-denote-commands-for-silos
-  '(denote
-    denote-date
-    denote-subdirectory
-    denote-template
-    denote-type)
-  "List of Denote commands to call after selecting a silo.
-  This is a list of symbols that specify the note-creating
-  interactive functions that Denote provides.")
-
-(defun my-denote-pick-silo-then-command (silo command)
-  "Select SILO and run Denote COMMAND in it.
-  SILO is a file path from `my-denote-silo-directories', while
-  COMMAND is one among `my-denote-commands-for-silos'."
-  (interactive
-   (list (completing-read "Select a silo: " my-denote-silo-directories nil t)
-         (intern (completing-read
-                  "Run command in silo: "
-                  my-denote-commands-for-silos nil t))))
-  (let ((denote-directory silo))
-    (call-interactively command)))
-#+end_src
-
-With this in place, =M-x my-denote-pick-silo-then-command= will use
-minibuffer completion to select a silo among the predefined options
-and then ask for the command to run in that context.
-
-Note that =let= binding ~denote-directory~ can be used in custom
-commands and other wrapper functions to override the global default
-value of ~denote-directory~ to select silos.
-
-*** The =denote-silo-extras.el=
-:PROPERTIES:
-:CUSTOM_ID: h:e43baf95-f201-4fec-8620-c0eb5eaa1c85
-:END:
-
-The =denote-silo-extras.el= provides optional convenience functions for
-working with silos ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
-Start by loading the relevant library:
-
-#+begin_src emacs-lisp
-(require 'denote-silo-extras)
-#+end_src
-
-#+vindex: denote-silo-extras-directories
-The user option ~denote-silo-extras-directories~ specifies a list of
-directories that the user has set up as ~denote-directory~ silos.
-
-#+findex: denote-silo-extras-create-note
-The command ~denote-silo-extras-create-note~ prompts for a directory
-among ~denote-silo-extras-directories~ and runs the ~denote~ command
-from there.
-
-#+findex: denote-silo-extras-open-or-create
-Similar to the above, the command ~denote-silo-extras-open-or-create~
-prompts for a directory among ~denote-silo-extras-directories~ and runs
-the ~denote-open-or-create~ command from there.
-
-#+findex: denote-silo-extras-select-silo-then-command
-The command ~denote-silo-extras-select-silo-then-command~ prompts with
-minibuffer completion for a directory among ~denote-silo-extras-directories~.
-Once the user selects a silo, a second prompt asks for a Denote
-note-creation command to call from inside that silo ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
-
-**** Switch to a silo directory outright
-:PROPERTIES:
-:CUSTOM_ID: h:6cec8750-d444-4d85-9e1e-512580c4bd58
-:END:
-
-[ The code snippets in this section depend on {{{development-version}}}. ]
-
-Users who rely on silos may have a need to quickly switch between
-directories. This can be done with bookmarks or projects, both of
-which are built into Emacs:
-
-- [[#h:1bba4c1e-6812-4749-948f-57df4fd49b36][Bookmark the directory with the notes]].
-- [[#h:fad3eb08-ddc7-43e4-ba28-210d89668037][Treat your notes as a project]].
-
-Another approach is to use the following small custom commands to (i)
-be prompted for a silo and (ii) either use ~cd~ or ~dired~ to switch
-to it.
-
-#+begin_src emacs-lisp
-(defun my-denote-silo-extras-dired-to-silo (silo)
-  "Switch to SILO directory using `dired'.
-SILO is a file path from `denote-silo-extras-directories'.
-
-When called from Lisp, SILO is a file system path to a directory that
-conforms with `denote-silo-extras-path-is-silo-p'."
-  (interactive (list (denote-silo-extras-directory-prompt)))
-  (denote-silo-extras-with-silo silo
-    (dired silo)))
-
-(defun my-denote-silo-extras-cd-to-silo (silo)
-  "Switch to SILO directory using `cd'.
-SILO is a file path from `denote-silo-extras-directories'.
-
-When called from Lisp, SILO is a file system path to a directory that
-conforms with `denote-silo-extras-path-is-silo-p'."
-  (interactive (list (denote-silo-extras-directory-prompt)))
-  (denote-silo-extras-with-silo silo
-    (cd silo)))
-#+end_src
-
 *** Make Org export work with silos
 :PROPERTIES:
 :CUSTOM_ID: h:fed09992-7c43-4237-b48f-f654bc29d1d8
@@ -1374,45 +1216,6 @@ ways to go about it, anyway:
      blocks before copying the code. This is because Org automatically
      prepends a comma to disambiguate those entries from actual
      keywords of the current file. ]
-
-*** Make any Denote command work in a silo from anywhere
-:PROPERTIES:
-:CUSTOM_ID: h:547e1aac-4b48-403c-8063-ddb74b55e135
-:END:
-
-Denote silos are instantiated with a directory-local value for the
-~denote-directory~ ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]). This
-means that all Denote commands will operate on the silo when the user
-is inside of that directory ([[#h:e0d60749-194d-4677-b943-5e98fbf9ad1d][How to switch a silo]]). Sometimes though,
-the user may not want to switch to the silo, then call a Denote
-command, and finally switch away from the silo: this context change
-can be done only for the duration of a command.
-
-Here we show how easy it is to transiently bind the value of the
-~denote-directory~ to the path of a silo (well, any path for that
-matter).
-
-#+begin_src emacs-lisp
-(defun my-denote-journal-extras-new-or-existing-entry ()
-  "Like `denote-journal-extras-new-or-existing-entry' for my silo."
-  (interactive)
-  (let ((denote-directory "/path/to/silo/"))
-    (call-interactively 'denote-journal-extras-new-or-existing-entry)))
-#+end_src
-
-All the user needs to do here is change the exact command that is
-passed to the ~call-interactively~. We use an example from the
-journaling conveniences that we provide ([[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Keep a journal or diary]]).
-
-With this in place, the user can now call their own command, such as
-the ~my-denote-journal-extras-new-or-existing-entry~ shown above, when
-they need to write a note there without manually switching to the
-silo. Of course, these commands can be assigned to key bindings for
-greater convenience. For example:
-
-#+begin_src emacs-lisp
-(define-key global-map (kbd "C-c n j") #'my-denote-journal-extras-new-or-existing-entry)
-#+end_src
 
 ** Exclude certain files from file prompts
 :PROPERTIES:
@@ -3779,6 +3582,26 @@ Unlike the ~consult-notes~ package by Colin McLear, ~consult-denote~
 uses the same presentation of data in the minibuffer to stay in sync
 with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
 It also only works with Denote.
+
+** Use the ~denote-silo~ package which formerly was =denote-silo-extras.el=
+:PROPERTIES:
+:CUSTOM_ID: h:e43baf95-f201-4fec-8620-c0eb5eaa1c85
+:END:
+
+The ~denote-silo~ package (by Protesilaos) provides convenience
+functions for working with silos ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
+
+The code of ~denote-silo~ used to be bundled up with the ~denote~
+package before version =4.0.0= of the latter and was available in the
+file =denote-silo-extras.el=. Users of the old code will need to adapt
+their setup to use the ~denote-silo~ package. This can be done by
+replacing all instances of =denote-silo-extras= with =denote-silo=
+across their configuration.
+
++ Package name (GNU ELPA): ~denote-silo~ (⚠️ Not available yet)
++ Official manual: <https://protesilaos.com/emacs/denote-silo>
++ Git repository: <https://github.com/protesilaos/denote-silo>
++ Backronym: Denote... Silos Insulate Localised Objects.
 
 ** Use the ~denote-search~ package as a search interface
 :PROPERTIES:
