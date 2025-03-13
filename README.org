@@ -3423,9 +3423,10 @@ of those file name components can write their own sorting algorithms
 :CUSTOM_ID: h:95345870-4ccd-484f-9adf-de4747ad5760
 :END:
 
-[ As part of version =3.2.0= of Denote, we provide the optional
-  extension =denote-sequence.el= which covers this workflow and provides
-  several useful commands ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or folgezettel]]). ]
+[ The ~denote-sequence~ package (by Protesilaos) covers this use-case
+  and many others ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or folgezettel]]). We keep the
+  code below for reference, as there may be users of it who need to
+  revisit it. Though long-term, it is better to use ~denote-sequence~. ]
 
 Niklas Luhmann would edit notes to form sequences of thoughts with
 branching paths, such as =1.1=, =1.1a=, =1.2=, =1.2a=, =1.2b=, etc.
