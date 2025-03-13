@@ -2886,76 +2886,6 @@ To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
 in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
 
-** Use the =markdown-obsidian= file type
-:PROPERTIES:
-:CUSTOM_ID: h:f0d0bb34-3ecf-4842-9941-3829e0f51143
-:END:
-
-[ This is part of {{{development-version}}}. ]
-
-The optional =denote-md-extras.el= file which is part of the Denote
-package includes features that are relevant for users of Markdown
-files. Among them is the ability to write files using the
-Obsidian-style front matter ([[#h:e01d6621-34e9-487d-8721-c4e42a6a286a][Convert =:denote= links to paths in Markdown or Obsidian style]]).
-This is a plain representation of the file's title as a top-level
-heading, without any further data.
-
-Include this in the Denote configuration:
-
-#+begin_src emacs-lisp
-(require 'denote-md-extras)
-#+end_src
-
-** Convert =:denote= links to paths in Markdown or Obsidian style
-:PROPERTIES:
-:CUSTOM_ID: h:e01d6621-34e9-487d-8721-c4e42a6a286a
-:END:
-
-[ These commands are part of {{{development-version}}}. ]
-
-Although Markdown is a ubiquitous file format, there is no
-standardised way to extend its link facility. This means that we
-cannot reliably make =denote:= links work in applications outside of
-Emacs. Though users will likely need this feature for interoperability.
-
-All we can do is provide commands which convert links from the
-=denote:= type to a relative or absolute file path, and vice versa:
-
-#+findex: denote-md-extras-convert-links-to-file-paths
-+ Convert =denote:= links to file paths :: The command
-  ~denote-md-extras-convert-links-to-file-paths~ runs through the
-  current Markdown file and converts every instance of a =denote:=
-  link to file path implied by the Denote identifier. For example,
-  this link =[Test description](denote:20241026T051243)= expands to
-  the file =20241026T051243--test-description__denote_testing.md=.
-  When ~denote-md-extras-convert-links-to-file-paths~ is called with a
-  prefix argument (=C-u= by default), it produces absolute file system
-  paths.
-
-#+findex: denote-md-extras-convert-links-to-denote-type
-+ Convert file paths links to =denote:= :: The command
-  ~denote-md-extras-convert-links-to-denote-type~ is the inverse of
-  the above. It finds all the file paths , be they relative or
-  absolute, and converts them into their corresponding =denote:= style
-  links. It only does so for files with a Denote identifier.
-
-#+findex: denote-md-extras-convert-links-to-obsidian-type
-+ Convert =denote:= links to Obsidian type :: The command
-  ~denote-md-extras-convert-links-to-obsidian-type~ changes links from
-  =[Test description](denote:20241026T051243)= becomes
-  =[20241026T051243--test-description__keyword1](20241026T051243--test-description__keyword1.md)=
-  ([[#h:f0d0bb34-3ecf-4842-9941-3829e0f51143][Use the =markdown-obsidian= file type]]).
-
-#+findex: denote-md-extras-convert-obsidian-links-to-denote-type
-+ Convert Obsidian style links to =denote:= type :: The command
-  ~denote-md-extras-convert-obsidian-links-to-denote-type~ does the
-  inverse of ~denote-md-extras-convert-links-to-obsidian-type~.
-
-DEVELOPMENT NOTE: The regular expressions I am using to determine what
-is a link are much simpler than what ~markdown-mode~ is using.
-Everything seems to work on my end, though do let me know if there are
-bugs.
-
 ** Fontify links in non-Org buffers
 :PROPERTIES:
 :CUSTOM_ID: h:156c5ea3-147b-4f9d-a404-86a00558c60a
@@ -3560,6 +3490,31 @@ concepts and relevant commands in further detail:
 + Git repository: <https://github.com/protesilaos/denote-sequence>
 + Backronym: Denote... Sequences Efficiently Queue Unsorted Entries
   Notwithstanding Curation Efforts.
+
+** Use the ~denote-markdown~ package to better integrate Markdown with Denote
+:PROPERTIES:
+:CUSTOM_ID: h:79b614e7-d7a3-4953-b776-216e6e1ede77
+:END:
+
+The ~denote-markdown~ package (by Protesilaos) provides some
+convenience functions to better integrate Markdown with Deonte. This
+is mostly about converting links from one type to another so that they
+can work in different applications (because Markdown does not have a
+standardised way to define custom link types).
+
+The code of ~denote-markdown~ used to be bundled up with the ~denote~
+package before version =4.0.0= of the latter and was available in the
+file =denote-md-extras.el=. Users of the old code will need to adapt
+their setup to use the ~denote-markdown~ package. This can be done by
+replacing all instances of =denote-md-extras= with =denote-markdown=
+across their configuration.
+
++ Package name (GNU ELPA): ~denote-markdown~ (⚠️ Not available yet)
++ Official manual: <https://protesilaos.com/emacs/denote-markdown>
++ Git repository: <https://github.com/protesilaos/denote-markdown>
++ Backronyms: Denote... Markdown's Ambitious Reimplimentations
+  Knowingly Dilute Obvious Widespread Norms; Denote... Markup
+  Agnosticism Requires Knowhow to Do Only What's Necessary.
 
 ** Use the ~denote-journal~ package which was formerly =denote-journal-extras.el=
 :PROPERTIES:
