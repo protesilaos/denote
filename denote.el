@@ -1010,11 +1010,6 @@ Like `denote--completion-table' but also disable sorting."
   "Return path of variable `denote-directory' as a proper directory.
 Custom Lisp code can `let' bind the variable `denote-directory'
 to override what this function returns."
-  ;; NOTE 2024-02-09: We may want to remove this condition eventually.
-  ;; The reason is that we want to stop supporting the dir-local
-  ;; values of `default-directory' or `local' in favour of just
-  ;; specifying a string.  I don't think we can delete this altogether
-  ;; though, as it will break existing configurations.
   (if-let* (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
             (silo-dir (denote--default-directory-is-silo-p)))
       (progn
