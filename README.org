@@ -65,6 +65,169 @@ included in the section entitled “GNU Free Documentation License.”
 modify this GNU manual.”
 #+end_quote
 
+* Installation
+:PROPERTIES:
+:CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
+:END:
+#+cindex: Installation instructions
+
+** GNU ELPA package
+:PROPERTIES:
+:CUSTOM_ID: h:42953f87-82bd-43ec-ab99-22b1e22955e7
+:END:
+
+The package is available as =denote=.  Simply do:
+
+: M-x package-refresh-contents
+: M-x package-install
+
+And search for it.
+
+GNU ELPA provides the latest stable release.  Those who prefer to follow
+the development process in order to report bugs or suggest changes, can
+use the version of the package from the GNU-devel ELPA archive.  Read:
+https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/.
+
+** Manual installation
+:PROPERTIES:
+:CUSTOM_ID: h:d397712c-c8c0-4cfa-ad1a-ef28cf78d1f0
+:END:
+
+Assuming your Emacs files are found in =~/.emacs.d/=, execute the
+following commands in a shell prompt:
+
+#+begin_src sh
+cd ~/.emacs.d
+
+# Create a directory for manually-installed packages
+mkdir manual-packages
+
+# Go to the new directory
+cd manual-packages
+
+# Clone this repo, naming it "denote"
+git clone https://github.com/protesilaos/denote denote
+#+end_src
+
+Finally, in your =init.el= (or equivalent) evaluate this:
+
+#+begin_src emacs-lisp
+;; Make Elisp files in that directory available to the user.
+(add-to-list 'load-path "~/.emacs.d/manual-packages/denote")
+#+end_src
+
+Everything is in place to set up the package.
+
+* Sample configuration
+:PROPERTIES:
+:CUSTOM_ID: h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
+:END:
+#+cindex: Package configuration
+
+Denote is immediately useful for beginners and power users alike. This
+manual covers everything in detail, though do not let the numerous
+possibilities distract you from the fact that a basic configuration is
+enough to be highly productive ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get started with this sample configuration]]).
+
+** Get started with this sample configuration
+:PROPERTIES:
+:CUSTOM_ID: h:998ae528-9276-47ec-b642-3d7355a38f27
+:END:
+
+If you are new to Denote, this a good place to start. Then work your
+way through the manual and expand your configuration accordingly. Only
+include commands/variables that are useful to you. We provide another
+code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][More comprehensive sample configuration]]).
+
+#+begin_src emacs-lisp
+;; Another basic setup with a little more to it.
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n l" . denote-link)
+   ("C-c n b" . denote-backlinks)
+   ("C-c n d" . denote-sort-dired))
+  :config
+  (setq denote-directory (expand-file-name "~/Documents/notes/"))
+
+  ;; Automatically rename Denote buffers when opening them so that
+  ;; instead of their long file name they have, for example, a literal
+  ;; "[D]" followed by the file's title.  Read the doc string of
+  ;; `denote-rename-buffer-format' for how to modify this.
+  (denote-rename-buffer-mode 1))
+#+end_src
+
+** More comprehensive sample configuration
+:PROPERTIES:
+:CUSTOM_ID: h:58c4746b-b0d8-4896-9d88-a99b1d487231
+:END:
+
+Here we include more of what you can configure with Denote ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get started with this sample configuration]]).
+
+#+begin_src emacs-lisp
+(use-package denote
+  :ensure t
+  :hook
+  ( ;; If you use Markdown or plain text files, then you want to make
+   ;; the Denote links clickable (Org renders links as buttons right
+   ;; away)
+   (text-mode . denote-fontify-links-mode-maybe)
+   ;; Apply colours to Denote names in Dired.  This applies to all
+   ;; directories.  Check `denote-dired-directories' for the specific
+   ;; directories you may prefer instead.  Then, instead of
+   ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
+   (dired-mode . denote-dired-mode))
+  :bind
+  ;; Denote DOES NOT define any key bindings.  This is for the user to
+  ;; decide.  For example:
+  ( :map global-map
+    ("C-c n n" . denote)
+    ("C-c n d" . denote-sort-dired)
+    ;; If you intend to use Denote with a variety of file types, it is
+    ;; easier to bind the link-related commands to the `global-map', as
+    ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
+    ;; `markdown-mode-map', and/or `text-mode-map'.
+    ("C-c n l" . denote-link)
+    ("C-c n L" . denote-add-links)
+    ("C-c n b" . denote-backlinks)
+    ;; Note that `denote-rename-file' can work from any context, not just
+    ;; Dired bufffers.  That is why we bind it here to the `global-map'.
+    ("C-c n r" . denote-rename-file)
+    ("C-c n R" . denote-rename-file-using-front-matter)
+
+    ;; Key bindings specifically for Dired.
+    :map dired-mode-map
+    ("C-c C-d C-i" . denote-dired-link-marked-notes)
+    ("C-c C-d C-r" . denote-dired-rename-files)
+    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
+    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
+
+  :config
+  ;; Remember to check the doc string of each of those variables.
+  (setq denote-directory (expand-file-name "~/Documents/notes/"))
+  (setq denote-save-buffers nil)
+  (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
+  (setq denote-infer-keywords t)
+  (setq denote-sort-keywords t)
+  (setq denote-prompts '(title keywords))
+  (setq denote-excluded-directories-regexp nil)
+  (setq denote-excluded-keywords-regexp nil)
+  (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
+
+  ;; Pick dates, where relevant, with Org's advanced interface:
+  (setq denote-date-prompt-use-org-read-date t)
+
+  ;; By default, we do not show the context of links.  We just display
+  ;; file names.  This provides a more informative view.
+  (setq denote-backlinks-show-context t)
+
+  ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
+  (denote-rename-buffer-mode 1))
+#+end_src
+
 * Overview
 :PROPERTIES:
 :CUSTOM_ID: h:a09b70a2-ae0b-4855-ac14-1dddfc8e3241
@@ -4549,169 +4712,6 @@ one among them and operate therein."
       ;; Here I am assuming we are in `org-mode', hence the leading
       ;; asterisk for the heading.  Adapt accordingly.
       (insert (format "* [%s]\n\n" time)))))
-#+end_src
-
-* Installation
-:PROPERTIES:
-:CUSTOM_ID: h:f3bdac2c-4704-4a51-948c-a789a2589790
-:END:
-#+cindex: Installation instructions
-
-** GNU ELPA package
-:PROPERTIES:
-:CUSTOM_ID: h:42953f87-82bd-43ec-ab99-22b1e22955e7
-:END:
-
-The package is available as =denote=.  Simply do:
-
-: M-x package-refresh-contents
-: M-x package-install
-
-And search for it.
-
-GNU ELPA provides the latest stable release.  Those who prefer to follow
-the development process in order to report bugs or suggest changes, can
-use the version of the package from the GNU-devel ELPA archive.  Read:
-https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/.
-
-** Manual installation
-:PROPERTIES:
-:CUSTOM_ID: h:d397712c-c8c0-4cfa-ad1a-ef28cf78d1f0
-:END:
-
-Assuming your Emacs files are found in =~/.emacs.d/=, execute the
-following commands in a shell prompt:
-
-#+begin_src sh
-cd ~/.emacs.d
-
-# Create a directory for manually-installed packages
-mkdir manual-packages
-
-# Go to the new directory
-cd manual-packages
-
-# Clone this repo, naming it "denote"
-git clone https://github.com/protesilaos/denote denote
-#+end_src
-
-Finally, in your =init.el= (or equivalent) evaluate this:
-
-#+begin_src emacs-lisp
-;; Make Elisp files in that directory available to the user.
-(add-to-list 'load-path "~/.emacs.d/manual-packages/denote")
-#+end_src
-
-Everything is in place to set up the package.
-
-* Sample configuration
-:PROPERTIES:
-:CUSTOM_ID: h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
-:END:
-#+cindex: Package configuration
-
-Denote is immediately useful for beginners and power users alike. This
-manual covers everything in detail, though do not let the numerous
-possibilities distract you from the fact that a basic configuration is
-enough to be highly productive ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get started with this sample configuration]]).
-
-** Get started with this sample configuration
-:PROPERTIES:
-:CUSTOM_ID: h:998ae528-9276-47ec-b642-3d7355a38f27
-:END:
-
-If you are new to Denote, this a good place to start. Then work your
-way through the manual and expand your configuration accordingly. Only
-include commands/variables that are useful to you. We provide another
-code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][More comprehensive sample configuration]]).
-
-#+begin_src emacs-lisp
-;; Another basic setup with a little more to it.
-(use-package denote
-  :ensure t
-  :hook (dired-mode . denote-dired-mode)
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n r" . denote-rename-file)
-   ("C-c n l" . denote-link)
-   ("C-c n b" . denote-backlinks)
-   ("C-c n d" . denote-sort-dired))
-  :config
-  (setq denote-directory (expand-file-name "~/Documents/notes/"))
-
-  ;; Automatically rename Denote buffers when opening them so that
-  ;; instead of their long file name they have, for example, a literal
-  ;; "[D]" followed by the file's title.  Read the doc string of
-  ;; `denote-rename-buffer-format' for how to modify this.
-  (denote-rename-buffer-mode 1))
-#+end_src
-
-** More comprehensive sample configuration
-:PROPERTIES:
-:CUSTOM_ID: h:58c4746b-b0d8-4896-9d88-a99b1d487231
-:END:
-
-Here we include more of what you can configure with Denote ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get started with this sample configuration]]).
-
-#+begin_src emacs-lisp
-(use-package denote
-  :ensure t
-  :hook
-  ( ;; If you use Markdown or plain text files, then you want to make
-   ;; the Denote links clickable (Org renders links as buttons right
-   ;; away)
-   (text-mode . denote-fontify-links-mode-maybe)
-   ;; Apply colours to Denote names in Dired.  This applies to all
-   ;; directories.  Check `denote-dired-directories' for the specific
-   ;; directories you may prefer instead.  Then, instead of
-   ;; `denote-dired-mode', use `denote-dired-mode-in-directories'.
-   (dired-mode . denote-dired-mode))
-  :bind
-  ;; Denote DOES NOT define any key bindings.  This is for the user to
-  ;; decide.  For example:
-  ( :map global-map
-    ("C-c n n" . denote)
-    ("C-c n d" . denote-sort-dired)
-    ;; If you intend to use Denote with a variety of file types, it is
-    ;; easier to bind the link-related commands to the `global-map', as
-    ;; shown here.  Otherwise follow the same pattern for `org-mode-map',
-    ;; `markdown-mode-map', and/or `text-mode-map'.
-    ("C-c n l" . denote-link)
-    ("C-c n L" . denote-add-links)
-    ("C-c n b" . denote-backlinks)
-    ;; Note that `denote-rename-file' can work from any context, not just
-    ;; Dired bufffers.  That is why we bind it here to the `global-map'.
-    ("C-c n r" . denote-rename-file)
-    ("C-c n R" . denote-rename-file-using-front-matter)
-
-    ;; Key bindings specifically for Dired.
-    :map dired-mode-map
-    ("C-c C-d C-i" . denote-dired-link-marked-notes)
-    ("C-c C-d C-r" . denote-dired-rename-files)
-    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
-    ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
-
-  :config
-  ;; Remember to check the doc string of each of those variables.
-  (setq denote-directory (expand-file-name "~/Documents/notes/"))
-  (setq denote-save-buffers nil)
-  (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-prompts '(title keywords))
-  (setq denote-excluded-directories-regexp nil)
-  (setq denote-excluded-keywords-regexp nil)
-  (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
-
-  ;; Pick dates, where relevant, with Org's advanced interface:
-  (setq denote-date-prompt-use-org-read-date t)
-
-  ;; By default, we do not show the context of links.  We just display
-  ;; file names.  This provides a more informative view.
-  (setq denote-backlinks-show-context t)
-
-  ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
-  (denote-rename-buffer-mode 1))
 #+end_src
 
 * For developers or advanced users
