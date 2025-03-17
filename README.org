@@ -5401,6 +5401,27 @@ might change them without further notice.
   a =FILE= argument and should return the description as a string. By
   default, the title of the file is returned as the description.
 
+** Xref interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:e824c215-1c31-4b26-b994-7df67341d075
+:END:
+
+[ All of the following are part of {{{development-version}}}. ]
+
+- Function ~denote-retrieve-groups-xref-query~ :: Access location of
+  xrefs for =QUERY= and group them per file. Limit the search to text
+  files.
+
+- Function ~denote-retrieve-files-xref-query~ :: Return sorted,
+  deduplicated file names with matches for =QUERY= in their contents.
+  Limit the search to text files.
+
+- Function ~denote-retrieve-xref-alist~ :: Return xref alist of files
+  with location of matches for =QUERY=. With optional
+  =FILES-MATCHING-REGEXP=, limit the list of files accordingly (per
+  ~denote-directory-files~). At all times limit the search to text
+  files.
+
 * Troubleshoot Denote in a pristine environment
 :PROPERTIES:
 :CUSTOM_ID: h:9c4467d5-6480-4681-80fb-cd9717bf8b3b
