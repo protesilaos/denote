@@ -4735,6 +4735,13 @@ By contradistinction, a "private" form is declared with two hyphens in
 its symbol such as ~denote--file-extension~.  Do not use those as we
 might change them without further notice.
 
+The following sections cover the specifics.
+
+** Common building blocks for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:c98aed45-341a-40a0-91ce-347a29c98ab4
+:END:
+
 #+vindex: denote-id-format
 + Variable ~denote-id-format~ :: Format of ID prefix of a note's
   filename.  The note's ID is derived from the date and time of its
@@ -4870,18 +4877,15 @@ might change them without further notice.
   ~denote-directory~ accepts a directory-local value for what we call
   "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
+** File path interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:08e696e4-c9e1-48b4-8349-e53451aed1df
+:END:
+
 #+findex: denote-file-name-relative-to-denote-directory
 + Function ~denote-file-name-relative-to-denote-directory~ :: Return
   name of =FILE= relative to the variable ~denote-directory~.  =FILE=
   must be an absolute path.
-
-#+findex: denote-get-path-by-id
-+ Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
-  string in ~denote-directory-files~.
-
-#+findex: denote-get-identifier-at-point
-+ Function ~denote-get-identifier-at-point~ :: Return the identifier
-  at point or =POINT=.
 
 #+findex: denote-slug-keep-only-ascii
 + Function ~denote-slug-keep-only-ascii~ :: Remove all non-ASCII
@@ -4911,18 +4915,6 @@ might change them without further notice.
 #+findex: denote-sluggify-keywords
 + Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
   a list of strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
-
-#+findex: denote-filetype-heuristics
-+ Function ~denote-filetype-heuristics~ :: Return likely file type of
-  =FILE=. If in the process of ~org-capture~, consider the file type to
-  be that of Org. Otherwise, use the file extension to detect the file
-  type of =FILE=.
-
-  If more than one file type correspond to this file extension, use
-  the first file type for which the :title-key-regexp in
-  ~denote-file-types~ matches in the file.
-
-  Return nil if the file type is not recognized.
 
 #+findex: denote-use-date
 + Function ~denote-use-date~ :: The date to be used in a note creation
@@ -5003,6 +4995,19 @@ might change them without further notice.
   type extension. It can be an empty string or a nil value, in which
   case it is not added to the base file name.
 
+** Data retrieval interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:9b32bf7d-1569-4495-801c-8835f022d72e
+:END:
+
+#+findex: denote-get-path-by-id
++ Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
+  string in ~denote-directory-files~.
+
+#+findex: denote-get-identifier-at-point
++ Function ~denote-get-identifier-at-point~ :: Return the identifier
+  at point or =POINT=.
+
 #+findex: denote-extract-keywords-from-path
 + Function ~denote-extract-keywords-from-path~ :: Extract keywords
   from =PATH= and return them as a list of strings.  =PATH= must be a
@@ -5062,6 +5067,11 @@ might change them without further notice.
 #+findex: denote-retrieve-front-matter-keywords-line
 + Function ~denote-retrieve-front-matter-keywords-line~ :: Return keywords line
   from =FILE= front matter per =FILE-TYPE=.
+
+** Prompt interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:e9d05541-bd00-43b9-8146-8c4445f78f07
+:END:
 
 #+findex: denote-add-prompts
 + Function ~denote-add-prompts~ :: Add list of =ADDITIONAL-PROMPTS= to
@@ -5160,53 +5170,96 @@ might change them without further notice.
   completion category (so it works with packages such as ~marginalia~
   and ~embark~).
 
-#+findex: denote-rename-file-prompt
-- Function ~denote-rename-file-prompt~ :: Prompt to rename file named
-  =OLD-NAME= to =NEW-NAME=. If ~denote-rename-confirmations~ does not
-  contain ~modify-file-name~, return t without prompting.
+** Front matter interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:80ddc044-5c64-4fb3-b4f4-2eaf6bceda3b
+:END:
 
-#+findex: denote-rename-file-and-buffer
-+ Function ~denote-rename-file-and-buffer~ :: Rename file named
-  =OLD-NAME= to =NEW-NAME=, updating buffer name.
+#+findex: denote-filetype-heuristics
++ Function ~denote-filetype-heuristics~ :: Return likely file type of
+  =FILE=. If in the process of ~org-capture~, consider the file type to
+  be that of Org. Otherwise, use the file extension to detect the file
+  type of =FILE=.
 
-#+findex: denote-prepend-front-matter
-+ Function ~denote-prepend-front-matter~ :: Prepend front matter to
-  =FILE=. The =TITLE=, =KEYWORDS=, =DATE=, =ID=, =SIGNATURE=, and
-  =FILE-TYPE= are passed from the renaming command and are used to
-  construct a new front matter block if appropriate. [ This function
-  is available as part of {{{development-version}}}. ]
+  If more than one file type correspond to this file extension, use
+  the first file type for which the :title-key-regexp in
+  ~denote-file-types~ matches in the file.
 
-#+findex: denote-rewrite-front-matter
-+ Function ~denote-rewrite-front-matter~ :: Rewrite front matter of
-  note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
-  =KEYWORDS=, =SIGNATURE=, =DATE=, =IDENTIFIER=, and =FILE-TYPE=
-  arguments are given by the renaming command and are used to construct
-  new front matter values if appropriate. If ~denote-rename-confirmations~
-  contains ~rewrite-front-matter~, prompt to confirm the rewriting of
-  the front matter. Otherwise produce a ~y-or-n-p~ prompt to that
-  effect. [ This function is changed as part of {{{development-version}}}. ]
+  Return nil if the file type is not recognized.
 
-#+findex: denote-add-front-matter-prompt
-+ Function ~denote-add-front-matter-prompt~ :: Prompt to add a
-  front-matter to =FILE=. Return non-nil if a new front matter should
-  be added. If ~denote-rename-confirmations~ does not contain
-  ~add-front-matter~, return t without prompting.
+#+vindex: denote-org-front-matter
++ Variable ~denote-org-front-matter~ :: Specifies the Org front
+  matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,
+  =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
-#+findex: denote-rewrite-keywords
-+ Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
-  outright according to =FILE-TYPE=. Do the same as
-  ~denote-rewrite-front-matter~ for keywords, but do not ask for
-  confirmation. With optional =SAVE-BUFFER=, save the buffer
-  corresponding to =FILE=. This function is for use in the commands
-  ~denote-keywords-add~, ~denote-keywords-remove~,
-  ~denote-dired-rename-files~, or related.
+#+vindex: denote-yaml-front-matter
++ Variable ~denote-yaml-front-matter~ :: Specifies the YAML (Markdown)
+  front matter.  It is passed to ~format~ with arguments =TITLE=,
+  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
-#+findex: denote-update-dired-buffers
-+ Function ~denote-update-dired-buffers~ :: Update Dired buffers of
-  variable ~denote-directory~. Also revert the current Dired buffer
-  even if it is not inside the ~denote-directory~. Note that the
-  ~denote-directory~ accepts a directory-local value for what we
-  internally refer to as "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
+#+vindex: denote-toml-front-matter
++ Variable ~denote-toml-front-matter~ :: Specifies the TOML (Markdown)
+  front matter.  It is passed to ~format~ with arguments =TITLE=,
+  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
+#+vindex: denote-text-front-matter
++ Variable ~denote-text-front-matter~ :: Specifies the plain text
+  front matter.  It is passed to ~format~ with arguments =TITLE=,
+  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+
+#+findex: denote-date-org-timestamp
++ Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
+  inactive timestamp notation.
+
+#+findex: denote-date-rfc3339
++ Function ~denote-date-rfc3339~ :: Format =DATE= using the RFC3339
+  specification.
+
+#+findex: denote-date-iso-8601
++ Function ~denote-date-iso-8601~ :: Format =DATE= according to ISO
+  8601 standard.
+
+#+findex: denote-trim-whitespace
++ Function ~denote-trim-whitespace~ :: Trim whitespace around string
+  =S=.  This can be used in ~denote-file-types~ to format front
+  mattter.
+
+#+findex: denote-trim-whitespace-then-quotes
++ Function ~denote-trim-whitespace-then-quotes~ :: Trim whitespace
+  then quotes around string =S=.  This can be used in
+  ~denote-file-types~ to format front mattter.
+
+#+findex: denote-format-string-for-org-front-matter
++ Function ~denote-format-string-for-org-front-matter~ :: Return
+  string =S= as-is for Org or plain text front matter. If =S= is not a
+  string, return an empty string.
+
+#+findex: denote-format-string-for-md-front-matter
++ Function ~denote-format-string-for-md-front-matter~ :: Surround
+  string =S= with quotes. If =S= is not a string, return a literal
+  emptry string. This can be used in ~denote-file-types~ to format
+  front mattter.
+
+#+findex: denote-format-keywords-for-md-front-matter
++ Function ~denote-format-keywords-for-md-front-matter~ :: Format
+  front matter =KEYWORDS= for markdown file type.  =KEYWORDS= is a
+  list of strings.  Consult the ~denote-file-types~ for how this is
+  used.
+
+#+findex: denote-format-keywords-for-text-front-matter
++ Function ~denote-format-keywords-for-text-front-matter~ :: Format
+  front matter =KEYWORDS= for text file type.  =KEYWORDS= is a list of
+  strings.  Consult the ~denote-file-types~ for how this is used.
+
+#+findex: denote-format-keywords-for-org-front-matter
++ Function ~denote-format-keywords-for-org-front-matter~ :: Format
+  front matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
+  strings.  Consult the ~denote-file-types~ for how this is used.
+
+#+findex: denote-extract-keywords-from-front-matter
++ Function ~denote-extract-keywords-from-front-matter~ :: Format front
+  matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
+  strings.  Consult the ~denote-file-types~ for how this is used.
 
 #+vindex: denote-file-types
 + Variable ~denote-file-types~ :: Alist of ~denote-file-type~ and
@@ -5267,25 +5320,10 @@ might change them without further notice.
   If ~denote-file-type~ is nil, use the first element of this list for
   new note creation.  The default is ~org~.
 
-#+vindex: denote-org-front-matter
-+ Variable ~denote-org-front-matter~ :: Specifies the Org front
-  matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,
-  =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
-
-#+vindex: denote-yaml-front-matter
-+ Variable ~denote-yaml-front-matter~ :: Specifies the YAML (Markdown)
-  front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
-
-#+vindex: denote-toml-front-matter
-+ Variable ~denote-toml-front-matter~ :: Specifies the TOML (Markdown)
-  front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
-
-#+vindex: denote-text-front-matter
-+ Variable ~denote-text-front-matter~ :: Specifies the plain text
-  front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+** Link interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:97b8eb9e-07e1-4992-8b59-2a0e3b65574b
+:END:
 
 #+vindex: denote-org-link-format
 + Variable ~denote-org-link-format~ :: Format of Org link to note.
@@ -5315,60 +5353,6 @@ might change them without further notice.
 + Variable ~denote-id-only-link-in-context-regexp~ :: Regexp to match
   an identifier-only link in its context.  The format of such links is
   ~denote-id-only-link-format~.
-
-#+findex: denote-date-org-timestamp
-+ Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
-  inactive timestamp notation.
-
-#+findex: denote-date-rfc3339
-+ Function ~denote-date-rfc3339~ :: Format =DATE= using the RFC3339
-  specification.
-
-#+findex: denote-date-iso-8601
-+ Function ~denote-date-iso-8601~ :: Format =DATE= according to ISO
-  8601 standard.
-
-#+findex: denote-trim-whitespace
-+ Function ~denote-trim-whitespace~ :: Trim whitespace around string
-  =S=.  This can be used in ~denote-file-types~ to format front
-  mattter.
-
-#+findex: denote-trim-whitespace-then-quotes
-+ Function ~denote-trim-whitespace-then-quotes~ :: Trim whitespace
-  then quotes around string =S=.  This can be used in
-  ~denote-file-types~ to format front mattter.
-
-#+findex: denote-format-string-for-org-front-matter
-+ Function ~denote-format-string-for-org-front-matter~ :: Return
-  string =S= as-is for Org or plain text front matter. If =S= is not a
-  string, return an empty string.
-
-#+findex: denote-format-string-for-md-front-matter
-+ Function ~denote-format-string-for-md-front-matter~ :: Surround
-  string =S= with quotes. If =S= is not a string, return a literal
-  emptry string. This can be used in ~denote-file-types~ to format
-  front mattter.
-
-#+findex: denote-format-keywords-for-md-front-matter
-+ Function ~denote-format-keywords-for-md-front-matter~ :: Format
-  front matter =KEYWORDS= for markdown file type.  =KEYWORDS= is a
-  list of strings.  Consult the ~denote-file-types~ for how this is
-  used.
-
-#+findex: denote-format-keywords-for-text-front-matter
-+ Function ~denote-format-keywords-for-text-front-matter~ :: Format
-  front matter =KEYWORDS= for text file type.  =KEYWORDS= is a list of
-  strings.  Consult the ~denote-file-types~ for how this is used.
-
-#+findex: denote-format-keywords-for-org-front-matter
-+ Function ~denote-format-keywords-for-org-front-matter~ :: Format
-  front matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
-  strings.  Consult the ~denote-file-types~ for how this is used.
-
-#+findex: denote-extract-keywords-from-front-matter
-+ Function ~denote-extract-keywords-from-front-matter~ :: Format front
-  matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
-  strings.  Consult the ~denote-file-types~ for how this is used.
 
 #+findex: denote-select-linked-file-prompt
 + Function ~denote-select-linked-file-prompt~ :: Prompt for linked
@@ -5421,6 +5405,59 @@ might change them without further notice.
   =FILES-MATCHING-REGEXP=, limit the list of files accordingly (per
   ~denote-directory-files~). At all times limit the search to text
   files.
+
+** Renaming files interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:66d31f42-6092-493a-97db-83b217db9d96
+:END:
+
+#+findex: denote-rename-file-prompt
+- Function ~denote-rename-file-prompt~ :: Prompt to rename file named
+  =OLD-NAME= to =NEW-NAME=. If ~denote-rename-confirmations~ does not
+  contain ~modify-file-name~, return t without prompting.
+
+#+findex: denote-rename-file-and-buffer
++ Function ~denote-rename-file-and-buffer~ :: Rename file named
+  =OLD-NAME= to =NEW-NAME=, updating buffer name.
+
+#+findex: denote-prepend-front-matter
++ Function ~denote-prepend-front-matter~ :: Prepend front matter to
+  =FILE=. The =TITLE=, =KEYWORDS=, =DATE=, =ID=, =SIGNATURE=, and
+  =FILE-TYPE= are passed from the renaming command and are used to
+  construct a new front matter block if appropriate. [ This function
+  is available as part of {{{development-version}}}. ]
+
+#+findex: denote-rewrite-front-matter
++ Function ~denote-rewrite-front-matter~ :: Rewrite front matter of
+  note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
+  =KEYWORDS=, =SIGNATURE=, =DATE=, =IDENTIFIER=, and =FILE-TYPE=
+  arguments are given by the renaming command and are used to construct
+  new front matter values if appropriate. If ~denote-rename-confirmations~
+  contains ~rewrite-front-matter~, prompt to confirm the rewriting of
+  the front matter. Otherwise produce a ~y-or-n-p~ prompt to that
+  effect. [ This function is changed as part of {{{development-version}}}. ]
+
+#+findex: denote-add-front-matter-prompt
++ Function ~denote-add-front-matter-prompt~ :: Prompt to add a
+  front-matter to =FILE=. Return non-nil if a new front matter should
+  be added. If ~denote-rename-confirmations~ does not contain
+  ~add-front-matter~, return t without prompting.
+
+#+findex: denote-rewrite-keywords
++ Function ~denote-rewrite-keywords~ :: Rewrite =KEYWORDS= in =FILE=
+  outright according to =FILE-TYPE=. Do the same as
+  ~denote-rewrite-front-matter~ for keywords, but do not ask for
+  confirmation. With optional =SAVE-BUFFER=, save the buffer
+  corresponding to =FILE=. This function is for use in the commands
+  ~denote-keywords-add~, ~denote-keywords-remove~,
+  ~denote-dired-rename-files~, or related.
+
+#+findex: denote-update-dired-buffers
++ Function ~denote-update-dired-buffers~ :: Update Dired buffers of
+  variable ~denote-directory~. Also revert the current Dired buffer
+  even if it is not inside the ~denote-directory~. Note that the
+  ~denote-directory~ accepts a directory-local value for what we
+  internally refer to as "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
 * Troubleshoot Denote in a pristine environment
 :PROPERTIES:
