@@ -2495,24 +2495,31 @@ This is a wrapper for `denote-retrieve-front-matter-title-value' and
           (t
            (file-name-base file)))))
 
-(defun denote--retrieve-location-in-xrefs (identifier)
-  "Return list of xrefs for IDENTIFIER with their respective location.
-Limit the search to text files, per `denote-directory-files' with
-non-nil `text-only' parameter."
-  (when-let* ((files (denote-directory-files nil nil :text-only)))
-    (mapcar #'xref-match-item-location (xref-matches-in-files identifier files))))
+(make-obsolete 'denote--retrieve-location-in-xrefs 'denote-retrieve-groups-xref-query "4.0.0")
 
-(defun denote--retrieve-group-in-xrefs (identifier)
-  "Access location of xrefs for IDENTIFIER and group them per file.
-See `denote--retrieve-locations-in-xrefs'."
-  (mapcar #'xref-location-group
-          (denote--retrieve-location-in-xrefs identifier)))
+(define-obsolete-function-alias
+  'denote--retrieve-group-in-xrefs
+  'denote-retrieve-groups-xref-query
+  "4.0.0")
 
-(defun denote--retrieve-files-in-xrefs (identifier)
-  "Return sorted, deduplicated file names with IDENTIFIER in their contents."
+(defun denote-retrieve-groups-xref-query (query)
+  "Access location of xrefs for QUERY and group them per file.
+Limit the search to text files."
+  (when-let* ((files (denote-directory-files nil nil :text-only))
+              (locations (mapcar #'xref-match-item-location (xref-matches-in-files query files))))
+    (mapcar #'xref-location-group locations)))
+
+(define-obsolete-function-alias
+  'denote--retrieve-files-in-xrefs
+  'denote-retrieve-files-xref-query
+  "4.0.0")
+
+(defun denote-retrieve-files-xref-query (query)
+  "Return sorted, deduplicated file names with matches for QUERY in their contents.
+Limit the search to text files."
   (sort
    (delete-dups
-    (denote--retrieve-group-in-xrefs identifier))
+    (denote-retrieve-groups-xref-query query))
    #'string-collate-lessp))
 
 (defun denote-retrieve-xref-alist (query &optional files-matching-regexp)
@@ -4997,7 +5004,7 @@ Also see `denote-link-return-backlinks'."
 Also see `denote-link-return-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
               (id (denote-retrieve-filename-identifier-with-error current-file)))
-    (delete current-file (denote--retrieve-files-in-xrefs id))))
+    (delete current-file (denote-retrieve-files-xref-query id))))
 
 ;; TODO 2024-09-04: Instead of using `denote-link-return-backlinks' we
 ;; should have a function that does not try to find all backlinks but
