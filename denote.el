@@ -3842,7 +3842,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (file-type (denote-filetype-heuristics file))
          (keywords (denote-keywords-sort keywords))
          (directory (file-name-directory file))
-         (extension (file-name-extension file :include-period))
+         (extension (denote-get-file-extension file))
          (date (or date (denote--generate-date-for-rename file)))
          (old-id (or (denote-retrieve-filename-identifier file) ""))
          (id (denote-get-identifier date))
