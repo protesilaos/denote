@@ -4822,6 +4822,14 @@ The following sections cover the specifics.
   return something like =.org= even if the actual file extension is
   =.org.gpg=.
 
+#+findex: denote-infer-keywords-from-files
++ Functions ~denote-infer-keywords-from-files~ :: Return list of
+  keywords in ~denote-directory-files~. With optional
+  =FILES-MATCHING-REGEXP=, only extract keywords from the matching
+  files. Otherwise, do it for all files. Keep any duplicates. Users
+  who do not want duplicates should refer to the functions
+  ~denote-keywords~. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
   candidates. If ~denote-infer-keywords~ is non-nil, infer keywords

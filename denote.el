@@ -1786,17 +1786,26 @@ Also see `denote-retrieve-filename-keywords'."
 (defalias 'denote-retrieve-filename-keywords-as-list 'denote-extract-keywords-from-path
   "Alias for the function `denote-extract-keywords-from-path'")
 
-(defun denote--inferred-keywords (&optional files-matching-regexp)
-  "Extract keywords from `denote-directory-files'.
+(define-obsolete-function-alias
+  'denote--inferred-keywords
+  'denote-infer-keywords-from-files
+  "4.0.0")
+
+(defun denote-infer-keywords-from-files (&optional files-matching-regexp)
+  "Return list of keywords in `denote-directory-files'.
 With optional FILES-MATCHING-REGEXP, only extract keywords from the
 matching files.  Otherwise, do it for all files.
 
-This function returns duplicates.  The `denote-keywords' is the
-one that doesn't."
-  (let ((kw (mapcan #'denote-extract-keywords-from-path (denote-directory-files files-matching-regexp))))
+Keep any duplicates.  Users who do not want duplicates should refer to
+the functions `denote-keywords'."
+  (when-let* ((files (denote-directory-files files-matching-regexp))
+              (keywords (mapcan #'denote-extract-keywords-from-path files)))
     (if-let* ((regexp denote-excluded-keywords-regexp))
-        (seq-remove (apply-partially #'string-match-p regexp) kw)
-      kw)))
+        (seq-remove
+         (lambda (k)
+           (string-match-p regexp k))
+         keywords)
+      keywords)))
 
 (defun denote-keywords (&optional files-matching-regexp)
   "Return appropriate list of keyword candidates.
@@ -1811,7 +1820,7 @@ all files.
 Filter inferred keywords with the user option `denote-excluded-keywords-regexp'."
   (delete-dups
    (if denote-infer-keywords
-       (append (denote--inferred-keywords files-matching-regexp) denote-known-keywords)
+       (append (denote-infer-keywords-from-files files-matching-regexp) denote-known-keywords)
      denote-known-keywords)))
 
 (defvar denote-keyword-history nil
