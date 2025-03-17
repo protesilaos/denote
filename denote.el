@@ -1800,16 +1800,15 @@ one that doesn't."
 
 (defun denote-keywords (&optional files-matching-regexp)
   "Return appropriate list of keyword candidates.
-If `denote-infer-keywords' is non-nil, infer keywords from
-existing notes and combine them into a list with
-`denote-known-keywords'.  Else use only the latter.
+If `denote-infer-keywords' is non-nil, infer keywords from existing
+notes and combine them into a list with `denote-known-keywords'.  Else
+use only the latter.
 
 In the case of keyword inferrence, use optional FILES-MATCHING-REGEXP,
 to extract keywords only from the matching files.  Otherwise, do it for
 all files.
 
-Inferred keywords are filtered by the user option
-`denote-excluded-keywords-regexp'."
+Filter inferred keywords with the user option `denote-excluded-keywords-regexp'."
   (delete-dups
    (if denote-infer-keywords
        (append (denote--inferred-keywords files-matching-regexp) denote-known-keywords)

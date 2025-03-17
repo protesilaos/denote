@@ -4824,10 +4824,14 @@ The following sections cover the specifics.
 
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
-  candidates.  If ~denote-infer-keywords~ is non-nil, infer keywords
+  candidates. If ~denote-infer-keywords~ is non-nil, infer keywords
   from existing notes and combine them into a list with
-  ~denote-known-keywords~.  Else use only the latter set of keywords
-  ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
+  ~denote-known-keywords~. Else use only the latter set of keywords
+  ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). In the case of keyword inferrence, use
+  optional =FILES-MATCHING-REGEXP=, to extract keywords only from the
+  matching files. Otherwise, do it for all files. Filter inferred
+  keywords with the user option ~denote-excluded-keywords-regexp~. [
+  The optional =FILES-MATCHING-REGEXP= parameter is part of {{{development-version}}}. ]
 
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
