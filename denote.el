@@ -2515,6 +2515,18 @@ See `denote--retrieve-locations-in-xrefs'."
     (denote--retrieve-group-in-xrefs identifier))
    #'string-collate-lessp))
 
+(defun denote-retrieve-xref-alist (query &optional files-matching-regexp)
+  "Return xref alist of files with location of matches for QUERY.
+With optional FILES-MATCHING-REGEXP, limit the list of files
+accordingly (per `denote-directory-files').
+
+At all times limit the search to text files."
+  (let ((xref-file-name-display 'abs))
+    (xref--analyze
+     (xref-matches-in-files
+      query
+      (denote-directory-files files-matching-regexp :omit-current :text-only)))))
+
 ;;;; New note
 
 ;;;;; Common helpers for new notes
@@ -5363,10 +5375,7 @@ non-nil value."
          ;; in relative form, but eventually notes may not be all
          ;; under a common directory (or project).
          (xref-file-name-display 'abs)
-         (xref-alist (xref--analyze
-                      (xref-matches-in-files
-                       query
-                       (denote-directory-files files-matching-regexp :omit-current :text-only))))
+         (xref-alist (denote-retrieve-xref-alist query files-matching-regexp))
          (dir (denote-directory)))
     (unless xref-alist
       (error "No backlinks for query `%s'" query))
