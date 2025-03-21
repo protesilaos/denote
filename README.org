@@ -4867,19 +4867,19 @@ The following sections cover the specifics.
 
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
-  paths in variable ~denote-directory~. Files that match
-  ~denote-excluded-files-regexp~ are excluded from the list. Files
-  only need to have an identifier. The return value may thus include
-  file types that are not implied by ~denote-file-type~. With optional
-  =FILES-MATCHING-REGEXP=, restrict files to those matching the given
-  regular expression. With optional =OMIT-CURRENT= as a non-nil value,
-  do not include the current Denote file in the returned list. With
-  optional =TEXT-ONLY= as a non-nil value, limit the results to text
-  files that satisfy ~denote-file-is-note-p~. With optional
-  =EXCLUDE-REGEXP= exclude the files that match the given regular
-  expression. This is done after =FILES-MATCHING-REGEXP= and
-  =OMIT-CURRENT= have been applied. [ The optional =EXCLUDE-REGEXP= is
-  part of {{{development-version}}}. ]
+  paths in variable ~denote-directory~ or optional =DIRECTORY=. Files
+  that match ~denote-excluded-files-regexp~ are excluded from the
+  list. Files only need to have an identifier. The return value may
+  thus include file types that are not implied by ~denote-file-type~.
+  With optional =FILES-MATCHING-REGEXP=, restrict files to those
+  matching the given regular expression. With optional =OMIT-CURRENT=
+  as a non-nil value, do not include the current Denote file in the
+  returned list. With optional =TEXT-ONLY= as a non-nil value, limit
+  the results to text files that satisfy ~denote-file-is-note-p~. With
+  optional =EXCLUDE-REGEXP= exclude the files that match the given
+  regular expression. This is done after =FILES-MATCHING-REGEXP= and
+  =OMIT-CURRENT= have been applied. [ The optional =EXCLUDE-REGEXP=
+  and =DIRECTORY= are part of {{{development-version}}}. ]
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -6177,17 +6177,17 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
   Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
-  Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
-  Mirko Hernandez, Niall Dooley, Nick Bell, Oliver Epper, Paul van
-  Gelder, Peter Prevos, Peter Smith, Riccardo Giannitrapani, Samuel W.
-  Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan Thesing,
-  Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
-  Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot,
-  atanasj, azegas, babusri, bdillahu, coherentstate, doolio, duli,
-  drcxd, elge70, elliottw, fingerknight, hpgisler, hyperfocus1337,
-  jtpavlock, juh, leafarbelm, mentalisttraceur, pRot0ta1p, rbenit68,
-  relict007, sarcom-sar, sienic, skissue, sundar bp,
-  yetanotherfossman, zadca123
+  Kevin McCarthy, Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol
+  Solis, Mark Olson, Mirko Hernandez, Niall Dooley, Nick Bell, Oliver
+  Epper, Paul van Gelder, Peter Prevos, Peter Smith, Riccardo
+  Giannitrapani, Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas
+  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ
+  Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade
+  Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas, babusri, bdillahu,
+  coherentstate, doolio, duli, drcxd, elge70, elliottw, fingerknight,
+  hpgisler, hyperfocus1337, jtpavlock, juh, leafarbelm,
+  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sarcom-sar,
+  sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

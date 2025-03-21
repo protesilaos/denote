@@ -1267,12 +1267,12 @@ Return t if FILE is valid, else return nil."
      ((denote--exclude-directory-regexp-p rel) nil)
      ((file-readable-p file)))))
 
-(defun denote--directory-all-files-recursively ()
-  "Return list of all files in variable `denote-directory'.
+(defun denote--directory-all-files-recursively (&optional directory)
+  "Return list of all files in variable `denote-directory' or optional DIRECTORY.
 Avoids traversing dotfiles (unconditionally) and whatever matches
 `denote-excluded-directories-regexp'."
   (directory-files-recursively
-   (denote-directory)
+   (or directory (denote-directory))
    directory-files-no-dot-files-regexp
    :include-directories
    #'denote--directory-files-recursively-predicate
@@ -1283,10 +1283,13 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   (and denote-excluded-files-regexp
        (string-match-p denote-excluded-files-regexp file)))
 
-(defun denote--directory-get-files ()
+(defun denote--directory-get-files (&optional directory)
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-identifier-p' and
-are not backups."
+are not backups.
+
+With optional DIRECTORY, use that instead of the variable
+`denote-directory'."
   (mapcar
    #'expand-file-name
    (seq-filter
@@ -1295,10 +1298,10 @@ are not backups."
            (denote-file-has-identifier-p file)
            (not (denote--file-excluded-p file))
            (not (backup-file-name-p file))))
-    (denote--directory-all-files-recursively))))
+    (denote--directory-all-files-recursively directory))))
 
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp)
-  "Return list of absolute file paths in variable `denote-directory'.
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp directory)
+  "Return absolute file paths in variable `denote-directory' or optional DIRECTORY.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
 
@@ -1318,7 +1321,7 @@ text files that satisfy `denote-file-has-supported-extension-p'.
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
 OMIT-CURRENT have been applied."
-  (let ((files (denote--directory-get-files)))
+  (let ((files (denote--directory-get-files directory)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
