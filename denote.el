@@ -3494,7 +3494,7 @@ The TITLE, KEYWORDS, DATE, ID, SIGNATURE, and FILE-TYPE are passed from
 the renaming command and are used to construct a new front matter block
 if appropriate."
   (when-let* ((new-front-matter (denote--format-front-matter title date keywords id signature file-type)))
-    (denote--file-with-temp-buffer file
+    (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
 
