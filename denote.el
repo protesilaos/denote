@@ -3380,7 +3380,7 @@ saved or killed at the end of `denote-region'."
 If file does not exist, invoke `denote' to create a file.  In that case,
 use the last input at the file prompt as the default value of the title
 prompt."
-  (interactive (list (denote-file-prompt nil nil :no-require-match)))
+  (interactive (list (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match)))
   (if (and target (file-exists-p target))
       (find-file target)
     (denote--command-with-features #'denote :use-last-input-as-def-title nil nil nil)))
@@ -3390,7 +3390,7 @@ prompt."
   "Like `denote-open-or-create' but use one of the `denote-commands-for-new-notes'."
   (declare (interactive-only t))
   (interactive)
-  (let ((target (denote-file-prompt nil nil :no-require-match)))
+  (let ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match)))
     (if (and target (file-exists-p target))
         (find-file target)
       (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
@@ -5084,7 +5084,7 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
-   (let* ((target (denote-file-prompt nil nil :no-require-match)))
+   (let* ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match)))
      (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
