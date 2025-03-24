@@ -5107,6 +5107,145 @@ file's title.  This has the same meaning as in `denote-link'."
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
   "Alias for `denote-link-or-create' command.")
 
+;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
+
+(make-obsolete 'denote-link--backlink-find-file nil "4.0.0")
+(make-obsolete 'denote-link--display-buffer nil "4.0.0")
+(make-obsolete 'denote-backlinks-mode-next nil "4.0.0")
+(make-obsolete 'denote-backlinks-mode-previous nil "4.0.0")
+(make-obsolete 'denote-backlinks-toggle-context nil "4.0.0")
+(make-obsolete-variable 'denote-backlinks-mode-map nil "4.0.0")
+
+(define-obsolete-function-alias
+  'denote-backlinks-mode
+  'denote-query-mode
+  "4.0.0")
+
+(define-derived-mode denote-query-mode xref--xref-buffer-mode "Denote"
+  "Major mode for queries found in the variable `denote-directory'.
+This is used by the command `denote-backlinks' and all links created by
+the `denote-query' command, among others."
+  :interactive nil)
+
+(define-obsolete-function-alias
+  'denote-link--prepare-backlinks
+  'denote-make-links-buffer
+  "4.0.0")
+
+;; NOTE 2025-03-24: The `&rest' is there because we used to have an
+;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
+;; code, even if we slightly modify the behaviour.
+(defun denote-make-links-buffer (query &optional files-matching-regexp buffer-name display-buffer-action &rest _)
+  "Create links' buffer called BUFFER-NAME for QUERY.
+
+With optional FILES-MATCHING-REGEXP, limit the list of files
+accordingly (per `denote-directory-files').
+
+Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
+concomitant alist, such as `denote-backlinks-display-buffer-action'."
+  (let* ((inhibit-read-only t)
+         (file buffer-file-name)
+         (buffer (or buffer-name (format-message "Denote query for `%s'" query)))
+         ;; We retrieve results in absolute form and change the
+         ;; absolute path to a relative path below. We could add a
+         ;; suitable function and the results would be automatically
+         ;; in relative form, but eventually notes may not be all
+         ;; under a common directory (or project).
+         (xref-alist (denote-retrieve-xref-alist query files-matching-regexp))
+         (dir (denote-directory)))
+    (unless xref-alist
+      (error "No matches for query `%s'" query))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (denote-query-mode)
+      ;; In the links' buffer, the values of variables set in a
+      ;; `.dir-locals.el` do not apply.  We need to set
+      ;; `denote-directory' here because the buttons depend on it.
+      ;; Moreover, its value is overwritten after enabling the major
+      ;; mode, so it needs to be set after.
+      (setq-local denote-directory dir)
+      (setq overlay-arrow-position nil)
+      (goto-char (point-min))
+      (xref--insert-xrefs xref-alist)
+      (goto-char (point-min))
+      (setq-local revert-buffer-function
+                  (lambda (_ignore-auto _noconfirm)
+                    (when-let* ((buffer-file-name file))
+                      (denote-make-links-buffer query files-matching-regexp buffer-name display-buffer-action)))))
+    (display-buffer buffer display-buffer-action)))
+
+(defvar denote-query-links-buffer-function #'denote-make-query-links-buffer
+  "Function to make an Xref buffer showing query link results.
+It accepts two arguments, a query and a `display-buffer' action alist
+like `denote-query-links-display-buffer-action'.")
+
+(defun denote-make-query-links-buffer (query display-buffer-action)
+  "Make a links buffer for QUERY given DISPLAY-BUFFER-ACTION."
+  (denote-make-links-buffer query nil nil display-buffer-action))
+
+(defun denote--backlinks-get-buffer-name (file id)
+  "Format a buffer name for `denote-backlinks'.
+Use FILE to detect a suitable title with which to name the buffer.  Else
+use the ID."
+  (if-let* ((type (denote-filetype-heuristics file))
+            (title (denote-retrieve-front-matter-title-value file type)))
+      (format "*Denote FILE backlinks for %S*" title)
+    (format "*Denote FILE backlinks for %s*" id)))
+
+;;;###autoload
+(defun denote-backlinks ()
+  "Produce a buffer with backlinks to the current note.
+
+Show the names of files linking to the current file.  Include the
+context of each link if the user option `denote-backlinks-show-context'
+is non-nil.
+
+Place the buffer below the current window or wherever the user option
+`denote-backlinks-display-buffer-action' specifies."
+  (interactive)
+  (if-let* ((file buffer-file-name))
+      (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
+        (denote-make-links-buffer
+         identifier nil
+         (denote--backlinks-get-buffer-name file identifier)
+         denote-backlinks-display-buffer-action))
+    (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
+
+(defalias 'denote-show-backlinks-buffer 'denote-backlinks
+  "Alias for `denote-backlinks' command.")
+
+(defvar denote-query-history nil
+  "Minibuffer history of `denote-query-prompt'.")
+
+(defun denote-query-prompt (&optional initial-query prompt-text)
+  "Prompt for query string.
+With optional INITIAL-QUERY use it as the initial minibuffer text.  With
+optional PROMPT-TEXT use it in the minibuffer instead of the default
+prompt.
+
+Previous inputs at this prompt are available for minibuffer completion
+if the user option `denote-history-completion-in-prompts' is set to a
+non-nil value."
+  (when (and initial-query (string-empty-p initial-query))
+    (setq initial-query nil))
+  (denote--with-conditional-completion
+   'denote-signature-prompt
+   (format-prompt (or prompt-text "Query in files") nil)
+   denote-query-history
+   initial-query))
+
+;;;###autoload
+(defun denote-query (query)
+  "Create query link at point, prompting for QUERY or using the active region.
+Query links do not point to any file but instead initiate a search in
+the contents of files inside the variable `denote-directory'.  They are
+always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
+and related commands do, which always establish a direct connection to a
+file and their format is more flexible."
+  (interactive (list (or (denote--get-active-region-content) (denote-query-prompt))))
+  (denote--delete-active-region-content)
+  (insert (format "[[denote:%s]]" query)))
+
 ;;;;; Link buttons
 
 (make-obsolete 'denote-link--find-file-at-button nil "4.0.0")
@@ -5260,145 +5399,6 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
                  '(url . denote--get-link-file-path-at-point)
                  thing-at-point-provider-alist)))
   (font-lock-update))
-
-;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
-
-(make-obsolete 'denote-link--backlink-find-file nil "4.0.0")
-(make-obsolete 'denote-link--display-buffer nil "4.0.0")
-(make-obsolete 'denote-backlinks-mode-next nil "4.0.0")
-(make-obsolete 'denote-backlinks-mode-previous nil "4.0.0")
-(make-obsolete 'denote-backlinks-toggle-context nil "4.0.0")
-(make-obsolete-variable 'denote-backlinks-mode-map nil "4.0.0")
-
-(define-obsolete-function-alias
-  'denote-backlinks-mode
-  'denote-query-mode
-  "4.0.0")
-
-(define-derived-mode denote-query-mode xref--xref-buffer-mode "Denote"
-  "Major mode for queries found in the variable `denote-directory'.
-This is used by the command `denote-backlinks' and all links created by
-the `denote-query' command, among others."
-  :interactive nil)
-
-(define-obsolete-function-alias
-  'denote-link--prepare-backlinks
-  'denote-make-links-buffer
-  "4.0.0")
-
-;; NOTE 2025-03-24: The `&rest' is there because we used to have an
-;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
-;; code, even if we slightly modify the behaviour.
-(defun denote-make-links-buffer (query &optional files-matching-regexp buffer-name display-buffer-action &rest _)
-  "Create links' buffer called BUFFER-NAME for QUERY.
-
-With optional FILES-MATCHING-REGEXP, limit the list of files
-accordingly (per `denote-directory-files').
-
-Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
-concomitant alist, such as `denote-backlinks-display-buffer-action'."
-  (let* ((inhibit-read-only t)
-         (file buffer-file-name)
-         (buffer (or buffer-name (format-message "Denote query for `%s'" query)))
-         ;; We retrieve results in absolute form and change the
-         ;; absolute path to a relative path below. We could add a
-         ;; suitable function and the results would be automatically
-         ;; in relative form, but eventually notes may not be all
-         ;; under a common directory (or project).
-         (xref-alist (denote-retrieve-xref-alist query files-matching-regexp))
-         (dir (denote-directory)))
-    (unless xref-alist
-      (error "No matches for query `%s'" query))
-    (with-current-buffer (get-buffer-create buffer)
-      (erase-buffer)
-      (denote-query-mode)
-      ;; In the links' buffer, the values of variables set in a
-      ;; `.dir-locals.el` do not apply.  We need to set
-      ;; `denote-directory' here because the buttons depend on it.
-      ;; Moreover, its value is overwritten after enabling the major
-      ;; mode, so it needs to be set after.
-      (setq-local denote-directory dir)
-      (setq overlay-arrow-position nil)
-      (goto-char (point-min))
-      (xref--insert-xrefs xref-alist)
-      (goto-char (point-min))
-      (setq-local revert-buffer-function
-                  (lambda (_ignore-auto _noconfirm)
-                    (when-let* ((buffer-file-name file))
-                      (denote-make-links-buffer query files-matching-regexp buffer-name display-buffer-action)))))
-    (display-buffer buffer display-buffer-action)))
-
-(defvar denote-query-links-buffer-function #'denote-make-query-links-buffer
-  "Function to make an Xref buffer showing query link results.
-It accepts two arguments, a query and a `display-buffer' action alist
-like `denote-query-links-display-buffer-action'.")
-
-(defun denote-make-query-links-buffer (query display-buffer-action)
-  "Make a links buffer for QUERY given DISPLAY-BUFFER-ACTION."
-  (denote-make-links-buffer query nil nil display-buffer-action))
-
-(defun denote--backlinks-get-buffer-name (file id)
-  "Format a buffer name for `denote-backlinks'.
-Use FILE to detect a suitable title with which to name the buffer.  Else
-use the ID."
-  (if-let* ((type (denote-filetype-heuristics file))
-            (title (denote-retrieve-front-matter-title-value file type)))
-      (format "*Denote FILE backlinks for %S*" title)
-    (format "*Denote FILE backlinks for %s*" id)))
-
-;;;###autoload
-(defun denote-backlinks ()
-  "Produce a buffer with backlinks to the current note.
-
-Show the names of files linking to the current file.  Include the
-context of each link if the user option `denote-backlinks-show-context'
-is non-nil.
-
-Place the buffer below the current window or wherever the user option
-`denote-backlinks-display-buffer-action' specifies."
-  (interactive)
-  (if-let* ((file buffer-file-name))
-      (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
-        (denote-make-links-buffer
-         identifier nil
-         (denote--backlinks-get-buffer-name file identifier)
-         denote-backlinks-display-buffer-action))
-    (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
-
-(defalias 'denote-show-backlinks-buffer 'denote-backlinks
-  "Alias for `denote-backlinks' command.")
-
-(defvar denote-query-history nil
-  "Minibuffer history of `denote-query-prompt'.")
-
-(defun denote-query-prompt (&optional initial-query prompt-text)
-  "Prompt for query string.
-With optional INITIAL-QUERY use it as the initial minibuffer text.  With
-optional PROMPT-TEXT use it in the minibuffer instead of the default
-prompt.
-
-Previous inputs at this prompt are available for minibuffer completion
-if the user option `denote-history-completion-in-prompts' is set to a
-non-nil value."
-  (when (and initial-query (string-empty-p initial-query))
-    (setq initial-query nil))
-  (denote--with-conditional-completion
-   'denote-signature-prompt
-   (format-prompt (or prompt-text "Query in files") nil)
-   denote-query-history
-   initial-query))
-
-;;;###autoload
-(defun denote-query (query)
-  "Create query link at point, prompting for QUERY or using the active region.
-Query links do not point to any file but instead initiate a search in
-the contents of files inside the variable `denote-directory'.  They are
-always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
-and related commands do, which always establish a direct connection to a
-file and their format is more flexible."
-  (interactive (list (or (denote--get-active-region-content) (denote-query-prompt))))
-  (denote--delete-active-region-content)
-  (insert (format "[[denote:%s]]" query)))
 
 ;;;;; Add links matching regexp
 
