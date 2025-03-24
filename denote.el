@@ -5109,20 +5109,16 @@ file's title.  This has the same meaning as in `denote-link'."
 
 ;;;;; Link buttons
 
-(defun denote-link--find-file-at-button (button)
-  "Visit file referenced by BUTTON."
-  (let* ((id (denote-extract-id-from-string
-              (buffer-substring-no-properties
-               (button-start button)
-               (button-end button))))
-         (file (denote-get-path-by-id id)))
-    (funcall denote-open-link-function file)))
+(make-obsolete 'denote-link--find-file-at-button nil "4.0.0")
 
 (make-obsolete
  'denote-link-buttonize-buffer
  'denote-fontify-links-mode
  "Use the `denote-fontify-links-mode', as it works better than buttonization. Since 3.0.0")
 
+;; NOTE 2025-03-24: This does not work for query links because of how
+;; `markdown-follow-link-at-point' is implemented to always check for
+;; links.
 (defun denote-link-markdown-follow (link)
   "Function to open Denote file present in LINK.
 To be assigned to `markdown-follow-link-functions'."
@@ -5146,67 +5142,78 @@ To be assigned to `markdown-follow-link-functions'."
     map)
   "Keymap for mouse actions over fontified Denote links.")
 
+(defun denote--link-open-at-point-subr ()
+  "Open link at point."
+  (let* ((query (get-text-property (point) 'denote-link-query-part))
+         (path (denote-get-path-by-id query)))
+    (if path
+        (funcall denote-open-link-function path)
+      (funcall denote-query-links-buffer-function query denote-query-links-display-buffer-action))))
+
+(defun denote-link-open-at-point ()
+  "Open Denote link at point."
+  (interactive)
+  (denote--link-open-at-point-subr))
+
 (defun denote-link-open-at-mouse (ev)
   "Open Denote link for mouse EV click."
   (interactive "e")
   (mouse-set-point ev)
-  (if-let* ((id (get-text-property (point) 'denote-link-id))
-            (path (denote-get-path-by-id id)))
-      (funcall denote-open-link-function path)
-    (error "Cannot resolve the link at point")))
+  (denote--link-open-at-point-subr))
 
-(defun denote-fontify-links (&optional limit)
-  "Fontify Denote links up until optional LIMIT.
-
+(defun denote--fontify-links-subr (query limit)
+  "Do the work of the font-lock match for QUERY up to LIMIT.
 Implementation based on the function `org-activate-links'."
   (catch :exit
-    (when-let* ((type (denote-filetype-heuristics (buffer-file-name))))
-      (while (re-search-forward (denote--link-in-context-regexp type) limit t)
-        (save-match-data  ; to return the matches to font-lock
-          (let* ((start (match-beginning 0))
-                 (end (match-end 0))
-                 (visible-start (match-beginning 2))
-                 (visible-end (match-end 2))
-                 (id (match-string-no-properties 1))
-                 (path (denote-get-path-by-id id))
-                 (file-link (concat "file:" path)))
-            ;; FIXME 2024-06-19: Rewrite this (unless...let...if...)
-            ;; because it is hard to reason about. But it works, so no
-            ;; pressure.
-            (unless (let ((face (get-text-property
-                                 (max (1- start) (point-min)) 'face)))
-                      (if (consp face)
-                          (memq 'font-lock-comment-face face)
-                        (eq 'font-lock-comment-face face)))
-              (let* ((properties `(face denote-faces-link
-                                        mouse-face highlight
-                                        keymap ,denote-link-mouse-map
-                                        denote-link-id ,id
-                                        help-echo ,(or (denote-retrieve-title-or-filename path type)
-                                                       (concat "denote:" id))
-                                        htmlize-link (:uri ,file-link)
-                                        font-lock-multiline t))
-                     (non-sticky-props
-                      '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
-                     (face-property 'link)
-                     (hidden (append '(invisible 'denote-link) properties)))
-                (remove-text-properties start end '(invisible nil))
-                (add-text-properties start visible-start hidden)
-                (add-face-text-property start end face-property)
-                (add-text-properties visible-start visible-end properties)
-                (add-text-properties visible-end end hidden)
-                (dolist (pos (list end visible-start visible-end))
-                  (add-text-properties (1- pos) pos non-sticky-props)))
-              (throw :exit t))))))      ; signal success
+    (while (re-search-forward query limit t)
+      (save-match-data  ; to return the matches to font-lock
+        (let* ((start (match-beginning 0))
+               (end (match-end 0))
+               (visible-start (or (match-beginning 2) start))
+               (visible-end (or (match-end 2) end))
+               (query (match-string-no-properties 1)))
+          (let* ((properties `(face denote-faces-link
+                                    mouse-face highlight
+                                    keymap ,denote-link-mouse-map
+                                    denote-link-query-part ,query
+                                    help-echo query
+                                    htmlize-link (:uri ,query)
+                                    font-lock-multiline t))
+                 (non-sticky-props
+                  '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
+                 (face-property 'link)
+                 (hidden (append '(invisible 'denote-link) properties)))
+            (remove-text-properties start end '(invisible nil))
+            (add-text-properties start visible-start hidden)
+            (add-face-text-property start end face-property)
+            (add-text-properties visible-start visible-end properties)
+            (add-text-properties visible-end end hidden)
+            (dolist (pos (list end visible-start visible-end))
+              (add-text-properties (1- pos) pos non-sticky-props)))
+          (throw :exit t))))      ; signal success
     nil))
 
-(defun denote-get-identifier-at-point (&optional point)
-  "Return the Denote identifier at point or optional POINT."
+(defun denote-fontify-links (limit)
+  "Provide font-lock matcher to fontify links up to LIMIT."
+  (when-let* ((type (denote-filetype-heuristics (buffer-file-name))))
+    (denote--fontify-links-subr (denote--link-in-context-regexp type) limit)))
+
+(defun denote-fontify-query-links (limit)
+    "Provide font-lock matcher to fontify query links up to LIMIT."
+  (denote--fontify-links-subr "\\[\\[denote:\\(?1:[^[]*?\\)]]" limit))
+
+(define-obsolete-function-alias
+  'denote-get-identifier-at-point
+  'denote-get-link-identifier-or-query-term-at-point
+  "4.0.0")
+
+(defun denote-get-link-identifier-or-query-term-at-point (&optional point)
+  "Return the Denote identifier or query term at point or optional POINT."
   (when-let* ((position (or point (point)))
               (face-at-point (get-text-property position 'face))
               ((or (eq face-at-point 'denote-faces-link)
                    (member 'denote-faces-link face-at-point))))
-    (or (get-text-property position 'denote-link-id)
+    (or (get-text-property position 'denote-link-query-part)
         (when-let* ((link-data (get-text-property position 'htmlize-link))
                     (link (cadr link-data)))
           (string-match denote-id-regexp link)
@@ -5216,8 +5223,9 @@ Implementation based on the function `org-activate-links'."
   "Return link to the Denote file path at point or optional POINT.
 To be used as a `thing-at' provider."
   (when-let* ((position (or point (point)))
-              (id (get-text-property position 'denote-link-id)))
-    (concat "file:" (denote-get-path-by-id id))))
+              (id (get-text-property position 'denote-link-query-part))
+              (path (denote-get-path-by-id id)))
+    (concat "file:" path)))
 
 (defvar thing-at-point-provider-alist)
 
@@ -5241,12 +5249,12 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
   (if denote-fontify-links-mode
       (progn
         (add-to-invisibility-spec 'denote-link)
-        (font-lock-add-keywords nil '(denote-fontify-links))
+        (font-lock-add-keywords nil '((denote-fontify-links) (denote-fontify-query-links)))
         (setq-local thing-at-point-provider-alist
                     (append thing-at-point-provider-alist
                             '((url . denote--get-link-file-path-at-point)))))
     (remove-from-invisibility-spec 'denote-link)
-    (font-lock-remove-keywords nil '(denote-fontify-links))
+    (font-lock-remove-keywords nil '((denote-fontify-links) (denote-fontify-query-links)))
     (setq-local thing-at-point-provider-alist
                 (delete
                  '(url . denote--get-link-file-path-at-point)
