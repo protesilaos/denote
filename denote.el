@@ -5379,11 +5379,8 @@ always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
 and related commands do, which always establish a direct connection to a
 file and their format is more flexible."
   (interactive (list (denote-query-prompt)))
-  (if-let* ((files (denote-retrieve-files-xref-query query)))
-      (progn
-        (denote--delete-active-region-content)
-        (insert (format "[[denote:%s]]" query)))
-    (user-error "No files with matching `%s'" query)))
+  (denote--delete-active-region-content)
+  (insert (format "[[denote:%s]]" query)))
 
 ;;;;; Add links matching regexp
 
