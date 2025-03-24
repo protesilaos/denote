@@ -5320,6 +5320,15 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
                       (denote-make-links-buffer query files-matching-regexp buffer-name display-buffer-action)))))
     (display-buffer buffer display-buffer-action)))
 
+(defvar denote-query-links-buffer-function #'denote-make-query-links-buffer
+  "Function to make an Xref buffer showing query link results.
+It accepts two arguments, a query and a `display-buffer' action alist
+like `denote-query-links-display-buffer-action'.")
+
+(defun denote-make-query-links-buffer (query display-buffer-action)
+  "Make a links buffer for QUERY given DISPLAY-BUFFER-ACTION."
+  (denote-make-links-buffer query nil nil display-buffer-action))
+
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
@@ -5649,7 +5658,7 @@ Uses the function `denote-directory' to establish the path to the file."
   (if-let* ((match (denote-link--ol-resolve-link-to-target link))
             (_ (file-exists-p match)))
       (org-link-open-as-file match nil)
-    (denote-make-links-buffer match nil nil denote-query-links-display-buffer-action)))
+    (funcall denote-query-links-buffer-function match denote-query-links-display-buffer-action)))
 
 ;;;###autoload
 (defun denote-link-ol-complete ()
