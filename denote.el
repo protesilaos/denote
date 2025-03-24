@@ -640,7 +640,8 @@ and/or the documentation string of `display-buffer'."
 (defcustom denote-query-links-display-buffer-action
   '((display-buffer-reuse-mode-window display-buffer-below-selected)
     (mode . denote-query-mode)
-    (window-height . fit-window-to-buffer))
+    (window-height . 0.3)
+    (preserve-size . (t . t)))
   "The action used to display query links.
 This is the same as `denote-backlinks-display-buffer-action'.  Refer to
 its documentation for the technicalities."
