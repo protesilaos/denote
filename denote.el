@@ -5371,27 +5371,15 @@ non-nil value."
    initial-query))
 
 ;;;###autoload
-(defun denote-query (query &optional files-matching-regexp)
+(defun denote-query (query)
   "Create a QUERY link at point.
 Query links do not point to any file but instead initiate a search in
 the contents of files inside the variable `denote-directory'.  They are
 always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
 and related commands do, which always establish a direct connection to a
-file and their format is more flexible.
-
-With optional FILES-MATCHING-REGEXP, limit the list of files to search
-through to only those whose file name matches the given regular
-expression.  When called interactively, prompt FILES-MATCHING-REGEXP
-when there is a universal prefix argument (\\[universal-argument])."
-  (interactive
-   (list
-    (denote-query-prompt)
-    (when current-prefix-arg
-      ;; NOTE 2025-03-24: I think we do not need a prompt for this
-      ;; one.  But if we do, then it probably should be like
-      ;; `denote-query-prompt'.
-      (read-string "Limit to FILES-MATCHING-REGEXP: "))))
-  (if-let* ((files (denote-retrieve-files-xref-query query files-matching-regexp)))
+file and their format is more flexible."
+  (interactive (list (denote-query-prompt)))
+  (if-let* ((files (denote-retrieve-files-xref-query query)))
       (progn
         (denote--delete-active-region-content)
         (insert (format "[[denote:%s]]" query)))
