@@ -5372,13 +5372,13 @@ non-nil value."
 
 ;;;###autoload
 (defun denote-query (query)
-  "Create a QUERY link at point.
+  "Create query link at point, prompting for QUERY or using the active region.
 Query links do not point to any file but instead initiate a search in
 the contents of files inside the variable `denote-directory'.  They are
 always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
 and related commands do, which always establish a direct connection to a
 file and their format is more flexible."
-  (interactive (list (denote-query-prompt)))
+  (interactive (list (or (denote--get-active-region-content) (denote-query-prompt))))
   (denote--delete-active-region-content)
   (insert (format "[[denote:%s]]" query)))
 
