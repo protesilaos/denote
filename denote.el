@@ -603,7 +603,7 @@ command."
   "3.1.0")
 
 (defcustom denote-backlinks-display-buffer-action
-  '((display-buffer-reuse-window display-buffer-below-selected)
+  '((display-buffer-reuse-mode-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer)
     (dedicated . t))
   "The action used to display the current file's backlinks buffer.
@@ -638,7 +638,7 @@ and/or the documentation string of `display-buffer'."
   :group 'denote)
 
 (defcustom denote-query-links-display-buffer-action
-  '((display-buffer-reuse-window display-buffer-below-selected)
+  '((display-buffer-reuse-mode-window display-buffer-below-selected)
     (window-height . fit-window-to-buffer)
     (dedicated . t))
   "The action used to display query links.
