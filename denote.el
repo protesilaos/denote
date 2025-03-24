@@ -1395,7 +1395,7 @@ something like .org even if the actual file extension is
         (car files)
       (seq-find
        (lambda (file)
-         (let ((file-extension (denote-get-file-extension file)))
+         (let ((file-extension (denote-get-file-extension-sans-encryption file)))
            (and (denote-file-has-supported-extension-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
