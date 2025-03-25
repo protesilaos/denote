@@ -1767,7 +1767,7 @@ When called from Lisp, the arguments are a string, a symbol among
           (message denote-sort-dired-buffer-name))
       (message "No matching files for: %s" files-matching-regexp))))
 
-(defalias 'denote-sort-dired 'denote-dired
+(defalias 'denote-dired 'denote-sort-dired
   "Alias for `denote-sort-dired' command.")
 
 ;;;; Keywords
