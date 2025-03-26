@@ -5747,6 +5747,7 @@ Also see the user option `denote-org-store-link-to-heading'."
                                 (derived-mode-p 'org-mode)
                                 (denote--org-capture-link-specifiers-p)))
             (heading (denote-link-ol-get-heading)))
+       (unless (consp orig-buf)
         (org-link-store-props
          :type "denote"
          :description (if (and heading-links heading)
@@ -5763,7 +5764,7 @@ Also see the user option `denote-org-store-link-to-heading'."
                  (format "denote:%s::#%s" file-id (denote-link-ol-get-id)))
                 (t
                  (concat "denote:" file-id))))
-        org-store-link-plist))))
+        org-store-link-plist)))))
 
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
