@@ -5254,7 +5254,7 @@ flexible."
   (interactive
    (list
     (or (denote--get-active-region-content)
-        (denote-query-link-prompt nil "Query in file contents"))))
+        (denote-query-link-prompt nil "Query in file CONTENTS"))))
   (denote--delete-active-region-content)
   (insert (denote--format-query-link 'query-contents query)))
 
@@ -5272,7 +5272,7 @@ flexible."
   (interactive
    (list
     (or (denote--get-active-region-content)
-        (denote-query-link-prompt nil "Query in file names"))))
+        (denote-query-link-prompt nil "Query in file NAMES"))))
   (denote--delete-active-region-content)
   (insert (denote--format-query-link 'query-filenames query)))
 
