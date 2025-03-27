@@ -4373,6 +4373,11 @@ Construct the file name in accordance with the user option
   :group 'denote-faces
   :package-version '(denote . "0.5.0"))
 
+(defface denote-faces-query-link '((t :inherit link-visited))
+  "Face used to style Denote query links in the buffer."
+  :group 'denote-faces
+  :package-version '(denote . "4.0.0"))
+
 (defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
 This should only ever needed in the backlinks' buffer (or
@@ -5853,6 +5858,12 @@ backend."
               (path (denote-get-path-by-id identifier)))
     path))
 
+(defun denote-link-ol-face (path)
+  "Return appropriate face for PATH."
+  (if (denote-identifier-p path)
+      'denote-faces-link
+    'denote-faces-query-link))
+
 ;; The `eval-after-load' part with the quoted lambda is adapted from
 ;; Elfeed: <https://github.com/skeeto/elfeed/>.
 
@@ -5867,7 +5878,7 @@ backend."
           (org-link-set-parameters
            "denote"
            :follow #'denote-link-ol-follow
-           :face 'denote-faces-link
+           :face #'denote-link-ol-face
            :help-echo #'denote-link-ol-help-echo
            :complete #'denote-link-ol-complete
            :store #'denote-link-ol-store
