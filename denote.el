@@ -5170,14 +5170,9 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
                       (denote-make-links-buffer query files-matching-regexp buffer-name display-buffer-action)))))
     (display-buffer buffer display-buffer-action)))
 
-(defvar denote-query-links-buffer-function #'denote-make-query-links-buffer
+(defvar denote-query-links-buffer-function #'denote-make-links-buffer
   "Function to make an Xref buffer showing query link results.
-It accepts two arguments, a query and a `display-buffer' action alist
-like `denote-query-links-display-buffer-action'.")
-
-(defun denote-make-query-links-buffer (query display-buffer-action)
-  "Make a links buffer for QUERY given DISPLAY-BUFFER-ACTION."
-  (denote-make-links-buffer query nil nil display-buffer-action))
+It accepts the same arguments as `denote-make-links-buffer'.")
 
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
@@ -5201,10 +5196,10 @@ Place the buffer below the current window or wherever the user option
   (interactive)
   (if-let* ((file buffer-file-name))
       (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
-        (denote-make-links-buffer
-         identifier nil
-         (denote--backlinks-get-buffer-name file identifier)
-         denote-backlinks-display-buffer-action))
+        (funcall denote-query-links-buffer-function
+                 identifier nil
+                 (denote--backlinks-get-buffer-name file identifier)
+                 denote-backlinks-display-buffer-action))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
@@ -5288,7 +5283,7 @@ search for."
   (cond
    ((string-prefix-p "query-contents:" query)
     (setq query (replace-regexp-in-string "query-contents:" "" query))
-    (funcall denote-query-links-buffer-function query denote-query-links-display-buffer-action))
+    (funcall denote-query-links-buffer-function query nil nil denote-query-links-display-buffer-action))
    ((string-prefix-p "query-filenames:" query)
     (setq query (replace-regexp-in-string "query-filenames:" "" query))
     ;; NOTE 2025-03-27: I do not think we need to add another
