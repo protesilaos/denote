@@ -5431,10 +5431,6 @@ Implementation based on the function `org-activate-links'."
   (when-let* ((type (denote-filetype-heuristics (buffer-file-name))))
     (denote--fontify-links-subr (denote--link-in-context-regexp type) limit)))
 
-(defun denote-fontify-query-links (limit)
-    "Provide font-lock matcher to fontify query links up to LIMIT."
-  (denote--fontify-links-subr "\\[\\[denote:\\(?1:[^[]*?\\)]]" limit))
-
 (define-obsolete-function-alias
   'denote-get-identifier-at-point
   'denote-get-link-identifier-or-query-term-at-point
@@ -5482,12 +5478,12 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
   (if denote-fontify-links-mode
       (progn
         (add-to-invisibility-spec 'denote-link)
-        (font-lock-add-keywords nil '((denote-fontify-links) (denote-fontify-query-links)))
+        (font-lock-add-keywords nil '((denote-fontify-links)))
         (setq-local thing-at-point-provider-alist
                     (append thing-at-point-provider-alist
                             '((url . denote--get-link-file-path-at-point)))))
     (remove-from-invisibility-spec 'denote-link)
-    (font-lock-remove-keywords nil '((denote-fontify-links) (denote-fontify-query-links)))
+    (font-lock-remove-keywords nil '((denote-fontify-links)))
     (setq-local thing-at-point-provider-alist
                 (delete
                  '(url . denote--get-link-file-path-at-point)
