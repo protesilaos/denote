@@ -5232,13 +5232,28 @@ non-nil value."
 (defconst denote-query-link-types '(query-contents query-filenames)
   "Types of query links.")
 
-(defun denote--format-query-link (type query)
-  "Format QUERY link of TYPE.
+;; NOTE 2025-03-27: Should we expose a user option for this?  And/or
+;; should we add a DESCRIPTION parameter to `denote--format-query-link'?
+;;
+;; What would make for a good default description in that scenario?
+;; Maybe "QC:query text here" and "QF:query text here" for
+;; `query-contents' and `query-filenames' respectively.
+(defvar denote-query-description-prefix ""
+  "Prefix string for query links to format their description text.
+The description text constists of the value of this variable followed by
+the query")
+
+(defun denote--format-query-link (type query file-type)
+  "Format QUERY link of TYPE for the given FILE-TYPE.
 Return an error if TYPE is not one among the symbols specified in
-`denote-query-link-types'."
+`denote-query-link-types'.
+
+If FILE-TYPE is nil, use that of Org."
   (unless (memq type denote-query-link-types)
     (error "Type `%s' is not one among `denote-query-link-types'" type))
-  (format "[[denote:%s:%s]]" type query))
+  (format (or (denote--link-format file-type) (denote--link-format 'org))
+          (format "%s:%s" type query)
+          (format "%s%s" denote-query-description-prefix query)))
 
 ;;;###autoload
 (defun denote-query-contents-link (query)
@@ -5259,7 +5274,7 @@ flexible."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (denote--delete-active-region-content)
-  (insert (denote--format-query-link 'query-contents query)))
+  (insert (denote--format-query-link 'query-contents query (denote-filetype-heuristics buffer-file-name))))
 
 ;;;###autoload
 (defun denote-query-filenames-link (query)
@@ -5280,7 +5295,7 @@ flexible."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (denote--delete-active-region-content)
-  (insert (denote--format-query-link 'query-filenames query)))
+  (insert (denote--format-query-link 'query-filenames query (denote-filetype-heuristics buffer-file-name))))
 
 (defvar denote--query-last-dired-buffer nil
   "Buffer object produced by the last query for file names.")
