@@ -4760,7 +4760,7 @@ Also see `denote-id-only-link-in-context-regexp'.")
 
 (defvar denote-org-link-in-context-regexp
   (concat "\\[\\[" "denote:"
-          "\\(?1:" denote-id-regexp "\\)"
+          "\\(?1:[^][]*?\\)"
           "\\(?:::.*\\)?" "]"
           "\\[" "\\(?2:" ".*?" "\\)" "]]")
   "Regexp to match an Org link in its context.
@@ -4768,12 +4768,12 @@ The format of such links is `denote-org-link-format'.")
 
 (defvar denote-md-link-in-context-regexp
   (concat "\\[" "\\(?2:" ".*?" "\\)" "]"
-          "(denote:"  "\\(?1:" denote-id-regexp "\\)" ")")
+          "(denote:"  "\\(?1:[^][]*?\\)" ")")
   "Regexp to match a Markdown link in its context.
 The format of such links is `denote-md-link-format'.")
 
 (defvar denote-id-only-link-in-context-regexp
-  (concat "\\[\\[" "denote:"  "\\(?1:" denote-id-regexp "\\)" "]]")
+  (concat "\\[\\[" "denote:"  "\\(?1:[^][]*?\\)" "]]")
   "Regexp to match an identifier-only link in its context.
 The format of such links is `denote-id-only-link-format'."  )
 
