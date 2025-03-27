@@ -496,7 +496,7 @@ and/or when the user invokes the command `denote-date'."
   :package-version '(denote . "0.6.0")
   :type 'boolean)
 
-(defcustom denote-org-store-link-to-heading 'id
+(defcustom denote-org-store-link-to-heading nil
   "Determine whether `org-store-link' links to the current Org heading.
 
 [ Remember that what `org-store-link' does is merely collect a link.  To
@@ -509,8 +509,6 @@ links only to the current file (by using the file's identifier).  For
 example:
 
     [[denote:20240118T060608][Some test]]
-
-This is what Denote was doing in versions prior to 2.3.0.
 
 If the value is `context', the link consists of the file's identifier
 and the text of the current heading, like this:
@@ -558,10 +556,10 @@ navigates to that heading.
   identifier of the file, even if this user option is set to a
   non-nil value.  ]"
   :group 'denote
-  :package-version '(denote . "3.2.0")
-  :type '(choice (const :tag "No link to heading" nil)
+  :package-version '(denote . "4.0.0")
+  :type '(choice (const :tag "No link to heading (default)" nil)
                  (const :tag "Link to the context" context)
-                 (const :tag "Link wtih CUSTOM_ID" id)))
+                 (const :tag "Link wtih CUSTOM_ID, creating it if needed" id)))
 
 (defcustom denote-templates nil
   "Alist of content templates for new notes.
@@ -1403,7 +1401,7 @@ something like .org even if the actual file extension is
         (car files)
       (seq-find
        (lambda (file)
-         (let ((file-extension (denote-get-file-extension file)))
+         (let ((file-extension (denote-get-file-extension-sans-encryption file)))
            (and (denote-file-has-supported-extension-p file)
                 (or (string= (denote--file-extension denote-file-type)
                              file-extension)
@@ -1773,7 +1771,7 @@ When called from Lisp, the arguments are a string, a symbol among
           buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
-(defalias 'denote-sort-dired 'denote-dired
+(defalias 'denote-dired 'denote-sort-dired
   "Alias for `denote-sort-dired' command.")
 
 ;;;; Keywords
