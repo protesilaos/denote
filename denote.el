@@ -5388,6 +5388,12 @@ To be assigned to `markdown-follow-link-functions'."
   (mouse-set-point ev)
   (denote--link-open-at-point-subr))
 
+(defun denote-get-link-face (query)
+  "Return appropriate face for QUERY."
+  (if (denote-identifier-p query)
+      'denote-faces-link
+    'denote-faces-query-link))
+
 (defun denote--fontify-links-subr (query limit)
   "Do the work of the font-lock match for QUERY up to LIMIT.
 Implementation based on the function `org-activate-links'."
@@ -5399,13 +5405,13 @@ Implementation based on the function `org-activate-links'."
                (visible-start (or (match-beginning 2) start))
                (visible-end (or (match-end 2) end))
                (query (match-string-no-properties 1)))
-          (let* ((properties `(face denote-faces-link
-                                    mouse-face highlight
-                                    keymap ,denote-link-mouse-map
-                                    denote-link-query-part ,query
-                                    help-echo query
-                                    htmlize-link (:uri ,query)
-                                    font-lock-multiline t))
+          (let* ((properties `( face ,(denote-get-link-face query)
+                                mouse-face highlight
+                                keymap ,denote-link-mouse-map
+                                denote-link-query-part ,query
+                                help-echo query
+                                htmlize-link (:uri ,query)
+                                font-lock-multiline t))
                  (non-sticky-props
                   '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
                  (face-property 'link)
@@ -5858,12 +5864,6 @@ backend."
               (path (denote-get-path-by-id identifier)))
     path))
 
-(defun denote-link-ol-face (path)
-  "Return appropriate face for PATH."
-  (if (denote-identifier-p path)
-      'denote-faces-link
-    'denote-faces-query-link))
-
 ;; The `eval-after-load' part with the quoted lambda is adapted from
 ;; Elfeed: <https://github.com/skeeto/elfeed/>.
 
@@ -5878,7 +5878,7 @@ backend."
           (org-link-set-parameters
            "denote"
            :follow #'denote-link-ol-follow
-           :face #'denote-link-ol-face
+           :face #'denote-get-link-face
            :help-echo #'denote-link-ol-help-echo
            :complete #'denote-link-ol-complete
            :store #'denote-link-ol-store
