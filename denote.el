@@ -639,7 +639,7 @@ and/or the documentation string of `display-buffer'."
 
 (defcustom denote-query-links-display-buffer-action
   '((display-buffer-reuse-mode-window display-buffer-below-selected)
-    (mode . denote-query-mode)
+    (mode . (denote-query-mode dired))
     (window-height . 0.3)
     (preserve-size . (t . t)))
   "The action used to display query links.
@@ -1739,7 +1739,7 @@ also prompt for SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
    OMIT-CURRENT have been applied.
 
 When called from Lisp, the arguments are a string, a symbol among
-`denote-sort-components', and a non-nil value, respectively."
+`denote-sort-components', a non-nil value, and a string, respectively."
   (interactive
    (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (let ((component (or sort-by-component
@@ -1770,9 +1770,7 @@ When called from Lisp, the arguments are a string, a symbol among
                           ;; `denote-update-dired-buffers'.
                           (kill-buffer dired-buffer)
                           (denote-sort-dired files-matching-regexp component reverse-sort exclude-rx))))
-          ;; Because of the above NOTE, I am printing a message.  Not
-          ;; what I want, but it is better than nothing...
-          (message denote-sort-dired-buffer-name))
+          buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defalias 'denote-sort-dired 'denote-dired
@@ -5214,10 +5212,10 @@ Place the buffer below the current window or wherever the user option
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
   "Alias for `denote-backlinks' command.")
 
-(defvar denote-query-history nil
-  "Minibuffer history of `denote-query-prompt'.")
+(defvar denote-query-link-history nil
+  "Minibuffer history of `denote-query-link-prompt'.")
 
-(defun denote-query-prompt (&optional initial-query prompt-text)
+(defun denote-query-link-prompt (&optional initial-query prompt-text)
   "Prompt for query string.
 With optional INITIAL-QUERY use it as the initial minibuffer text.  With
 optional PROMPT-TEXT use it in the minibuffer instead of the default
@@ -5230,21 +5228,89 @@ non-nil value."
     (setq initial-query nil))
   (denote--with-conditional-completion
    'denote-signature-prompt
-   (format-prompt (or prompt-text "Query in files") nil)
-   denote-query-history
+   (format-prompt (or prompt-text "Query for") nil)
+   denote-query-link-history
    initial-query))
 
+(defconst denote-query-link-types '(query-contents query-filenames)
+  "Types of query links.")
+
+(defun denote--format-query-link (type query)
+  "Format QUERY link of TYPE.
+Return an error if TYPE is not one among the symbols specified in
+`denote-query-link-types'."
+  (unless (memq type denote-query-link-types)
+    (error "Type `%s' is not one among `denote-query-link-types'" type))
+  (format "[[denote:%s:%s]]" type query))
+
 ;;;###autoload
-(defun denote-query (query)
-  "Create query link at point, prompting for QUERY or using the active region.
-Query links do not point to any file but instead initiate a search in
-the contents of files inside the variable `denote-directory'.  They are
-always formatted as [[denote:QUERY]].  This is unlike what `denote-link'
-and related commands do, which always establish a direct connection to a
-file and their format is more flexible."
-  (interactive (list (or (denote--get-active-region-content) (denote-query-prompt))))
+(defun denote-query-contents-link (query)
+  "Insert query link for file contents.
+Prompt for QUERY or use the text of the active region.
+
+Query links of this sort do not point to any file but instead initiate a
+search in the contents of files inside the variable `denote-directory'.
+They are always formatted as [[denote:query-contents:QUERY]].  This is
+unlike what `denote-link' and related commands do, which always
+establish a direct connection to a file and their format is more
+flexible."
+  (interactive
+   (list
+    (or (denote--get-active-region-content)
+        (denote-query-link-prompt nil "Query in file contents"))))
   (denote--delete-active-region-content)
-  (insert (format "[[denote:%s]]" query)))
+  (insert (denote--format-query-link 'query-contents query)))
+
+;;;###autoload
+(defun denote-query-filenames-link (query)
+  "Insert query link for file names.
+Prompt for QUERY or use the text of the active region.
+
+Query links of this sort do not point to any file but instead initiate a
+search in the contents of files inside the variable `denote-directory'.
+They are always formatted as [[denote:query-filenames:QUERY]].  This is
+unlike what `denote-link' and related commands do, which always
+establish a direct connection to a file and their format is more
+flexible."
+  (interactive
+   (list
+    (or (denote--get-active-region-content)
+        (denote-query-link-prompt nil "Query in file names"))))
+  (denote--delete-active-region-content)
+  (insert (denote--format-query-link 'query-filenames query)))
+
+(defvar denote--query-last-dired-buffer nil
+  "Buffer object produced by the last query for file names.")
+
+(defun denote--act-on-query-link (query)
+  "Act on QUERY link.
+QUERY is a string of the form TYPE:SEARCH, where TYPE is one among
+`denote-query-link-types' while SEARCH is the regular expression to
+search for."
+  (cond
+   ((string-prefix-p "query-contents:" query)
+    (setq query (replace-regexp-in-string "query-contents:" "" query))
+    (funcall denote-query-links-buffer-function query denote-query-links-display-buffer-action))
+   ((string-prefix-p "query-filenames:" query)
+    (setq query (replace-regexp-in-string "query-filenames:" "" query))
+    ;; NOTE 2025-03-27: I do not think we need to add another
+    ;; parameter to `denote-sort-dired' for handling the
+    ;; `display-buffer'.  This is a special case, but we can always
+    ;; change it later if the need arises.
+    ;;
+    ;; Here we handle the buffer and window state to make it behave
+    ;; like the Xref buffer.  Otherwise, Dired does not reuse its
+    ;; buffer (which is generally okay).
+    (let ((buffer (save-window-excursion (denote-sort-dired query nil nil nil))))
+      (when denote--query-last-dired-buffer
+        (when-let* ((window (get-buffer-window denote--query-last-dired-buffer))
+                    (_ (window-live-p window)))
+          (delete-window window))
+        (kill-buffer denote--query-last-dired-buffer))
+      (display-buffer buffer denote-query-links-display-buffer-action)
+      (setq denote--query-last-dired-buffer buffer)))
+   (t
+    (error "Cannot open `%s' of unknown link type" query))))
 
 ;;;;; Link buttons
 
@@ -5283,11 +5349,10 @@ To be assigned to `markdown-follow-link-functions'."
 
 (defun denote--link-open-at-point-subr ()
   "Open link at point."
-  (let* ((query (get-text-property (point) 'denote-link-query-part))
-         (path (denote-get-path-by-id query)))
-    (if path
+  (let ((query (get-text-property (point) 'denote-link-query-part)))
+    (if-let* ((path (denote-get-path-by-id query)))
         (funcall denote-open-link-function path)
-      (funcall denote-query-links-buffer-function query denote-query-links-display-buffer-action))))
+      (denote--act-on-query-link query))))
 
 (defun denote-link-open-at-point ()
   "Open Denote link at point."
@@ -5659,14 +5724,14 @@ option akin to that of standard Org `file:' link types.  Read Info
 node `(org) Query Options'.
 
 If LINK is not an identifier, then it is not pointing to a file but to a
-query of file contents.  Those are displayed in a separate buffer which
-uses `denote-query-mode'.
+query of file contents or file names (see the commands
+`denote-query-contents-link' and `denote-query-filenames-link').
 
 Uses the function `denote-directory' to establish the path to the file."
   (if-let* ((match (denote-link--ol-resolve-link-to-target link))
             (_ (file-exists-p match)))
       (org-link-open-as-file match nil)
-    (funcall denote-query-links-buffer-function match denote-query-links-display-buffer-action)))
+    (denote--act-on-query-link match)))
 
 ;;;###autoload
 (defun denote-link-ol-complete ()
