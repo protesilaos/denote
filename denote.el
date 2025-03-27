@@ -5174,6 +5174,8 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
   "Function to make an Xref buffer showing query link results.
 It accepts the same arguments as `denote-make-links-buffer'.")
 
+;;;;;; Backlinks
+
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
@@ -5204,6 +5206,8 @@ Place the buffer below the current window or wherever the user option
 
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
   "Alias for `denote-backlinks' command.")
+
+;;;;;; Query links
 
 (defvar denote-query-link-history nil
   "Minibuffer history of `denote-query-link-prompt'.")
