@@ -5255,6 +5255,9 @@ flexible."
    (list
     (or (denote--get-active-region-content)
         (denote-query-link-prompt nil "Query in file CONTENTS"))))
+  (unless (or (denote--file-type-org-extra-p)
+              (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (denote--delete-active-region-content)
   (insert (denote--format-query-link 'query-contents query)))
 
@@ -5273,6 +5276,9 @@ flexible."
    (list
     (or (denote--get-active-region-content)
         (denote-query-link-prompt nil "Query in file NAMES"))))
+  (unless (or (denote--file-type-org-extra-p)
+              (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
+    (user-error "The current file type is not recognized by Denote"))
   (denote--delete-active-region-content)
   (insert (denote--format-query-link 'query-filenames query)))
 
