@@ -5382,7 +5382,7 @@ To be assigned to `markdown-follow-link-functions'."
 
 (defun denote-get-link-face (query)
   "Return appropriate face for QUERY."
-  (if (denote-identifier-p query)
+  (if (denote-identifier-p (string-trim-right query ":.*"))
       'denote-faces-link
     'denote-faces-query-link))
 
@@ -5758,7 +5758,7 @@ query of file contents or file names (see the commands
 
 Uses the function `denote-directory' to establish the path to the file."
   (if-let* ((match (denote-link--ol-resolve-link-to-target link))
-            (_ (file-exists-p match)))
+            (_ (file-exists-p (string-trim-right match ":.*"))))
       (org-link-open-as-file match nil)
     (denote--act-on-query-link match)))
 
