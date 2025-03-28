@@ -5280,14 +5280,10 @@ across the variable `denote-directory'."
 ;;;###autoload
 (defun denote-query-filenames-link (query)
   "Insert query link for file names.
-Prompt for QUERY or use the text of the active region.
-
-Query links of this sort do not point to any file but instead initiate a
-search in the contents of files inside the variable `denote-directory'.
-They are always formatted as [[denote:query-filenames:QUERY]].  This is
-unlike what `denote-link' and related commands do, which always
-establish a direct connection to a file and their format is more
-flexible."
+Prompt for QUERY or use the text of the active region.  When the user
+follows this link, place any matches in a separate buffer (using the
+built-in Dired mechanism).  This is the equivalent of a Unix find
+command across the variable `denote-directory'."
   (interactive
    (list
     (or (denote--get-active-region-content)
