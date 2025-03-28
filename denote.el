@@ -5655,10 +5655,17 @@ This command is meant to be used from a Dired buffer."
      :help "Rename marked files in Dired using their front matter as input"
      :enable (derived-mode-p 'dired-mode)]
     "---"
-    ["Insert a link" denote-link
+    ["Insert a direct link" denote-link
      :help "Insert link to a file in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
-    ["Insert links with regexp" denote-add-links
+    ["Insert a query link for file contents" denote-query-contents-link
+     :help "Insert query link searching for file contents in the `denote-directory'"
+     :enable (derived-mode-p 'text-mode)]
+    ["Insert a query link for file names" denote-query-filenames-link
+     :help "Insert query link searching for file names in the `denote-directory'"
+     :enable (derived-mode-p 'text-mode)]
+    "---"
+    ["Insert links to files matching regexp" denote-add-links
      :help "Insert links to files matching regexp in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
     ["Insert Dired marked files as links" denote-link-dired-marked-notes
