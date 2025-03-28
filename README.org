@@ -220,10 +220,6 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
   ;; Pick dates, where relevant, with Org's advanced interface:
   (setq denote-date-prompt-use-org-read-date t)
 
-  ;; By default, we do not show the context of links.  We just display
-  ;; file names.  This provides a more informative view.
-  (setq denote-backlinks-show-context t)
-
   ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
   (denote-rename-buffer-mode 1))
 #+end_src
@@ -2569,30 +2565,44 @@ front matter.
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
 
-Denote offers several commands for linking between notes.
+[ Support for query links is part of {{{development-version}}}. ]
 
-All links target files which are Denote files. This means that they
-have our file-naming scheme. Files need to be inside the
-~denote-directory~ or one of its subdirectories. No other file is
-recognised.
+Denote offers several commands for linking between notes. Those use
+the =denote:= hyperlink type. There are two types of links supported
+by Denote:
 
-The following sections delve into the details ([[#h:4f354db1-aa78-47fd-ac60-c3d1e0f0b0a4][Why are some Org links opening outside Emacs?]]).
+- Direct links :: A direct link points to a file inside the
+  ~denote-directory~. The link is constructed by using the =denote:=
+  prefix and the target file's identifier ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+  This looks like =denote:20250328T075526=. The syntax of a link
+  depends on the file type. For example, in Org and plain text links look like
+  =[[denote:20250328T075526][The title of the target file]]=, while in
+  Markdown they are written as =[The title of the target file](denote:20250328T075526)=.
 
-** Adding a single link
+- Query links :: The =denote:= hyperlink type also supports special
+  qualifiers that change how the target of the link is interpreted.
+  The qualifier is a special token than tells Denote how to treat the
+  target of the link. It is written thus =denote:TOKEN:QUERY=. There
+  are two kinds of tokens: =query-contents= and =query-filenames=.
+  Those determine how the query terms are used. As their names
+  suggest, these two tokens trigger a search in (i) the file contents
+  of all readable files or (ii) in the file names only. They are, in
+  other words, counterparts of the Unix ~grep~ and ~find~ programs,
+  respectively.
+
+The following sections cover all the details ([[#h:4f354db1-aa78-47fd-ac60-c3d1e0f0b0a4][Why are some Org links opening outside Emacs?]]).
+
+** Adding a single direct link
 :PROPERTIES:
 :CUSTOM_ID: h:5e5e3370-12ab-454f-ba09-88ff44214324
 :END:
 
 #+findex: denote-link
-The ~denote-link~ command inserts a link at point to a file specified
+The ~denote-link~ command inserts a link at point to a file selected
 at the minibuffer prompt. Links are formatted depending on the file
 type of the current note. In Org and plain text buffers, links are
 formatted thus: =[[denote:IDENTIFIER][DESCRIPTION]]=. While in
 Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
-
-[ We optionally support links to Org headings ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
-  Other file types do not have the features of Org, so we cannot
-  generalise this. ]
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=, regardless of
@@ -2612,35 +2622,54 @@ By default, the description of the link is determined thus:
   name.
 - If the target file has no signature, the title is used.
 
-Links are created only for files which qualify as a "note" for our
-purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Users who need to link to Denote files from
-anywhere, can write a simple command to that effect:
-
-#+begin_src emacs-lisp
-(defun my-denote-link-global (file file-type description &optional id-only)
-  "Like the `denote-link', but works in any buffer.
-The FILE, FILE-TYPE, DESCRIPTION, and ID-ONLY have the same meaning as
-in `denote-link'."
-  (interactive
-   (let* ((file (denote-file-prompt nil "Link to FILE"))
-          (file-type (denote-filetype-heuristics buffer-file-name))
-          (description (when (file-exists-p file)
-                         (denote--link-get-description file))))
-     (list file file-type description current-prefix-arg)))
-  (unless (file-exists-p file)
-    (user-error "The linked file does not exists"))
-  (let ((beg (point)))
-    (denote--delete-active-region-content)
-    (insert (denote-format-link file description file-type id-only))
-    (unless (derived-mode-p 'org-mode)
-      (make-button beg (point) 'type 'denote-link-button))))
-#+end_src
-
 #+vindex: denote-faces-link
-Links are styled with the ~denote-faces-link~ face, which looks exactly
-like an ordinary link by default.  This is just a convenience for the
-user/theme in case they want =denote:= links to remain distinct from
-other links.
+Links are styled with the ~denote-faces-link~ face, which looks
+exactly like an ordinary link by default.
+
+[ We optionally support direct links to a file followed by an extra
+  target to an Org headings ([[#h:d99de1fb-b1b7-4a74-8667-575636a4d6a4][The ~denote-org-store-link-to-heading~ user option]]).
+  Other file types do not have the features of Org, so we cannot
+  generalise this. ]
+
+** Adding a query link
+:PROPERTIES:
+:CUSTOM_ID: h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d
+:END:
+
+[ Query links are part of {{{development-version}}}. ]
+
+As noted in the introduction to this section of the manual, the
+=denote:= hyperlink type supports query links ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Unlike
+direct links, they do not point to any given file. Instead, they
+trigger a search, whose results are displayed in a separate buffer.
+
+Query links are expressed as =denote:TOKEN:QUERY=, where =TOKEN= is
+either =query-contents= or =query-filenames=, while =QUERY= is a
+string or Emacs regular expression to search for.
+
+The exact syntax of a query link depends on the file type. In Org and
+plain text buffers, links are of the form =[[denote:TOKEN:QUERY][QUERY]]=.
+In Markdown, they are formatted as  =[QUERY](denote:TOKEN:QUERY)=. In
+all cases, the description of the link is the query text itself.
+
+#+findex: denote-query-contents-link
+The command ~denote-query-contents-link~ inserts a link at point that
+triggers a search in the file contents of all readable documents in
+the ~denote-directory~. This is the equivalent of the Unix ~grep~
+command and uses the built-in Emacs Xref interface ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' or query links' buffer creation?]]).
+Matches are displayed in a separate buffer, highlighting the exact text
+while showing its context.
+
+#+findex: denote-query-filenames-link
+The command ~denote-query-filenames-link~ creates a link at point that
+initiates a search across file names in the ~denote-directory~. This
+is the equivalent of the Unix ~find~ command. Results are placed in a
+Dired buffer.
+
+#+vindex: denote-query-links-display-buffer-action
+The user option ~denote-query-links-display-buffer-action~ controls
+the placement of query link buffers. By default, they are designed to
+appear below the current window.
 
 ** The ~denote-open-link-function~ user option
 :PROPERTIES:
@@ -2901,28 +2930,24 @@ creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing 
 :CUSTOM_ID: h:c73f1f68-e214-49d5-b369-e694f6a5d708
 :END:
 
+[ Older versions of Denote had two types of formatting for the
+  backlinks' buffer. As part of version =4.0.0= ({{{development-version}}}),
+  we only support the standard Xref view which shows matches in their
+  context. The user option ~denote-backlinks-show-context~ is thus
+  removed. ]
+
 #+findex: denote-backlinks
 The command ~denote-backlinks~ produces a bespoke buffer which
-displays backlinks to the current note.  A "backlink" is a link back
-to the present entry.
+displays backlinks to the current note. A "backlink" is a link back to
+the present entry. Backlinks can be generated for any file type that
+has a Denote file-naming scheme, such as PDFs, images, and videos, as
+well as the regular plain text files.
 
-By default, the backlinks' buffer is designed to display the file name
-of the note linking to the current entry.  Each file name is presented
-on its own line, like this:
-
-#+begin_example
-Backlinks to "On being honest" (20220614T130812)
-------------------------------------------------
-
-20220614T145606--let-this-glance-become-a-stare__journal.txt
-20220616T182958--feeling-butterflies-in-your-stomach__journal.txt
-#+end_example
-
-#+vindex: denote-backlinks-show-context
-When the user option ~denote-backlinks-show-context~ is non-nil, the
-backlinks' buffer displays the line on which a link to the current
-note occurs.  It also shows multiple occurrences, if present.  It looks
-like this (and has the appropriate fontification):
+The backlinks' buffer is, in essence, the equivalent of a Unix ~grep~
+command across the ~denote-directory~ ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]).
+It groups matches by file name, while it displays the line on which a
+link to the current file occurs together with its context. It looks
+like this (plus the appropriate fontification):
 
 #+begin_example
 Backlinks to "On being honest" (20220614T130812)
@@ -2935,57 +2960,27 @@ Backlinks to "On being honest" (20220614T130812)
 62: indifference.  In [[denote:20220614T130812][On being honest]] I alluded
 #+end_example
 
-#+findex: denote-backlinks-toggle-context
-The command ~denote-backlinks-toggle-context~ will toggle between the
-compact and detailed views inside of the current backlinks buffer.
-
 Note that the width of the lines in the context depends on the
-underlying file.  In the above example, the lines are split at the
-~fill-column~.  Long lines will show up just fine.  Also note that the
+underlying file. In the above example, the lines are split at the
+~fill-column~. Long lines will show up just fine. Also note that the
 built-in user option ~xref-truncation-width~ can truncate long lines
 to a given maximum number of characters.
 
-[[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]
-
-#+findex: denote-backlinks-mode
-#+vindex: denote-backlinks-mode-map
-The backlinks' buffer runs the major-mode ~denote-backlinks-mode~.  It
-binds keys to move between links with =n= (next) and =p= (previous).
-These are stored in the ~denote-backlinks-mode-map~ (use =M-x
-describe-mode= (=C-h m=) in an unfamiliar buffer to learn more about
-it).  When the user option ~denote-backlinks-show-context~ is non-nil,
-all relevant Xref key bindings are fully functional: again, check
-~describe-mode~.
-
-The backlinking facility uses Emacs' built-in Xref infrastructure.  On
-some operating systems, the user may need to add certain executables
-to the relevant environment variable.
-
-[[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]
-
-Backlinks to the current file can also be visited by using the
-minibuffer completion interface with the ~denote-find-backlink~
-command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
+As with query links, the backlinking facility uses Emacs' built-in
+Xref infrastructure ([[#h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d][Adding a query link]]). On some operating systems,
+the user may need to add certain executables to the relevant
+environment variable ([[#h:42f6b07e-5956-469a-8294-17f9cf62eb2b][Why do I get "Search failed with status 1" when I search for backlinks?]]).
 
 #+vindex: denote-backlinks-display-buffer-action
 The placement of the backlinks' buffer is subject to the user option
 ~denote-backlinks-display-buffer-action~. Due to the nature of the
 underlying ~display-buffer~ mechanism, this inevitably is a relatively
 advanced feature. By default, the backlinks' buffer is displayed below
-the current window. The doc string of our user option includes a
-sample configuration that places the buffer in a left side window
-instead. Reproducing it here for the sake of convenience:
+the current window.
 
-#+begin_src emacs-lisp
-(setq denote-backlinks-display-buffer-action
-      '((display-buffer-reuse-window
-         display-buffer-in-side-window)
-        (side . left)
-        (slot . 99)
-        (window-width . 0.3)
-        (dedicated . t)
-        (preserve-size . (t . t))))
-#+end_src
+Backlinks to the current file can also be visited by using the
+minibuffer completion interface with the ~denote-find-backlink~
+command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
 
 ** Writing metanotes
 :PROPERTIES:
@@ -6065,7 +6060,7 @@ in their Org or Denote configuration:
 Each of these adds a new entry to the existing value of that user
 option. Replace =md= or =html= with the desired file type extension.
 
-** Speed up backlinks' buffer creation?
+** Speed up backlinks' or query links' buffer creation?
 :PROPERTIES:
 :CUSTOM_ID: h:893eec49-d7be-4603-bcff-fcc247244011
 :END:
