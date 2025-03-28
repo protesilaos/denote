@@ -5450,6 +5450,7 @@ To be used as a `thing-at' provider."
 
 (defvar thing-at-point-provider-alist)
 
+;;;###autoload
 (defun denote-fontify-links-mode-maybe ()
   "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
   (when (and buffer-file-name
@@ -5457,6 +5458,7 @@ To be used as a `thing-at' provider."
              (denote-file-is-note-p buffer-file-name))
     (denote-fontify-links-mode)))
 
+;;;###autoload
 (define-minor-mode denote-fontify-links-mode
   "A minor mode to fontify and fold Denote links.
 
