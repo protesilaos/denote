@@ -5684,6 +5684,9 @@ This command is meant to be used from a Dired buffer."
      :help "Create new note with the chosen command and link to it from the current file"
      :enable (derived-mode-p 'text-mode)]
     "---"
+    ["Generate sorted and filtered Dired listing" denote-sort-dired
+     :help "Generate a sorted and filtered Dired listing of files in the `denote-directory'"]
+    "---"
     ["Highlight Dired file names" denote-dired-mode
      :help "Apply colors to Denote file name components in Dired"
      :enable (derived-mode-p 'dired-mode)
