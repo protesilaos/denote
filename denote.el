@@ -4989,7 +4989,8 @@ Also see `denote-link-return-backlinks'."
 
 ;;;###autoload
 (defun denote-find-link ()
-  "Use minibuffer completion to visit linked file."
+  "Use minibuffer completion to visit linked file.
+Also see `denote-find-backlink'."
   (declare (interactive-only t))
   (interactive)
   (find-file
@@ -4998,34 +4999,6 @@ Also see `denote-link-return-backlinks'."
     (denote-select-linked-file-prompt
      (or (denote-link-return-links)
          (user-error "No links found"))))))
-
-(defun denote-link-return-backlinks (&optional file)
-  "Return list of backlinks in current or optional FILE.
-Also see `denote-link-return-links'."
-  (when-let* ((current-file (or file (buffer-file-name)))
-              (id (denote-retrieve-filename-identifier-with-error current-file)))
-    (delete current-file (denote-retrieve-files-xref-query id))))
-
-;; TODO 2024-09-04: Instead of using `denote-link-return-backlinks' we
-;; should have a function that does not try to find all backlinks but
-;; simply exits as soon as it finds one.
-(defun denote--file-has-backlinks-p (file)
-  "Return non-nil if FILE has backlinks."
-  (not (zerop (length (denote-link-return-backlinks file)))))
-
-;;;###autoload
-(defun denote-find-backlink ()
-  "Use minibuffer completion to visit backlink to current file.
-
-Like `denote-find-link', but select backlink to follow."
-  (declare (interactive-only t))
-  (interactive)
-  (find-file
-   (denote-get-path-by-id
-    (denote-extract-id-from-string
-     (denote-select-linked-file-prompt
-      (or (denote-link-return-backlinks)
-          (user-error "No backlinks found")))))))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
@@ -5211,6 +5184,34 @@ Place the buffer below the current window or wherever the user option
 
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
   "Alias for `denote-backlinks' command.")
+
+
+(defun denote-link-return-backlinks (&optional file)
+  "Return list of backlinks in current or optional FILE.
+Also see `denote-link-return-links'."
+  (when-let* ((current-file (or file (buffer-file-name)))
+              (id (denote-retrieve-filename-identifier-with-error current-file)))
+    (delete current-file (denote-retrieve-files-xref-query id))))
+
+;; TODO 2024-09-04: Instead of using `denote-link-return-backlinks' we
+;; should have a function that does not try to find all backlinks but
+;; simply exits as soon as it finds one.
+(defun denote--file-has-backlinks-p (file)
+  "Return non-nil if FILE has backlinks."
+  (not (zerop (length (denote-link-return-backlinks file)))))
+
+;;;###autoload
+(defun denote-find-backlink ()
+  "Use minibuffer completion to visit backlink to current file.
+Alo see `denote-find-link'."
+  (declare (interactive-only t))
+  (interactive)
+  (find-file
+   (denote-get-path-by-id
+    (denote-extract-id-from-string
+     (denote-select-linked-file-prompt
+      (or (denote-link-return-backlinks)
+          (user-error "No backlinks found")))))))
 
 ;;;;;; Query links
 
