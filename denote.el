@@ -5552,6 +5552,42 @@ inserts links with just the identifier."
 (defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
   "Alias for `denote-add-links' command.")
 
+;;;;; Link to file with matching contents
+
+;;;###autoload
+(defun denote-link-to-file-with-contents (query &optional id-only)
+  "Link to a file whose contents match QUERY.
+This is similar to `denote-link', except that the file prompt is limited
+to files matching QUERY.  Optional ID-ONLY has the same meaning as in
+`denote-link'."
+  (interactive
+   (list (denote-query-link-prompt nil "Files whose contents include QUERY")))
+  (if-let* ((files (denote-retrieve-files-xref-query query))
+            ;; NOTE 2025-03-29: Maybe we should have a named prompt
+            ;; for this case, but I think we do not need it right now.
+            (file (completing-read
+                   (format "Select FILE with contents `%s': "
+                           (propertize query 'face 'denote-faces-prompt-current-name))
+                   (denote--completion-table 'file files)
+                   nil t nil 'denote-file-history)))
+      (denote-link file
+                   (denote-filetype-heuristics buffer-file-name)
+                   (denote-get-link-description file)
+                   id-only)
+    (user-error "No files include the query `%s' in their contents" query)))
+
+;;;###autoload
+(defun denote-link-to-all-files-with-contents (query &optional id-only)
+  "Link to all files whose contents match QUERY.
+This is similar to `denote-add-links', except it searches inside file
+contents, not file names.  Optional ID-ONLY has the same meaning as in
+`denote-link' and `denote-add-links'."
+  (interactive
+   (list (denote-query-link-prompt nil "Files whose contents include QUERY")))
+  (if-let* ((files (denote-retrieve-files-xref-query query)))
+      (denote-link--insert-links files (denote-filetype-heuristics buffer-file-name) id-only)
+    (user-error "No files include the query `%s' in their contents" query)))
+
 ;;;;; Links from Dired marks
 
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
