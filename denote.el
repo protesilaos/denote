@@ -5530,10 +5530,10 @@ Optional INCLUDE-DATE has the same meaning as in `denote-format-link'."
 
 ;;;###autoload
 (defun denote-add-links (regexp &optional id-only)
-  "Insert links to all notes matching REGEXP.
-Use this command to reference multiple files at once.
-Particularly useful for the creation of metanotes (read the
-manual for more on the matter).
+  "Insert links to all files whose file names match REGEXP.
+Use this command to reference multiple files at once.  Particularly
+useful for the creation of metanotes (read the manual for more on the
+matter).
 
 Optional ID-ONLY has the same meaning as in `denote-link': it
 inserts links with just the identifier."
