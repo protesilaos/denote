@@ -385,7 +385,12 @@ components are actually used in the order specified herein.
 Before deciding on this, please consider the longer-term implications
 of file names with varying patterns. Consistency makes things
 predictable and thus easier to find. So pick one order and never touch
-it again. When in doubt, leave the default file-naming scheme as-is."
+it again. When in doubt, leave the default file-naming scheme as-is.
+
+This user option should only be used to build a file name.  Custom code
+should not have behaviors that depend on its value.  The reason is that
+its value can change over time and Denote should be able to handle past
+and current notes."
   :group 'denote
   :package-version '(denote . "3.0.0")
   ;; FIXME 2024-05-19: This technically works to display the user
