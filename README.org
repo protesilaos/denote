@@ -2598,11 +2598,12 @@ The following sections cover all the details ([[#h:4f354db1-aa78-47fd-ac60-c3d1e
 :END:
 
 #+findex: denote-link
-The ~denote-link~ command inserts a link at point to a file selected
-at the minibuffer prompt. Links are formatted depending on the file
-type of the current note. In Org and plain text buffers, links are
-formatted thus: =[[denote:IDENTIFIER][DESCRIPTION]]=. While in
-Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
+#+findex: denote-insert-link
+The ~denote-link~ command (alias ~denote-insert-link~) inserts a link
+at point to a file selected at the minibuffer prompt. Links are
+formatted depending on the file type of the current note. In Org and
+plain text buffers, links are formatted thus: =[[denote:IDENTIFIER][DESCRIPTION]]=.
+While in Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=, regardless of
@@ -3001,11 +3002,13 @@ creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing 
   removed. ]
 
 #+findex: denote-backlinks
-The command ~denote-backlinks~ produces a bespoke buffer which
-displays backlinks to the current note. A "backlink" is a link back to
-the present entry. Backlinks can be generated for any file type that
-has a Denote file-naming scheme, such as PDFs, images, and videos, as
-well as the regular plain text files.
+#+findex: denote-show-backlinks-buffer
+The command ~denote-backlinks~ (alias ~denote-show-backlinks-buffer~)
+produces a bespoke buffer which displays backlinks to the current
+note. A "backlink" is a link back to the present entry. Backlinks can
+be generated for any file type that has a Denote file-naming scheme,
+such as PDFs, images, and videos, as well as the regular plain text
+files.
 
 The backlinks' buffer is, in essence, the equivalent of a Unix ~grep~
 command across the ~denote-directory~ ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]).
@@ -3144,27 +3147,7 @@ In files whose major mode is ~markdown-mode~, the default key binding
 correctly resolves =denote:= links. Interested users can refer to the
 function ~denote-link-markdown-follow~ for the implementation details.
 
-** Miscellaneous information about links
-:PROPERTIES:
-:CUSTOM_ID: h:dd8f2231-8d77-49b9-acc4-af525c68b271
-:END:
-
-*** Aliases for the linking commands
-:PROPERTIES:
-:CUSTOM_ID: h:078856d9-f608-43a8-be84-f2cad4c27d0e
-:END:
-
-#+findex: denote-insert-link
-#+findex: denote-show-backlinks-buffer
-#+findex: denote-link-insert-links-matching-regexp
-For convenience, the ~denote-link~ command has an alias called
-~denote-insert-link~.  The ~denote-backlinks~ can also be used as
-~denote-show-backlinks-buffer~.  While ~denote-add-links~ is
-aliased ~denote-link-insert-links-matching-regexp~.  The purpose of
-these aliases is to offer alternative, more descriptive names of
-select commands.
-
-*** The ~denote-link-description-format~ to format link descriptions
+** The ~denote-link-description-format~ to format link descriptions
 :PROPERTIES:
 :CUSTOM_ID: h:f634427c-b451-40e2-993e-e00ac627af68
 :END:
