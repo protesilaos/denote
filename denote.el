@@ -5549,9 +5549,6 @@ inserts links with just the identifier."
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
-(defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
-  "Alias for `denote-add-links' command.")
-
 ;;;;; Link to file with matching contents
 
 ;;;###autoload
