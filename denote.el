@@ -5694,6 +5694,9 @@ This command is meant to be used from a Dired buffer."
     ["Insert a direct link" denote-link
      :help "Insert link to a file in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
+    ["Insert a direct link to file with contents" denote-link-to-file-with-contents
+     :help "Insert link to a file in the `denote-directory' whose contents include a query"
+     :enable (derived-mode-p 'text-mode)]
     ["Insert a query link for file contents" denote-query-contents-link
      :help "Insert query link searching for file contents in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
@@ -5701,8 +5704,11 @@ This command is meant to be used from a Dired buffer."
      :help "Insert query link searching for file names in the `denote-directory'"
      :enable (derived-mode-p 'text-mode)]
     "---"
-    ["Insert links to files matching regexp" denote-add-links
-     :help "Insert links to files matching regexp in the `denote-directory'"
+    ["Insert links to file names matching regexp" denote-add-links
+     :help "Insert links to file names in the `denote-directory' matching regexp"
+     :enable (derived-mode-p 'text-mode)]
+    ["Insert links to files whose contents match regexp" denote-link-to-all-files-with-contents
+     :help "Insert links to file in the `denote-directory' whose contents match regexp"
      :enable (derived-mode-p 'text-mode)]
     ["Insert Dired marked files as links" denote-link-dired-marked-notes
      :help "Rename marked files in Dired as links in a Denote buffer"
