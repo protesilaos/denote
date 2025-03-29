@@ -776,7 +776,7 @@ structure template as soon as `denote-region' is done:
   :type 'hook)
 
 (defvar denote-prompts-with-history-as-completion
-  '(denote-title-prompt denote-signature-prompt denote-files-matching-regexp-prompt)
+  '(denote-title-prompt denote-signature-prompt denote-files-matching-regexp-prompt denote-query-link-prompt)
   "Prompts that conditionally perform completion against their history.
 
 These are minibuffer prompts that ordinarily accept a free form string
@@ -5230,7 +5230,7 @@ non-nil value."
   (when (and initial-query (string-empty-p initial-query))
     (setq initial-query nil))
   (denote--with-conditional-completion
-   'denote-signature-prompt
+   'denote-query-link-prompt
    (format-prompt (or prompt-text "Query for") nil)
    denote-query-link-history
    initial-query))
