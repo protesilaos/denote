@@ -3478,14 +3478,15 @@ means of the non-interactive function ~denote-sort-files~.
 #+vindex: denote-sort-dired-extra-prompts
 By default, the ~denote-sort-dired~ command prompts for (i) a query to
 match file names, (ii) a file name component to sort by, and (iii)
-whether to reverse the sorting. Users can configure the latter two by
-modifying the user option ~denote-sort-dired-extra-prompts~.
+whether to reverse the sorting ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with denote-sort-dired]]).
+Users can configure the latter two by modifying the user option
+~denote-sort-dired-extra-prompts~.
 
-It accepts either a nil value or a list of symbols among
-~sort-by-component~, ~reverse-sort~, and ~exclude-regexp~. The order
-those symbols appear in the list is significant, with the leftmost
-coming first. [ The ~exclude-regexp~ feature is part of
-{{{development-version}}}. ]
+The ~denote-sort-dired-extra-prompts~ accepts either a nil value or a
+list of symbols among ~sort-by-component~, ~reverse-sort~, and
+~exclude-regexp~. The order those symbols appear in the list is
+significant, with the leftmost coming first. [ The ~exclude-regexp~
+feature is part of {{{development-version}}}. ]
 
 These symbols correspond to the following:
 
@@ -3497,8 +3498,8 @@ These symbols correspond to the following:
 #+vindex: denote-sort-dired-default-sort-component
 #+vindex: denote-sort-dired-default-reverse-sort
 In case of a nil value, those extra prompts will not happen, meaning
-that ~denote-sort-dired~ will fall back to using
-~denote-sort-dired-default-sort-component~ and
+that ~denote-sort-dired~ will fall back to using whatever is defined
+in the variables ~denote-sort-dired-default-sort-component~ and
 ~denote-sort-dired-default-reverse-sort~.
 
 Here are some examples:
@@ -3530,8 +3531,8 @@ Here are some examples:
 
 When sorting by =title=, =keywords=, or =signature= with the
 ~denote-sort-dired~ command, Denote will internally apply a sorting
-function that is specific to each component. These are subject to user
-configuration:
+function that is specific to each component ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
+These are subject to user configuration:
 
 #+vindex: denote-sort-identifier-comparison-function
 - ~denote-sort-identifier-comparison-function~ [ This one was missing
