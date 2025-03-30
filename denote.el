@@ -416,7 +416,7 @@ Note that even though a component may be listed in this variable, it
 will not be present in the front matter if the corresponding line is not
 in the front matter template."
   :group 'denote
-  :package-version '(denote . "3.2.0")
+  :package-version '(denote . "4.0.0")
   :type '(list
           (const :tag "Title" title)
           (const :tag "Keywords" keywords)
@@ -829,7 +829,7 @@ have been warned."
 (define-obsolete-variable-alias
   'denote-link-button-action
   'denote-open-link-function
-  "3.2.0")
+  "4.0.0")
 
 (defcustom denote-open-link-function #'find-file-other-window
   "Function to find the file of a Denote link.
@@ -845,12 +845,12 @@ documentation of the `org-open-at-point' command."
   :type '(choice (function :tag "Other window" find-file-other-window)
                  (function :tag "Current window" find-file)
                  (function :tag "Custom function"))
-  :package-version '(denote . "3.2.0"))
+  :package-version '(denote . "4.0.0"))
 
 (define-obsolete-variable-alias
   'denote-link-description-function
   'denote-link-description-format
-  "3.2.0")
+  "4.0.0")
 
 (defcustom denote-link-description-format #'denote-link-description-with-signature-and-title
   "The format of a link description text.
@@ -895,7 +895,7 @@ If the region is active, its text is used as the link's description."
   :type '(choice
           (string :tag "String with treats format specifiers specially")
           (function :tag "Custom function like `denote-link-description-with-signature-and-title'"))
-  :package-version '(denote . "3.2.0")
+  :package-version '(denote . "4.0.0")
   :group 'denote)
 
 ;;;; Main variables
@@ -921,7 +921,7 @@ The note's ID is derived from the date and time of its creation.")
 (make-obsolete-variable
  'denote-excluded-punctuation-extra-regexp
  'denote-file-name-slug-functions
- "3.2.0")
+ "4.0.0")
 
 ;;;; File helper functions
 
@@ -1004,7 +1004,7 @@ This is useful as a helper function to construct
 (define-obsolete-function-alias
   'denote--slug-hyphenate
   'denote-slug-hyphenate
-  "3.2.0")
+  "4.0.0")
 
 (defun denote-slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
@@ -1433,7 +1433,7 @@ Return the absolute path to the matching file."
 The function accepts two arguments and must return a non-nil value if
 the first argument is smaller than the second one."
   :type 'function
-  :package-version '(denote . "3.2.0")
+  :package-version '(denote . "4.0.0")
   :group 'denote-sort)
 
 (defcustom denote-sort-title-comparison-function denote-sort-comparison-fallback-function
@@ -1484,7 +1484,7 @@ done according to `denote-sort-dired-default-sort-component' and
                      (const :tag "Sort by file name component" sort-by-component)
                      (const :tag "Reverse the sort" reverse-sort)
                      (const :tag "Exclude files matching regexp" exclude-regexp)))
-  :package-version '(denote . "3.2.0")
+  :package-version '(denote . "4.0.0")
   :group 'denote-sort)
 
 (defcustom denote-sort-dired-default-sort-component 'identifier
@@ -2301,7 +2301,7 @@ It should stay nil otherwise.")
 (define-obsolete-function-alias
   'denote-create-unique-file-identifier
   'denote-get-identifier
-  "3.2.0")
+  "4.0.0")
 
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
@@ -2657,7 +2657,7 @@ where the former does not read dates without a time component."
 (define-obsolete-function-alias
   'denote-parse-date
   'denote-valid-date-p
-  "3.2.0")
+  "4.0.0")
 
 (defun denote-valid-date-p (date)
   "Return DATE as a valid date.
@@ -3449,7 +3449,7 @@ If a buffer is visiting the file, its name is updated."
 (define-obsolete-function-alias
   'denote--add-front-matter
   'denote-prepend-front-matter
-  "3.2.0")
+  "4.0.0")
 
 (defun denote-prepend-front-matter (file title keywords signature date id file-type)
   "Prepend front matter to FILE.
@@ -4836,7 +4836,7 @@ active, use it as the description."
 (define-obsolete-function-alias
   'denote--link-get-description
   'denote-get-link-description
-  "3.2.0")
+  "4.0.0")
 
 ;;;###autoload
 (defun denote-link (file file-type description &optional id-only)
