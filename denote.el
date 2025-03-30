@@ -5112,7 +5112,7 @@ file's title.  This has the same meaning as in `denote-link'."
 (defvar denote-query-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "a" #'outline-cycle-buffer)
-    (define-key map "f" #'denote-grep-refine)
+    (define-key map "f" #'denote-grep-focus)
     (define-key map "k" #'outline-previous-heading)
     (define-key map "j" #'outline-next-heading)
     (define-key map "o" #'delete-other-windows)
@@ -5258,7 +5258,7 @@ It accepts the same arguments as `denote-make-links-buffer'.")
 The prompt assumes a search in all files, unless TYPE is non-nil.
 
 For now, the only recognized value for TYPE is :focused (for a focused
-search, see `denote-grep-refine').
+search, see `denote-grep-focus').
 
 TYPE only affects the prompt, not the returned value.
 
@@ -5316,7 +5316,7 @@ You can insert a link to a grep search in any note by using the command
   (let (denote-query--omit-current)
     (denote-make-links-buffer query)))
 
-(defun denote-grep-refine (query)
+(defun denote-grep-focus (query)
   "Search QUERY in the content of files which matched the last search.
 \"Last search\" here means any call to `denote-backlinks' and all links
 created by the `denote-query' command.
