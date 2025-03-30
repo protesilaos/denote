@@ -5268,14 +5268,12 @@ The prompt assumes a search in all files, unless TYPE is non-nil.
 For now, the only recognized value for TYPE is :focused (for a focused
 search (a search among matching files), see `denote-grep-focus').
 
-TYPE only affects the prompt, not the returned value.
-
-Returned value is a list in order to be used in an `interactive' spec."
-  (list (read-string
-         (cond ((eq type :focused)
-                "Search (only files matched last): ")
-               (t "Search (all Denote files): "))
-         nil 'denote-grep-query-history)))
+TYPE only affects the prompt, not the returned value."
+  (read-string
+   (cond ((eq type :focused)
+          "Search (only files matched last): ")
+         (t "Search (all Denote files): "))
+   nil 'denote-grep-query-history))
 
 (defun denote-grep-file-regexp-prompt (&optional include)
   "Prompt for a file regexp in the minibuffer.
@@ -5320,7 +5318,7 @@ filtering (see the manual for details).
 
 You can insert a link to a grep search in any note by using the command
 `denote-query-contents-link'."
-  (interactive (denote-grep-query-prompt))
+  (interactive (list (denote-grep-query-prompt)))
   (let (denote-query--omit-current)
     (denote-make-links-buffer query)))
 
@@ -5330,7 +5328,7 @@ You can insert a link to a grep search in any note by using the command
 created by the `denote-query' command.
 
 QUERY should be regular expression."
-  (interactive (denote-grep-query-prompt :focused))
+  (interactive (list (denote-grep-query-prompt :focused)))
   (denote-make-links-buffer
    query denote-query--last-files
    nil '(display-buffer-same-window))
