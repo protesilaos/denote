@@ -5133,9 +5133,8 @@ This is used by the commands `denote-backlinks', `denote-grep',
 `denote-query-contents-link', and `denote-query-filenames-link', among
 others."
   :interactive nil
-  (require 'outline)
   (setq-local outline-minor-mode-use-buttons 'in-margins)
-  (outline-minor-mode))
+  (outline-minor-mode 1))
 
 (define-obsolete-function-alias
   'denote-link--prepare-backlinks
