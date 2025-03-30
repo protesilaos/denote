@@ -5254,11 +5254,9 @@ It accepts the same arguments as `denote-make-links-buffer'.")
 
 ;;;;;; Additional features for searching file contents
 
-(defvar denote-grep-query-history nil
-  "Minibuffer history for `denote-grep' commands.")
-
-(defvar denote-grep-file-regexp-history nil
-  "Minibuffer history for `denote-grep' commands asking for a file regexp.")
+(defvar denote-grep-history nil
+  "Minibuffer history of content searches performed by `denote-grep'.
+Also see `denote-grep-file-regexp-history'.")
 
 (defun denote-grep-query-prompt (&optional type)
   "Prompt for a grep query in the minibuffer.
@@ -5273,7 +5271,11 @@ TYPE only affects the prompt, not the returned value."
    (cond ((eq type :focused)
           "Search (only files matched last): ")
          (t "Search (all Denote files): "))
-   nil 'denote-grep-query-history))
+   nil 'denote-grep-history))
+
+(defvar denote-grep-file-regexp-history nil
+  "Minibuffer history for `denote-grep' commands asking for a file regexp.
+Also see `denote-grep-history'.")
 
 (defun denote-grep-file-regexp-prompt (&optional include)
   "Prompt for a file regexp in the minibuffer.
