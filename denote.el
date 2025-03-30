@@ -2539,10 +2539,19 @@ pass it to `denote-directory-files'."
     (denote-retrieve-groups-xref-query query files-matching-regexp))
    #'string-collate-lessp))
 
+(defvar denote-query--last-files nil
+  "List of files matched by the last call to `denote-make-links-buffer'.")
+
+(defvar denote-query--last-query nil
+  "String of the last call to `denote-make-links-buffer'.")
+
+(defvar denote-query--omit-current t
+  "When non-nil `denote-make-links-buffer' omits the current file.")
+
 (defun denote-retrieve-xref-alist (query &optional files)
   "Return xref alist of absolute file paths with location of matches for QUERY.
 Optional FILES can be a list of files to search for.  It can also be a
-regular expression, which means to use the text files in
+regular expression, which means to use the text files in the variable
 `denote-directory' that match that regexp.
 
 If FILES is not given, use all text files as returned by
@@ -5163,15 +5172,6 @@ Used only by `denote-query-extract-title'."
   :link '(info-link "(denote) Use the denote-grep command to search in files")
   :group 'denote-grep
   :type 'string)
-
-(defvar denote-query--last-files nil
-  "List of files matched by the last call to `denote-make-links-buffer'.")
-
-(defvar denote-query--last-query nil
-  "String of the last call to `denote-make-links-buffer'.")
-
-(defvar denote-query--omit-current t
-  "When non-nil `denote-make-links-buffer' omits the current file.")
 
 (defun denote-query-extract-title (file)
   "Extract note title from FILE front matter.
