@@ -5261,12 +5261,12 @@ It accepts the same arguments as `denote-make-links-buffer'.")
   "Minibuffer history for `denote-grep' commands asking for a file regexp.")
 
 (defun denote-grep-query-prompt (&optional type)
-  "Prompt for a search query in the minibuffer.
+  "Prompt for a grep query in the minibuffer.
 
 The prompt assumes a search in all files, unless TYPE is non-nil.
 
 For now, the only recognized value for TYPE is :focused (for a focused
-search, see `denote-grep-focus').
+search (a search among matching files), see `denote-grep-focus').
 
 TYPE only affects the prompt, not the returned value.
 
