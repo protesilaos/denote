@@ -3852,6 +3852,10 @@ across their configuration.
 :CUSTOM_ID: h:c905b733-e959-4aa4-8f2c-0ed9eba459df
 :END:
 
+[ As part of version =4.0.0= ({{{development-version}}}), Denote comes
+  with the ~denote-grep~ command and related functionality ([[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]]).
+The core of this feature set was written by Lucas Quintana. ]
+
 The ~denote-search~ package by Lucas Quintana provides a search
 utility for Denote: <https://github.com/lmq-10/denote-search>.
 
