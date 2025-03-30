@@ -5181,13 +5181,11 @@ When no title is found, return title found in FILE name.
 When that doesn't work, return `denote-grep-untitled-string'.
 
 Intended to be used as `denote-query-format-heading-function'."
-  (let ((title
-         (denote-retrieve-title-or-filename
-          file
-          (denote-filetype-heuristics file))))
-    (if (and (stringp title) (not (string-blank-p title)))
-        title
-      denote-query-untitled-string)))
+  (if-let* ((type (denote-filetype-heuristics file))
+            (title (denote-retrieve-title-or-filename file type))
+            (_ (not (string-blank-p title))))
+      title
+    denote-query-untitled-string))
 
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
 ;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
