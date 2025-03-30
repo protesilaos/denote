@@ -596,68 +596,7 @@ command."
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
-(make-obsolete-variable 'denote-backlinks-show-context nil "4.0.0")
-
 (make-obsolete-variable 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
-
-(define-obsolete-variable-alias
-  'denote-link-backlinks-display-buffer-action
-  'denote-backlinks-display-buffer-action
-  "3.1.0")
-
-(defcustom denote-backlinks-display-buffer-action
-  '((display-buffer-reuse-mode-window display-buffer-below-selected)
-    (mode . denote-query-mode)
-    (window-height . fit-window-to-buffer))
-  "The action used to display the current file's backlinks buffer.
-
-The value has the form (FUNCTION . ALIST), where FUNCTION is
-either an \"action function\", a list thereof, or possibly an
-empty list.  ALIST is a list of \"action alist\" which may be
-omitted (or be empty).
-
-Sample configuration to display the buffer in a side window on
-the left of the Emacs frame:
-
-    (setq denote-backlinks-display-buffer-action
-          (quote ((display-buffer-reuse-window display-buffer-in-side-window)
-                  (side . left)
-                  (slot . 99)
-                  (window-width . 0.3)
-                  (dedicated . t)
-                  (preserve-size . (t . t)))))
-
-See Info node `(elisp) Displaying Buffers' for more details
-and/or the documentation string of `display-buffer'."
-  :risky t
-  :type `(choice
-          (alist :key-type
-                 (choice :tag "Condition"
-                         regexp
-                         (function :tag "Matcher function"))
-                 :value-type ,display-buffer--action-custom-type)
-          (function :tag "Custom function to return an action alist"))
-  :package-version '(denote . "3.1.0")
-  :group 'denote)
-
-(defcustom denote-query-links-display-buffer-action
-  '((display-buffer-reuse-mode-window display-buffer-below-selected)
-    (mode . (denote-query-mode dired))
-    (window-height . 0.3)
-    (preserve-size . (t . t)))
-  "The action used to display query links.
-This is the same as `denote-backlinks-display-buffer-action'.  Refer to
-its documentation for the technicalities."
-  :risky t
-  :type `(choice
-          (alist :key-type
-                 (choice :tag "Condition"
-                         regexp
-                         (function :tag "Matcher function"))
-                 :value-type ,display-buffer--action-custom-type)
-          (function :tag "Custom function to return an action alist"))
-  :package-version '(denote . "4.0.0")
-  :group 'denote)
 
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
@@ -5153,6 +5092,67 @@ others."
 (defgroup denote-query ()
   "Integration between Denote and Xref for grep/query/backlink buffers."
   :group 'denote)
+
+(make-obsolete-variable 'denote-backlinks-show-context nil "4.0.0")
+
+(define-obsolete-variable-alias
+  'denote-link-backlinks-display-buffer-action
+  'denote-backlinks-display-buffer-action
+  "3.1.0")
+
+(defcustom denote-backlinks-display-buffer-action
+  '((display-buffer-reuse-mode-window display-buffer-below-selected)
+    (mode . denote-query-mode)
+    (window-height . fit-window-to-buffer))
+  "The action used to display the current file's backlinks buffer.
+
+The value has the form (FUNCTION . ALIST), where FUNCTION is
+either an \"action function\", a list thereof, or possibly an
+empty list.  ALIST is a list of \"action alist\" which may be
+omitted (or be empty).
+
+Sample configuration to display the buffer in a side window on
+the left of the Emacs frame:
+
+    (setq denote-backlinks-display-buffer-action
+          (quote ((display-buffer-reuse-window display-buffer-in-side-window)
+                  (side . left)
+                  (slot . 99)
+                  (window-width . 0.3)
+                  (dedicated . t)
+                  (preserve-size . (t . t)))))
+
+See Info node `(elisp) Displaying Buffers' for more details
+and/or the documentation string of `display-buffer'."
+  :risky t
+  :type `(choice
+          (alist :key-type
+                 (choice :tag "Condition"
+                         regexp
+                         (function :tag "Matcher function"))
+                 :value-type ,display-buffer--action-custom-type)
+          (function :tag "Custom function to return an action alist"))
+  :package-version '(denote . "3.1.0")
+  :group 'denote-query)
+
+(defcustom denote-query-links-display-buffer-action
+  '((display-buffer-reuse-mode-window display-buffer-below-selected)
+    (mode . (denote-query-mode dired))
+    (window-height . 0.3)
+    (preserve-size . (t . t)))
+  "The action used to display query links.
+This is the same as `denote-backlinks-display-buffer-action'.  Refer to
+its documentation for the technicalities."
+  :risky t
+  :type `(choice
+          (alist :key-type
+                 (choice :tag "Condition"
+                         regexp
+                         (function :tag "Matcher function"))
+                 :value-type ,display-buffer--action-custom-type)
+          (function :tag "Custom function to return an action alist"))
+  :package-version '(denote . "4.0.0")
+  :group 'denote-query)
 
 (defcustom denote-query-format-heading-function #'identity
   "Function used to construct headings for files matched by a query.
