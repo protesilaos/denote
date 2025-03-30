@@ -5409,7 +5409,7 @@ See `denote-grep-exclude-files-with-keywords' for details."
    (mapcar (lambda (kw) (concat "_" kw)) keywords)))
 
 (defun denote-grep-clear-all-filters ()
-  "Run the last search with the full set of files in `denote-directory'.
+  "Run last search with the full set of files in the variable `denote-directory'.
 
 This effectively gets ride of any interactive filter applied (by the
 means of e.g. `denote-grep-exclude-files')."
