@@ -5150,7 +5150,7 @@ others."
   'denote-make-links-buffer
   "4.0.0")
 
-(defgroup denote-grep ()
+(defgroup denote-query ()
   "Integration between Denote and Xref for grep/query/backlink buffers."
   :group 'denote)
 
@@ -5161,7 +5161,7 @@ It is called with a single argument, the path to the note file, and it
 should always return a string."
   :package-version '(denote . "4.0.0")
   :link '(info-link "(denote) Use the denote-grep command to search in files")
-  :group 'denote-grep
+  :group 'denote-query
   :type 'function)
 
 (defcustom denote-query-untitled-string "[Untitled]"
@@ -5170,7 +5170,7 @@ should always return a string."
 Used only by `denote-query-extract-title'."
   :package-version '(denote . "4.0.0")
   :link '(info-link "(denote) Use the denote-grep command to search in files")
-  :group 'denote-grep
+  :group 'denote-query
   :type 'string)
 
 (defun denote-query-extract-title (file)
