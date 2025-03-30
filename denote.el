@@ -5041,8 +5041,7 @@ file's title.  This has the same meaning as in `denote-link'."
 (define-derived-mode denote-query-mode xref--xref-buffer-mode "Denote Query"
   "Major mode for queries found in the variable `denote-directory'.
 This is used by the commands `denote-backlinks', `denote-grep',
-`denote-query-contents-link', and `denote-query-filenames-link', among
-others."
+`denote-query-contents-link', among others."
   :interactive nil
   (setq-local outline-minor-mode-use-buttons 'in-margins)
   (outline-minor-mode 1))
