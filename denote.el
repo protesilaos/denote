@@ -5003,13 +5003,6 @@ file's title.  This has the same meaning as in `denote-link'."
 
 ;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
 
-(make-obsolete 'denote-link--backlink-find-file nil "4.0.0")
-(make-obsolete 'denote-link--display-buffer nil "4.0.0")
-(make-obsolete 'denote-backlinks-mode-next nil "4.0.0")
-(make-obsolete 'denote-backlinks-mode-previous nil "4.0.0")
-(make-obsolete 'denote-backlinks-toggle-context nil "4.0.0")
-(make-obsolete-variable 'denote-backlinks-mode-map nil "4.0.0")
-
 (define-obsolete-function-alias
   'denote-backlinks-mode
   'denote-query-mode
@@ -5046,14 +5039,17 @@ This is used by the commands `denote-backlinks', `denote-grep',
   (setq-local outline-minor-mode-use-buttons 'in-margins)
   (outline-minor-mode 1))
 
+(make-obsolete 'denote-link--backlink-find-file nil "4.0.0")
+(make-obsolete 'denote-link--display-buffer nil "4.0.0")
+(make-obsolete 'denote-backlinks-mode-next nil "4.0.0")
+(make-obsolete 'denote-backlinks-mode-previous nil "4.0.0")
+(make-obsolete 'denote-backlinks-toggle-context nil "4.0.0")
+(make-obsolete-variable 'denote-backlinks-mode-map nil "4.0.0")
+
 (define-obsolete-function-alias
   'denote-link--prepare-backlinks
   'denote-make-links-buffer
   "4.0.0")
-
-(defgroup denote-query ()
-  "Integration between Denote and Xref for grep/query/backlink buffers."
-  :group 'denote)
 
 (make-obsolete-variable 'denote-backlinks-show-context nil "4.0.0")
 
@@ -5061,6 +5057,10 @@ This is used by the commands `denote-backlinks', `denote-grep',
   'denote-link-backlinks-display-buffer-action
   'denote-backlinks-display-buffer-action
   "3.1.0")
+
+(defgroup denote-query ()
+  "Integration between Denote and Xref for grep/query/backlink buffers."
+  :group 'denote)
 
 (defcustom denote-backlinks-display-buffer-action
   '((display-buffer-reuse-mode-window display-buffer-below-selected)
