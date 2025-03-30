@@ -2689,16 +2689,17 @@ all cases, the description of the link is the query text itself.
 #+findex: denote-query-contents-link
 The command ~denote-query-contents-link~ inserts a link at point that
 triggers a search in the file contents of all readable documents in
-the ~denote-directory~. This is the equivalent of the Unix ~grep~
-command and uses the built-in Emacs Xref interface ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' or query links' buffer creation?]]).
-Matches are displayed in a separate buffer, highlighting the exact text
-while showing its context.
+the ~denote-directory~ ([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]). This is the
+equivalent of the Unix ~grep~ command and uses the built-in Emacs Xref
+interface ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' or query links' buffer creation?]]).
+Matches are displayed in a separate buffer, highlighting the exact
+text while showing its context.
 
 #+findex: denote-query-filenames-link
 The command ~denote-query-filenames-link~ creates a link at point that
 initiates a search across file names in the ~denote-directory~. This
 is the equivalent of the Unix ~find~ command. Results are placed in a
-Dired buffer.
+Dired buffer ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~]]).
 
 #+vindex: denote-query-links-display-buffer-action
 The user option ~denote-query-links-display-buffer-action~ controls
@@ -3004,11 +3005,11 @@ creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing 
 #+findex: denote-backlinks
 #+findex: denote-show-backlinks-buffer
 The command ~denote-backlinks~ (alias ~denote-show-backlinks-buffer~)
-produces a bespoke buffer which displays backlinks to the current
-note. A "backlink" is a link back to the present entry. Backlinks can
-be generated for any file type that has a Denote file-naming scheme,
-such as PDFs, images, and videos, as well as the regular plain text
-files.
+produces a bespoke buffer which displays backlinks to the current note
+([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]). A "backlink" is a link back to the
+present entry. Backlinks can be generated for any file type that has a
+Denote file-naming scheme, such as PDFs, images, and videos, as well
+as the regular plain text files.
 
 The backlinks' buffer is, in essence, the equivalent of a Unix ~grep~
 command across the ~denote-directory~ ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' buffer creation?]]).
@@ -3449,6 +3450,9 @@ the ~denote-directory~ ([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sort
 does so by a series of prompts, which can be configured with the user
 option ~denote-sort-dired-extra-prompts~ ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
 
+Think of ~denote-sort-dired~ as the counterpart to the Unix ~find~
+command. While ~denote-grep~ corresponds to the Unix ~grep~ ([[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]]).
+
 The out-of-the-box behaviour of ~denote-sort-dired~ is as follows:
 
 1. It first asks for a regular expression with which to match Denote
@@ -3623,6 +3627,67 @@ they can perform and the keys they are bound to ([[#h:435592bc-e896-429f-a599-9f
 
 Think of ~denote-grep~ as the counterpart to the Unix ~grep~ command.
 While ~denote-sort-dired~ corresponds to the Unix ~find~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~]]).
+
+* Interact with the links buffer
+:PROPERTIES:
+:CUSTOM_ID: h:435592bc-e896-429f-a599-9f1bcd5ab9b8
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+Denote commands, such as ~denote-grep~, ~denote-backlinks~, and
+~denote-query-contents-link~, produce an Xref buffer with search
+results ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' or query links' buffer creation?]]).
+Matching lines are grouped by the file name they belong to.
+
+- [[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]].
+- [[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]].
+- [[#h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d][Add a query link]].
+
+#+findex: denote-query-mode
+#+vindex: denote-query-mode-map
+This buffer uses the major mode ~denote-query-mode~. It binds commands
+to keys in the ~denote-query-mode-map~. Those allow users to filter
+the output of the last search. Here, "last search" refers to the list
+of files that were returned by whichever command produced the buffer
+(e.g. the last ~denote-grep~).
+
+#+findex: denote-query-focus-last-search
+- ~denote-query-focus-last-search~ :: Perform a search in the contents
+  of files that were matched by the last search.
+
+#+findex: denote-query-exclude-files
+- ~denote-query-exclude-files~ :: Exclude files from the last search
+  whose name matches the given input.
+
+#+findex: denote-query-only-include-files
+- ~denote-query-only-include-files~ :: Only keep files from the last
+  search whose name matches the given input.
+
+#+findex: denote-query-exclude-files-with-keywords
+- ~denote-query-exclude-files-with-keywords~ :: Exclude files from the
+  last search whose name includes the given keywords.
+
+#+findex: denote-query-only-include-files-with-keywords
+- ~denote-query-only-include-files-with-keywords~ :: Only keep files
+  from the last search whose name includes the given keywords.
+
+#+findex: denote-query-clear-all-filters
+- ~denote-query-clear-all-filters~ :: Clear all the applied filters.
+
+Remember that these are easy to use even without knowledge of regular
+expressions, thanks to the efficiency of the Denote file-naming scheme
+([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]). For
+instance, to exclude notes with the keyword =philosophy= from current
+search buffer, use ~denote-query-exclude-files~ and then type
+=_philosophy= as your input.
+
+In addition to those filtering options, the ~denote-query-mode~ also
+allows provides an outline mechanism to hide or show the matches as
+these are grouped per file. There also are some of the default actions
+provided by the Xref infrastructure. Users can do =M-x describe-mode=
+(=C-h m= with default key bindings) to learn about all the actions
+they can perform.
 
 * Minibuffer histories
 :PROPERTIES:
