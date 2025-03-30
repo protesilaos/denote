@@ -5291,7 +5291,9 @@ KEYWORDS should be a list of keywords (without underscore).
 
 Interactively, KEYWORDS are read from the minibuffer using
 `completing-read-multiple', which see."
-  (interactive (denote-grep-keywords-prompt) denote-query-mode)
+  (interactive
+   (list (denote-keywords-prompt "Exclude files with keywords"))
+   denote-query-mode)
   (unless (derived-mode-p 'denote-query-mode)
     (user-error "Only use this command inside the `denote-query-mode'"))
   (denote-query-exclude-files
@@ -5301,7 +5303,9 @@ Interactively, KEYWORDS are read from the minibuffer using
   "Exclude files without KEYWORDS from current query buffer.
 
 See `denote-query-exclude-files-with-keywords' for details."
-  (interactive (denote-grep-keywords-prompt :include) denote-query-mode)
+  (interactive
+   (list (denote-keywords-prompt "Only include files with keywords"))
+   denote-query-mode)
   (unless (derived-mode-p 'denote-query-mode)
     (user-error "Only use this command inside the `denote-query-mode'"))
   (denote-query-only-include-files
@@ -5354,24 +5358,7 @@ non-nil."
      "Only include file names matching: ")
    nil 'denote-grep-file-regexp-history))
 
-(defun denote-grep-keywords-prompt (&optional include)
-  "Prompt for keywords to filter in the minibuffer, with completion.
 
-Keywords are read using `completing-read-multiple'.
-
-The prompt assumes the user wants to exclude the keywords, unless
-INCLUDE is non-nil.
-
-Returned value is a list in order to be used in an `interactive' spec."
-  (list
-   (delete-dups
-    (completing-read-multiple
-     (if (not include)
-         "Exclude files with keywords: "
-       "Only include files with keywords: ")
-     (denote-keywords) nil t nil 'denote-keyword-history))))
-
-;;;###autoload
 (defun denote-grep (query)
   "Search QUERY in the content of Denote files.
 QUERY should be a regular expression accepted by `xref-search-program'.
