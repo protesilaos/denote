@@ -5165,13 +5165,13 @@ Used only by `denote-query-extract-title'."
   :type 'string)
 
 (defvar denote-query--last-files nil
-  "Variable holding files matched by last call to `denote-make-links-buffer'.")
+  "List of files matched by the last call to `denote-make-links-buffer'.")
 
 (defvar denote-query--last-query nil
-  "Variable holding query string for last call to `denote-make-links-buffer'.")
+  "String of the last call to `denote-make-links-buffer'.")
 
 (defvar denote-query--omit-current t
-  "Variable governing whether query should omit current file.")
+  "When non-nil `denote-make-links-buffer' omits the current file.")
 
 (defun denote-query-extract-title (file)
   "Extract note title from FILE front matter.
