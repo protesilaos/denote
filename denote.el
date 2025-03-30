@@ -5281,14 +5281,12 @@ Also see `denote-grep-history'.")
   "Prompt for a file regexp in the minibuffer.
 
 The prompt assumes the user wants to exclude files, unless INCLUDE is
-non-nil.
-
-Returned value is a list in order to be used in an `interactive' spec."
-  (list (read-string
-         (if (not include)
-             "Exclude file names matching: "
-           "Only include file names matching: ")
-         nil 'denote-grep-file-regexp-history)))
+non-nil."
+  (read-string
+   (if (not include)
+       "Exclude file names matching: "
+     "Only include file names matching: ")
+   nil 'denote-grep-file-regexp-history))
 
 (defun denote-grep-keywords-prompt (&optional include)
   "Prompt for keywords to filter in the minibuffer, with completion.
@@ -5354,7 +5352,7 @@ a list of fixed strings (NOT regexps) to check against last matched
 files.  Files that match any of the strings get excluded.  Internally,
 the list is processed using `regexp-opt'.  For an example of this usage,
 see `denote-grep-exclude-files-with-keywords'."
-  (interactive (denote-grep-file-regexp-prompt))
+  (interactive (list (denote-grep-file-regexp-prompt)))
   (let (final-files)
     (dolist (file denote-query--last-files)
       (unless (string-match
@@ -5374,7 +5372,7 @@ see `denote-grep-exclude-files-with-keywords'."
 
 See `denote-grep-exclude-files' for details, including the behaviour
 when REGEXP is a list."
-  (interactive (denote-grep-file-regexp-prompt :include))
+  (interactive (list (denote-grep-file-regexp-prompt :include)))
   (let (final-files)
     (dolist (file denote-query--last-files)
       (when (string-match
