@@ -3606,6 +3606,24 @@ Perform the comparison with `string<'."
 (setq denote-sort-signature-comparison-function #'my-denote-sort-for-signatures)
 #+end_src
 
+* Use ~denote-grep~ to search inside files
+:PROPERTIES:
+:CUSTOM_ID: h:e71c9d14-7e88-4386-91d0-9ad249947077
+:END:
+
+[ The ~denote-grep~ command and everything related to it is part of {{{development-version}}}. ]
+
+#+findex: denote-grep
+The command ~denote-grep~ searches for the given query across all
+readable files in the ~denote-directory~. It puts the collected
+results in an Xref buffer (just like with our backlinks and query
+links functionality). In this buffer, users can do =M-x describe-mode=
+(=C-h m= with default key bindings) to learn about all the actions
+they can perform and the keys they are bound to ([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]).
+
+Think of ~denote-grep~ as the counterpart to the Unix ~grep~ command.
+While ~denote-sort-dired~ corresponds to the Unix ~find~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~]]).
+
 * Minibuffer histories
 :PROPERTIES:
 :CUSTOM_ID: h:82dc1203-d689-44b2-9a6c-b37776209651

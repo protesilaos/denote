@@ -5122,7 +5122,7 @@ its documentation for the technicalities."
 It is called with a single argument, the path to the note file, and it
 should always return a string."
   :package-version '(denote . "4.0.0")
-  :link '(info-link "(denote) Use the denote-grep command to search in files")
+  :link '(info-link "(denote) Use denote-grep to search inside files")
   :group 'denote-query
   :type 'function)
 
@@ -5131,7 +5131,7 @@ should always return a string."
 
 Used only by `denote-query-extract-title'."
   :package-version '(denote . "4.0.0")
-  :link '(info-link "(denote) Use the denote-grep command to search in files")
+  :link '(info-link "(denote) Use denote-grep to search inside files")
   :group 'denote-query
   :type 'string)
 
