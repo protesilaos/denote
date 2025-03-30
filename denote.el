@@ -123,11 +123,6 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-(define-obsolete-variable-alias
-  'denote-user-enforced-denote-directory
-  'denote-directory
-  "2.3.0")
-
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
@@ -821,11 +816,6 @@ have been warned."
                              (const keyword))
                 :value function))
 
-(make-obsolete
- 'denote-file-name-letter-casing
- 'denote-file-name-slug-functions
- "2.3.0")
-
 (define-obsolete-variable-alias
   'denote-link-button-action
   'denote-open-link-function
@@ -1075,11 +1065,6 @@ they are used as the keywords separator in file names."
      (denote--replace-consecutive-token-characters
       (denote--remove-dot-characters str-slug) component) component)))
 
-(make-obsolete
- 'denote-letter-case
- 'denote-sluggify
- "2.3.0")
-
 (defun denote-sluggify-title (str)
   "Make STR an appropriate slug for title."
   (downcase
@@ -1096,11 +1081,6 @@ they are used as the keywords separator in file names."
   "Sluggify STR while joining separate words."
   (downcase
    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" "" str)))
-
-(make-obsolete
- 'denote-sluggify-and-join
- 'denote-sluggify-keyword
- "2.3.0")
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
@@ -1880,11 +1860,6 @@ It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
-(define-obsolete-function-alias
-  'denote-surround-with-quotes
-  'denote-format-string-for-md-front-matter
-  "2.3.0")
-
 (defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
 
@@ -2429,11 +2404,6 @@ or `line', referring to what the function should retrieve."
 (defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
   "Alias for `denote-retrieve-front-matter-keywords-line'.")
 
-(define-obsolete-function-alias
-  'denote--retrieve-title-or-filename
-  'denote-retrieve-title-or-filename
-  "2.3.0")
-
 (defun denote-retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
@@ -2648,11 +2618,6 @@ where the former does not read dates without a time component."
   (if (<= (length date) 10)
       (format "%s %s" date (format-time-string "%H:%M:%S" (current-time)))
     date))
-
-(define-obsolete-function-alias
-  'denote--valid-date
-  'denote-valid-date-p
-  "2.3.0")
 
 (define-obsolete-function-alias
   'denote-parse-date
@@ -4759,8 +4724,6 @@ With optional INCLUDE-DATE, convert the identifier using
        (denote--link-format file-type)))
      identifier
      desc)))
-
-(make-obsolete 'denote-link-signature-format nil "2.3.0")
 
 (defun denote-link-description-with-signature-and-title (file)
   "Return link description for FILE.
