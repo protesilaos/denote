@@ -5141,17 +5141,27 @@ others."
   'denote-make-links-buffer
   "4.0.0")
 
+(defgroup denote-grep ()
+  "Integration between Denote and Xref for grep/query/backlink buffers."
+  :group 'denote)
+
 (defcustom denote-query-format-heading-function #'identity
   "Function used to construct headings for files matched by a query.
 
 It is called with a single argument, the path to the note file, and it
 should always return a string."
+  :package-version '(denote . "4.0.0")
+  :link '(info-link "(denote) Use the denote-grep command to search in files")
+  :group 'denote-grep
   :type 'function)
 
 (defcustom denote-query-untitled-string "[Untitled]"
   "String to use as heading for untitled notes in links' buffer.
 
 Used only by `denote-query-extract-title'."
+  :package-version '(denote . "4.0.0")
+  :link '(info-link "(denote) Use the denote-grep command to search in files")
+  :group 'denote-grep
   :type 'string)
 
 (defvar denote-query--last-files nil
