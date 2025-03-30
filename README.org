@@ -3434,11 +3434,11 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
 :END:
 
-[ As part of {{{development-version}}}, the code of =denote-sort.el=
-  is merged into =denote.el= as part of a wider reorganisation of the
+[ With {{{development-version}}}, the code of =denote-sort.el= is
+  merged into =denote.el= as part of a wider reorganisation of the
   project. ]
 
-The =denote.el= file contains functions which empowers user or
+The =denote.el= file contains functions which empower user or
 developers to sort files by the given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+findex: denote-sort-dired
@@ -3446,29 +3446,29 @@ developers to sort files by the given file name component ([[#h:4e9c7512-84dc-4d
 The command ~denote-sort-dired~ (alias ~denote-dired~) produces a
 Dired file listing with a flat, filtered, and sorted set of files from
 the ~denote-directory~ ([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]). It
-does so by a series of prompts, which can be configured by the user
+does so by a series of prompts, which can be configured with the user
 option ~denote-sort-dired-extra-prompts~ ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
 
 The out-of-the-box behaviour of ~denote-sort-dired~ is as follows:
 
 1. It first asks for a regular expression with which to match Denote
-   files. Remember that due to Denote's efficient file-naming scheme,
-   you do not need to write some complex regular expression. Even
-   something like =_journal= will match only files with a =journal=
-   keyword.
+   file names. Remember that due to Denote's efficient file-naming
+   scheme, you usually do not need to write some complex regular
+   expression. For example, something like =_journal= will match only
+   files with a =journal= keyword.
 2. Once the regular expression is provided, the command asks for a
    Denote file name component to sort files by. This is a symbol among
-   =title=, =keywords=, =signature=, and =identifier=.
-3. Finally, it asks a "yes or no" on whether to reverse the sort
-   order.
+   =title=, =keywords=, =signature=, and =identifier= ([[#h:c958e087-1d23-4a25-afdd-db7bf5606b4c][Define a sorting function per component]]).
+3. Finally, it asks a "yes or no" on whether to reverse the sort order.
 
-The resulting Dired listing is a regular Dired buffer, unlike that of
+The resulting listing is a regular Dired buffer, unlike that of
 ~dired-virtual-mode~ ([[#h:d35d8d41-f51b-4139-af8f-9c8cc508e35b][Use ~dired-virtual-mode~ for arbitrary file listings]]).
 
 #+findex: denote-sort-files
-As an example, the dynamic Org blocks that the ~denote-org~ package
-(by Protesilaos) defines also use this feature internally by means of
-the non-interactive function ~denote-sort-files~.
+The sorting mechanism can be used by other packages to achieve their
+ends. As an example, the dynamic Org blocks that the ~denote-org~
+package (by Protesilaos) defines also use this feature internally by
+means of the non-interactive function ~denote-sort-files~.
 
 ** Configure what extra prompts ~denote-sort-dired~ issues
 :PROPERTIES:
