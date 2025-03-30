@@ -5287,10 +5287,9 @@ You can insert a link to a grep search in any note by using the command
 
 (defun denote-grep-focus (query)
   "Search QUERY in the content of files which matched the last search.
-\"Last search\" here means any call to `denote-backlinks' and all links
-created by the `denote-query' command.
-
-QUERY should be regular expression."
+\"Last search\" here means any call to `denote-grep',
+`denote-backlinks', `denote-query-contents-link', or, generally, any
+command that relies on the `denote-make-links-buffer'."
   (interactive (list (denote-grep-query-prompt :focused)))
   (denote-make-links-buffer
    query denote-query--last-files
