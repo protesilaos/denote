@@ -5016,18 +5016,18 @@ file's title.  This has the same meaning as in `denote-link'."
 (defvar denote-query-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "a" #'outline-cycle-buffer)
-    (define-key map "f" #'denote-grep-focus)
+    (define-key map "f" #'denote-query-focus-last-search)
     (define-key map "k" #'outline-previous-heading)
     (define-key map "j" #'outline-next-heading)
     (define-key map "o" #'delete-other-windows)
     (define-key map "s" #'denote-grep)
     (define-key map "v" #'outline-cycle)
-    (define-key map "x" #'denote-grep-exclude-files)
-    (define-key map "i" #'denote-grep-only-include-files)
+    (define-key map "x" #'denote-query-exclude-files)
+    (define-key map "i" #'denote-query-only-include-files)
     (define-key map "l" #'recenter-current-error)
-    (define-key map "X" #'denote-grep-exclude-files-with-keywords)
-    (define-key map "I" #'denote-grep-only-include-files-with-keywords)
-    (define-key map "G" #'denote-grep-clear-all-filters)
+    (define-key map "X" #'denote-query-exclude-files-with-keywords)
+    (define-key map "I" #'denote-query-only-include-files-with-keywords)
+    (define-key map "G" #'denote-query-clear-all-filters)
     map)
   "Keymap for `denote-query-mode' buffers.")
 
@@ -5214,6 +5214,98 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
   "Function to make an Xref buffer showing query link results.
 It accepts the same arguments as `denote-make-links-buffer'.")
 
+(defun denote-query-focus-last-search (query)
+  "Search QUERY in the content of files which matched the last search.
+\"Last search\" here means any call to `denote-grep',
+`denote-backlinks', `denote-query-contents-link', or, generally, any
+command that relies on the `denote-make-links-buffer'."
+  (interactive (list (denote-grep-query-prompt :focused)))
+  (denote-make-links-buffer
+   query denote-query--last-files
+   nil '(display-buffer-same-window))
+  (message "Searching `%s' in files matched previously" query))
+
+(defun denote-query-exclude-files (regexp)
+  "Exclude files whose name matches REGEXP from current search buffer.
+
+This is useful even if you don't know regular expressions, given the
+Denote file-naming scheme.  For instance, to exclude notes with the
+keyword \"philosophy\" from current search buffer, type
+‘\\<denote-query-mode-map>\\[denote-query-exclude-files] _philosophy
+RET’.
+
+Internally, this works by generating a new call to
+`denote-make-links-buffer' with the same QUERY as the last one, but with
+a set of files gotten from checking REGEXP against last matched files.
+
+When called from Lisp, REGEXP can be a list; in that case, it should be
+a list of fixed strings (NOT regexps) to check against last matched
+files.  Files that match any of the strings get excluded.  Internally,
+the list is processed using `regexp-opt'.  For an example of this usage,
+see `denote-query-exclude-files-with-keywords'."
+  (interactive (list (denote-grep-file-regexp-prompt)))
+  (let (final-files)
+    (dolist (file denote-query--last-files)
+      (unless (string-match
+               ;; Support list of strings as REGEXP
+               (if (listp regexp)
+                   (regexp-opt regexp)
+                 regexp)
+               file)
+        (push file final-files)))
+    (if final-files
+        (denote-make-links-buffer denote-query--last-query final-files)
+      (user-error "No remaining files when applying that filter"))
+    (message "Excluding files matching `%s'" regexp)))
+
+(defun denote-query-only-include-files (regexp)
+  "Exclude file names not matching REGEXP from current query buffer.
+
+See `denote-query-exclude-files' for details, including the behaviour
+when REGEXP is a list."
+  (interactive (list (denote-grep-file-regexp-prompt :include)))
+  (let (final-files)
+    (dolist (file denote-query--last-files)
+      (when (string-match
+             ;; Support list of strings as REGEXP
+             (if (listp regexp)
+                 (regexp-opt regexp)
+               regexp)
+             file)
+        (push file final-files)))
+    (if final-files
+        (denote-make-links-buffer denote-query--last-query final-files)
+      (user-error "No remaining files when applying that filter"))
+    (message "Only including files matching `%s'" regexp)))
+
+(defun denote-query-exclude-files-with-keywords (keywords)
+  "Exclude files with KEYWORDS from current query buffer.
+
+KEYWORDS should be a list of keywords (without underscore).
+
+Interactively, KEYWORDS are read from the minibuffer using
+`completing-read-multiple', which see."
+  (interactive (denote-grep-keywords-prompt))
+  (denote-query-exclude-files
+   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
+
+(defun denote-query-only-include-files-with-keywords (keywords)
+  "Exclude files without KEYWORDS from current query buffer.
+
+See `denote-query-exclude-files-with-keywords' for details."
+  (interactive (denote-grep-keywords-prompt :include))
+  (denote-query-only-include-files
+   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
+
+(defun denote-query-clear-all-filters ()
+  "Run last search with the full set of files in the variable `denote-directory'.
+
+This effectively gets ride of any interactive filter applied (by the
+means of e.g. `denote-query-exclude-files')."
+  (interactive)
+  (denote-make-links-buffer denote-query--last-query)
+  (message "Cleared all filters"))
+
 ;;;;;; Additional features for searching file contents
 
 (defvar denote-grep-history nil
@@ -5226,7 +5318,7 @@ Also see `denote-grep-file-regexp-history'.")
 The prompt assumes a search in all files, unless TYPE is non-nil.
 
 For now, the only recognized value for TYPE is :focused (for a focused
-search (a search among matching files), see `denote-grep-focus').
+search (a search among matching files), see `denote-query-focus-last-search').
 
 TYPE only affects the prompt, not the returned value."
   (read-string
@@ -5283,98 +5375,6 @@ You can insert a link to a grep search in any note by using the command
   (interactive (list (denote-grep-query-prompt)))
   (let (denote-query--omit-current)
     (denote-make-links-buffer query)))
-
-(defun denote-grep-focus (query)
-  "Search QUERY in the content of files which matched the last search.
-\"Last search\" here means any call to `denote-grep',
-`denote-backlinks', `denote-query-contents-link', or, generally, any
-command that relies on the `denote-make-links-buffer'."
-  (interactive (list (denote-grep-query-prompt :focused)))
-  (denote-make-links-buffer
-   query denote-query--last-files
-   nil '(display-buffer-same-window))
-  (message "Searching `%s' in files matched previously" query))
-
-(defun denote-grep-exclude-files (regexp)
-  "Exclude files whose name matches REGEXP from current search buffer.
-
-This is useful even if you don't know regular expressions, given the
-Denote file-naming scheme.  For instance, to exclude notes with the
-keyword \"philosophy\" from current search buffer, type
-‘\\<denote-query-mode-map>\\[denote-grep-exclude-files] _philosophy
-RET’.
-
-Internally, this works by generating a new call to
-`denote-make-links-buffer' with the same QUERY as the last one, but with
-a set of files gotten from checking REGEXP against last matched files.
-
-When called from Lisp, REGEXP can be a list; in that case, it should be
-a list of fixed strings (NOT regexps) to check against last matched
-files.  Files that match any of the strings get excluded.  Internally,
-the list is processed using `regexp-opt'.  For an example of this usage,
-see `denote-grep-exclude-files-with-keywords'."
-  (interactive (list (denote-grep-file-regexp-prompt)))
-  (let (final-files)
-    (dolist (file denote-query--last-files)
-      (unless (string-match
-               ;; Support list of strings as REGEXP
-               (if (listp regexp)
-                   (regexp-opt regexp)
-                 regexp)
-               file)
-        (push file final-files)))
-    (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files)
-      (user-error "No remaining files when applying that filter"))
-    (message "Excluding files matching `%s'" regexp)))
-
-(defun denote-grep-only-include-files (regexp)
-  "Exclude file names not matching REGEXP from current query buffer.
-
-See `denote-grep-exclude-files' for details, including the behaviour
-when REGEXP is a list."
-  (interactive (list (denote-grep-file-regexp-prompt :include)))
-  (let (final-files)
-    (dolist (file denote-query--last-files)
-      (when (string-match
-             ;; Support list of strings as REGEXP
-             (if (listp regexp)
-                 (regexp-opt regexp)
-               regexp)
-             file)
-        (push file final-files)))
-    (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files)
-      (user-error "No remaining files when applying that filter"))
-    (message "Only including files matching `%s'" regexp)))
-
-(defun denote-grep-exclude-files-with-keywords (keywords)
-  "Exclude files with KEYWORDS from current query buffer.
-
-KEYWORDS should be a list of keywords (without underscore).
-
-Interactively, KEYWORDS are read from the minibuffer using
-`completing-read-multiple', which see."
-  (interactive (denote-grep-keywords-prompt))
-  (denote-grep-exclude-files
-   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
-
-(defun denote-grep-only-include-files-with-keywords (keywords)
-  "Exclude files without KEYWORDS from current query buffer.
-
-See `denote-grep-exclude-files-with-keywords' for details."
-  (interactive (denote-grep-keywords-prompt :include))
-  (denote-grep-only-include-files
-   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
-
-(defun denote-grep-clear-all-filters ()
-  "Run last search with the full set of files in the variable `denote-directory'.
-
-This effectively gets ride of any interactive filter applied (by the
-means of e.g. `denote-grep-exclude-files')."
-  (interactive)
-  (denote-make-links-buffer denote-query--last-query)
-  (message "Cleared all filters"))
 
 ;;;;;; Backlinks
 
