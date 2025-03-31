@@ -193,6 +193,8 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
     ("C-c n l" . denote-link)
     ("C-c n L" . denote-add-links)
     ("C-c n b" . denote-backlinks)
+    ("C-c n q c" . denote-query-contents-link) ; create link that triggers a grep
+    ("C-c n q f" . denote-query-filenames-link) ; create link that triggers a dired
     ;; Note that `denote-rename-file' can work from any context, not just
     ;; Dired bufffers.  That is why we bind it here to the `global-map'.
     ("C-c n r" . denote-rename-file)
