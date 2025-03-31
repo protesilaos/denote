@@ -3432,7 +3432,7 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 + Git repository: <https://github.com/protesilaos/denote-org>
 + Backronym: Denote... Ordinarily Restricts Gyrations.
 
-* Display filtered and sorted files with ~denote-sort-dired~
+* Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~
 :PROPERTIES:
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
 :END:
