@@ -5328,18 +5328,42 @@ means of e.g. `denote-query-exclude-files')."
   "Minibuffer history of content searches performed by `denote-grep'.
 Also see `denote-grep-file-regexp-history'.")
 
+(defcustom denote-grep-display-buffer-action
+  '((display-buffer-same-window)
+    (mode . denote-query-mode))
+  "The action used to display search results from `denote-grep'.
+This is the same as `denote-backlinks-display-buffer-action'.  Refer to
+its documentation for the technicalities."
+  :risky t
+  :type `(choice
+          (alist :key-type
+                 (choice :tag "Condition"
+                         regexp
+                         (function :tag "Matcher function"))
+                 :value-type ,display-buffer--action-custom-type)
+          (function :tag "Custom function to return an action alist"))
+  :package-version '(denote . "4.0.0")
+  :group 'denote-query)
+
 (defun denote-grep-query-prompt (&optional type)
   "Prompt for a grep query in the minibuffer.
 
 The prompt assumes a search in all files, unless TYPE is non-nil.
 
-For now, the only recognized value for TYPE is :focused (for a focused
-search (a search among matching files), see `denote-query-focus-last-search').
+TYPE can be one of :focused (for a focused search (a search among
+matching files), see `denote-query-focus-last-search'), :dired (for a
+search in marked dired files, see `denote-grep-marked-dired-files') or
+:region (for a search in files referenced in region, see
+`denote-grep-files-referenced-in-region').
 
 TYPE only affects the prompt, not the returned value."
   (read-string
    (cond ((eq type :focused)
           "Search (only files matched last): ")
+         ((eq type :dired)
+          "Search (only marked dired files): ")
+         ((eq type :region)
+          "Search (only files referenced in region): ")
          (t "Search (all Denote files): "))
    nil 'denote-grep-history))
 
@@ -5358,7 +5382,6 @@ non-nil."
      "Only include file names matching: ")
    nil 'denote-grep-file-regexp-history))
 
-
 (defun denote-grep (query)
   "Search QUERY in the content of Denote files.
 QUERY should be a regular expression accepted by `xref-search-program'.
@@ -5373,7 +5396,49 @@ You can insert a link to a grep search in any note by using the command
 `denote-query-contents-link'."
   (interactive (list (denote-grep-query-prompt)))
   (let (denote-query--omit-current)
-    (denote-make-links-buffer query)))
+    (denote-make-links-buffer query nil nil denote-grep-display-buffer-action)))
+
+(defun denote-grep-marked-dired-files (query)
+  "Search QUERY in the content of marked dired files.
+See `denote-grep' for details."
+  (interactive (list (denote-grep-query-prompt :dired)))
+  (if-let* ((files (dired-get-marked-files)))
+      (denote-make-links-buffer query files nil denote-grep-display-buffer-action)
+    (user-error "No marked files")))
+
+(defun denote-grep--get-files-referenced-in-region (start end)
+  "Return a list with all Denote files referenced between START and END.
+
+START and END should be buffer positions, as integers.
+
+\"Referenced\" here means an ID is present in the text, so it'll work with
+plain links, links written by a dynamic block, or even file lists
+returned by ls (and that naturally includes dired).
+
+Returned value is a list with the absoulte path of referenced files."
+  (let (id-list)
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (goto-char (point-min))
+        (while (re-search-forward denote-id-regexp nil t)
+          (push (denote-get-path-by-id (match-string 0)) id-list))))
+    id-list))
+
+(defun denote-grep-files-referenced-in-region (query start end)
+  "Search QUERY in the content of files referenced between START and END.
+See `denote-grep' for details.
+
+START and END should be buffer positions, as integers.  Interactively,
+they are the positions of point and mark (i.e. the region).
+
+See `denote-grep--get-files-referenced-in-region' for an explanation
+of what referenced means (in short: an ID is present somewhere)."
+  (interactive
+   (list (denote-grep-query-prompt :region) (region-beginning) (region-end)))
+  (if-let* ((files (denote-grep--get-files-referenced-in-region start end)))
+      (denote-make-links-buffer query files nil denote-grep-display-buffer-action)
+    (user-error "No files referenced in region")))
 
 ;;;;;; Backlinks
 
