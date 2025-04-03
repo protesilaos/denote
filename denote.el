@@ -6262,15 +6262,17 @@ option `denote-templates'."
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-rename-buffer-format "[D] %t%b"
+(defcustom denote-rename-buffer-format "[D] %D%b"
   "The format of the buffer name `denote-rename-buffer' should use.
-The value is a string that treats specially the following
-specifiers:
+The value is a string that treats specially the following specifiers:
 
 - The %t is the Denote TITLE in the front matter or the file name.
 - The %T is the Denote TITLE in the file name.
 - The %i is the Denote IDENTIFIER of the file.
+- The %I is the identifier converted to DAYNAME, DAYNUM MONTHNUM YEAR.
 - The %d is the same as %i (DATE mnemonic).
+- The %D is a \"do what I mean\" which behaves the same as %t and if
+  that returns nothing, it falls back to %I, then %i.
 - The %s is the Denote SIGNATURE of the file.
 - The %k is the Denote KEYWORDS of the file.
 - The %b inserts `denote-rename-buffer-backlinks-indicator'.
@@ -6293,7 +6295,7 @@ Any other string it taken as-is.  Users may want, for example, to
 include some text that makes Denote buffers stand out, such as
 a [D] prefix."
   :type 'string
-  :package-version '(denote . "3.1.0")
+  :package-version '(denote . "4.0.0")
   :group 'denote-rename-buffer)
 
 (defcustom denote-rename-buffer-function #'denote-rename-buffer
@@ -6329,7 +6331,21 @@ buffer will be used, if available."
                           (cons ?T (or (denote-retrieve-filename-title file) ""))
                           (cons ?b (if should-show-backlink-indicator denote-rename-buffer-backlinks-indicator ""))
                           (cons ?i (or (denote-retrieve-filename-identifier file) ""))
+                          ;; TODO 2025-04-03: Maybe we can have something like `denote-date-format' here,
+                          ;; but I think we are okay with a hardcoded value.
+                          (cons ?I (or (when-let* ((id (denote-retrieve-filename-identifier file))
+                                                   (_ (denote-valid-date-p id)))
+                                         (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id))))
+                                       ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
+                          (cons ?D (cond
+                                    ((denote-retrieve-front-matter-title-value file type))
+                                    ((denote-retrieve-filename-title file))
+                                    ((when-let* ((id (denote-retrieve-filename-identifier file)))
+                                       (if (denote-valid-date-p id)
+                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id)))
+                                         id)))
+                                    (t  "")))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))
                           (cons ?k (or (denote-retrieve-filename-keywords file) ""))
                           (cons ?% "%"))

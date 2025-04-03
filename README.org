@@ -3346,6 +3346,9 @@ available to all programs.
 :CUSTOM_ID: h:35507c18-35b1-41b9-9d80-52f54fcef3cb
 :END:
 
+[ Updated as part of {{{development-version}}} to use a default "do
+  what I mean" value. ]
+
 The user option ~denote-rename-buffer-format~ controls how the
 function ~denote-rename-buffer~ chooses the name of the
 buffer-to-be-renamed.
@@ -3355,9 +3358,15 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 
 #+vindex: denote-rename-buffer-backlinks-indicator
 - The =%t= is the Denote =TITLE= in the front matter or the file name.
-- The =%T= is the Denote =TITLE= in the file name. [ The =%T= is part of {{{development-version}}}. ]
+- The =%T= is the Denote =TITLE= in the file name. [ The =%T= is part
+  of {{{development-version}}}. ]
 - The =%i= is the Denote =IDENTIFIER= of the file.
+- The =%I= is the identifier converted to =DAYNAME, DAYNUM MONTHNUM
+  YEAR=. [ The =%I= is part of {{{development-version}}}. ]
 - The =%d= is the same as =%i= (=DATE= mnemonic).
+- The =%D= is a "do what I mean" which behaves the same as =%t= and if
+  that returns nothing, it falls back to =%I=, then =%i=. [ The =%D=
+  is part of {{{development-version}}}. ]
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
 - The =%b= is an indicator of whether or not the file has backlinks
@@ -3384,9 +3393,12 @@ include some text that makes Denote buffers stand out, such as
 a =[D]= prefix.  Examples:
 
 #+begin_src emacs-lisp
-;; Use a literal [D] prefix, followed by the title and then the
-;; backlinks indicator (default).
-(setq denote-rename-buffer-format "[D] %t%b")
+;; The following is the default value.  Use a literal [D] prefix,
+;; followed by the title and then the backlinks indicator.  If there
+;; is no title, use the identifier in its human-readable date
+;; representation, and if that is not possible, use the identifier
+;; as-is.
+(setq denote-rename-buffer-format "[D] %D%b")
 
 ;; Customize what the backlink indicator looks like.  This two-faced
 ;; arrow is the default.
@@ -3400,7 +3412,7 @@ a =[D]= prefix.  Examples:
 (setq denote-rename-buffer-format "[D] %t")
 
 ;; As above, but also add the `denote-rename-buffer-backlinks-indicator' at the end.
-(setq denote-rename-buffer-format "[D] %t")
+(setq denote-rename-buffer-format "[D] %t%b")
 #+end_src
 
 Users who need yet more flexibility are best served by writing their
