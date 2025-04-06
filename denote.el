@@ -2328,8 +2328,6 @@ Subroutine of `denote--file-with-temp-buffer'."
        (goto-char (point-min))
        ,@body)))
 
-;; These are public front matter retrieval functions, working with a FILE argument
-
 (defmacro denote--define-retrieve-front-matter (component scope)
   "Define a function to retrieve front matter for COMPONENT given SCOPE.
 The COMPONENT is one of the file name components that has a
