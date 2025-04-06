@@ -5350,7 +5350,7 @@ The prompt assumes a search in all files, unless TYPE is non-nil.
 
 TYPE can be one of :focused (for a focused search (a search among
 matching files), see `denote-query-focus-last-search'), :dired (for a
-search in marked dired files, see `denote-grep-marked-dired-files') or
+search in marked Dired files, see `denote-grep-marked-dired-files') or
 :region (for a search in files referenced in region, see
 `denote-grep-files-referenced-in-region').
 
@@ -5397,7 +5397,7 @@ You can insert a link to a grep search in any note by using the command
     (denote-make-links-buffer query nil nil denote-grep-display-buffer-action)))
 
 (defun denote-grep-marked-dired-files (query)
-  "Search QUERY in the content of marked dired files.
+  "Search QUERY in the content of marked Dired files.
 See `denote-grep' for details."
   (interactive (list (denote-grep-query-prompt :dired)))
   (if-let* ((files (dired-get-marked-files)))
