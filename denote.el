@@ -5825,7 +5825,7 @@ Optional ID-ONLY has the same meaning as in `denote-link': it
 inserts links with just the identifier."
   (interactive
    (list
-    (denote-files-matching-regexp-prompt "Insert links matching REGEXP")
+    (denote-files-matching-regexp-prompt "Insert links to files matching REGEXP")
     current-prefix-arg))
   (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
