@@ -140,7 +140,12 @@ include commands/variables that are useful to you. We provide another
 code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][More comprehensive sample configuration]]).
 
 #+begin_src emacs-lisp
-;; Another basic setup with a little more to it.
+;; Remember that the website version of this manual shows the latest
+;; developments, which may not be available in the package you are
+;; using.  Instead of copying from the web site, refer to the version
+;; of the documentation that comes with your package.  Evaluate:
+;;
+;;     (info "(denote) Sample configuration")
 (use-package denote
   :ensure t
   :hook (dired-mode . denote-dired-mode)
@@ -169,6 +174,12 @@ code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][M
 Here we include more of what you can configure with Denote ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get started with this sample configuration]]).
 
 #+begin_src emacs-lisp
+;; Remember that the website version of this manual shows the latest
+;; developments, which may not be available in the package you are
+;; using.  Instead of copying from the web site, refer to the version
+;; of the documentation that comes with your package.  Evaluate:
+;;
+;;     (info "(denote) Sample configuration")
 (use-package denote
   :ensure t
   :hook
@@ -6314,12 +6325,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
-  Purslane, Alfredo Borrás, Alp Eren Kose, Ashton Wiersdorf, Benjamin
-  Kästner, Claudio Migliorelli, Claudiu Tănăselia, Colin McLear,
-  Cosmin-Octavian C, Damien Cassou, Elias Storms, Federico Stilman,
-  Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
-  Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty, Jay
-  Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
+  Purslane, Alfredo Borrás, Alp Eren Kose, André Bering, Ashton
+  Wiersdorf, Benjamin Kästner, Claudio Migliorelli, Claudiu Tănăselia,
+  Colin McLear, Cosmin-Octavian C, Damien Cassou, Elias Storms,
+  Federico Stilman, Florian, Frédéric Willem Frank Ehmsen, Glenna D.,
+  Guo Yong, Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty,
+  Jay Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
   Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
   Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
