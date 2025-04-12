@@ -2812,10 +2812,10 @@ is ignored if nil.
 Only ever `let' bind this, otherwise the title will always be the same
 and the title prompt will be skipped.")
 
-(defvar denote-use-keywords nil
+(defvar denote-use-keywords 'default
   "The keywords to be used in a note creation command.
 See the documentation of `denote' for acceptable values.  This variable
-is ignored if nil.
+is ignored if `default'.
 
 Only ever `let' bind this, otherwise the keywords will always be the same
 and the keywords prompt will be skipped.")
@@ -2881,7 +2881,7 @@ instead."
                                  (buffer-substring-no-properties
                                   (region-beginning)
                                   (region-end)))))))
-        ('keywords (unless denote-use-keywords
+        ('keywords (when (eq denote-use-keywords 'default)
                      (setq keywords (denote-keywords-prompt))))
         ('file-type (unless denote-use-file-type
                       (setq file-type (denote-file-type-prompt))))
@@ -2905,7 +2905,7 @@ If a `denote-use-*' variable is set for a data, its value is used
 instead of that of the parameter."
   (let* (;; Handle the `denote-use-*' variables
          (title (or denote-use-title title))
-         (keywords (or denote-use-keywords keywords))
+         (keywords (if (eq denote-use-keywords 'default) keywords denote-use-keywords))
          (file-type (or denote-use-file-type file-type))
          (directory (or denote-use-directory directory))
          (date (or denote-use-date date))

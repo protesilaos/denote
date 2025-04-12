@@ -5108,7 +5108,7 @@ The following sections cover the specifics.
 #+findex: denote-use-keywords
 + Function ~denote-use-keywords~ :: The keywords to be used in a note
   creation command. See the documentation of ~denote~ for acceptable
-  values. This variable is ignored if nil. Only ever ~let~ bind this,
+  values. This variable is ignored if ~default~. Only ever ~let~ bind this,
   otherwise the title will always be the same and the title prompt
   will be skipped.
 
