@@ -5667,7 +5667,7 @@ To be assigned to `markdown-follow-link-functions'."
 
 (defun denote-get-link-face (query)
   "Return appropriate face for QUERY."
-  (if (denote-identifier-p (string-trim-right query ":.*"))
+  (if (denote-identifier-p (string-trim-right query ":[^/]+.*"))
       'denote-faces-link
     'denote-faces-query-link))
 
