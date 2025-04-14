@@ -3083,9 +3083,7 @@ a value that can be parsed by `decode-time' or nil."
             (setq time (time-add time (string-to-number cur-time-seconds))))
           (format-time-string "%Y-%m-%d %H:%M:%S" time))
       (read-string
-       (or
-        "DATE and TIME for note (e.g. 2022-06-16 14:30): "
-        prompt-text)
+       (or prompt-text "DATE and TIME for note (e.g. 2022-06-16 14:30): ")
        (denote--date-convert initial-date :string)
        'denote-date-history))))
 
