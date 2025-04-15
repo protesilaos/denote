@@ -5378,6 +5378,7 @@ non-nil."
      "Only include file names matching: ")
    nil 'denote-grep-file-regexp-history))
 
+;;;###autoload
 (defun denote-grep (query)
   "Search QUERY in the content of Denote files.
 QUERY should be a regular expression accepted by `xref-search-program'.
