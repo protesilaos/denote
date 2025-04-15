@@ -859,7 +859,10 @@ If the value is a string, it treats specially the following specifiers:
 - The %t is the Denote TITLE in the front matter or the file name.
 - The %T is the Denote TITLE in the file name.
 - The %i is the Denote IDENTIFIER of the file.
+- The %I is the identifier converted to DAYNAME, DAYNUM MONTHNUM YEAR.
 - The %d is the same as %i (DATE mnemonic).
+- The %D is a \"do what I mean\" which behaves the same as %t and if
+  that returns nothing, it falls back to %I, then %i.
 - The %s is the Denote SIGNATURE of the file.
 - The %k is the Denote KEYWORDS of the file.
 - The %% is a literal percent sign.
@@ -4776,19 +4779,34 @@ active, use it as the description."
    ((stringp denote-link-description-format)
     (if-let* ((region (denote--get-active-region-content)))
         region
-      (string-trim
-       (format-spec denote-link-description-format
-                    (list (cons ?t (cond
-                                    ((denote-retrieve-front-matter-title-value file (denote-filetype-heuristics file)))
-                                    ((denote-retrieve-filename-title file))
-                                    (t  "")))
-                          (cons ?T (or (denote-retrieve-filename-title file) ""))
-                          (cons ?i (or (denote-retrieve-filename-identifier file) ""))
-                          (cons ?d (or (denote-retrieve-filename-identifier file) ""))
-                          (cons ?s (or (denote-retrieve-filename-signature file) ""))
-                          (cons ?k (or (denote-retrieve-filename-keywords file) ""))
-                          (cons ?% "%"))
-                    'delete))))
+      (let ((type (denote-filetype-heuristics file)))
+        (string-trim
+         (format-spec denote-link-description-format
+                      (list (cons ?t (cond
+                                      ((denote-retrieve-front-matter-title-value file (denote-filetype-heuristics file)))
+                                      ((denote-retrieve-filename-title file))
+                                      (t  "")))
+                            (cons ?T (or (denote-retrieve-filename-title file) ""))
+                            (cons ?i (or (denote-retrieve-filename-identifier file) ""))
+                            ;; TODO 2025-04-03: Maybe we can have something like `denote-date-format' here,
+                            ;; but I think we are okay with a hardcoded value.
+                            (cons ?I (or (when-let* ((id (denote-retrieve-filename-identifier file))
+                                                     (_ (denote-valid-date-p id)))
+                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id))))
+                                         ""))
+                            (cons ?D (cond
+                                      ((denote-retrieve-front-matter-title-value file type))
+                                      ((denote-retrieve-filename-title file))
+                                      ((when-let* ((id (denote-retrieve-filename-identifier file)))
+                                         (if (denote-valid-date-p id)
+                                             (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id)))
+                                           id)))
+                                      (t  "")))
+                            (cons ?d (or (denote-retrieve-filename-identifier file) ""))
+                            (cons ?s (or (denote-retrieve-filename-signature file) ""))
+                            (cons ?k (or (denote-retrieve-filename-keywords file) ""))
+                            (cons ?% "%"))
+                      'delete)))))
    (t
     (error "The `denote-link-description-format' must be a function or string"))))
 
