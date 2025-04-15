@@ -5394,6 +5394,7 @@ You can insert a link to a grep search in any note by using the command
   (let (denote-query--omit-current)
     (denote-make-links-buffer query nil nil denote-grep-display-buffer-action)))
 
+;;;###autoload
 (defun denote-grep-marked-dired-files (query)
   "Search QUERY in the content of marked Dired files.
 See `denote-grep' for details."
@@ -5417,6 +5418,7 @@ Return a list with the absoulte path of referenced files."
           (push (denote-get-path-by-id (match-string 0)) id-list))))
     id-list))
 
+;;;###autoload
 (defun denote-grep-files-referenced-in-region (query start end)
   "Perform `denote-grep' QUERY in files referenced between START and END.
 When called interactively, prompt for QUERY.  Also get START and END as
