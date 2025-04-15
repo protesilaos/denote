@@ -3655,6 +3655,25 @@ they can perform and the keys they are bound to ([[#h:435592bc-e896-429f-a599-9f
 Think of ~denote-grep~ as the counterpart to the Unix ~grep~ command.
 While ~denote-sort-dired~ corresponds to the Unix ~find~ ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~]]).
 
+#+findex: denote-grep-marked-dired-files
+The command ~denote-grep-marked-dired-files~ is like ~denote-grep~ but
+operates on the files that are marked in a Dired buffer.
+
+#+findex: denote-grep-files-referenced-in-region
+The command ~denote-grep-files-referenced-in-region~ is like
+~denote-grep~ for any files referenced within the boundaries of the
+marked region. Files are referenced by their identifier. This includes
+links with just the identifier (as described in ~denote-link~ and
+related ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Add a single direct link using a file name prompt]])), links
+written by an Org dynamic block (see the ~denote-org~ package ([[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]])),
+or even file listings such as those of ~dired~ and the command-line
+~ls~ program.
+
+#+vindex: denote-grep-display-buffer-action
+The user option ~denote-grep-display-buffer-action~ controls where the
+buffer with the search results is displayed at. By default, they appear in
+the same window where the command ~denote-grep~ is called from.
+
 * Interact with the links buffer
 :PROPERTIES:
 :CUSTOM_ID: h:435592bc-e896-429f-a599-9f1bcd5ab9b8
