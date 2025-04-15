@@ -5431,7 +5431,12 @@ just the identifier (as described in `denote-link' and related), links
 written by an Org dynamic block (see the `denote-org' package), or even
 file listings such as those of `dired' and the command-line `ls' program."
   (interactive
-   (list (denote-grep-query-prompt :region) (region-beginning) (region-end)))
+   (if (region-active-p)
+       (list
+        (denote-grep-query-prompt :region)
+        (region-beginning)
+        (region-end))
+     (user-error "No region is active; aborting")))
   (if-let* ((files (denote-grep--get-files-referenced-in-region start end)))
       (denote-make-links-buffer query files nil denote-grep-display-buffer-action)
     (user-error "No files referenced in region")))
