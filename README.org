@@ -3452,7 +3452,7 @@ Dynamic blocks are particularly useful for metanote entries that
 reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebecc][Writing metanotes]]). The
 ~denote-org~ package defines many of these Org dynamic blocks.
 
-+ Package name (GNU ELPA): ~denote-org~ (⚠️ Not available yet)
++ Package name (GNU ELPA): ~denote-org~
 + Official manual: <https://protesilaos.com/emacs/denote-org>
 + Git repository: <https://github.com/protesilaos/denote-org>
 + Backronym: Denote... Ordinarily Restricts Gyrations.
@@ -3819,7 +3819,7 @@ topic that belongs to the wider theme of dogs.
 The ~denote-sequence~ package has a manual that explains these
 concepts and relevant commands in further detail:
 
-+ Package name (GNU ELPA): ~denote-sequence~ (⚠️ Not available yet)
++ Package name (GNU ELPA): ~denote-sequence~
 + Official manual: <https://protesilaos.com/emacs/denote-sequence>
 + Git repository: <https://github.com/protesilaos/denote-sequence>
 + Backronym: Denote... Sequences Efficiently Queue Unsorted Entries
@@ -3843,7 +3843,7 @@ their setup to use the ~denote-markdown~ package. This can be done by
 replacing all instances of =denote-md-extras= with =denote-markdown=
 across their configuration.
 
-+ Package name (GNU ELPA): ~denote-markdown~ (⚠️ Not available yet)
++ Package name (GNU ELPA): ~denote-markdown~
 + Official manual: <https://protesilaos.com/emacs/denote-markdown>
 + Git repository: <https://github.com/protesilaos/denote-markdown>
 + Backronyms: Denote... Markdown's Ambitious Reimplimentations
@@ -3867,7 +3867,7 @@ adapt their setup to use the ~denote-journal~ package. This can be
 done by replacing all instances of =denote-journal-extras= with
 =denote-journal= across their configuration.
 
-+ Package name (GNU ELPA): ~denote-journal~ (⚠️ Not available yet)
++ Package name (GNU ELPA): ~denote-journal~
 + Official manual: <https://protesilaos.com/emacs/denote-journal>
 + Git repository: <https://github.com/protesilaos/denote-journal>
 + Backronym: Denote... Journaling Obviously Utilises Reasonableness
@@ -3888,7 +3888,7 @@ their setup to use the ~denote-silo~ package. This can be done by
 replacing all instances of =denote-silo-extras= with =denote-silo=
 across their configuration.
 
-+ Package name (GNU ELPA): ~denote-silo~ (⚠️ Not available yet)
++ Package name (GNU ELPA): ~denote-silo~
 + Official manual: <https://protesilaos.com/emacs/denote-silo>
 + Git repository: <https://github.com/protesilaos/denote-silo>
 + Backronym: Denote... Silos Insulate Localised Objects.
