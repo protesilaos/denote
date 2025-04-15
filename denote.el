@@ -5404,14 +5404,10 @@ See `denote-grep' for details."
 
 (defun denote-grep--get-files-referenced-in-region (start end)
   "Return a list with all Denote files referenced between START and END.
+START and END are buffer positions, as integers.  A reference to a file
+is the mere presence of its identifier.
 
-START and END should be buffer positions, as integers.
-
-\"Referenced\" here means an ID is present in the text, so it'll work with
-plain links, links written by a dynamic block, or even file lists
-returned by ls (and that naturally includes dired).
-
-Returned value is a list with the absoulte path of referenced files."
+Return a list with the absoulte path of referenced files."
   (let (id-list)
     (save-excursion
       (save-restriction
@@ -5422,14 +5418,16 @@ Returned value is a list with the absoulte path of referenced files."
     id-list))
 
 (defun denote-grep-files-referenced-in-region (query start end)
-  "Search QUERY in the content of files referenced between START and END.
-See `denote-grep' for details.
+  "Perform `denote-grep' QUERY in files referenced between START and END.
+When called interactively, prompt for QUERY.  Also get START and END as
+the buffer positions that delimit the marked region.  When called from
+Lisp, QUERY is a string, while START and END are buffer positions, as
+integers.
 
-START and END should be buffer positions, as integers.  Interactively,
-they are the positions of point and mark (i.e. the region).
-
-See `denote-grep--get-files-referenced-in-region' for an explanation
-of what referenced means (in short: an ID is present somewhere)."
+Find references to files by their identifier.  This includes links with
+just the identifier (as described in `denote-link' and related), links
+written by an Org dynamic block (see the `denote-org' package), or even
+file listings such as those of `dired' and the command-line `ls' program."
   (interactive
    (list (denote-grep-query-prompt :region) (region-beginning) (region-end)))
   (if-let* ((files (denote-grep--get-files-referenced-in-region start end)))
