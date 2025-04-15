@@ -177,11 +177,6 @@ Extend what we do in `dt-denote-file-type-extensions'."
                 (member ".org.age" extensions)
                 (member ".txt.age" extensions)))))
 
-(ert-deftest dt-denote-surround-with-quotes ()
-  "Test that `denote-surround-with-quotes' returns a string in quotes."
-  (should (and (equal (denote-surround-with-quotes "test") "\"test\"")
-               (equal (denote-surround-with-quotes "") "\"\""))))
-
 (ert-deftest dt-denote--format-front-matter ()
   "Test that `denote--format-front-matter' formats front matter correctly.
 To make the test reproducible, set `denote-date-format' to a value that
@@ -541,52 +536,6 @@ does not involve the time zone."
                   nil)))
   (should-error (denote--date-convert '(26454 45206 461174 657000) :not-valid-type))
   (should-error (denote--date-convert nil :not-valid-type)))
-
-;;;; Tests for denote-journal-extras.el
-
-(require 'denote-journal-extras)
-
-(ert-deftest dt-denote-journal-extras-daily--title-format ()
-  "Make sure that `denote-journal-extras-daily--title-format' yields the desired format."
-  (should (and
-           ;; These three should prompt, but I am here treating the
-           ;; prompt as if it already returned a string.  The test for
-           ;; the `denote-title-prompt' can be separate.
-           (stringp
-            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
-                      (denote-journal-extras-title-format nil))
-              (denote-journal-extras-daily--title-format)))
-
-           (stringp
-            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
-                      (denote-journal-extras-title-format t))
-              (denote-journal-extras-daily--title-format)))
-
-           (stringp
-            (cl-letf (((symbol-function 'denote-title-prompt) #'identity)
-                      (denote-journal-extras-title-format :some-arbitrary-keyword))
-              (denote-journal-extras-daily--title-format)))
-
-           ;; And these return the following values
-           (string-match-p
-            "\\<.*?\\>"
-            (let ((denote-journal-extras-title-format 'day))
-              (denote-journal-extras-daily--title-format)))
-
-           (string-match-p
-            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\}"
-            (let ((denote-journal-extras-title-format 'day-date-month-year))
-              (denote-journal-extras-daily--title-format)))
-
-           (string-match-p
-            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\} [0-9]\\{,2\\}:[0-9]\\{,2\\} \\<.*?\\>"
-            (let ((denote-journal-extras-title-format 'day-date-month-year-12h))
-              (denote-journal-extras-daily--title-format)))
-
-           (string-match-p
-            "\\<.*?\\> [0-9]\\{,2\\} \\<.*?\\> [0-9]\\{,4\\} [0-9]\\{,2\\}:[0-9]\\{,2\\}"
-            (let ((denote-journal-extras-title-format 'day-date-month-year-24h))
-              (denote-journal-extras-daily--title-format))))))
 
 (provide 'denote-test)
 ;;; denote-test.el ends here
