@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 3.1.0
-#+macro: release-date 2024-09-04
-#+macro: development-version 4.0.0-dev
+#+macro: stable-version 4.0.0
+#+macro: release-date 2025-04-15
+#+macro: development-version 4.1.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -354,9 +354,6 @@ creating the new note ([[#h:a947908e-1847-4471-ba07-377ee2f4b36c][Access the dat
 called from Lisp, it returns the path it generates. Before returning
 the path, it decides what to do with the buffer of the note, in
 accordance with the user option ~denote-kill-buffers~ ([[#h:c8fd826f-3ac9-4820-9709-4375603f8865][The ~denote-kill-buffers~ option]]).
-
-[ As part of {{{development-version}}}, the ~denote~ command runs the
-  hook and then kills the buffer, whereas it was the other way around before. ]
 
 The file type of the new note is determined by the user option
 ~denote-file-type~ ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
@@ -2569,18 +2566,15 @@ we shall act accordingly.
 :CUSTOM_ID: h:54b48277-e0e5-4188-ad54-ef3db3b7e772
 :END:
 
-As part of version 3.2.0 (currently {{{development-version}}}), the
-command ~denote-add-front-matter~ is superseded by
-~denote-rename-file~ and related ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]). Those commands will
-add missing front matter or rewrite the modified lines of existing
-front matter.
+As part of version 4.0.0, the command ~denote-add-front-matter~ is
+superseded by ~denote-rename-file~ and related ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]). Those
+commands will add missing front matter or rewrite the modified lines
+of existing front matter.
 
 * Linking notes
 :PROPERTIES:
 :CUSTOM_ID: h:fc913d54-26c8-4c41-be86-999839e8ad31
 :END:
-
-[ Support for query links is part of {{{development-version}}}. ]
 
 Denote offers several commands for linking between notes. Those use
 the =denote:= hyperlink type. There are two types of links supported
@@ -2659,8 +2653,6 @@ exactly like an ordinary link by default.
 :CUSTOM_ID: h:25a983ca-049e-43d4-8f6e-06a2325e2c3c
 :END:
 
-[ The ~denote-link-to-file-with-contents~ is part of {{{development-version}}}. ]
-
 #+findex: denote-link-to-file-with-contents
 The ~denote-link~ command that we covered before prompts to select a
 file among those in the ~denote-directory~ ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single direct link using a file name prompt]]).
@@ -2684,8 +2676,6 @@ The command ~denote-link-to-file-with-contents~ is the counterpart of
 :PROPERTIES:
 :CUSTOM_ID: h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d
 :END:
-
-[ Query links are part of {{{development-version}}}. ]
 
 As noted in the introduction to this section of the manual, the
 =denote:= hyperlink type supports query links ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]). Unlike
@@ -2796,8 +2786,6 @@ purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 :CUSTOM_ID: h:299d3aeb-9946-489e-bd91-e06f8c4ae2a9
 :END:
 
-[ The command ~denote-link-to-all-files-with-contents~ is part of {{{development-version}}}. ]
-
 #+findex: denote-link-to-all-files-with-contents
 The aforementioned ~denote-add-links~ command takes a query that
 matches it against file names ([[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links to all files matching a query in their file name]]).
@@ -2814,8 +2802,6 @@ counterpart of ~denote-link-to-file-with-contents~ ([[#h:25a983ca-049e-43d4-8f6e
 :CUSTOM_ID: h:6aa22a2d-3338-433e-ab9f-ba272417aab9
 :END:
 
-[ This is part of {{{development-version}}}. ]
-
 #+vindex: denote-open-link-function
 The user option ~denote-open-link-function~ specifies the function
 used by Denote to open the file of a link. The default value opens the
@@ -2831,10 +2817,6 @@ the command ~org-open-at-point~).
 :PROPERTIES:
 :CUSTOM_ID: h:d99de1fb-b1b7-4a74-8667-575636a4d6a4
 :END:
-
-[ Revised to also support context links that do not use a =PROPERTIES=
-  drawer but which are easier to break. This is done as part of
-  {{{development-version}}}. Also revised to have a nil value by default. ]
 
 #+vindex: denote-org-store-link-to-heading
 The user option ~denote-org-store-link-to-heading~ determines whether
@@ -2931,9 +2913,7 @@ As always, links are created only for files which qualify as a "note"
 for our purposes ([[#h:fc913d54-26c8-4c41-be86-999839e8ad31][Linking notes]]).
 
 #+findex: denote-dired-link-marked-notes
-The ~denote-dired-link-marked-notes~ is an alias for
-~denote-link-dired-marked-notes~. [ The alias is part of
-{{{development-version}}}. ]
+The ~denote-dired-link-marked-notes~ is an alias for ~denote-link-dired-marked-notes~.
 
 ** Link to an existing note or create a new one
 :PROPERTIES:
@@ -3012,10 +2992,9 @@ creating a new one ([[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing 
 :END:
 
 [ Older versions of Denote had two types of formatting for the
-  backlinks' buffer. As part of version =4.0.0= ({{{development-version}}}),
-  we only support the standard Xref view which shows matches in their
-  context. The user option ~denote-backlinks-show-context~ is thus
-  removed. ]
+  backlinks' buffer. As part of version =4.0.0=, we only support the
+  standard Xref view which shows matches in their context. The user
+  option ~denote-backlinks-show-context~ is thus removed. ]
 
 #+findex: denote-backlinks
 #+findex: denote-show-backlinks-buffer
@@ -3168,12 +3147,6 @@ function ~denote-link-markdown-follow~ for the implementation details.
 :CUSTOM_ID: h:f634427c-b451-40e2-993e-e00ac627af68
 :END:
 
-[ As part of {{{development-version}}}, the old user option
-  ~denote-link-description-function~ is deprecated and superseded by
-  the new ~denote-link-description-format~. The new user option still
-  accepts a custom function as its value, so the old behaviour should
-  be retained. ]
-
 The user option ~denote-link-description-format~ controls how the
 command ~denote-link~ and related functions create a link description
 by default.
@@ -3191,11 +3164,10 @@ If the value is a string, it treats specially the following specifiers:
 - The =%T= is the Denote =TITLE= in the file name.
 - The =%i= is the Denote =IDENTIFIER= of the file.
 - The =%I= is the identifier converted to =DAYNAME, DAYNUM MONTHNUM
-  YEAR=. [ The =%I= is part of {{{development-version}}}. ]
+  YEAR=.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%D= is a "do what I mean" which behaves the same as =%t= and if
-  that returns nothing, it falls back to =%I=, then =%i=. [ The =%D=
-  is part of {{{development-version}}}. ]
+  that returns nothing, it falls back to =%I=, then =%i=.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
@@ -3329,9 +3301,6 @@ its standand attachments' facility).
 :CUSTOM_ID: h:3ca4db16-8f26-4d7d-b748-bac48ae32d69
 :END:
 
-[ As part of {{{development-version}}}, the code of =denote-rename-buffer.el=
-  is now part of =denote.el= as part of a wider reorganisation of the project. ]
-
 #+findex: denote-rename-buffer-mode
 The minor mode ~denote-rename-buffer-mode~ provides the means to
 automatically rename the buffer of a Denote file upon visiting the
@@ -3363,9 +3332,6 @@ available to all programs.
 :CUSTOM_ID: h:35507c18-35b1-41b9-9d80-52f54fcef3cb
 :END:
 
-[ Updated as part of {{{development-version}}} to use a default "do
-  what I mean" value. ]
-
 The user option ~denote-rename-buffer-format~ controls how the
 function ~denote-rename-buffer~ chooses the name of the
 buffer-to-be-renamed.
@@ -3375,15 +3341,13 @@ are placeholders for Denote file name components ([[#h:4e9c7512-84dc-4dfb-9fa9-e
 
 #+vindex: denote-rename-buffer-backlinks-indicator
 - The =%t= is the Denote =TITLE= in the front matter or the file name.
-- The =%T= is the Denote =TITLE= in the file name. [ The =%T= is part
-  of {{{development-version}}}. ]
+- The =%T= is the Denote =TITLE= in the file name.
 - The =%i= is the Denote =IDENTIFIER= of the file.
 - The =%I= is the identifier converted to =DAYNAME, DAYNUM MONTHNUM
-  YEAR=. [ The =%I= is part of {{{development-version}}}. ]
+  YEAR=.
 - The =%d= is the same as =%i= (=DATE= mnemonic).
 - The =%D= is a "do what I mean" which behaves the same as =%t= and if
-  that returns nothing, it falls back to =%I=, then =%i=. [ The =%D=
-  is part of {{{development-version}}}. ]
+  that returns nothing, it falls back to =%I=, then =%i=.
 - The =%s= is the Denote =SIGNATURE= of the file.
 - The =%k= is the Denote =KEYWORDS= of the file.
 - The =%b= is an indicator of whether or not the file has backlinks
@@ -3440,10 +3404,6 @@ own function and assigning it to the ~denote-rename-buffer-function~.
 :CUSTOM_ID: h:8b542c50-dcc9-4bca-8037-a36599b22779
 :END:
 
-[ The ~denote-org~ package is developed in tandem with ~denote~
-  {{{development-version}}} and will be available when the new Denote
-  version is published. ]
-
 This section is about the external package ~denote-org~ (by
 Protesilaos). The code of ~denote-org~ used to be available as part of
 the main ~denote~ package, but we decided to keep each optional
@@ -3467,10 +3427,6 @@ reflect on the status of earlier notes ([[#h:6060a7e6-f179-4d42-a9de-a9968aaebec
 :PROPERTIES:
 :CUSTOM_ID: h:9fe01e63-f34f-4479-8713-f162a5ca865e
 :END:
-
-[ With {{{development-version}}}, the code of =denote-sort.el= is
-  merged into =denote.el= as part of a wider reorganisation of the
-  project. ]
 
 The =denote.el= file contains functions which empower user or
 developers to sort files by the given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
@@ -3522,8 +3478,7 @@ Users can configure the latter two by modifying the user option
 The ~denote-sort-dired-extra-prompts~ accepts either a nil value or a
 list of symbols among ~sort-by-component~, ~reverse-sort~, and
 ~exclude-regexp~. The order those symbols appear in the list is
-significant, with the leftmost coming first. [ The ~exclude-regexp~
-feature is part of {{{development-version}}}. ]
+significant, with the leftmost coming first.
 
 These symbols correspond to the following:
 
@@ -3572,8 +3527,7 @@ function that is specific to each component ([[#h:a34228cb-484f-48fe-9cbc-8e41f3
 These are subject to user configuration:
 
 #+vindex: denote-sort-identifier-comparison-function
-- ~denote-sort-identifier-comparison-function~ [ This one was missing
-  is older versions and is now added as part of {{{development-version}}}. ]
+- ~denote-sort-identifier-comparison-function~
 
 #+vindex: denote-sort-title-comparison-function
 - ~denote-sort-title-comparison-function~
@@ -3648,8 +3602,6 @@ Perform the comparison with `string<'."
 :CUSTOM_ID: h:e71c9d14-7e88-4386-91d0-9ad249947077
 :END:
 
-[ The ~denote-grep~ command and everything related to it is part of {{{development-version}}}. ]
-
 #+findex: denote-grep
 The command ~denote-grep~ searches for the given query across all
 readable files in the ~denote-directory~. It puts the collected
@@ -3684,8 +3636,6 @@ the same window where the command ~denote-grep~ is called from.
 :PROPERTIES:
 :CUSTOM_ID: h:435592bc-e896-429f-a599-9f1bcd5ab9b8
 :END:
-
-[ Part of {{{development-version}}}. ]
 
 Denote commands, such as ~denote-grep~, ~denote-backlinks~, and
 ~denote-query-contents-link~, produce an Xref buffer with search
@@ -3904,9 +3854,9 @@ across their configuration.
 :CUSTOM_ID: h:c905b733-e959-4aa4-8f2c-0ed9eba459df
 :END:
 
-[ As part of version =4.0.0= ({{{development-version}}}), Denote comes
-  with the ~denote-grep~ command and related functionality ([[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]]).
-The core of this feature set was written by Lucas Quintana. ]
+[ As part of version =4.0.0=, Denote comes with the ~denote-grep~
+  command and related functionality ([[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]]).
+  The core of this feature set was written by Lucas Quintana. ]
 
 The ~denote-search~ package by Lucas Quintana provides a search
 utility for Denote: <https://github.com/lmq-10/denote-search>.
@@ -4962,7 +4912,7 @@ The following sections cover the specifics.
   =FILE= respects the file-naming scheme of Denote. This tests the
   rules of Denote's file-naming scheme. Sluggification is ignored. It
   is done by removing all file name components and validating what
-  remains. [ This function is part of {{{development-version}}}. ]
+  remains.
 
 #+findex: denote-file-has-signature-p
 + Function ~denote-file-has-signature-p~ :: Return non-nil if =FILE=
@@ -5009,7 +4959,7 @@ The following sections cover the specifics.
   =FILES-MATCHING-REGEXP=, only extract keywords from the matching
   files. Otherwise, do it for all files. Keep any duplicates. Users
   who do not want duplicates should refer to the functions
-  ~denote-keywords~. [ Part of {{{development-version}}}. ]
+  ~denote-keywords~.
 
 #+findex: denote-keywords
 + Function ~denote-keywords~ :: Return appropriate list of keyword
@@ -5019,8 +4969,7 @@ The following sections cover the specifics.
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). In the case of keyword inferrence, use
   optional =FILES-MATCHING-REGEXP=, to extract keywords only from the
   matching files. Otherwise, do it for all files. Filter inferred
-  keywords with the user option ~denote-excluded-keywords-regexp~. [
-  The optional =FILES-MATCHING-REGEXP= parameter is part of {{{development-version}}}. ]
+  keywords with the user option ~denote-excluded-keywords-regexp~.
 
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
@@ -5059,8 +5008,7 @@ The following sections cover the specifics.
   files that satisfy ~denote-file-is-note-p~. With optional
   =EXCLUDE-REGEXP= exclude the files that match the given regular
   expression. This is done after =FILES-MATCHING-REGEXP= and
-  =OMIT-CURRENT= have been applied. [ The optional =EXCLUDE-REGEXP= is
-  part of {{{development-version}}}. ]
+  =OMIT-CURRENT= have been applied.
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of
@@ -5170,8 +5118,7 @@ The following sections cover the specifics.
 
   =ID= is a string holding the identifier of the note. It can be an
   empty string, in which case its respective file name component is
-  not added to the base file name. [ This is changed as part of
-  {{{development-version}}}. ]
+  not added to the base file name.
 
   =DIR-PATH= and =ID= form the base file name.
 
@@ -5206,9 +5153,7 @@ The following sections cover the specifics.
   from =PATH= and return them as a list of strings.  =PATH= must be a
   Denote-style file name where keywords are prefixed with an
   underscore.  If =PATH= has no such keywords, which is possible,
-  return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). [ As part of {{{development-version}}},
-  this function has an alias ~denote-retrieve-filename-keywords-as-list~
-  which should make it easier to discover this functionality. ]
+  return nil ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 #+findex: denote-extract-id-from-string
 + Function ~denote-extract-id-from-string~ :: Return existing Denote
@@ -5217,8 +5162,7 @@ The following sections cover the specifics.
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
   from =FILE= name, if present, else return nil. To create a new one
-  from a date, refer to the ~denote-get-identifier~ function. [ This
-  is changed as part of {{{development-version}}}. ]
+  from a date, refer to the ~denote-get-identifier~ function.
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ ::  Extract Denote title
@@ -5242,7 +5186,7 @@ The following sections cover the specifics.
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
   identifier using ~denote-id-format~. If =DATE= is nil, return an
-  empty string as the identifier. [ This is changed as part of {{{development-version}}}. ]
+  empty string as the identifier.
 
 #+findex: denote-retrieve-front-matter-title-value
 + Function ~denote-retrieve-front-matter-title-value~ :: Return title value from
@@ -5328,8 +5272,7 @@ The following sections cover the specifics.
   =PROMPT-TEXT= use it in the minibuffer instead of the default
   prompt. =INITIAL-DATE= is a string that can be processed by
   ~denote-valid-date-p~, a value that can be parsed by ~decode-time~
-  or nil. [ The =INITIAL-DATE= and =PROMPT-TEXT= are part of
-  {{{development-version}}}. ]
+  or nil.
 
 #+findex: denote-command-prompt
 + Function ~denote-command-prompt~ ::  Prompt for command among
@@ -5583,8 +5526,6 @@ The following sections cover the specifics.
 :CUSTOM_ID: h:e824c215-1c31-4b26-b994-7df67341d075
 :END:
 
-[ All of the following are part of {{{development-version}}}. ]
-
 - Function ~denote-retrieve-groups-xref-query~ :: Access location of
   xrefs for =QUERY= and group them per file. Limit the search to text
   files.
@@ -5617,18 +5558,17 @@ The following sections cover the specifics.
 + Function ~denote-prepend-front-matter~ :: Prepend front matter to
   =FILE=. The =TITLE=, =KEYWORDS=, =DATE=, =ID=, =SIGNATURE=, and
   =FILE-TYPE= are passed from the renaming command and are used to
-  construct a new front matter block if appropriate. [ This function
-  is available as part of {{{development-version}}}. ]
+  construct a new front matter block if appropriate.
 
 #+findex: denote-rewrite-front-matter
 + Function ~denote-rewrite-front-matter~ :: Rewrite front matter of
-  note after ~denote-rename-file~ (or related) The =FILE=, =TITLE=,
+  note after ~denote-rename-file~ (or related). The =FILE=, =TITLE=,
   =KEYWORDS=, =SIGNATURE=, =DATE=, =IDENTIFIER=, and =FILE-TYPE=
   arguments are given by the renaming command and are used to construct
   new front matter values if appropriate. If ~denote-rename-confirmations~
   contains ~rewrite-front-matter~, prompt to confirm the rewriting of
   the front matter. Otherwise produce a ~y-or-n-p~ prompt to that
-  effect. [ This function is changed as part of {{{development-version}}}. ]
+  effect.
 
 #+findex: denote-add-front-matter-prompt
 + Function ~denote-add-front-matter-prompt~ :: Prompt to add a

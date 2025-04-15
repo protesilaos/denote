@@ -13,6 +13,599 @@ the manual: <https://protesilaos.com/emacs/denote>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 4.0.0 on 2025-04-15
+:PROPERTIES:
+:CUSTOM_ID: h:8a134846-72cc-4fbf-830d-6ca9fd0f9ec8
+:END:
+
+This is a massive release. There is one breaking change, which should
+be easy to adapt to: this pertains to the reorganisation of the
+project to separate the "core" of Denote from its "extensions". The
+core is the ~denote~ package. Each extension now has its own package
+(details below).
+
+Other than that, this version includes lots of new features for
+searching and linking as well as quality-of-life refinements. We have
+generalised the infrastructure for performing queries in the
+~denote-directory~ and made the buffers with the search results more
+useful.
+
+Take your time to read through this publication. I am writing it for
+you. Also remember that the most up-to-date resource for anything
+related to Denote is its manual. You are always welcome to contact me:
+<https://protesilaos.com/contact>. Or join the development on the Git
+repository.
+
+As usual, special thanks to Jean-Philippe Gagné Guay for making high
+quality contributions to Denote since the beginning of the project ~3
+years ago. Those will not always be headline features, but are
+important improvements to the underlying code base.
+
+I mention contributions from Jean-Philippe and others in its context.
+Though I do not cover implementation details, otherwise this document
+will be the size of a book. This does not mean that they are no
+important though. Please consult the Git commit log for all the
+technicalities.
+
+** All the "extras" are in separate packages, including the Org dynamic blocks
+:PROPERTIES:
+:CUSTOM_ID: h:26ed2af1-60c8-4217-93b3-bbe344e4eb7b
+:END:
+
+In previous versions of Denote, we included some optional extensions
+as part of the ~denote~ package. These included the files
+=denote-org-extras.el= (Org dynamic blocks, among others),
+=denote-journal-extras.el= (streamlined for journaling),
+=denote-silo-extras.el= (working with multiple Denote silos).
+
+The files =denote-md-extras.el= (Markdown extras) and
+=denote-sequence.el= (sequence notes, including Luhmann-style
+alphanumeric sequences) were also part of the project during the last
+development cycle, though they never made it into a tagged release.
+
+All these are now available as standalone packages on the official GNU
+ELPA archive:
+
+- ~denote-org~ :: In the Emacs configuration file, replace all
+  instances of =denote-org-extras= with =denote-org=.
+
+- ~denote-journal~ :: Replace =denote-journal-extras= with =denote-journal=.
+
+- ~denote-silo~ :: Replace =denote-silo-extras= with =denote-silo=.
+
+- ~denote-markdown~  :: Replace =denote-md-extras= with =denote-markdown=.
+
+- ~denote-sequence~ :: No changes to any of the defined symbols.
+  Simply get the new package.
+
+I will document each of these packages further below. The plan, going
+forward, is to maintain all the packages and coordinate their new
+versions.
+
+** More things in "core"
+:PROPERTIES:
+:CUSTOM_ID: h:3820e9cf-f034-4c3c-a4ed-1e7d11f1cd23
+:END:
+
+While the extras are moved out to their own code repositories, all
+other features are merged into =denote.el=. Those include everything
+that was in =denote-sort.el= and =denote-rename-buffer.el=.
+
+- The "sort" mechanism is mostly for package developers. We use it
+  extensively in our Org dynamic blocks, which are now part of the
+  ~denote-org~ package.
+
+- The ~denote-dired~ command (alias ~denote-sort-dired~) is the only
+  user-facing "sort" command we have always provided. It produces a
+  fully fledged Dired buffer showing the results of the given search
+  for file names. The matching files are sorted according to the
+  user's expressed preference. The details are described in the
+  manual.
+
+- The ~denote-rename-buffer-mode~ and all of its user options are
+  unchanged. This mode automatically renames the buffer of a given
+  Denote file so that it is easier to read it. Again, the manual
+  covers the technicalities.
+
+Users do not need to make changes, unless they are explicitly loading
+=denote-sort-dired= and =denote-rename-buffer=. In that case, they may
+just remove those calls: only ~denote~ needs to be loaded.
+
+** The ~denote-query-mode~
+:PROPERTIES:
+:CUSTOM_ID: h:36f305e2-310d-4327-941a-ca0570b473d2
+:END:
+
+Many of the features I will describe below produce search results via
+the built-in Xref mechanism. Xref performs a search with a Grep or
+Grep-like program, subject to the user option ~xref-search-program~.
+The buffer those search results are displayed in runs the
+~denote-query-mode~. It supersedes ~denote-backlinks-mode~.
+
+The ~denote-query-mode~ supports the following:
+
+- Results are shown in the context, with the exact match in highlight.
+- Matches are grouped by file. Each file is a "heading".
+- Headings can be folded with =TAB=, just how it is done in Org buffers.
+- The results can be used for further queries. Type =C-h m=
+  (~describe-mode~) to learn about all the relevant commands.
+
+We have had support for Xref since the original version of Denote. It
+now is more generalised to cover backlinks, query links, and
+~denote-grep~ (more below).
+
+** Use query links for file contents or file names
+:PROPERTIES:
+:CUSTOM_ID: h:c217a37a-db73-46bd-ab5f-3f9c54f9d53b
+:END:
+
+Denote has always provided the option to link directly to a file with
+a given name by referencing its identifier. This can be done with the
+command ~denote-link~, among a few others like it (always consult the
+manual of Denote).
+
+In addition to these "direct links", we also support "query links".
+Those do not point to a file but instead trigger a search. The results
+are placed in a buffer that uses the appropriate major mode.
+
+There are two types of query links:
+
+- Query file contents :: Use the command ~denote-query-contents-link~
+  to insert a query link at point for "file contents". It perform a
+  search inside files in the ~denote-directory~ and put the results in
+  a ~denote-query-mode~ buffer.
+
+- Query file names :: Use the ~denote-query-filenames-link~ to insert
+  a query link for "file names". It performs the query against file
+  names (not contents!) and puts the results in a ~dired~ buffer.
+
+The display of the buffer with the query link results is controlled by
+the user option ~denote-query-links-display-buffer-action~.
+
+Query links are styled a little bit differently than direct links.
+Compare the ~denote-faces-link~ with ~denote-faces-query-link~. Both
+should look okay with most themes.
+
+Denote query links are supported as part of the =denote:= hyperlink
+type. They are available in all file types we define (per the user
+option ~denote-file-type~) and should, in principle, work in any
+custom file type (advanced users can check the variable ~denote-file-types~).
+
+** Backlinks now always show their context
+:PROPERTIES:
+:CUSTOM_ID: h:8ebc6ae8-1087-46fa-a0ec-464749f0ac4d
+:END:
+
+In the past, the command ~denote-backlinks~ would produce a bespoke
+buffer showing a list of file names that included links to the current
+file (any file with the Denote file-naming scheme can have backlinks,
+by the way, including PDFs, videos, etc.). This buffer did not provide
+any additional functionality. We used to support the option to show
+results in their context via ~denote-backlinks-show-context~. Those
+would be rendered in a standard Xref buffer.
+
+The contextual results are now the default and sole option. This is
+because we have expanded the functionality of those buffers to use the
+~denote-query-mode~, as explained above. Plus, it makes our code base
+simpler.
+
+Users will notice how backlikns look just like a query link for file
+contents. This is because backlinks are the original query links since
+day one of Denote.
+
+** Direct links to a file with matching contents
+:PROPERTIES:
+:CUSTOM_ID: h:a1a7b766-328d-4883-93b2-c68b49bd1aa3
+:END:
+
+The command ~denote-link-to-file-with-contents~ allows users to
+produce a direct link to a file whose contents (not file name!)
+includes the given query.
+
+Similarly, the command ~denote-link-to-all-files-with-contents~
+generates a typographic list (bullet list) to all files whose contents
+match the given query.
+
+The manual covers all linking commands in depth.
+
+** The essence of ~denote-search~ is part of ~denote~
+:PROPERTIES:
+:CUSTOM_ID: h:5d2ac378-304c-4ea8-bbfb-b3f7b649b27d
+:END:
+
+The ~denote-search~ package by Lucas Quintana uses the infrastructure
+of Denote to perform searches in file contents. We now provide its
+feature set as part of core ~denote~.
+
+We decided to do this since query links already introduced all of the
+requisite generalisations to ~denote-query-mode~.
+
+Users can rely on the commands ~denote-grep~, ~denote-grep-marked-dired-files~,
+and ~denote-grep-files-referenced-in-region~.
+
+The placement of these buffers is subject to the user option
+~denote-grep-display-buffer-action~.
+
+This functionality was introduced in two pull requests by Lucas
+Quintana, 571 and 573, with further changes by me:
+
+- <https://github.com/protesilaos/denote/pull/571>.
+- <https://github.com/protesilaos/denote/pull/573>.
+
+Lucas has assigned copyright to the Free Software Foundation.
+
+I think this was a much-needed addition to the core of Denote. It
+complements ~denote-dired~ and query links.
+
+** Formatting of links with ~denote-link-description-format~
+:PROPERTIES:
+:CUSTOM_ID: h:635b7f04-891a-4a8b-b420-4e0d9dadc232
+:END:
+
+The old user option ~denote-link-description-function~ is deprecated
+and superseded by the new ~denote-link-description-format~. The new
+user option still accepts a custom function as its value, so the old
+behaviour should be retained.
+
+What the new ~denote-link-description-format~ supports is an easier
+way to customise the description of a link by using format specifiers
+for common options. For example, users who only want to see the title
+of the linked file can do this:
+
+#+begin_src emacs-lisp
+(setq denote-link-description-format "%t")
+#+end_src
+
+The documentation of this user option covers all the format specifiers
+and further details.
+
+** Miscellaneous changes for all users
+:PROPERTIES:
+:CUSTOM_ID: h:76a56ab5-c44b-4c67-8048-25dd0dd88dcf
+:END:
+
+- The command ~denote-add-front-matter~ is superseded by
+  ~denote-rename-file~ and related. Those renaming commands will add
+  missing front matter or rewrite the modified lines of existing front
+  matter. This is due to refinements made by Jean-Philippe Gagné Guay
+  to the file renaming mechanism. We discussed this deprecation in
+  issue 498: <https://github.com/protesilaos/denote/issues/498>. Also
+  thanks to Samuel Flint for reporting an earlier problem with file
+  name signatures: <https://github.com/protesilaos/denote/issues/492>.
+
+- The user option ~denote-open-link-function~ specifies the function
+  used by Denote to open the file of a direct link.
+
+- The user option ~denote-org-store-link-to-heading~ can now be set to
+  form generic context links without a =PROPERTIES= drawer and
+  corresponding =CUSTOM_ID=. Set the value of this variable to
+  ='context=. Read its documentation for further details.
+
+- Also about ~denote-org-store-link-to-heading~, we have changed its
+  default value to ~nil~, which is what we were doing for most of
+  Denote's history. This means that, by default, ~org-store-link~ and
+  anything building on top of it will create a link only to the
+  current Denote file, like =denote:IDENTIFIER=, but not to the
+  current heading within that file. To create links to the
+  file+heading, set the value of this variable to ='id=.
+
+- The command ~denote-dired-link-marked-notes~ is an alias for
+  ~denote-link-dired-marked-notes~.
+
+- The user option ~denote-sort-dired-extra-prompts~ control what
+  ~denote-dired~ (alias ~denote-sort-dired~) prompts for. It accepts
+  either a nil value or a list of symbols among ~sort-by-component~,
+  ~reverse-sort~, and ~exclude-regexp~. The order those symbols appear
+  in the list is significant, with the leftmost coming first.
+
+- There is a new ~denote-sort-identifier-comparison-function~ variable
+  which determines how identifier-based sorting should be done by
+  default. It complements the existing ~denote-sort-title-comparison-function~,
+  ~denote-sort-keywords-comparison-function~, ~denote-sort-signature-comparison-function~.
+  Thanks to Maikol Solís for the contribution in pull request 517:
+  <https://github.com/protesilaos/denote/pull/517>. The change is
+  small, meaning that Maikol does not need to assign copyright to the
+  Free Software Foundation (though I believe the paperwork is done, anyway).
+
+- Lots of refinements to the doc strings of individual variables
+  and/or functions as well as the manual.
+
+- Lots of other contributions to discussions and questions on the Git
+  repository. Granted, these are not "changes" per se but are part of
+  the development effort nonetheless.
+
+- Made ~denote-get-path-by-id~ use ~denote-get-file-extension-sans-encryption~
+  instead of ~denote-get-file-extension~. This fixes a bug where the
+  extension is duplicated if it has an encryption component. Thanks to
+  eum3l for the patch in pull request 562: <https://github.com/protesilaos/denote/pull/562>.
+  The change is small, meaning that the author does not need to assign
+  copyright to the Free Software Foundation.
+
+- Same as above for ~denote--rename-file~, which was done in pull
+  request 557: <https://github.com/protesilaos/denote/pull/557>.
+
+** For developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:7eaf43a6-7d62-440e-bf7c-8d9536c7d36e
+:END:
+
+The following have been added or modified.
+
++ NEW Function ~denote-file-has-denoted-filename-p~ :: Return non-nil
+  if =FILE= respects the file-naming scheme of Denote. This tests the
+  rules of Denote's file-naming scheme. Sluggification is ignored. It
+  is done by removing all file name components and validating what
+  remains. Thanks to Jean-Philippe Gagné Guay for the pull request
+  515: <https://github.com/protesilaos/denote/pull/515>.
+
++ NEW Functions ~denote-infer-keywords-from-files~ :: Return list of
+  keywords in ~denote-directory-files~. With optional
+  =FILES-MATCHING-REGEXP=, only extract keywords from the matching
+  files. Otherwise, do it for all files. Keep any duplicates. Users
+  who do not want duplicates should refer to the functions
+  ~denote-keywords~.
+
++ MODIFIED Function ~denote-keywords~ :: Returns an appropriate list
+  of keyword candidates, while accounting for the value of the user
+  option ~denote-infer-keywords~. It now also accepts the optional
+  =FILES-MATCHING-REGEXP= parameter.
+
++ MODIFIED Function ~denote-directory-files~ :: Returns a list of
+  absolute file paths in variable ~denote-directory~. It now accepts
+  the optional =EXCLUDE-REGEXP= parameter.
+
++ MODIFIED Function ~denote-format-file-name~ :: Formats a file name.
+  The way it treats its =ID= parameter has changed. Please read its
+  doc string. Thanks to Jean-Philippe Gagné Guay for the pull request
+  496: <https://github.com/protesilaos/denote/pull/496>.
+
++ ALIAS Function ~denote-retrieve-filename-keywords-as-list~ :: This
+  is a name that is easier to discover than ~denote-extract-keywords-from-path~,
+  because of the many other functions with the =denote-retrieve-*= prefix.
+
++ MODIFIED Function ~denote-retrieve-filename-identifier~ :: Extracts
+  the identifier from =FILE= name, if present, else returns nil. To
+  create a new one from a date, refer to the ~denote-get-identifier~
+  function. Thanks to Jean-Philippe Gagné Guay for the pull request
+  476: <https://github.com/protesilaos/denote/pull/476>.
+
++ MODIFIED Function ~denote-get-identifier~ :: Converts =DATE= into a
+  Denote identifier using ~denote-id-format~. If =DATE= is nil, it
+  returns an empty string as the identifier. Also by Jean-Philippe in
+  pull request 476 mentioned right above.
+
++ MODIFIED Function ~denote-date-prompt~ :: Prompts for a date,
+  expecting =YYYY-MM-DD= or that plus =HH:MM= (or even =HH:MM:SS=).
+  Can also use Org's more advanced date selection utility if the user
+  option ~denote-date-prompt-use-org-read-date~ is non-nil. It now has
+  the optional parameters =INITIAL-DATE= and =PROMPT-TEXT=. Thanks to
+  Jean-Philippe Gagné Guay for the pull request 576:
+  <https://github.com/protesilaos/denote/pull/576>.
+
+- NEW Function ~denote-retrieve-groups-xref-query~ :: Accesses the
+  location of xrefs for =QUERY= and group them per file. Limit the
+  search to text files.
+
+- NEW Function ~denote-retrieve-files-xref-query~ :: Returns sorted,
+  deduplicated file names with matches for =QUERY= in their contents.
+  Limits the search to text files.
+
+- NEW Function ~denote-retrieve-xref-alist~ :: Returns xref alist of
+  files with the location of matches for =QUERY=. With optional
+  =FILES-MATCHING-REGEXP=, it limits the list of files accordingly
+  (per ~denote-directory-files~). At all times, it limits the search
+  to text files.
+
++ NEW Function ~denote-prepend-front-matter~ :: Prepend front matter
+  to =FILE=. The =TITLE=, =KEYWORDS=, =DATE=, =ID=, =SIGNATURE=, and
+  =FILE-TYPE= are passed from the renaming command and are used to
+  construct a new front matter block if appropriate.
+
++ MODIFIED Function ~denote-rewrite-front-matter~ :: Rewrites front
+  matter of note after ~denote-rename-file~ (or related). The =FILE=,
+  =TITLE=, =KEYWORDS=, =SIGNATURE=, =DATE=, =IDENTIFIER=, and
+  =FILE-TYPE= arguments are given by the renaming command and are used
+  to construct new front matter values if appropriate. If
+  ~denote-rename-confirmations~ contains ~rewrite-front-matter~,
+  prompt to confirm the rewriting of the front matter. Otherwise
+  produce a ~y-or-n-p~ prompt to that effect. Thanks to
+  Jean-Philippe Gagné Guay for the pull request 558:
+  <https://github.com/protesilaos/denote/pull/558>.
+
+** Denote "extensions" that are not in the ~denote~ package anymore
+:PROPERTIES:
+:CUSTOM_ID: h:40e030cd-f462-44ce-add9-ab1525359ae6
+:END:
+
+*** ~denote-journal~ integrates nicely with =M-x calendar=
+:PROPERTIES:
+:CUSTOM_ID: h:f8ab710d-852f-4d8b-b0f8-9a24c5c83808
+:END:
+
+The ~calendar~ can now highlight days that have journal entry. It may
+also be used as a date picker to view or write a journal entry for
+that day.
+
+- Thanks to Alan Schmitt for reporting an issue with the calendar
+  integration during development:
+  <https://github.com/protesilaos/denote-journal/issues/8>.
+
+- Thanks to Vineet C. Kulkarni for tweaking the identification of the
+  journal keyword to be more robust:
+  <https://github.com/protesilaos/denote-journal/pull/4>.
+
+- Thanks to Honza Pokorny for fixing two small issues with the path
+  expansion:
+  
+  - <https://github.com/protesilaos/denote-journal/pull/5>
+  - <https://github.com/protesilaos/denote-journal/pull/7>
+
+Other than that, the package is providing the same functionality as
+the discontinued =denote-journal-extras.el=.
+
+- Manual: <https://protesilaos.com/emacs/denote-journal>.
+- GitHub: <https://github.com/protesilaos/denote-journal>.
+
+*** ~denote-org~ is almost the same as the discontinued =denote-org-extras.el=
+:PROPERTIES:
+:CUSTOM_ID: h:db491fe0-0c96-4c2e-9320-dc2697106e12
+:END:
+
+The only addition to dynamic blocks the optional =:not-regexp= parameter.
+This is a regular expression that can further filter the results of a
+search, such that the matching items are removed from the output.
+
+The official manual of ~denote-org~ covers the technicalities.
+
+- Manual: <https://protesilaos.com/emacs/denote-org>.
+- GitHub: <https://github.com/protesilaos/denote-org>.
+
+Also thanks to Elias Storms for fixing a small issue with the "missing
+links" Org dynamic block, in pull request 486: <https://github.com/protesilaos/denote/pull/486>
+
+*** ~denote-silo~ is the same as the discontinued =denote-silo-extras.el=
+:PROPERTIES:
+:CUSTOM_ID: h:ed7c77f5-9b44-4e76-9ada-80ff0ed6d5f6
+:END:
+
+I have only made small tweaks to it, but nothing that changes the user
+experience.
+
++ Manual: <https://protesilaos.com/emacs/denote-silo>
++ GitHub: <https://github.com/protesilaos/denote-silo>
+
+*** ~denote-markdown~ for some Markdown-specific extras
+:PROPERTIES:
+:CUSTOM_ID: h:e01d236c-fb50-488f-9fb2-15e866fa122a
+:END:
+
+This package provides some convenience functions to better integrate
+Markdown with Denote. This is mostly about converting links from one
+type to another so that they can work in different applications
+(because Markdown does not have a standardised way to define custom
+link types). It also defines an "Obsidian" file type which does not
+have any front matter but only uses a level 1 heading for the title of
+the note.
+
+The code of ~denote-markdown~ used to be bundled up with the ~denote~
+package before version =4.0.0= of the latter and was available in the
+file =denote-md-extras.el=. Users of the old code will need to adapt
+their setup to use the ~denote-markdown~ package. This can be done by
+replacing all instances of =denote-md-extras= with =denote-markdown=
+across their configuration.
+
++ Manual: <https://protesilaos.com/emacs/denote-markdown>
++ GitHub: <https://github.com/protesilaos/denote-markdown>
+
+*** Write sequence notes (or "folgezettel") with ~denote-sequence~
+:PROPERTIES:
+:CUSTOM_ID: h:6181df9e-790f-4fcf-8093-cefbba324cb5
+:END:
+
+Users who want their notes to have an inherent structure can use
+~denote-sequence~. The idea is to have thoughts that naturally form
+sequences and are named accordingly. The sequence scheme is either
+numeric or alphanumeric. The manual of the package explains all the
+details.
+
++ Manual: <https://protesilaos.com/emacs/denote-sequence>
++ GitHub: <https://github.com/protesilaos/denote-sequence>
+
+I had a lot of fun developing this comprehensive package during the
+winter holidays.
+
+Thanks to Claudio Migliorelli, Kierin Bell, Mirko Hernandez for
+helping me fix some issues during development:
+
+- <https://github.com/protesilaos/denote/pull/518>.
+- <https://github.com/protesilaos/denote/pull/528>.
+- <https://github.com/protesilaos/denote/pull/540>.
+- <https://github.com/protesilaos/denote/pull/541>.
+- <https://github.com/protesilaos/denote-sequence/issues/2>.
+
+** The ~consult-denote~ also gets a small update
+:PROPERTIES:
+:CUSTOM_ID: h:90a9287d-a7dd-4d65-9214-4be6ebdf5943
+:END:
+
+This has always been a standalone package. I made the function
+~consult-denote-file-prompt~ read the special-purpose variable
+~denote-file-prompt-use-files-matching-regexp~. This is related to
+commit =e0f1d47= in denote.git, about issue 536 as reported by Alan
+Schmitt: <https://github.com/protesilaos/denote/issues/536>. The
+variable =denote-file-prompt-use-files-matching-regexp= is meant to be
+~let~ bound and is for advanced users or developers.
+
+** Feature freeze at least until the end of April 2025
+:PROPERTIES:
+:CUSTOM_ID: h:8624e698-90cd-429e-a072-b0fa2df76662
+:END:
+
+I will not develop new features or accept pull request for a couple of
+weeks. The idea is to focus on fixing any bug reports. We can then
+publish point releases quickly.
+
+New features can be included after we are confident that the packages
+we have are okay.
+
+** Git commits
+:PROPERTIES:
+:CUSTOM_ID: h:5191b423-6dc5-4ca7-9bcc-39797be5707c
+:END:
+
+This is just an overview of the Git commits, though remember that
+there is more that goes into a project, such as the reporting of
+inconsistencies, discussion of new ideas, et cetera. Thanks to
+everybody involved! Plus, some commits are large while others are
+tiny.
+
+#+begin_src
+~/Git/Projects/denote $ git shortlog 3.1.0..4.0.0  --summary --numbered
+   470	Protesilaos Stavrou
+    90	Jean-Philippe Gagné Guay
+     6	Kierin Bell
+     4	Alan Schmitt
+     3	eum3l
+     2	Claudio Migliorelli
+     2	Lucas Quintana
+     2	grtcdr
+     1	Elias Storms
+     1	Laurent Gatto
+     1	Maikol Solís
+     1	Octavian
+     1	TomoeMami
+#+end_src
+
+The following are not accurate because they only reflect the changes
+after the reorganisation I made. But we have to start from somewhere.
+
+#+begin_src
+~/Git/Projects/denote-journal $ git shortlog  --summary --numbered
+    54	Protesilaos Stavrou
+     2	Honza Pokorny
+     1	Vineet C. Kulkarni
+#+end_src
+
+#+begin_src
+~/Git/Projects/denote-sequence $ git shortlog  --summary --numbered
+    22	Protesilaos Stavrou
+#+end_src
+
+#+begin_src
+~/Git/Projects/denote-silo $ git shortlog  --summary --numbered
+    17	Protesilaos Stavrou
+#+end_src
+
+#+begin_src
+~/Git/Projects/denote-org $ git shortlog  --summary --numbered
+    15	Protesilaos Stavrou
+#+end_src
+
+#+begin_src 
+~/Git/Projects/denote-markdown $ git shortlog  --summary --numbered
+    11	Protesilaos Stavrou
+#+end_src
+
 * Version 3.1.0 on 2024-09-04
 :PROPERTIES:
 :CUSTOM_ID: h:f089ab11-4ad7-4fd9-9bf3-2deb2e070297

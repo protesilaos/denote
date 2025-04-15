@@ -5,7 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
-;; Version: 3.1.0
+;; Version: 4.0.0
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -4235,7 +4235,7 @@ they have front matter and what that may be."
 
 ;;;;; Creation of front matter
 
-(make-obsolete 'denote-add-front-matter nil "Use `denote-rename-file' or related. Starting with version 3.2.0.")
+(make-obsolete 'denote-add-front-matter nil "Use `denote-rename-file' or related. Starting with version 4.0.0.")
 
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
@@ -4856,7 +4856,7 @@ the active region specially, is up to it."
 (defalias 'denote-insert-link 'denote-link
   "Alias for `denote-link' command.")
 
-(make-obsolete 'denote-link-with-signature nil " 3.2.0: Use the `denote-link-description-format'.")
+(make-obsolete 'denote-link-with-signature nil " 4.0.0: Use the `denote-link-description-format'.")
 
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
