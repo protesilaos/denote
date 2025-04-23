@@ -5694,42 +5694,39 @@ To be assigned to `markdown-follow-link-functions'."
       'denote-faces-link
     'denote-faces-query-link))
 
-(defun denote--fontify-links-subr (query limit)
-  "Do the work of the font-lock match for QUERY up to LIMIT.
-Implementation based on the function `org-activate-links'."
-  (catch :exit
-    (while (re-search-forward query limit t)
-      (save-match-data  ; to return the matches to font-lock
-        (let* ((start (match-beginning 0))
-               (end (match-end 0))
-               (visible-start (or (match-beginning 2) start))
-               (visible-end (or (match-end 2) end))
-               (query (match-string-no-properties 1)))
-          (let* ((properties `( face ,(denote-get-link-face query)
-                                mouse-face highlight
-                                keymap ,denote-link-mouse-map
-                                denote-link-query-part ,query
-                                help-echo query
-                                htmlize-link (:uri ,query)
-                                font-lock-multiline t))
-                 (non-sticky-props
-                  '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
-                 (face-property 'link)
-                 (hidden (append '(invisible 'denote-link) properties)))
-            (remove-text-properties start end '(invisible nil))
-            (add-text-properties start visible-start hidden)
-            (add-face-text-property start end face-property)
-            (add-text-properties visible-start visible-end properties)
-            (add-text-properties visible-end end hidden)
-            (dolist (pos (list end visible-start visible-end))
-              (add-text-properties (1- pos) pos non-sticky-props)))
-          (throw :exit t))))      ; signal success
-    nil))
-
+;; Implementation based on the function `org-activate-links'.
 (defun denote-fontify-links (limit)
   "Provide font-lock matcher to fontify links up to LIMIT."
-  (when-let* ((type (denote-filetype-heuristics (buffer-file-name))))
-    (denote--fontify-links-subr (denote--link-in-context-regexp type) limit)))
+  (when-let* ((type (denote-filetype-heuristics (buffer-file-name)))
+              (query (denote--link-in-context-regexp type)))
+    (catch :exit
+      (while (re-search-forward query limit t)
+        (save-match-data  ; to return the matches to font-lock
+          (let* ((start (match-beginning 0))
+                 (end (match-end 0))
+                 (visible-start (or (match-beginning 2) start))
+                 (visible-end (or (match-end 2) end))
+                 (query (match-string-no-properties 1)))
+            (let* ((properties `( face ,(denote-get-link-face query)
+                                  mouse-face highlight
+                                  keymap ,denote-link-mouse-map
+                                  denote-link-query-part ,query
+                                  help-echo query
+                                  htmlize-link (:uri ,query)
+                                  font-lock-multiline t))
+                   (non-sticky-props
+                    '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
+                   (face-property 'link)
+                   (hidden (append '(invisible 'denote-link) properties)))
+              (remove-text-properties start end '(invisible nil))
+              (add-text-properties start visible-start hidden)
+              (add-face-text-property start end face-property)
+              (add-text-properties visible-start visible-end properties)
+              (add-text-properties visible-end end hidden)
+              (dolist (pos (list end visible-start visible-end))
+                (add-text-properties (1- pos) pos non-sticky-props)))
+            (throw :exit t))))      ; signal success
+      nil)))
 
 (define-obsolete-function-alias
   'denote-get-identifier-at-point
