@@ -5511,12 +5511,10 @@ Also see `denote-link-return-links'."
 Alo see `denote-find-link'."
   (declare (interactive-only t))
   (interactive)
-  (find-file
-   (denote-get-path-by-id
-    (denote-extract-id-from-string
-     (denote-select-linked-file-prompt
-      (or (denote-link-return-backlinks)
-          (user-error "No backlinks found")))))))
+  (when-let* ((links (or (denote-link-return-backlinks)
+                         (user-error "No backlinks found")))
+              (selected (denote-select-linked-file-prompt links)))
+    (find-file selected)))
 
 ;;;;;; Query links
 
