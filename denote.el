@@ -4927,12 +4927,10 @@ Also see `denote-link-return-backlinks'."
 Also see `denote-find-backlink'."
   (declare (interactive-only t))
   (interactive)
-  (find-file
-   (concat
-    (denote-directory)
-    (denote-select-linked-file-prompt
-     (or (denote-link-return-links)
-         (user-error "No links found"))))))
+  (when-let* ((links (or (denote-link-return-links)
+                         (user-error "No links found")))
+              (selected (denote-select-linked-file-prompt links)))
+  (find-file selected)))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
