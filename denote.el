@@ -4875,15 +4875,7 @@ the active region specially, is up to it."
         (push (match-string-no-properties 1) matches)))
     matches))
 
-(defun denote-link--expand-identifiers (regexp)
-  "Expend identifiers matching REGEXP into file paths."
-  (let ((files (denote-directory-files))
-        found-files)
-    (dolist (file files)
-      (dolist (i (denote-link--collect-identifiers regexp))
-        (when (string= i (denote-retrieve-filename-identifier file))
-          (push file found-files))))
-    found-files))
+(make-obsolete 'denote-link--expand-identifiers nil "4.1.0")
 
 (defvar denote-link-find-file-history nil
   "History for `denote-find-link'.")
