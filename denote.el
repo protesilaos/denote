@@ -5900,6 +5900,9 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 
 ;;;;; Links from Dired marks
 
+;; TODO 2025-04-29: Rewrite the denote-link--buffer-file-prompt to be more general.
+;; TODO 2025-04-29: Rewrite `denote-link-dired-marked-notes' to be more easy to reason about.
+
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-file-prompt (buffer-file-names)
   "Select file from BUFFER-FILE-NAMES of Denote notes."
