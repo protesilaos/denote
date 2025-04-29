@@ -4902,14 +4902,17 @@ the generic one."
                     nil t nil 'denote-link-find-file-history)))
     (expand-file-name selected (denote-directory))))
 
-(defun denote-link-return-links (&optional file)
+(defun denote-link-return-links (&optional file files)
   "Return list of links in current or optional FILE.
+With optional FILES, consider only those, otherwise use the return value
+of `denote-directory-files'.
+
 Also see `denote-link-return-backlinks'."
   (when-let* ((current-file (or file (buffer-file-name)))
               ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
-              (files (denote-directory-files))
+              (files (or files (denote-directory-files)))
               (file-identifiers
                (with-temp-buffer
                  (insert-file-contents current-file)

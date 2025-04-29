@@ -5496,7 +5496,10 @@ The following sections cover the specifics.
 
 #+findex: denote-link-return-links
 + Function ~denote-link-return-links~ :: Return list of links in
-  current or optional =FILE=.  Also see ~denote-link-return-backlinks~.
+  current or optional =FILE=. With optional =FILES= consider only
+  those, otherwise use the return value of ~denote-directory-files~.
+  Also see ~denote-link-return-backlinks~. [ Optional =FILES= is part
+  of {{{development-version}}}. ]
 
 #+findex: denote-link-return-backlinks
 + Function ~denote-link-return-backlinks~ :: Return list of backlinks
