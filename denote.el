@@ -4905,7 +4905,7 @@ With optional PROMPT-TEXT use it for the minibuffer prompt instead of
 the generic one."
   (let* ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files))
          (selected (completing-read
-                    (or prompt-text "Select file among files: ")
+                    (format-prompt (or prompt-text "Select file among files") nil)
                     (denote--completion-table 'file file-names)
                     nil t nil 'denote-link-find-file-history)))
     (expand-file-name selected (denote-directory))))
