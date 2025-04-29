@@ -5545,6 +5545,13 @@ The following sections cover the specifics.
 :CUSTOM_ID: h:66d31f42-6092-493a-97db-83b217db9d96
 :END:
 
+#+vindex: denote-rename-rewrite-front-matter
+- Variable ~denote-rename-rewrite-front-matter~ :: When non-nil,
+  rewrite the front matter if appropriate. The purpose of this
+  variable is to be ~let~ bound to nil by a caller of the command
+  ~denote-rename-file~ or related. This will have the effect of not
+  rewriting the file's front matter [ Part of {{{development-version}}}. ]
+
 #+findex: denote-rename-file-prompt
 - Function ~denote-rename-file-prompt~ :: Prompt to rename file named
   =OLD-NAME= to =NEW-NAME=. If ~denote-rename-confirmations~ does not

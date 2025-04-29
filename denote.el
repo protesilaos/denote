@@ -3739,6 +3739,12 @@ Respect `denote-generate-identifier-automatically'."
           (current-time))
     nil))
 
+(defvar denote-rename-rewrite-front-matter t
+  "When non-nil, rewrite the front matter if appropriate.
+The purpose of this variable is to be `let' bound to nil by a caller of
+the command `denote-rename-file' or related.  This will have the effect
+of not rewriting the file's front matter.")
+
 (defun denote--rename-file (file title keywords signature date)
   "Rename FILE according to the other parameters.
 Parameters TITLE, KEYWORDS, SIGNATURE and DATE are as described
@@ -3777,7 +3783,8 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
     (when (denote-rename-file-prompt file new-name)
       (denote-rename-file-and-buffer file new-name))
     ;; Handle front matter if new-name is of a supported type (rewrite or add front matter)
-    (when (and (denote-file-has-supported-extension-p file)
+    (when (and denote-rename-rewrite-front-matter
+               (denote-file-has-supported-extension-p file)
                (denote-file-is-writable-and-supported-p new-name))
       (if (denote--file-has-front-matter-p new-name file-type)
           (denote-rewrite-front-matter new-name title keywords signature date id file-type)
