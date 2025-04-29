@@ -4891,21 +4891,24 @@ the active region specially, is up to it."
 (defalias 'denote-link--find-file-history 'denote-link-find-file-history
   "Compatibility alias for `denote-link-find-file-history'.")
 
-(defun denote-select-linked-file-prompt (files)
+(define-obsolete-function-alias
+  'denote-select-linked-file-prompt
+  'denote-select-from-files-prompt
+  "4.1.0")
+
+(defun denote-select-from-files-prompt (files &optional prompt-text)
   "Prompt for linked file among FILES.
 Show relative file names and then return the absolute version of the
-selected one."
+selected one.
+
+With optional PROMPT-TEXT use it for the minibuffer prompt instead of
+the generic one."
   (let* ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files))
          (selected (completing-read
-                    "Find linked file: "
+                    (or prompt-text "Select file among files: ")
                     (denote--completion-table 'file file-names)
                     nil t nil 'denote-link-find-file-history)))
     (expand-file-name selected (denote-directory))))
-
-(define-obsolete-function-alias
-  'denote-link--find-file-prompt
-  'denote-select-linked-file-prompt
-  "3.0.0")
 
 (defun denote-link-return-links (&optional file)
   "Return list of links in current or optional FILE.
@@ -4939,7 +4942,7 @@ Also see `denote-find-backlink'."
   (interactive)
   (when-let* ((links (or (denote-link-return-links)
                          (user-error "No links found")))
-              (selected (denote-select-linked-file-prompt links)))
+              (selected (denote-select-from-files-prompt links)))
   (find-file selected)))
 
 ;;;###autoload
@@ -5523,7 +5526,7 @@ Alo see `denote-find-link'."
   (interactive)
   (when-let* ((links (or (denote-link-return-backlinks)
                          (user-error "No backlinks found")))
-              (selected (denote-select-linked-file-prompt links)))
+              (selected (denote-select-from-files-prompt links)))
     (find-file selected)))
 
 ;;;;;; Query links
