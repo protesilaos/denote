@@ -4942,7 +4942,7 @@ Also see `denote-find-backlink'."
   (interactive)
   (when-let* ((links (or (denote-link-return-links)
                          (user-error "No links found")))
-              (selected (denote-select-from-files-prompt links)))
+              (selected (denote-select-from-files-prompt links "Select among LINKS")))
   (find-file selected)))
 
 ;;;###autoload
@@ -5526,7 +5526,7 @@ Alo see `denote-find-link'."
   (interactive)
   (when-let* ((links (or (denote-link-return-backlinks)
                          (user-error "No backlinks found")))
-              (selected (denote-select-from-files-prompt links)))
+              (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
     (find-file selected)))
 
 ;;;;;; Query links
