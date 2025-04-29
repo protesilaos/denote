@@ -5516,6 +5516,9 @@ Also see `denote-link-return-links'."
 ;;;###autoload
 (defun denote-find-backlink ()
   "Use minibuffer completion to visit backlink to current file.
+Visit the file itself, not the location where the link is.  For a
+context-sensitive operation, use `denote-find-backlink-with-location'.
+
 Alo see `denote-find-link'."
   (declare (interactive-only t))
   (interactive)
@@ -5523,6 +5526,17 @@ Alo see `denote-find-link'."
                          (user-error "No backlinks found")))
               (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
     (find-file selected)))
+
+;;;###autoload
+(defun denote-find-backlink-with-location ()
+  "Like `denote-find-backlink' but jump to the exact location of the link."
+  (declare (interactive-only t))
+  (interactive)
+  (when-let* ((current-file buffer-file-name)
+              (id (denote-retrieve-filename-identifier-with-error current-file))
+              (files (denote-directory-files nil :omit-current :text-only))
+              (fetcher (lambda () (xref-matches-in-files id files))))
+    (xref-show-definitions-completing-read fetcher nil)))
 
 ;;;;;; Query links
 

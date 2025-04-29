@@ -3042,7 +3042,8 @@ the current window.
 
 Backlinks to the current file can also be visited by using the
 minibuffer completion interface with the ~denote-find-backlink~
-command ([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]).
+command or the more powerful ~denote-find-backlink-with-location~
+([[#h:1bc2adad-dca3-4878-b9f0-b105d5dec6f4][Visiting linked files via the minibuffer]]). [ The command ~denote-find-backlink-with-location~ is part of {{{development-version}}}. ]
 
 ** Writing metanotes
 :PROPERTIES:
@@ -3103,6 +3104,19 @@ session).
 To visit backlinks to the current note via the minibuffer, use
 ~denote-find-backlink~.  This is an alternative to placing backlinks
 in a dedicated buffer ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+
+#+findex: denote-find-backlink-with-location
+As an alternative to ~denote-find-backlink~, the command
+~denote-find-backlink-with-location~ shows the complete results of all
+backlinks in their context, grouped by file. It prompts to pick one
+among them, using minibuffer completion, and then jumps to the
+corresponding file at that exact location where the link is.
+
+Think of the ~denote-find-backlink-with-location~ as the
+minibuffer-centric variant of the backlinks buffer: the backlinks
+buffer sticks around, whereas this one is only available for the
+duration of the command. Depending on the scenario, one is more
+appropriate than the other. [ The command ~denote-find-backlink-with-location~ is part of {{{development-version}}}. ]
 
 ** Fontify links in non-Org buffers
 :PROPERTIES:
@@ -6315,10 +6329,10 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz),
   Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot,
   atanasj, azegas, babusri, bdillahu, coherentstate, doolio, duli,
-  drcxd, elge70, elliottw, fingerknight, hpgisler, hyperfocus1337,
-  jtpavlock, juh, leafarbelm, mentalisttraceur, pRot0ta1p, rbenit68,
-  relict007, sarcom-sar, sienic, skissue, sundar bp,
-  yetanotherfossman, zadca123
+  drcxd, elge70, elliottw, fingerknight, hpgisler,
+  hyperfocus1337,johkneisl, jtpavlock, juh, leafarbelm,
+  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sarcom-sar,
+  sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
