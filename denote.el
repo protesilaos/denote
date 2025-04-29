@@ -5903,12 +5903,12 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-file-prompt (buffer-file-names)
   "Select file from BUFFER-FILE-NAMES of Denote notes."
-  (let ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)))
-    (concat (denote-directory)
-            (completing-read
-             "Select open note to add links to: "
-             (denote--completion-table 'file relative-buffer-file-names)
-             nil t))))
+  (let* ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names))
+         (selected (completing-read
+                    "Select open note to add links to: "
+                    (denote--completion-table 'file relative-buffer-file-names)
+                    nil t)))
+    (expand-file-name selected (denote-directory))))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-has-denoted-filename-p' from Dired marked items."
