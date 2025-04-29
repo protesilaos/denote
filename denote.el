@@ -4892,12 +4892,15 @@ the active region specially, is up to it."
   "Compatibility alias for `denote-link-find-file-history'.")
 
 (defun denote-select-linked-file-prompt (files)
-  "Prompt for linked file among FILES."
-  (let ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files)))
-    (completing-read
-     "Find linked file: "
-     (denote--completion-table 'file file-names)
-     nil t nil 'denote-link-find-file-history)))
+  "Prompt for linked file among FILES.
+Show relative file names and then return the absolute version of the
+selected one."
+  (let* ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files))
+         (selected (completing-read
+                    "Find linked file: "
+                    (denote--completion-table 'file file-names)
+                    nil t nil 'denote-link-find-file-history)))
+    (expand-file-name selected (denote-directory))))
 
 (define-obsolete-function-alias
   'denote-link--find-file-prompt
