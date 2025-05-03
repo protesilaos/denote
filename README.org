@@ -3535,24 +3535,31 @@ Here are some examples:
 :CUSTOM_ID: h:c958e087-1d23-4a25-afdd-db7bf5606b4c
 :END:
 
-When sorting by =title=, =keywords=, or =signature= with the
-~denote-sort-dired~ command, Denote will internally apply a sorting
-function that is specific to each component ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
-These are subject to user configuration:
+When sorting by =title=, =keywords=, =signature=, =identifier=, or
+=random= with the ~denote-dired~ command (alias ~denote-sort-dired~),
+Denote will internally apply a sorting function that is specific to
+each component ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
+
+With the exception of =random=, the sorting of file name components
+is subject to user configuration:
 
 #+vindex: denote-sort-identifier-comparison-function
-- ~denote-sort-identifier-comparison-function~
+- ~denote-sort-identifier-comparison-function~ :: The function to sort
+  by the file name identifier.
 
 #+vindex: denote-sort-title-comparison-function
-- ~denote-sort-title-comparison-function~
+- ~denote-sort-title-comparison-function~ :: The function to sort by
+  the file name title.
 
 #+vindex: denote-sort-keywords-comparison-function
-- ~denote-sort-keywords-comparison-function~
+- ~denote-sort-keywords-comparison-function~ :: The function to sort
+  by the file name keywords.
 
 #+vindex: denote-sort-signature-comparison-function
-- ~denote-sort-signature-comparison-function~
+- ~denote-sort-signature-comparison-function~ :: The function to sort
+  by the file name signature.
 
-By default, all these user options use the same sorting function,
+By default, all these user options use the same comparison function,
 namely ~string-collate-lessp~. Users who have specific needs for any
 of those file name components can write their own sorting algorithms
 ([[#h:95345870-4ccd-484f-9adf-de4747ad5760][Sort signatures that include Luhmann-style sequences]]).
@@ -6308,9 +6315,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
   Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz,
   TomoeMami , Vedang Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101,
-  bryanrinders, eum3l, ezchi, jarofromel, leinfink (Henrik), l-o-l-h
-  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
-  relict007, skissue.
+  bryanrinders, eum3l, experimental-code-86, ezchi, jarofromel,
+  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
+  mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis

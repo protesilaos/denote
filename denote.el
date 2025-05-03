@@ -1408,7 +1408,7 @@ Return the absolute path to the matching file."
 (defconst denote-sort-comparison-fallback-function #'string-collate-lessp
   "String comparison function used by `denote-sort-files' subroutines.")
 
-(defconst denote-sort-components '(title keywords signature identifier)
+(defconst denote-sort-components '(title keywords signature identifier random)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
 (defcustom denote-sort-identifier-comparison-function denote-sort-comparison-fallback-function
@@ -1478,8 +1478,9 @@ minibuffer prompt for which file name component to sort by."
           (const :tag "Sort by identifier (default)" identifier)
           (const :tag "Sort by title" title)
           (const :tag "Sort by keywords" keywords)
-          (const :tag "Sort by signature" signature))
-  :package-version '(denote . "3.1.0")
+          (const :tag "Sort by signature" signature)
+          (const :tag "Random order" random))
+  :package-version '(denote . "4.1.0")
   :group 'denote-sort)
 
 (defcustom denote-sort-dired-default-reverse-sort nil
@@ -1519,6 +1520,17 @@ The `%s' performs the comparison."
 (denote-sort--define-lessp keywords)
 (denote-sort--define-lessp signature)
 
+(defun denote-sort-random (elements)
+  "Shuffle ELEMENTS of list randomly."
+  (let* ((elements (copy-sequence elements))
+         (shuffled-list nil))
+    (while elements
+      (let* ((list-length (length elements))
+             (element (nth (random list-length) elements)))
+        (setq elements (delq element elements))
+        (push element shuffled-list)))
+    shuffled-list))
+
 ;;;###autoload
 (defun denote-sort-files (files component &optional reverse)
   "Returned sorted list of Denote FILES.
@@ -1534,17 +1546,21 @@ With COMPONENT as a nil value keep the original date-based
 sorting which relies on the identifier of each file name.
 
 With optional REVERSE as a non-nil value, reverse the sort order."
-  (let* ((files-to-sort (copy-sequence files))
-         (sort-fn (pcase component
-                    ((pred functionp) component)
-                    ('identifier #'denote-sort-identifier-lessp)
-                    ('title #'denote-sort-title-lessp)
-                    ('keywords #'denote-sort-keywords-lessp)
-                    ('signature #'denote-sort-signature-lessp)))
-         (sorted-files (if sort-fn (sort files sort-fn) files-to-sort)))
-    (if reverse
-        (reverse sorted-files)
-      sorted-files)))
+  (let ((files-to-sort (copy-sequence files)))
+    (if (eq component 'random)
+        (denote-sort-random files)
+      (let* ((sort-fn (pcase component
+                        ((pred functionp) component)
+                        ('identifier #'denote-sort-identifier-lessp)
+                        ('title #'denote-sort-title-lessp)
+                        ('keywords #'denote-sort-keywords-lessp)
+                        ('signature #'denote-sort-signature-lessp)))
+             (sorted-files (if sort-fn
+                               (sort files sort-fn)
+                             files-to-sort)))
+        (if reverse
+            (reverse sorted-files)
+          sorted-files)))))
 
 (defun denote-sort-get-directory-files (files-matching-regexp sort-by-component &optional reverse omit-current exclude-regexp)
   "Return sorted list of files in variable `denote-directory'.
