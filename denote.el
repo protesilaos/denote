@@ -5211,7 +5211,7 @@ Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
 concomitant alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
          (file buffer-file-name)
-         (buffer (or buffer-name (format-message "Denote query for `%s'" query)))
+         (buffer (or buffer-name (format-message "*Denote query for `%s'*" query)))
          ;; We retrieve results in absolute form and change the
          ;; absolute path to a relative path below. We could add a
          ;; suitable function and the results would be automatically
@@ -5307,7 +5307,9 @@ see `denote-query-exclude-files-with-keywords'."
                file)
         (push file final-files)))
     (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files)
+        (denote-make-links-buffer denote-query--last-query final-files
+                                  (and (eq major-mode 'denote-query-mode) (buffer-name))
+                                  '(display-buffer-same-window))
       (user-error "No remaining files when applying that filter"))
     (message "Excluding files matching `%s'" regexp)))
 
@@ -5329,7 +5331,9 @@ when REGEXP is a list."
              file)
         (push file final-files)))
     (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files)
+        (denote-make-links-buffer denote-query--last-query final-files
+                                  (and (eq major-mode 'denote-query-mode) (buffer-name))
+                                  '(display-buffer-same-window))
       (user-error "No remaining files when applying that filter"))
     (message "Only including files matching `%s'" regexp)))
 
@@ -5368,7 +5372,9 @@ means of e.g. `denote-query-exclude-files')."
   (interactive nil denote-query-mode)
   (unless (derived-mode-p 'denote-query-mode)
     (user-error "Only use this command inside the `denote-query-mode'"))
-  (denote-make-links-buffer denote-query--last-query)
+  (denote-make-links-buffer denote-query--last-query nil
+                            (and (eq major-mode 'denote-query-mode) (buffer-name))
+                            '(display-buffer-same-window))
   (message "Cleared all filters"))
 
 ;;;;;; Additional features for searching file contents
