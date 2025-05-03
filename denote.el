@@ -5422,7 +5422,7 @@ When called from Lisp, any argument as accepted by `denote-sort-files'
 is allowed."
   (interactive (list (denote-sort-component-prompt)))
   (let ((denote-query-sorting component))
-    (denote-make-links-buffer denote-query--last-query nil
+    (denote-make-links-buffer denote-query--last-query denote-query--last-files
                               (and (eq major-mode 'denote-query-mode) (buffer-name))
                               '(display-buffer-same-window))))
 
