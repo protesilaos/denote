@@ -1620,14 +1620,27 @@ OMIT-CURRENT have been applied."
 (defalias 'denote-sort--component-hist 'denote-sort-component-history
   "Compatibility alias for `denote-sort-component-history'.")
 
+(defun denote-sort-annotate (component)
+  "Annotate COMPONENT for `denote-sort-component-prompt'."
+  (when-let* ((text (pcase component
+                      ("title" "The title of the file name")
+                      ("keywords" "The keywords of the file name")
+                      ("signature" "The signature of the file name")
+                      ("identifier" "The identifier of the file name")
+                      ("random" "Random file sort"))))
+    (format "%s-- %s"
+            (propertize " " 'display '(space :align-to 12))
+            (propertize text 'face 'completions-annotations))))
+
 (defun denote-sort-component-prompt ()
   "Prompt for sorting key among `denote-sort-components'."
-  (let ((default (car denote-sort-component-history)))
+  (let ((default (car denote-sort-component-history))
+        (completion-extra-properties (list :annotation-function #'denote-sort-annotate)))
     (intern
      (completing-read
       (format-prompt "Sort by file name component" default)
-      denote-sort-components nil :require-match
-      nil 'denote-sort-component-history default))))
+      (denote--completion-table 'denote-sort-component denote-sort-components)
+      nil :require-match nil 'denote-sort-component-history default))))
 
 (defvar denote-sort-exclude-files-history nil
   "Minibuffer history for `denote-sort-exclude-files-prompt'.")
