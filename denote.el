@@ -2505,12 +2505,11 @@ If FILES is not given, use all text files as returned by
             (if (and files (listp files))
                 files
               (denote-directory-files files denote-query--omit-current :text-only))))))
-    (if (not denote-query-sorting)
-        data
-      ;; Sort results
-      (let* ((files-matched (mapcar #'car data))
-             (files-sorted (denote-sort-files files-matched denote-query-sorting)))
-        (mapcar (lambda (x) (assoc x data)) files-sorted)))))
+    (if-let* ((sort denote-query-sorting)
+              (files-matched (mapcar #'car data))
+              (files-sorted (denote-sort-files files-matched sort)))
+        (mapcar (lambda (x) (assoc x data)) files-sorted)
+      data)))
 
 ;;;; New note
 
