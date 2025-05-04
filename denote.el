@@ -1668,7 +1668,8 @@ OMIT-CURRENT have been applied."
     (list sort-by-component reverse-sort exclude-rx)))
 
 ;;;###autoload
-(defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
+(defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp
+                          &optional buffer-name)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
 When called interactively, prompt for FILES-MATCHING-REGEXP and,
 depending on the value of the user option `denote-sort-dired-extra-prompts',
@@ -1712,7 +1713,8 @@ When called from Lisp, the arguments are a string, a symbol among
               ;; it upstream, but even if it is fixed we cannot use it
               ;; for now (whatever fix will be available for Emacs 30+).
               (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
+              (buffer-name (or buffer-name
+                               (format "Denote sort by `%s' at %s" component (format-time-string "%T")))))
         (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
