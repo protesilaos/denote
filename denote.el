@@ -5414,12 +5414,12 @@ means of e.g. `denote-query-exclude-files')."
   (message "Cleared all filters"))
 
 (defun denote-query-sort-last-search (component)
-  "Sort the files matched by the last search according to COMPONENT.
+  "Sort files matched by the last search according to COMPONENT.
 
-Interactively, prompt for COMPONENT among `denote-sort-components'.
+When called interactively, prompt for COMPONENT among `denote-sort-components'.
 
-When called from Lisp, any argument as accepted by `denote-sort-files'
-is allowed."
+When called from Lisp, COMPONENT has the same meaning as in the function
+`denote-sort-files'."
   (interactive (list (denote-sort-component-prompt)))
   (let ((denote-query-sorting component))
     (denote-make-links-buffer denote-query--last-query denote-query--last-files
