@@ -3698,6 +3698,14 @@ of files that were returned by whichever command produced the buffer
 #+findex: denote-query-clear-all-filters
 - ~denote-query-clear-all-filters~ :: Clear all the applied filters.
 
+#+findex: denote-query-sort-last-search
+- ~denote-query-sort-last-search~ :: Change the sorting of files from
+  the last search. The user option ~denote-query-sorting~ controlls
+  the default sort ([[#h:ec3d009a-518b-439f-a3e5-38342b1c13fe][Control the default sort of a query buffer]]).
+
+  [ Both the command ~denote-query-sorting~ and the user option
+    ~denote-query-sorting~ are part of {{{development-version}}}. ]
+
 Remember that these are easy to use even without knowledge of regular
 expressions, thanks to the efficiency of the Denote file-naming scheme
 ([[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]]). For
@@ -3711,6 +3719,40 @@ these are grouped per file. There also are some of the default actions
 provided by the Xref infrastructure. Users can do =M-x describe-mode=
 (=C-h m= with default key bindings) to learn about all the actions
 they can perform.
+
+** Control the default sort of a query buffer
+:PROPERTIES:
+:CUSTOM_ID: h:ec3d009a-518b-439f-a3e5-38342b1c13fe
+:END:
+
+[ Part of {{{development-version}}}. ]
+
+#+vindex: denote-query-sorting
+The user option ~denote-query-sorting~ controls the order of matching
+files in a query buffer (buffers that use the ~denote-query-mode~. The
+applies to the buffer that is produced by query links, backlinks, and
+the ~denote-grep~ command:
+
+- [[#h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d][Add a query link]].
+- [[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]].
+- [[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]].
+
+By default, no sorting of matching files is performed. They appear in
+the query buffer in the order they were retrieved.
+
+The ~denote-query-sorting~ can be set to a symbol among =title=,
+=keywords=, =signature=, or =identifier= to sort by the given file
+name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). The symbol =random= produces
+a random order each time.
+
+The ~denote-query-sorting~ can also be set to the symbol of a
+function. In that case, the given function is used to perform the
+sorting. This is for advanced users, who may refer to the
+documentation of the ~denote-sort-files~ for the technicalities.
+
+Whatever the value of ~denote-query-sorting~, users may change the
+sort of query buffers by calling the command ~denote-query-sort-last-search~
+([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]).
 
 * Minibuffer histories
 :PROPERTIES:
