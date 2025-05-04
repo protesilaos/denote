@@ -2487,6 +2487,8 @@ pass it to `denote-directory-files'."
 (defvar denote-query--omit-current t
   "When non-nil `denote-make-links-buffer' omits the current file.")
 
+(defvar denote-query-sorting)
+
 (defun denote-retrieve-xref-alist (query &optional files)
   "Return xref alist of absolute file paths with location of matches for QUERY.
 Optional FILES can be a list of files to search for.  It can also be a
