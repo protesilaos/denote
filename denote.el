@@ -5136,9 +5136,8 @@ files in a custom manner.  The value is passed as the COMPONENT argument
 to the `denote-sort-files' function.  That means it can be a symbol
 among `denote-sort-components' or a function which performs the sorting.
 
-The user can also call the function `denote-query-sort-last-search' in
-order to sort file names interactively and temporarily in the query
-buffer."
+The user can also call the command `denote-query-sort-last-search' in
+order to sort file names interactively in the query buffer."
   :type '(radio
           (const :tag "Don't sort (default)" nil)
           (const :tag "Sort by identifier" identifier)
