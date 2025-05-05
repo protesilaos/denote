@@ -4951,12 +4951,17 @@ the generic one."
                     nil t nil 'denote-link-find-file-history)))
     (expand-file-name selected (denote-directory))))
 
-(defun denote-link-return-links (&optional file files)
+(define-obsolete-function-alias
+  'denote-link-return-links
+  'denote-get-links
+  "4.1.0")
+
+(defun denote-get-links (&optional file files)
   "Return list of links in current or optional FILE.
 With optional FILES, consider only those, otherwise use the return value
 of `denote-directory-files'.
 
-Also see `denote-link-return-backlinks'."
+Also see `denote-get-backlinks'."
   (when-let* ((current-file (or file (buffer-file-name)))
               ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
@@ -4975,16 +4980,13 @@ Also see `denote-link-return-backlinks'."
           (push file found-files)))
       found-files)))
 
-(defalias 'denote-link-return-forelinks 'denote-link-return-links
-  "Alias for `denote-link-return-links'.")
-
 ;;;###autoload
 (defun denote-find-link ()
   "Use minibuffer completion to visit linked file.
 Also see `denote-find-backlink'."
   (declare (interactive-only t))
   (interactive)
-  (when-let* ((links (or (denote-link-return-links)
+  (when-let* ((links (or (denote-get-links)
                          (user-error "No links found")))
               (selected (denote-select-from-files-prompt links "Select among LINKS")))
   (find-file selected)))
@@ -5594,20 +5596,24 @@ Place the buffer below the current window or wherever the user option
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
   "Alias for `denote-backlinks' command.")
 
+(define-obsolete-function-alias
+  'denote-link-return-backlinks
+  'denote-get-backlinks
+  "4.1.0")
 
-(defun denote-link-return-backlinks (&optional file)
+(defun denote-get-backlinks (&optional file)
   "Return list of backlinks in current or optional FILE.
-Also see `denote-link-return-links'."
+Also see `denote-get-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
               (id (denote-retrieve-filename-identifier-with-error current-file)))
     (delete current-file (denote-retrieve-files-xref-query id))))
 
-;; TODO 2024-09-04: Instead of using `denote-link-return-backlinks' we
+;; TODO 2024-09-04: Instead of using `denote-get-backlinks' we
 ;; should have a function that does not try to find all backlinks but
 ;; simply exits as soon as it finds one.
 (defun denote--file-has-backlinks-p (file)
   "Return non-nil if FILE has backlinks."
-  (not (zerop (length (denote-link-return-backlinks file)))))
+  (not (zerop (length (denote-get-backlinks file)))))
 
 ;;;###autoload
 (defun denote-find-backlink ()
@@ -5618,7 +5624,7 @@ context-sensitive operation, use `denote-find-backlink-with-location'.
 Alo see `denote-find-link'."
   (declare (interactive-only t))
   (interactive)
-  (when-let* ((links (or (denote-link-return-backlinks)
+  (when-let* ((links (or (denote-get-backlinks)
                          (user-error "No backlinks found")))
               (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
     (find-file selected)))
