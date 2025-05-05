@@ -6152,6 +6152,28 @@ This command is meant to be used from a Dired buffer."
     ["Perform a query in the contents of files" denote-grep
      :help "Search inside files in the `denote-directory'"]
     "---"
+    ["Search inside the files of the last search (focused search)" denote-query-exclude-files
+     :help "Perform a query inside only the files that matched the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Exclude files from last search" denote-query-exclude-files
+     :help "Exclude files matching a regular expression from the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Exclude files with keywords from last search" denote-query-exclude-files-with-keywords
+     :help "Exclude files matching the given keywords from the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Include only the given files from last search" denote-query-only-include-files
+     :help "Include only the files matching the given regular expression from the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Include only the given files with keywords from last search" denote-query-only-include-files-with-keywords
+     :help "Include only the files matching the given keywords from the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Sort files of last search" denote-query-sort-last-search
+     :help "Change the order of the files matched in the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    ["Clear all filters from last search" denote-query-clear-all-filters
+     :help "Clear all the filters that have been applied to the last search"
+     :enable (derived-mode-p 'denote-query-mode)]
+    "---"
     ["Highlight Dired file names" denote-dired-mode
      :help "Apply colors to Denote file name components in Dired"
      :enable (derived-mode-p 'dired-mode)
