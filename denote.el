@@ -2221,14 +2221,16 @@ this list for new note creation.  The default is `org'.")
         (symbol-value prop)
       prop)))
 
+(defvar denote-id-only-link-in-context-regexp)
+
 (defun denote--link-in-context-regexp (file-type)
   "Return link regexp in context based on FILE-TYPE."
-  (let ((prop (plist-get
-               (alist-get file-type denote-file-types)
-               :link-in-context-regexp)))
-    (if (symbolp prop)
-        (symbol-value prop)
-      prop)))
+  (when-let* ((type (alist-get file-type denote-file-types))
+              (property (plist-get type :link-in-context-regexp))
+              (link-type-regexp (if (symbolp property)
+                                    (symbol-value property)
+                                  property)))
+    (format "%s\\|%s" link-type-regexp denote-id-only-link-in-context-regexp)))
 
 (defun denote-file-type-extensions ()
   "Return all file type extensions in `denote-file-types'."
@@ -4918,8 +4920,7 @@ the active region specially, is up to it."
   (let (matches)
     (save-excursion
       (goto-char (point-min))
-      (while (or (re-search-forward regexp nil t)
-                 (re-search-forward denote-id-only-link-in-context-regexp nil t))
+      (while (re-search-forward regexp nil t)
         (push (match-string-no-properties 1) matches)))
     matches))
 
