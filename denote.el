@@ -6080,7 +6080,8 @@ This command is meant to be used from a Dired buffer."
 ;;;; Define menu
 
 (defvar denote--menu-contents
-  '(["Create a note" denote
+  '("Denote"
+    ["Create a note" denote
      :help "Create a new note in the `denote-directory'"]
     ["Create a note with given file type" denote-type
      :help "Create a new note with a given file type in the `denote-directory'"]
