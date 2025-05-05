@@ -6149,6 +6149,8 @@ This command is meant to be used from a Dired buffer."
     "---"
     ["Generate sorted and filtered Dired listing" denote-sort-dired
      :help "Generate a sorted and filtered Dired listing of files in the `denote-directory'"]
+    ["Perform a query in the contents of files" denote-grep
+     :help "Search inside files in the `denote-directory'"]
     "---"
     ["Highlight Dired file names" denote-dired-mode
      :help "Apply colors to Denote file name components in Dired"
