@@ -6380,8 +6380,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   atanasj, azegas, babusri, bdillahu, coherentstate, doolio, duli,
   drcxd, elge70, elliottw, fingerknight, hpgisler,
   hyperfocus1337,johkneisl, jtpavlock, juh, leafarbelm,
-  mentalisttraceur, pRot0ta1p, rbenit68, relict007, sarcom-sar,
-  sienic, skissue, sundar bp, yetanotherfossman, zadca123
+  mentalisttraceur, mjkalyan, pRot0ta1p, rbenit68, relict007,
+  sarcom-sar, sienic, skissue, sundar bp, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

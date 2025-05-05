@@ -1667,6 +1667,23 @@ OMIT-CURRENT have been applied."
         ('exclude-regexp (setq exclude-rx (denote-sort-exclude-files-prompt)))))
     (list sort-by-component reverse-sort exclude-rx)))
 
+(defvar denote-sort-dired-buffer-name-function #'denote-sort-dired-format-buffer-name
+  "Function to format a buffer name for `denote-sort-dired'.
+It is called with all the arguments passed to `denote-sort-dired' and
+must return a string that is appropriate for a buffer name.")
+
+(defun denote-sort-dired-format-buffer-name (files-matching-regexp sort-by-component reverse exclude-regexp)
+  "Format buffer name for `denote-sort-dired'.
+The FILES-MATCHING-REGEXP, SORT-BY-COMPONENT, REVERSE, and
+EXCLUDE-REGEXP all have the same meaning as `denote-sort-dired'.
+Process them to return the buffer name."
+  (format-message
+   "*denote-dired: regexp `%s'; sort `%s'%s%s*"
+   files-matching-regexp
+   sort-by-component
+   (if reverse "; reverse t" "")
+   (if exclude-regexp (format-message "; exclude-regexp `%s'" exclude-regexp) "")))
+
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
@@ -1704,18 +1721,12 @@ When called from Lisp, the arguments are a string, a symbol among
                           nil))
         (exclude-rx (or exclude-regexp nil)))
     (if-let* ((default-directory (denote-directory))
-              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx))
-              ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-              ;; buffer-name produces an error if the regexp contains a
-              ;; wildcard for a directory. I can reproduce this in emacs
-              ;; -Q and am not sure if it is a bug. Anyway, I will report
-              ;; it upstream, but even if it is fixed we cannot use it
-              ;; for now (whatever fix will be available for Emacs 30+).
-              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
-        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name files)))))
+              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx)))
+        (let ((dired-buffer (dired (cons (denote-directory) (mapcar #'file-relative-name files))))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
+            (rename-buffer buffer-name :unique)
             (setq-local revert-buffer-function
                         (lambda (&rest _)
                           ;; FIXME 2025-01-04: Killing the buffer has
