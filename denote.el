@@ -1726,15 +1726,7 @@ When called from Lisp, the arguments are a string, a symbol among
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
-            (rename-buffer buffer-name :unique)
-            (setq-local revert-buffer-function
-                        (lambda (&rest _)
-                          ;; FIXME 2025-01-04: Killing the buffer has
-                          ;; the unintended side effect of affecting the
-                          ;; window configuration when we call
-                          ;; `denote-update-dired-buffers'.
-                          (kill-buffer dired-buffer)
-                          (denote-sort-dired files-matching-regexp component reverse-sort exclude-rx))))
+            (rename-buffer buffer-name :unique))
           buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
