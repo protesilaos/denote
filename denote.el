@@ -773,6 +773,16 @@ and `denote-link-after-creating-with-command'."
   :link '(info-link "(denote) Choose which commands to prompt for")
   :type '(repeat symbol))
 
+(defcustom denote-buffer-name-prefix "[D] "
+  "String used as the prefix of all buffer names produced by Denote.
+This includes the query links, backlinks, `denote-grep', `denote-dired'
+buffers, as well as all the regular Denote files whose buffer name gets
+updated when `denote-rename-buffer-mode' is enabled (that mode uses the
+`denote-rename-buffer-format')."
+  :type 'string
+  :package-version '(denote . "4.1.0")
+  :group 'denote)
+
 (defcustom denote-file-name-slug-functions
   '((title . denote-sluggify-title)
     (signature . denote-sluggify-signature)
@@ -1397,6 +1407,14 @@ Return the absolute path to the matching file."
     ;; appropriately.
     absolute-file))
 
+(defun denote-format-buffer-name (string &optional special)
+  "Use STRING to return a Denote buffer name with `denote-buffer-name-prefix'.
+With optional SPECIAL, wrap the name in asterisks, signifying that this
+is a special buffer."
+  (if special
+      (format "*%s%s*" denote-buffer-name-prefix string)
+    (format "%s%s" denote-buffer-name-prefix string)))
+
 ;;;; The sort mechanism
 
 (defgroup denote-sort nil
@@ -1677,14 +1695,14 @@ must return a string that is appropriate for a buffer name.")
 The FILES-MATCHING-REGEXP, SORT-BY-COMPONENT, REVERSE, and
 EXCLUDE-REGEXP all have the same meaning as `denote-sort-dired'.
 Process them to return the buffer name."
-  (denote-buffer-name
+  (denote-format-buffer-name
    (format-message
     "regexp `%s'; sort `%s'%s%s"
     files-matching-regexp
     sort-by-component
     (if reverse "; reverse t" "")
     (if exclude-regexp (format-message "; exclude-regexp `%s'" exclude-regexp) ""))
-   t))
+   :special-buffer))
 
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
@@ -5255,9 +5273,8 @@ Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
 concomitant alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
          (file buffer-file-name)
-         (buffer (or buffer-name (denote-buffer-name
-                                  (format-message "query for `%s'" query)
-                                  t)))
+         (buffer (or buffer-name
+                     (denote-format-buffer-name (format-message "query for `%s'" query) :special-buffer)))
          ;; We retrieve results in absolute form and change the
          ;; absolute path to a relative path below. We could add a
          ;; suitable function and the results would be automatically
@@ -5565,12 +5582,12 @@ file listings such as those of `dired' and the command-line `ls' program."
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
 use the ID."
-  (denote-buffer-name
+  (denote-format-buffer-name
    (if-let* ((type (denote-filetype-heuristics file))
              (title (denote-retrieve-front-matter-title-value file type)))
        (format "FILE backlinks for %S" title)
      (format "FILE backlinks for %s" id))
-   t))
+   :special-buffer))
 
 ;;;###autoload
 (defun denote-backlinks ()
@@ -6489,24 +6506,13 @@ option `denote-templates'."
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-buffer-name-prefix "[D] "
-  "A string used as a buffer name prefix to indicate that a buffer is a
-Denote buffer of any kind."
-  :type 'string
-  :package-version '(denote . "TODO") ; what version will this be included in?
-  :group 'denote)
-
-(defun denote-buffer-name (string &optional special?)
-  "Return a Denote buffer name based on STRING. That means prefixing
-‘denote-buffer-name-prefix’ to STRING (indicating the buffer is a Denote
-buffer) and surrounding the string with asterisks when the buffer is
-special/temporary (i.e. when SPECIAL? is non-nil)."
-  (let ((maybe-asterisk (if special? "*" "")))
-    (concat maybe-asterisk denote-buffer-name-prefix string maybe-asterisk)))
-
 (defcustom denote-rename-buffer-format "%D%b"
   "The format of the buffer name `denote-rename-buffer' should use.
-The value is a string that treats specially the following specifiers:
+This also covers the `denote-rename-buffer-mode'.  The resulting buffer
+name will also include the `denote-buffer-name-prefix'.
+
+The value of this user option is a string that treats specially the
+following specifiers:
 
 - The %t is the Denote TITLE in the front matter or the file name.
 - The %T is the Denote TITLE in the file name.
@@ -6533,9 +6539,7 @@ When combined all together, the above are written thus:
 
     %<flags><width><precision>SPECIFIER-CHARACTER
 
-Any other string it taken as-is.  Users may want, for example, to
-include some text that makes Denote buffers stand out, such as
-a [D] prefix."
+Any other string it taken as-is."
   :type 'string
   :package-version '(denote . "4.0.0")
   :group 'denote-rename-buffer)
@@ -6602,7 +6606,7 @@ option `denote-rename-buffer-function' and is thus used by the
               ((denote-file-has-identifier-p file))
               (new-name (denote-rename-buffer--format (or buffer (current-buffer))))
               ((not (string-blank-p new-name))))
-    (rename-buffer (denote-buffer-name new-name) :unique)))
+    (rename-buffer (denote-format-buffer-name new-name) :unique)))
 
 (defun denote-rename-buffer--fallback (&optional buffer)
   "Fallback to rename BUFFER or `current-buffer'.
