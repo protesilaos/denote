@@ -778,7 +778,11 @@ and `denote-link-after-creating-with-command'."
 This includes the query links, backlinks, `denote-grep', `denote-dired'
 buffers, as well as all the regular Denote files whose buffer name gets
 updated when `denote-rename-buffer-mode' is enabled (that mode uses the
-`denote-rename-buffer-format')."
+`denote-rename-buffer-format').
+
+By default, the value of `denote-buffer-name-prefix' is \"[D] \".
+Users can set it to any string they want, such as \"<Denote> \", or
+even an empty string to not have any such prefix."
   :type 'string
   :package-version '(denote . "4.1.0")
   :group 'denote)
