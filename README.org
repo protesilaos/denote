@@ -893,6 +893,12 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
+Also, using ~denote-use-template~ with ~let~ bind could potentially interfere
+with the user option ~denote-org-capture-specifiers~. Along with the ~let~
+bind for ~denote-use-template~, it is advisable to bind
+~denote-org-capture-specifiers~ to nil or an empty string in case of template
+getting duplicated.
+
 [ You may not need ~org-capture~ to do what you want ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]). ]
 
 ** Create note with specific prompts using Org capture
