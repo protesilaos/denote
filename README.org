@@ -6349,13 +6349,13 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Claudio Migliorelli, Clemens Radermacher, Colin McLear, Damien
   Cassou, Eduardo Grajeda, Elias Storms, Eshel Yaron, Florian, Glenna
   D., Graham Marlow, Hilde Rhyne, Ivan Sokolov, Jack Baty, Jakub
-  Szczerbowski, Jean-Charles Bagneris, Jean-Philippe Gagné Guay,
-  Jianwei Hou, Joseph Turner, Jürgen Hötzel, Kaushal Modi, Kai von
-  Fintel, Kierin Bell, Kostas Andreadis, Kristoffer Balintona, Kyle
-  Meyer, Laurent Gatto, Lucas Quintana, Maikol Solis, Marc Fargas,
-  Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Octavian, Peter
-  Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer, Stefan
-  Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz,
+  Szczerbowski, James Kalyan, Jean-Charles Bagneris, Jean-Philippe
+  Gagné Guay, Jianwei Hou, Joseph Turner, Jürgen Hötzel, Kaushal Modi,
+  Kai von Fintel, Kierin Bell, Kostas Andreadis, Kristoffer Balintona,
+  Kyle Meyer, Laurent Gatto, Lucas Quintana, Maikol Solis, Marc
+  Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Octavian,
+  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer,
+  Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz,
   TomoeMami , Vedang Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101,
   bryanrinders, eum3l, experimental-code-86, ezchi, jarofromel,
   leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
