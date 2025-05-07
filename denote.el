@@ -1415,9 +1415,7 @@ Return the absolute path to the matching file."
   "Use STRING to return a Denote buffer name with `denote-buffer-name-prefix'.
 With optional SPECIAL, wrap the name in asterisks, signifying that this
 is a special buffer."
-  (if special
-      (format "*%s%s*" denote-buffer-name-prefix string)
-    (format "%s%s" denote-buffer-name-prefix string)))
+  (format (if special "*%s%s*" "%s%s") denote-buffer-name-prefix string))
 
 ;;;; The sort mechanism
 
