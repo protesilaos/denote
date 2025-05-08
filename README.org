@@ -5116,44 +5116,14 @@ The following sections cover the specifics.
   ~denote-directory~ accepts a directory-local value for what we call
   "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
-** File path interface for developers or advanced users
+** Predefined note values for developers or advanced users
 :PROPERTIES:
-:CUSTOM_ID: h:08e696e4-c9e1-48b4-8349-e53451aed1df
+:CUSTOM_ID: h:a8b9082c-8bd5-492d-8da7-4f41ee493d59
 :END:
 
-#+findex: denote-file-name-relative-to-denote-directory
-+ Function ~denote-file-name-relative-to-denote-directory~ :: Return
-  name of =FILE= relative to the variable ~denote-directory~.  =FILE=
-  must be an absolute path.
-
-#+findex: denote-slug-keep-only-ascii
-+ Function ~denote-slug-keep-only-ascii~ :: Remove all non-ASCII
-  characters from =STR= and replace them with spaces. This is useful
-  as a helper function to construct ~denote-file-name-slug-functions~
-  ([[#h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a][Custom sluggification to remove non-ASCII characters]]).
-
-#+findex: denote-sluggify
-+ Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
-  file name =COMPONENT= ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
-  Apply the function specified in ~denote-file-name-slug-function~ to
-  =COMPONENT= which is one of =title=, =signature=, =keyword=. If the
-  resulting string still contains consecutive =-=,=_= or ~=~, they are
-  replaced by a single occurence of the character, if necessary
-  according to =COMPONENT=. If =COMPONENT= is ~keyword~, remove
-  underscores from =STR= as they are used as the keywords separator in
-  file names.
-
-#+findex: denote-sluggify-keyword
-+ Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
-  separate words.
-
-#+findex: denote-sluggify-signature
-+ Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
-  slug for signatures ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
-
-#+findex: denote-sluggify-keywords
-+ Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
-  a list of strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
+In custom code, it is possible to override what the ~denote~ command
+is reading by specifying a value for the following. In that case,
+there will be no corresponding prompt.
 
 #+findex: denote-use-date
 + Function ~denote-use-date~ :: The date to be used in a note creation
@@ -5203,6 +5173,45 @@ The following sections cover the specifics.
   values. This variable is ignored if nil. Only ever ~let~ bind this,
   otherwise the title will always be the same and the title prompt
   will be skipped.
+
+** File path interface for developers or advanced users
+:PROPERTIES:
+:CUSTOM_ID: h:08e696e4-c9e1-48b4-8349-e53451aed1df
+:END:
+
+#+findex: denote-file-name-relative-to-denote-directory
++ Function ~denote-file-name-relative-to-denote-directory~ :: Return
+  name of =FILE= relative to the variable ~denote-directory~.  =FILE=
+  must be an absolute path.
+
+#+findex: denote-slug-keep-only-ascii
++ Function ~denote-slug-keep-only-ascii~ :: Remove all non-ASCII
+  characters from =STR= and replace them with spaces. This is useful
+  as a helper function to construct ~denote-file-name-slug-functions~
+  ([[#h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a][Custom sluggification to remove non-ASCII characters]]).
+
+#+findex: denote-sluggify
++ Function ~denote-sluggify~ :: Make =STR= an appropriate slug for
+  file name =COMPONENT= ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
+  Apply the function specified in ~denote-file-name-slug-function~ to
+  =COMPONENT= which is one of =title=, =signature=, =keyword=. If the
+  resulting string still contains consecutive =-=,=_= or ~=~, they are
+  replaced by a single occurence of the character, if necessary
+  according to =COMPONENT=. If =COMPONENT= is ~keyword~, remove
+  underscores from =STR= as they are used as the keywords separator in
+  file names.
+
+#+findex: denote-sluggify-keyword
++ Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
+  separate words.
+
+#+findex: denote-sluggify-signature
++ Function ~denote-sluggify-signature~ :: Make =STR= an appropriate
+  slug for signatures ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
+
+#+findex: denote-sluggify-keywords
++ Function ~denote-sluggify-keywords~ :: Sluggify =KEYWORDS=, which is
+  a list of strings ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
 
 #+findex: denote-format-file-name
 + Function ~denote-format-file-name~ :: Format file name. =DIR-PATH=,
