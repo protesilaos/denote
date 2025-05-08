@@ -893,11 +893,10 @@ sets the Org file extension for the created note to ensure that the
 capture process works as intended, especially for the desired output of
 the ~denote-org-capture-specifiers~.
 
-Also, using ~denote-use-template~ with ~let~ bind could potentially interfere
-with the user option ~denote-org-capture-specifiers~. Along with the ~let~
-bind for ~denote-use-template~, it is advisable to bind
-~denote-org-capture-specifiers~ to nil or an empty string in case of template
-getting duplicated.
+Developers or advanced users who ~let~ bind the ~denote-use-template~
+must consider setting ~denote-org-capture-specifiers~ to nil or an
+appropriate string ([[#h:a8b9082c-8bd5-492d-8da7-4f41ee493d59][Predefined note values for developers or advanced users]]).
+Otherwise the contents of the new note may contain duplicates.
 
 [ You may not need ~org-capture~ to do what you want ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]). ]
 
@@ -6377,12 +6376,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kai von Fintel, Kierin Bell, Kostas Andreadis, Kristoffer Balintona,
   Kyle Meyer, Laurent Gatto, Lucas Quintana, Maikol Solis, Marc
   Fargas, Matthew Lemon, Noboru Ota (nobiot), Norwid Behrnd, Octavian,
-  Peter Prevos, Philip Kaludercic, Quiliro Ordóñez, Stephen R. Kifer,
-  Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz Hołubowicz,
-  TomoeMami , Vedang Manerikar, Wesley Harvey, Zhenxu Xu, arsaber101,
-  bryanrinders, eum3l, experimental-code-86, ezchi, jarofromel,
-  leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
-  mentalisttraceur, pmenair, relict007, skissue.
+  Peter Prevos, Philip Kaludercic, Ryota, Quiliro Ordóñez, Stephen R.
+  Kifer, Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tomasz
+  Hołubowicz, TomoeMami , Vedang Manerikar, Wesley Harvey, Zhenxu Xu,
+  arsaber101, bryanrinders, eum3l, experimental-code-86, ezchi,
+  jarofromel, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
+  maxbrieiev, mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
