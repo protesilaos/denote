@@ -1018,32 +1018,11 @@ of the ~denote-directory~. The following code block does exactly that.
                  :jump-to-captured t)))
 #+end_src
 
-The values one may predefine in this way are via these variables ([[#h:c916d8c5-540a-409f-b780-6ccbd90e088e][For developers or advanced users]]):
-
-#+findex: denote-use-date
-+ ~denote-use-date~
-
-#+findex: denote-use-directory
-+ ~denote-use-directory~
-
-#+findex: denote-use-file-type
-+ ~denote-use-file-type~
-
-#+findex: denote-use-keywords
-+ ~denote-use-keywords~
-
-#+findex: denote-use-signature
-+ ~denote-use-signature~
-
-#+findex: denote-use-template
-+ ~denote-use-template~
-
-#+findex: denote-use-title
-+ ~denote-use-title~
-
-When there exists a binding for the aforementioned variables, the
-corresponding prompt is always skipped. It is thus paramount to never
-set those variables outside the scope of a ~let~ (or equivalent).
+The values one may predefine in this way are described elsewhere in
+this manual ([[#h:a8b9082c-8bd5-492d-8da7-4f41ee493d59][Predefined note values for developers or advanced users]]).
+When there exists a binding for those variables, the corresponding
+prompt is always skipped. It is thus paramount to never set those
+variables outside the scope of a ~let~ (or equivalent).
 
 With those granted, here is another example scenario where the user
 wants to have a constant value for the subdirectory but also be
