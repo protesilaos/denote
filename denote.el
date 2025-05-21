@@ -2720,7 +2720,12 @@ If DATE is nil or an empty string, return nil."
         (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
          (date-to-time (denote--date-add-current-time date)))))
 
-(defun denote--id-to-date (identifier)
+(define-obsolete-function-alias
+  'denote--id-to-date
+  'denote-id-to-date
+  "4.1.0")
+
+(defun denote-id-to-date (identifier)
   "Convert IDENTIFIER string to YYYY-MM-DD."
   (if (denote-identifier-p identifier)
       (replace-regexp-in-string
@@ -4870,14 +4875,14 @@ active, use it as the description."
                             ;; but I think we are okay with a hardcoded value.
                             (cons ?I (or (when-let* ((id (denote-retrieve-filename-identifier file))
                                                      (_ (denote-valid-date-p id)))
-                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id))))
+                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote-id-to-date id))))
                                          ""))
                             (cons ?D (cond
                                       ((denote-retrieve-front-matter-title-value file type))
                                       ((denote-retrieve-filename-title file))
                                       ((when-let* ((id (denote-retrieve-filename-identifier file)))
                                          (if (denote-valid-date-p id)
-                                             (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id)))
+                                             (format-time-string "%A, %e %B %Y" (date-to-time (denote-id-to-date id)))
                                            id)))
                                       (t  "")))
                             (cons ?d (or (denote-retrieve-filename-identifier file) ""))
@@ -6586,7 +6591,7 @@ buffer will be used, if available."
                           ;; but I think we are okay with a hardcoded value.
                           (cons ?I (or (when-let* ((id (denote-retrieve-filename-identifier file))
                                                    (_ (denote-valid-date-p id)))
-                                         (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id))))
+                                         (format-time-string "%A, %e %B %Y" (date-to-time (denote-id-to-date id))))
                                        ""))
                           (cons ?d (or (denote-retrieve-filename-identifier file) ""))
                           (cons ?D (cond
@@ -6594,7 +6599,7 @@ buffer will be used, if available."
                                     ((denote-retrieve-filename-title file))
                                     ((when-let* ((id (denote-retrieve-filename-identifier file)))
                                        (if (denote-valid-date-p id)
-                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote--id-to-date id)))
+                                           (format-time-string "%A, %e %B %Y" (date-to-time (denote-id-to-date id)))
                                          id)))
                                     (t  "")))
                           (cons ?s (or (denote-retrieve-filename-signature file) ""))

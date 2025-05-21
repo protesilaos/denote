@@ -5094,6 +5094,10 @@ The following sections cover the specifics.
   ~denote-directory~ accepts a directory-local value for what we call
   "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).
 
+#+findex: denote-id-to-date
++ Function ~denote-id-to-date~ :: Convert =IDENTIFIER= to a date
+  string of the form =YYYY-MM-DD=. [ Made public as part of {{{development-version}}}. ]
+
 ** Predefined note values for developers or advanced users
 :PROPERTIES:
 :CUSTOM_ID: h:a8b9082c-8bd5-492d-8da7-4f41ee493d59
