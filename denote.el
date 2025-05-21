@@ -4800,7 +4800,7 @@ See the `:link' property of `denote-file-types'."
     (t
      (denote--link-format file-type)))
    (denote-retrieve-filename-identifier file)
-   desc))
+   description))
 
 (defun denote-link-description-with-signature-and-title (file)
   "Return link description for FILE.
