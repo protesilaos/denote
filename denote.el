@@ -496,17 +496,6 @@ and/or when the user invokes the command `denote-date'."
   :package-version '(denote . "0.6.0")
   :type 'boolean)
 
-(defcustom denote-sluggify-signature-in-frontmatter t
-  "Control whether signature should be sluggified in frontmatter.
-
-When non-nil, the signature in frontmatter would be sluggified.
-Otherwise, the signature in frontmatter keeps the same as user input.
-
-The default value is t."
-  :group 'denote
-  :package-version '(denote . "4.1.0")
-  :type 'boolean)
-
 (defcustom denote-org-store-link-to-heading nil
   "Determine whether `org-store-link' links to the current Org heading.
 
@@ -2294,10 +2283,7 @@ is a list of strings.  FILETYPE is one of the values of variable
          (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
          (id-string (if id-value-function (funcall id-value-function id) ""))
-         (signature-string (if signature-value-function (funcall signature-value-function
-                                                                 (if denote-sluggify-signature-in-frontmatter
-                                                                     (denote-sluggify-signature signature)
-                                                                   signature)) ""))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) ""))
          (new-front-matter (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
     ;; Remove lines with empty values if the corresponding component
     ;; is not in `denote-front-matter-components-present-even-if-empty-value'.
