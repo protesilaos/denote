@@ -1340,12 +1340,16 @@ something like .org even if the actual file extension is
       extension)))
 
 (defun denote-get-path-by-id (id)
-  "Return absolute path of ID string in `denote-directory-files'."
+  "Return absolute path of ID string in `denote-directory-files'.
+When `denote-extra-directories' is set, also consider files in such
+directories."
   (let ((files
          (seq-filter
           (lambda (file)
             (string= id (denote-retrieve-filename-identifier file)))
-          (denote-directory-files))))
+          (if (not denote-extra-directories)
+              (denote-directory-files)
+            (denote-extra-directories-files :include-main)))))
     (if (length< files 2)
         (car files)
       (seq-find
@@ -5092,6 +5096,84 @@ file's title.  This has the same meaning as in `denote-link'."
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
   "Alias for `denote-link-or-create' command.")
 
+;;;;; Link to external note (outside of `denote-directory')
+
+(defcustom denote-extra-directories nil
+  "List of additional directories where files can be stored and linked to.
+
+The `denote-link' command can only link to a file inside
+`denote-directory'.  However, sometimes it may be desirable to link to a
+file which is outside of that directory (for instance, a pool of
+documents following the Denote file-naming scheme somewhere else).  For
+these cases, the targeted directory can be added to this variable.  Any
+file located inside one of these directories can be linked to using the
+`denote-link-external-file' command, and will be followed as usual.
+
+You can see backlinks coming from one of the files in these directories
+by using the command `denote-backlinks-extra', or by customizing the
+variable `denote-backlinks-include-extra-directories'."
+  :group 'denote
+  :package-version '(denote . "4.1.0")
+  :type '(repeat directory))
+
+(defcustom denote-notify-when-leaving-main-directory t
+  "Whether to show a message when visiting a file in `denote-extra-directories'.
+
+By default, a message is shown, so that the user does not get lost while
+traversing the file system."
+  :group 'denote
+  :package-version '(denote . "4.1.0")
+  :type 'boolean)
+
+(defcustom denote-backlinks-include-extra-directories nil
+  "Whether to consider files in `denote-extra-directories' for backlinks.
+
+Even when this variable is nil, you can generate a backlinks buffer
+including extra directories with the command `denote-backlinks-extra'."
+  :group 'denote
+  :package-version '(denote . "4.1.0")
+  :type 'boolean)
+
+(defun denote-extra-directories-files (&optional include-main files-matching-regexp omit-current text-only exclude-regexp)
+  "Return list of absolute file paths in all `denote-extra-directories'.
+INCLUDE-MAIN, when non-nil, means also include `denote-directory' files.
+
+FILES-MATCHING-REGEXP, OMIT-CURRENT, TEXT-ONLY and EXCLUDE-REGEXP are
+interpreted as in `denote-directory-files'."
+  (let ((files
+         (when include-main
+           (denote-directory-files files-matching-regexp omit-current text-only exclude-regexp))))
+    (dolist (dir (mapcar #'expand-file-name denote-extra-directories) (delete-dups files))
+      (let ((denote-directory dir))
+        (setq files (append files (denote-directory-files files-matching-regexp omit-current text-only exclude-regexp)))))))
+
+(defun denote-link-external-file (file file-type description &optional id-only)
+  "Like `denote-link', but only considers files in `denote-extra-directories'."
+  (interactive
+   (let* ((file (completing-read
+                 "Link to external FILE: "
+                 (denote--completion-table
+                  'file
+                  ;; We want to be sure no files from `denote-directory' are included
+                  (seq-remove
+                   (lambda (file) (string-prefix-p (denote-directory) file))
+                   (denote-extra-directories-files nil nil :omit-current)))
+                  nil :require-match nil 'denote-file-history))
+          (file-type (denote-filetype-heuristics buffer-file-name))
+          (description (when (file-exists-p file)
+                         (denote-get-link-description file))))
+     (list file file-type description current-prefix-arg)))
+  (denote-link file file-type description id-only))
+
+(defun denote-backlinks-extra ()
+  "Like `denote-backlinks', but also considers files in `denote-extra-directories'.
+See also the variable `denote-backlinks-include-extra-directories'."
+  (interactive)
+  (let ((denote-backlinks--files-override
+         (when denote-extra-directories
+           (denote-extra-directories-files :include-main nil :omit-current :text-only))))
+    (denote-backlinks)))
+
 ;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
 
 (define-obsolete-function-alias
@@ -5586,6 +5668,12 @@ file listings such as those of `dired' and the command-line `ls' program."
 
 ;;;;;; Backlinks
 
+(defvar denote-backlinks--files-override nil
+  "List of files to search for when generating backlinks.
+If nil, use all text files in `denote-directory'.
+
+Only ever `let' bind this.")
+
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
@@ -5611,7 +5699,10 @@ Place the buffer below the current window or wherever the user option
   (if-let* ((file buffer-file-name))
       (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
         (funcall denote-query-links-buffer-function
-                 identifier nil
+                 identifier
+                 (or denote-backlinks--files-override
+                     (and denote-backlinks-include-extra-directories denote-extra-directories
+                          (denote-extra-directories-files :include-main nil :omit-current :text-only)))
                  (denote--backlinks-get-buffer-name file identifier)
                  denote-backlinks-display-buffer-action))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
@@ -6267,10 +6358,15 @@ If LINK is not an identifier, then it is not pointing to a file but to a
 query of file contents or file names (see the commands
 `denote-query-contents-link' and `denote-query-filenames-link').
 
-Uses the function `denote-directory' to establish the path to the file."
+Uses the function `denote-directory' to establish the path to the file.
+However, an identifier not found in that directory is also searched
+inside `denote-extra-directories'."
   (if-let* ((match (denote-link--ol-resolve-link-to-target link))
             (_ (file-exists-p (string-trim-right match ":[^/]+.*"))))
-      (org-link-open-as-file match nil)
+      (let ((outside-main-dir (and denote-extra-directories (not (string-prefix-p (denote-directory) match)))))
+        (org-link-open-as-file match nil)
+        (when (and outside-main-dir denote-notify-when-leaving-main-directory)
+          (message "Following link to directory `%s'" (file-name-directory match))))
     (denote--act-on-query-link match)))
 
 ;;;###autoload
