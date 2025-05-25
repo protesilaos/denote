@@ -2283,7 +2283,7 @@ is a list of strings.  FILETYPE is one of the values of variable
          (date-string (denote--format-front-matter-date date filetype))
          (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
          (id-string (if id-value-function (funcall id-value-function id) ""))
-         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-signature signature)) ""))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify 'signature signature)) ""))
          (new-front-matter (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
     ;; Remove lines with empty values if the corresponding component
     ;; is not in `denote-front-matter-components-present-even-if-empty-value'.
@@ -3536,7 +3536,7 @@ identifier.  It also returns nil given a nil date or nil keywords."
   (pcase component
     ('title (not (string-empty-p value)))
     ('keywords (not (null value)))
-    ('signature (not (string-empty-p (denote-sluggify-signature value))))
+    ('signature (not (string-empty-p (denote-sluggify 'signature value))))
     ('date (not (null value)))
     ('identifier (not (string-empty-p value)))))
 
