@@ -5172,17 +5172,20 @@ there will be no corresponding prompt.
   as a helper function to construct ~denote-file-name-slug-functions~
   ([[#h:d1e4eb5b-e7f2-4a3b-9243-e1c653817a4a][Custom sluggification to remove non-ASCII characters]]).
 
+#+findex: denote-sluggify
 #+findex: denote-sluggify-and-apply-rules
-+ Function ~denote-sluggify-and-apply-rules~ :: Make =STR= an
-  appropriate slug for file name =COMPONENT=
-  ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]). Apply the function
-  specified in ~denote-file-name-slug-function~ to =COMPONENT= which
-  is one of =title=, =signature=, =keyword=. If the resulting string
-  still contains consecutive =-=,=_= or ~=~, they are replaced by a
-  single occurence of the character, if necessary according to
-  =COMPONENT=. If =COMPONENT= is ~keyword~, remove underscores from
-  =STR= as they are used as the keywords separator in file names. Also
-  enforce the rules of the file-naming scheme.
++ Function ~denote-sluggify-and-apply-rules~ (alias ~denote-sluggify~) :: Make
+  =STR= an appropriate slug for file name =COMPONENT= ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).
+  Apply the function specified in ~denote-file-name-slug-function~ to
+  =COMPONENT= which is one of =title=, =signature=, =keyword=. If the
+  resulting string still contains consecutive =-=,=_= or ~=~, they are
+  replaced by a single occurence of the character, if necessary
+  according to =COMPONENT=. If =COMPONENT= is ~keyword~, remove
+  underscores from =STR= as they are used as the keywords separator in
+  file names. Also enforce the rules of the file-naming scheme.
+  [ As part of {{{development-version}}} the
+  ~denote-sluggify-and-apply-rules~ is the new name of
+  ~denote-sluggify~ to better communicate its application. ]
 
 #+findex: denote-sluggify-keyword
 + Function ~denote-sluggify-keyword~ :: Sluggify =STR= while joining
