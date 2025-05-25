@@ -1060,7 +1060,7 @@ a single one in str, if necessary according to COMPONENT."
       (replace-regexp-in-string
        "-\\{2,\\}" "-" str))))
 
-(defun denote-sluggify (component str)
+(defun denote-sluggify-and-apply-rules (component str)
   "Make STR an appropriate slug for file name COMPONENT.
 
 Apply the function specified in `denote-file-name-slug-function' to
@@ -1068,7 +1068,9 @@ COMPONENT which is one of `title', `signature', `keyword'.  If the
 resulting string still contains consecutive -, _, =, or @, they are
 replaced by a single occurence of the character, if necessary according
 to COMPONENT.  If COMPONENT is `keyword', remove underscores from STR as
-they are used as the keywords separator in file names."
+they are used as the keywords separator in file names.
+
+Also enforce the rules of the file-naming scheme."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
          (str-slug (cond ((eq component 'title)
                           (funcall (or slug-function #'denote-sluggify-title) str))
@@ -1081,6 +1083,9 @@ they are used as the keywords separator in file names."
     (denote--trim-right-token-characters
      (denote--replace-consecutive-token-characters
       (denote--remove-dot-characters str-slug) component) component)))
+
+(defalias 'denote-sluggify 'denote-sluggify-and-apply-rules
+  "Alias for the function `denote-sluggify-and-apply-rules'.")
 
 (defun denote-sluggify-title (str)
   "Make STR an appropriate slug for title."
@@ -1099,11 +1104,14 @@ they are used as the keywords separator in file names."
   (downcase
    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" "" str)))
 
-(defun denote-sluggify-keywords (keywords)
+(defun denote-sluggify-keywords-and-apply-rules (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
   (mapcar (lambda (keyword)
-            (denote-sluggify 'keyword keyword))
+            (denote-sluggify-and-apply-rules 'keyword keyword))
           keywords))
+
+(defalias 'denote-sluggify-keywords 'denote-sluggify-keywords-and-apply-rules
+  "Alias for the function `denote-sluggify-keywords-and-apply-rules'.")
 
 ;;;;; Common helper functions
 
@@ -2281,9 +2289,9 @@ is a list of strings.  FILETYPE is one of the values of variable
          (signature-value-function (denote--signature-value-function filetype))
          (title-string (if title-value-function (funcall title-value-function title) ""))
          (date-string (denote--format-front-matter-date date filetype))
-         (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords keywords)) ""))
+         (keywords-string (if keywords-value-function (funcall keywords-value-function (denote-sluggify-keywords-and-apply-rules keywords)) ""))
          (id-string (if id-value-function (funcall id-value-function id) ""))
-         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify 'signature signature)) ""))
+         (signature-string (if signature-value-function (funcall signature-value-function (denote-sluggify-and-apply-rules 'signature signature)) ""))
          (new-front-matter (if fm (format fm title-string date-string keywords-string id-string signature-string) "")))
     ;; Remove lines with empty values if the corresponding component
     ;; is not in `denote-front-matter-components-present-even-if-empty-value'.
@@ -2584,11 +2592,11 @@ which case it is not added to the base file name."
       (cond ((and (eq component 'identifier) id (not (string-empty-p id)))
              (setq file-name (concat file-name "@@" id)))
             ((and (eq component 'title) title (not (string-empty-p title)))
-             (setq file-name (concat file-name "--" (denote-sluggify 'title title))))
+             (setq file-name (concat file-name "--" (denote-sluggify-and-apply-rules 'title title))))
             ((and (eq component 'keywords) keywords)
-             (setq file-name (concat file-name "__" (denote-keywords-combine (denote-sluggify-keywords keywords)))))
+             (setq file-name (concat file-name "__" (denote-keywords-combine (denote-sluggify-keywords-and-apply-rules keywords)))))
             ((and (eq component 'signature) signature (not (string-empty-p signature)))
-             (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))))
+             (setq file-name (concat file-name "==" (denote-sluggify-and-apply-rules 'signature signature))))))
     (when (string-empty-p file-name)
       (error "There should be at least one file name component"))
     (setq file-name (concat file-name extension))
@@ -3536,7 +3544,7 @@ identifier.  It also returns nil given a nil date or nil keywords."
   (pcase component
     ('title (not (string-empty-p value)))
     ('keywords (not (null value)))
-    ('signature (not (string-empty-p (denote-sluggify 'signature value))))
+    ('signature (not (string-empty-p (denote-sluggify-and-apply-rules 'signature value))))
     ('date (not (null value)))
     ('identifier (not (string-empty-p value)))))
 
