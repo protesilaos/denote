@@ -2541,9 +2541,15 @@ If FILES is not given, use all text files as returned by
           (xref--analyze
            (xref-matches-in-files
             query
-            (if (and files (listp files))
-                files
-              (denote-directory-files files denote-query--omit-current :text-only))))))
+            (cond ((and files (listp files))
+                   ;; Use provided list of files
+                   files)
+                  ((and denote-extra-directories denote-query-include-extra-directories)
+                   ;; Use all files, including those of `denote-extra-directories'
+                   (denote-extra-directories-files :include-main nil denote-query--omit-current :text-only))
+                  (t
+                   ;; Use all files in `denote-directory'
+                   (denote-directory-files nil denote-query--omit-current :text-only)))))))
     (if-let* ((sort denote-query-sorting)
               (files-matched (mapcar #'car data))
               (files-sorted (denote-sort-files files-matched sort)))
@@ -5110,8 +5116,9 @@ file located inside one of these directories can be linked to using the
 `denote-link-external-file' command, and will be followed as usual.
 
 You can see backlinks coming from one of the files in these directories
-by using the command `denote-backlinks-extra', or by customizing the
-variable `denote-backlinks-include-extra-directories'."
+by using the command `denote-backlinks-extra', or you can make all query
+commands use them by default by customizing the variable
+`denote-query-include-extra-directories'."
   :group 'denote
   :package-version '(denote . "4.1.0")
   :type '(repeat directory))
@@ -5125,8 +5132,10 @@ traversing the file system."
   :package-version '(denote . "4.1.0")
   :type 'boolean)
 
-(defcustom denote-backlinks-include-extra-directories nil
-  "Whether to consider files in `denote-extra-directories' for backlinks.
+(defcustom denote-query-include-extra-directories nil
+  "Whether to consider files in `denote-extra-directories' for query commands.
+This includes commands `denote-backlinks', `denote-grep',
+`denote-query-contents-link', among others.
 
 Even when this variable is nil, you can generate a backlinks buffer
 including extra directories with the command `denote-backlinks-extra'."
@@ -5169,7 +5178,7 @@ interpreted as in `denote-directory-files'."
 
 (defun denote-backlinks-extra ()
   "Like `denote-backlinks', but also considers files in `denote-extra-directories'.
-See also the variable `denote-backlinks-include-extra-directories'."
+See also the variable `denote-query-include-extra-directories'."
   (interactive)
   (let ((denote-backlinks--files-override
          (when denote-extra-directories
@@ -5670,12 +5679,6 @@ file listings such as those of `dired' and the command-line `ls' program."
 
 ;;;;;; Backlinks
 
-(defvar denote-backlinks--files-override nil
-  "List of files to search for when generating backlinks.
-If nil, use all text files in `denote-directory'.
-
-Only ever `let' bind this.")
-
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
@@ -5701,10 +5704,7 @@ Place the buffer below the current window or wherever the user option
   (if-let* ((file buffer-file-name))
       (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
         (funcall denote-query-links-buffer-function
-                 identifier
-                 (or denote-backlinks--files-override
-                     (and denote-backlinks-include-extra-directories denote-extra-directories
-                          (denote-extra-directories-files :include-main nil :omit-current :text-only)))
+                 identifier nil
                  (denote--backlinks-get-buffer-name file identifier)
                  denote-backlinks-display-buffer-action))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
