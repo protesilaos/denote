@@ -5165,11 +5165,12 @@ interpreted as in `denote-directory-files'."
                  "Link to external FILE: "
                  (denote--completion-table
                   'file
-                  ;; We want to be sure no files from `denote-directory' are included
+                  ;; We want to be sure no files from current directory are included
+                  ;; (that can happen if current directory is itself in `denote-extra-directories')
                   (seq-remove
-                   (lambda (file) (string-prefix-p (denote-directory) file))
+                   (lambda (file) (string-prefix-p (file-name-directory buffer-file-name) file))
                    (denote-extra-directories-files nil nil :omit-current)))
-                  nil :require-match nil 'denote-file-history))
+                 nil :require-match nil 'denote-file-history))
           (file-type (denote-filetype-heuristics buffer-file-name))
           (description (when (file-exists-p file)
                          (denote-get-link-description file))))
