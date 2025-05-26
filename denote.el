@@ -5181,9 +5181,7 @@ interpreted as in `denote-directory-files'."
   "Like `denote-backlinks', but also considers files in `denote-extra-directories'.
 See also the variable `denote-query-include-extra-directories'."
   (interactive)
-  (let ((denote-backlinks--files-override
-         (when denote-extra-directories
-           (denote-extra-directories-files :include-main nil :omit-current :text-only))))
+  (let ((denote-query-include-extra-directories t))
     (denote-backlinks)))
 
 ;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
