@@ -5150,7 +5150,9 @@ interpreted as in `denote-directory-files'."
 (defun denote-link-external-file (file file-type description &optional id-only)
   "Like `denote-link', but only considers files in `denote-extra-directories'."
   (interactive
-   (let* ((file (completing-read
+   (let* ((_ (unless denote-extra-directories
+               (user-error "No extra directories defined; customize `denote-extra-directories'")))
+          (file (completing-read
                  "Link to external FILE: "
                  (denote--completion-table
                   'file
