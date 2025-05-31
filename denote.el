@@ -123,14 +123,16 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
+;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (listp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
 
+This can also be a list of directories.
+
 If you intend to reference this variable in Lisp, consider using
-the function `denote-directory' instead."
+the function `denote-directories' instead."
   :group 'denote
-  :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
+  :safe (lambda (val) (or (stringp val) (listp val) (eq val 'local) (eq val 'default-directory)))
   :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
@@ -958,12 +960,7 @@ Like `denote--completion-table' but also disable sorting."
      ((stringp dir-locals)
       dir-locals))))
 
-(defun denote--make-denote-directory ()
-  "Make the variable `denote-directory' and its parents, if needed."
-  (when (not (file-directory-p denote-directory))
-    (make-directory denote-directory :parents)))
-
-(defun denote-directory ()
+(defun denote-directories ()
   "Return path of variable `denote-directory' as a proper directory.
 Custom Lisp code can `let' bind the variable `denote-directory'
 to override what this function returns."
@@ -972,12 +969,30 @@ to override what this function returns."
       (progn
         (display-warning
          'denote
-         "Silo value must be a string; `local' or `default-directory'are obsolete"
+         "Silo value must be a string; `local' or `default-directory' are obsolete"
          :error)
         silo-dir)
-    (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
-      (denote--make-denote-directory)
-      denote-directory)))
+    (let ((denote-directories
+           (if (listp denote-directory)
+               (mapcar (lambda (d)
+                         (file-name-as-directory (expand-file-name d)))
+                       denote-directory)
+             (list (file-name-as-directory (expand-file-name denote-directory))))))
+      (mapc (lambda (d)
+              (when (not (file-directory-p d))
+                (make-directory d :parents)))
+            denote-directories)
+      denote-directories)))
+
+(defun denote-directory ()
+  "Return path of variable `denote-directory' as a proper directory.
+
+This function is obsolete. Use `denote-directories' instead, which
+returns the note directories as a list.  The current function only
+returns the first directory."
+  (car (denote-directories)))
+
+(make-obsolete 'denote-directory 'denote-directories "4.1.0")
 
 ;; TODO: Review and fix the features listed in the docstring below before
 ;; making this a user option.
@@ -1137,7 +1152,10 @@ extensions are those implied by the variable `denote-file-type'."
 
 (defun denote-file-is-in-denote-directory-p (file)
   "Return non-nil if FILE is in the variable `denote-directory'."
-  (string-prefix-p (denote-directory) (expand-file-name file)))
+  (seq-some
+   (lambda (d)
+     (string-prefix-p d (expand-file-name file)))
+   (denote-directories)))
 
 (defun denote-filename-is-note-p (filename)
   "Return non-nil if FILENAME is a valid name for a Denote note.
@@ -1195,11 +1213,14 @@ what remains."
 (defun denote-get-file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
-  (when-let* ((dir (denote-directory))
+  (when-let* ((directories (denote-directories))
               ((file-name-absolute-p file))
               (file-name (expand-file-name file))
-              ((string-prefix-p dir file-name)))
-    (substring-no-properties file-name (length dir))))
+              (directory (seq-find
+                          (lambda (d)
+                            (string-prefix-p d file-name))
+                          directories)))
+    (substring-no-properties file-name (length directory))))
 
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
@@ -1226,12 +1247,16 @@ Return t if FILE is valid, else return nil."
   "Return list of all files in variable `denote-directory'.
 Avoids traversing dotfiles (unconditionally) and whatever matches
 `denote-excluded-directories-regexp'."
-  (directory-files-recursively
-   (denote-directory)
-   directory-files-no-dot-files-regexp
-   :include-directories
-   #'denote--directory-files-recursively-predicate
-   :follow-symlinks))
+  (apply #'append
+         (mapcar
+          (lambda (directory)
+            (directory-files-recursively
+             directory
+             directory-files-no-dot-files-regexp
+             :include-directories
+             #'denote--directory-files-recursively-predicate
+             :follow-symlinks))
+          (denote-directories))))
 
 (defun denote--file-excluded-p (file)
   "Return non-file if FILE matches `denote-excluded-files-regexp'."
@@ -1394,21 +1419,26 @@ select a file.
 With optional NO-REQUIRE-MATCH, accept the given input as-is.
 
 Return the absolute path to the matching file."
-  (let* ((default-directory (denote-directory))
+  (let* ((default-directory (car (denote-directories)))
+         (has-multiple-directories (cdr (denote-directories)))
+         (files (denote-directory-files
+                 (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
+                 :omit-current))
          (relative-files (mapcar
                           #'denote-get-file-name-relative-to-denote-directory
-                          (denote-directory-files
-                           (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                           :omit-current)))
-         (prompt (format "%s in %s: "
-                         (or prompt-text "Select FILE")
-                         (propertize (denote-directory) 'face 'denote-faces-prompt-current-name)))
+                          files))
+         (prompt (format "%s: " (or prompt-text "Select FILE")))
          (input (completing-read
                  prompt
-                 (denote--completion-table 'file relative-files)
+                 (denote--completion-table 'file
+                                           (if has-multiple-directories
+                                               files
+                                             relative-files))
                  nil (unless no-require-match :require-match)
                  nil 'denote-file-history))
-         (absolute-file (expand-file-name input (denote-directory))))
+         (absolute-file (if has-multiple-directories
+                            input
+                          (expand-file-name input (car (denote-directories))))))
     ;; NOTE: This block is executed when no-require-match is t. It is useful
     ;; for commands such as `denote-open-or-create` or similar.
     (unless (file-exists-p absolute-file)
@@ -1750,7 +1780,7 @@ When called from Lisp, the arguments are a string, a symbol among
                           denote-sort-dired-default-reverse-sort
                           nil))
         (exclude-rx (or exclude-regexp nil)))
-    (if-let* ((default-directory (denote-directory))
+    (if-let* ((default-directory (car (denote-directories)))
               (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx)))
         (let ((dired-buffer (dired (cons (denote-directory) (mapcar #'file-relative-name files))))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
@@ -2556,7 +2586,7 @@ DIR-PATH, ID, KEYWORDS, TITLE, EXTENSION and SIGNATURE are
 expected to be supplied by `denote' or equivalent command.
 
 DIR-PATH is a string pointing to a directory.  It ends with a
-forward slash (the function `denote-directory' makes sure this is
+forward slash (the function `denote-directories' makes sure this is
 the case when returning the value of the variable `denote-directory').
 DIR-PATH cannot be nil or an empty string.
 
@@ -2660,7 +2690,10 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
 
 (defun denote--dir-in-denote-directory-p (directory)
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
-  (string-prefix-p (denote-directory) (expand-file-name directory)))
+  (seq-some
+   (lambda (d)
+     (string-prefix-p d (expand-file-name directory)))
+   (denote-directories)))
 
 (defun denote--valid-file-type (filetype)
   "Return a valid filetype symbol given the argument FILETYPE.
@@ -3005,7 +3038,7 @@ instead of that of the parameter."
          (date (if (string-empty-p id) nil (date-to-time id)))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
-                      (denote-directory)))
+                      (car (denote-directories))))
          (template (if (or (stringp template) (functionp template))
                        template
                      (or (alist-get template denote-templates) "")))
@@ -3036,8 +3069,8 @@ When called from Lisp, all arguments are optional.
 - DIRECTORY is a string representing the path to either the
   value of the variable `denote-directory' or a subdirectory
   thereof.  The subdirectory must exist: Denote will not create
-  it.  If DIRECTORY does not resolve to a valid path, the
-  variable `denote-directory' is used instead.
+  it.  If DIRECTORY does not resolve to a valid path, the first
+  item in the variable `denote-directory' is used instead.
 
 - DATE is a string representing a date like 2022-06-30 or a date
   and time like 2022-06-16 14:30.  A nil value or an empty string
@@ -3194,9 +3227,12 @@ Optional INITIAL-DATE and PROMPT-TEXT have the same meaning as
   "Prompt for subdirectory of the variable `denote-directory'.
 The table uses the `file' completion category (so it works with
 packages such as `marginalia' and `embark')."
-  (let* ((root (directory-file-name (denote-directory)))
+  (let* ((roots (mapcar
+                 (lambda (d)
+                   (directory-file-name d))
+                 (denote-directories)))
          (subdirs (denote-directory-subdirectories))
-         (dirs (push root subdirs)))
+         (dirs (append roots subdirs)))
     (denote--subdirs-completion-table dirs)))
 
 (defvar denote-template-history nil
@@ -4652,7 +4688,7 @@ and seconds."
   "Integration between Denote and Dired."
   :group 'denote)
 
-(defcustom denote-dired-directories (list denote-directory)
+(defcustom denote-dired-directories (list (expand-file-name "~/Documents/notes"))
   "List of directories where `denote-dired-mode' should apply to.
 For this to take effect, add `denote-dired-mode-in-directories',
 to the `dired-mode-hook'.
@@ -4964,12 +5000,10 @@ selected one.
 
 With optional PROMPT-TEXT use it for the minibuffer prompt instead of
 the generic one."
-  (let* ((file-names (mapcar #'denote-get-file-name-relative-to-denote-directory files))
-         (selected (completing-read
-                    (format-prompt (or prompt-text "Select file among files") nil)
-                    (denote--completion-table 'file file-names)
-                    nil t nil 'denote-link-find-file-history)))
-    (expand-file-name selected (denote-directory))))
+  (completing-read
+   (format-prompt (or prompt-text "Select file among files") nil)
+   (denote--completion-table 'file files)
+   nil t nil 'denote-link-find-file-history))
 
 (define-obsolete-function-alias
   'denote-link-return-links
@@ -5289,7 +5323,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
          ;; in relative form, but eventually notes may not be all
          ;; under a common directory (or project).
          (xref-alist (denote-retrieve-xref-alist query files))
-         (dir (denote-directory)))
+         (dirs (denote-directories)))
     (unless xref-alist
       (error "No matches for query `%s'" query))
     ;; Update internal variables
@@ -5319,7 +5353,7 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
       ;; `denote-directory' here because the buttons depend on it.
       ;; Moreover, its value is overwritten after enabling the major
       ;; mode, so it needs to be set after.
-      (setq-local denote-directory dir)
+      (setq-local denote-directory dirs)
       (setq overlay-arrow-position nil)
       (goto-char (point-min))
       (xref--insert-xrefs xref-alist)
@@ -6036,12 +6070,10 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-file-prompt (buffer-file-names)
   "Select file from BUFFER-FILE-NAMES of Denote notes."
-  (let* ((relative-buffer-file-names (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names))
-         (selected (completing-read
-                    "Select open note to add links to: "
-                    (denote--completion-table 'file relative-buffer-file-names)
-                    nil t)))
-    (expand-file-name selected (denote-directory))))
+  (completing-read
+   "Select open note to add links to: "
+   (denote--completion-table 'file buffer-file-names)
+   nil t))
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-has-denoted-filename-p' from Dired marked items."
