@@ -1753,6 +1753,20 @@ Process them to return the buffer name."
     (if exclude-regexp (format-message "; exclude-regexp `%s'" exclude-regexp) ""))
    :special-buffer))
 
+(defun denote-sort-dired--find-common-directory (directories)
+  "Return common root directory among DIRECTORIES."
+  (if-let* ((parts (mapcar (lambda (directory) (split-string directory "/" :omit-nulls)) directories))
+            (common-parent (seq-reduce
+                            (lambda (dir-parts comparison-parts)
+                              (let ((common nil))
+                                (dolist (part dir-parts)
+                                  (when (member part comparison-parts)
+                                    (push part common)))
+                                (nreverse common)))
+                            parts (car parts))))
+      (format "/%s/" (mapconcat #'identity common-parent "/"))
+    "/"))
+
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
@@ -1782,19 +1796,20 @@ When called from Lisp, the arguments are a string, a symbol among
 `denote-sort-components', a non-nil value, and a string, respectively."
   (interactive
    (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
-  (unless (denote-has-single-denote-directory-p)
-    (user-error "This command does not work when `denote-directory' has multiple directories"))
   (let ((component (or sort-by-component
                        denote-sort-dired-default-sort-component
                        'identifier))
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
                           nil))
-        (exclude-rx (or exclude-regexp nil)))
+        (exclude-rx (or exclude-regexp nil))
+        (single-dir-p (denote-has-single-denote-directory-p)))
     (if-let* (;; See comment in `denote-file-prompt'.
-              (default-directory (car (denote-directories)))
+              (default-directory (if single-dir-p
+                                     (car (denote-directories))
+                                   (denote-sort-dired--find-common-directory (denote-directories))))
               (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx)))
-        (let ((dired-buffer (dired (cons (car (denote-directories)) (mapcar #'file-relative-name files))))
+        (let ((dired-buffer (dired (cons default-directory (if single-dir-p (mapcar #'file-relative-name files) files))))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
