@@ -2388,7 +2388,7 @@ To create a new one from a date, refer to the function
   (let ((filename (file-name-nondirectory file)))
     (cond ((string-match (concat "\\`" denote-date-identifier-regexp) filename)
            (match-string-no-properties 0 filename))
-          ((string-match (concat "@@\\(?1:" denote-date-identifier-regexp "\\)") filename)
+          ((string-match denote-identifier-regexp filename)
            (match-string-no-properties 1 filename)))))
 
 ;; TODO 2023-12-08: Maybe we can only use
