@@ -3291,6 +3291,26 @@ packages such as `marginalia' and `embark')."
        nil t nil 'denote-template-history))
      templates)))
 
+(defvar denote-identifier-history nil
+  "Minibuffer history of `denote-identifier-prompt'.")
+
+(defun denote-identifier-prompt (&optional initial-identifier prompt-text)
+  "Prompt for identifier string.
+With optional INITIAL-IDENTIFIER use it as the initial minibuffer
+text.  With optional PROMPT-TEXT use it in the minibuffer instead
+of the default prompt.
+
+Previous inputs at this prompt are available for minibuffer completion
+if the user option `denote-history-completion-in-prompts' is set to a
+non-nil value."
+  (when (and initial-identifier (string-empty-p initial-identifier))
+    (setq initial-identifier nil))
+  (denote--with-conditional-completion
+   'denote-identifier-prompt
+   (format-prompt (or prompt-text "New file IDENTIFIER") nil)
+   denote-identifier-history
+   initial-identifier))
+
 (defvar denote-signature-history nil
   "Minibuffer history of `denote-signature-prompt'.")
 
