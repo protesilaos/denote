@@ -415,12 +415,6 @@ does not involve the time zone."
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.gpg") 'markdown-yaml)
                (eq (denote-filetype-heuristics "20231010T105034--some-test-file__denote_testing.md.age") 'markdown-yaml))))
 
-(ert-deftest dt-denote-get-identifier ()
-  "Test that `denote-get-identifier' returns an identifier."
-  (should (and (equal (denote-get-identifier nil) "")
-               (equal (denote-get-identifier 1705644188) "20240119T080308")
-               (equal (denote-get-identifier '(26026 4251)) "20240119T080307"))))
-
 (ert-deftest dt-denote-retrieve-filename-identifier ()
   "Test that `denote-retrieve-filename-identifier' returns only the identifier."
   (should (and (null
@@ -515,10 +509,10 @@ does not involve the time zone."
   (should (and (denote-identifier-p "20240901T090910")
                (null (denote-identifier-p "20240901T090910-not-identifier-format")))))
 
-(ert-deftest dt-denote--id-to-date ()
-  "Test that `denote--id-to-date' returns the date from an identifier."
-  (should (equal (denote--id-to-date "20240901T090910") "2024-09-01"))
-  (should-error (denote--id-to-date "20240901T090910-not-identifier-format")))
+(ert-deftest dt-denote-id-to-date ()
+  "Test that `denote-id-to-date' returns the date from an identifier."
+  (should (equal (denote-id-to-date "20240901T090910") "2024-09-01"))
+  (should-error (denote-id-to-date "20240901T090910-not-identifier-format")))
 
 (ert-deftest dt-denote--date-convert ()
   "Test that `denote--date-convert' works with dates."

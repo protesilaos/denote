@@ -430,6 +430,10 @@ of the following:
 
   [[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]].
 
+- =identifier=: Prompts with completion for the identifier of the new
+  note. It expects a string that has the format of
+  ~denote-date-identifier-format~.
+
 - =template=: Prompts for a KEY among the ~denote-templates~.  The value
   of that KEY is used to populate the new note with content, which is
   added after the front matter ([[#h:f635a490-d29e-4608-9372-7bd13b34d56c][The denote-templates option]]).
@@ -452,15 +456,15 @@ time) and a supported file type extension (per ~denote-file-type~).
 Recall that Denote's standard file-naming scheme is defined as follows
 ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]):
 
-: DATE--TITLE__KEYWORDS.EXT
+: ID--TITLE__KEYWORDS.EXT
 
 If either or both of the =title= and =keywords= prompts are not
 included in the value of this variable, file names will be any of
 those permutations:
 
-: DATE.EXT
-: DATE--TITLE.EXT
-: DATE__KEYWORDS.EXT
+: ID.EXT
+: ID--TITLE.EXT
+: ID__KEYWORDS.EXT
 
 When in doubt, always include the =title= and =keywords= prompts.
 
@@ -2024,13 +2028,14 @@ directories.
 Every note produced by Denote follows this pattern by default
 ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
-: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
+: ID==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
-The =DATE= field represents the date in year-month-day format followed
-by the capital letter =T= (for "time") and the current time in
-hour-minute-second notation.  The presentation is compact:
-=20220531T091625=.  The =DATE= serves as the unique identifier of each
-note and, as such, is also known as the file's ID or identifier.
+The =ID= field represents the identifier which, by default, is the
+date in year-month-day format followed by the capital letter =T= (for
+"time") and the current time in hour-minute-second notation. The
+presentation is compact: =20220531T091625=. The =ID= serves as the
+unique identifier of each note and, as such, is also known as the
+file's ID or identifier.
 
 File names can include an arbitrary string of alphanumeric characters
 in the =SIGNATURE= field. Signatures have no clearly defined purpose
@@ -2090,13 +2095,13 @@ invoking =M-x re-builder=).
 The ~denote-prompts~ can be configured in such ways to yield the
 following file name permutations:
 
-: DATE.EXT
-: DATE--TITLE.EXT
-: DATE__KEYWORDS.EXT
-: DATE==SIGNATURE.EXT
-: DATE==SIGNATURE--TITLE.EXT
-: DATE==SIGNATURE--TITLE__KEYWORDS.EXT
-: DATE==SIGNATURE__KEYWORDS.EXT
+: ID.EXT
+: ID--TITLE.EXT
+: ID__KEYWORDS.EXT
+: ID==SIGNATURE.EXT
+: ID==SIGNATURE--TITLE.EXT
+: ID==SIGNATURE--TITLE__KEYWORDS.EXT
+: ID==SIGNATURE__KEYWORDS.EXT
 
 When in doubt, stick to the default design, which is carefully
 considered and works well ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
@@ -2356,11 +2361,11 @@ use the following in their Emacs configuration ([[#h:d375c6d2-92c7-425f-9d9d-219
 By default, file names have three fields and two sets of field
 delimiters between them:
 
-: DATE--TITLE__KEYWORDS.EXTENSION
+: ID--TITLE__KEYWORDS.EXTENSION
 
 When a signature is present, this becomes:
 
-: DATE==SIGNATURE--TITLE__KEYWORDS.EXTENSION
+: ID==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
 Field delimiters practically serve as anchors for easier searching.
 Consider this example:
@@ -4970,9 +4975,9 @@ The following sections cover the specifics.
 + Variable ~denote-keywords-regexp~ :: Regular expression to match the
   =KEYWORDS= field in a file name ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
-#+findex: denote-identifier-p
-+ Function ~denote-identifier-p~ :: Return non-nil if =IDENTIFIER=
-  string is a Denote identifier.
+#+findex: denote-date-identifier-p
++ Function ~denote-date-identifier-p~ :: Return non-nil if =IDENTIFIER=
+  string is a Denote date identifier.
 
 #+findex: denote-file-is-note-p
 + Function ~denote-file-is-note-p~ :: Return non-nil if =FILE= is an
@@ -5256,7 +5261,8 @@ there will be no corresponding prompt.
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
   from =FILE= name, if present, else return nil. To create a new one
-  from a date, refer to the ~denote-get-identifier~ function.
+  from a date, refer to the ~denote--identifier-generation-function~
+  variable.
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ ::  Extract Denote title
@@ -5276,11 +5282,6 @@ there will be no corresponding prompt.
   title for =FILE= given its =TYPE=. This is a wrapper for
   ~denote-retrieve-front-matter-title-value~ and
   =denote-retrieve-filename-title=.
-
-#+findex: denote-get-identifier
-+ Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
-  identifier using ~denote-date-identifier-format~. If =DATE= is nil, return an
-  empty string as the identifier.
 
 #+findex: denote-retrieve-front-matter-title-value
 + Function ~denote-retrieve-front-matter-title-value~ :: Return title value from
@@ -5309,6 +5310,14 @@ there will be no corresponding prompt.
   ~denote-prompts~. This is best done inside of a ~let~ to create a
   wrapper function around ~denote~, ~denote-rename-file~, and
   generally any command that consults the value of ~denote-prompts~.
+
+#+findex: denote-identifier-prompt
++ Function ~denote-identifier-prompt~ :: Prompt for identifier string.
+  With optional =INITIAL-IDENTIFIER= use it as the initial minibuffer
+  text. With optional =PROMPT-TEXT= use it in the minibuffer instead
+  of the default prompt. Previous inputs at this prompt are available
+  for minibuffer completion if the user option ~denote-history-completion-in-prompts~
+  is set to a non-nil value ([[#h:403422a7-7578-494b-8f33-813874c12da3][The ~denote-history-completion-in-prompts~ option]]).
 
 #+findex: denote-signature-prompt
 + Function ~denote-signature-prompt~ :: Prompt for signature string.
@@ -5385,10 +5394,6 @@ there will be no corresponding prompt.
 + Function ~denote-files-matching-regexp-prompt~ ::  Prompt for
   =REGEXP= to filter Denote files by. With optional =PROMPT-TEXT= use
   it instead of a generic prompt.
-
-#+findex: denote-prompt-for-date-return-id
-+ Function ~denote-prompt-for-date-return-id~ :: Use
-  ~denote-date-prompt~ and return it as ~denote-date-identifier-format~.
 
 #+findex: denote-template-prompt
 + Function ~denote-template-prompt~ :: Prompt for template key in
