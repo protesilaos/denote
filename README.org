@@ -4949,14 +4949,14 @@ The following sections cover the specifics.
 :CUSTOM_ID: h:c98aed45-341a-40a0-91ce-347a29c98ab4
 :END:
 
-#+vindex: denote-id-format
-+ Variable ~denote-id-format~ :: Format of ID prefix of a note's
+#+vindex: denote-date-identifier-format
++ Variable ~denote-date-identifier-format~ :: Format of ID prefix of a note's
   filename.  The note's ID is derived from the date and time of its
   creation ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
-#+vindex: denote-id-regexp
-+ Variable ~denote-id-regexp~ :: Regular expression to match
-  ~denote-id-format~.
+#+vindex: denote-date-identifier-regexp
++ Variable ~denote-date-identifier-regexp~ :: Regular expression to match
+  ~denote-date-identifier-format~.
 
 #+vindex: denote-signature-regexp
 + Variable ~denote-signature-regexp~ :: Regular expression to match
@@ -5279,7 +5279,7 @@ there will be no corresponding prompt.
 
 #+findex: denote-get-identifier
 + Function ~denote-get-identifier~ :: Convert =DATE= into a Denote
-  identifier using ~denote-id-format~. If =DATE= is nil, return an
+  identifier using ~denote-date-identifier-format~. If =DATE= is nil, return an
   empty string as the identifier.
 
 #+findex: denote-retrieve-front-matter-title-value
@@ -5388,7 +5388,7 @@ there will be no corresponding prompt.
 
 #+findex: denote-prompt-for-date-return-id
 + Function ~denote-prompt-for-date-return-id~ :: Use
-  ~denote-date-prompt~ and return it as ~denote-id-format~.
+  ~denote-date-prompt~ and return it as ~denote-date-identifier-format~.
 
 #+findex: denote-template-prompt
 + Function ~denote-template-prompt~ :: Prompt for template key in

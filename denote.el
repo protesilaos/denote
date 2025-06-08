@@ -911,12 +911,15 @@ If the region is active, its text is used as the link's description."
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 
-(defconst denote-id-format "%Y%m%dT%H%M%S"
+(defconst denote-date-identifier-format "%Y%m%dT%H%M%S"
   "Format of ID prefix of a note's filename.
 The note's ID is derived from the date and time of its creation.")
 
-(defconst denote-id-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
-  "Regular expression to match `denote-id-format'.")
+(defconst denote-date-identifier-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
+  "Regular expression to match `denote-date-identifier-format'.")
+
+(defconst denote-identifier-regexp "@@\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@.*\\|\\..*\\)*$"
+  "Regular expression to match the IDENTIFIER field in a file name.")
 
 (defconst denote-signature-regexp "==\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@.*\\|\\..*\\)*$"
   "Regular expression to match the SIGNATURE field in a file name.")
@@ -926,6 +929,16 @@ The note's ID is derived from the date and time of its creation.")
 
 (defconst denote-keywords-regexp "__\\([^.]*?\\)\\(==.*\\|--.*\\|__.*\\|@@.*\\|\\..*\\)*$"
   "Regular expression to match the KEYWORDS field in a file name.")
+
+(make-obsolete-variable
+ 'denote-id-format
+ 'denote-date-identifier-format
+ "4.1.0")
+
+(make-obsolete-variable
+ 'denote-id-regexp
+ 'denote-date-identifier-regexp
+ "4.1.0")
 
 (make-obsolete-variable
  'denote-excluded-punctuation-extra-regexp
@@ -1140,7 +1153,7 @@ Also enforce the rules of the file-naming scheme."
 
 (defun denote-identifier-p (identifier)
   "Return non-nil if IDENTIFIER string is a Denote identifier."
-  (string-match-p (format "\\`%s\\'" denote-id-regexp) identifier))
+  (string-match-p (format "\\`%s\\'" denote-date-identifier-regexp) identifier))
 
 (defun denote-file-has-identifier-p (file)
   "Return non-nil if FILE has a Denote identifier."
@@ -1228,7 +1241,7 @@ FILE must be an absolute path."
 
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
-  (when (string-match denote-id-regexp string)
+  (when (string-match denote-date-identifier-regexp string)
     (match-string-no-properties 0 string)))
 
 (defun denote--exclude-directory-regexp-p (file)
@@ -2373,9 +2386,9 @@ is a list of strings.  FILETYPE is one of the values of variable
 To create a new one from a date, refer to the function
 `denote-get-identifier'."
   (let ((filename (file-name-nondirectory file)))
-    (cond ((string-match (concat "\\`" denote-id-regexp) filename)
+    (cond ((string-match (concat "\\`" denote-date-identifier-regexp) filename)
            (match-string-no-properties 0 filename))
-          ((string-match (concat "@@\\(?1:" denote-id-regexp "\\)") filename)
+          ((string-match (concat "@@\\(?1:" denote-date-identifier-regexp "\\)") filename)
            (match-string-no-properties 1 filename)))))
 
 ;; TODO 2023-12-08: Maybe we can only use
@@ -2386,10 +2399,10 @@ To create a new one from a date, refer to the function
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
 (defun denote-get-identifier (date)
-  "Convert DATE into a Denote identifier using `denote-id-format'.
+  "Convert DATE into a Denote identifier using `denote-date-identifier-format'.
 If DATE is nil, return an empty string as the identifier."
   (if date
-      (format-time-string denote-id-format date)
+      (format-time-string denote-date-identifier-format date)
     ""))
 
 (defvar denote--used-ids nil
@@ -2659,7 +2672,7 @@ which case it is not added to the base file name."
     (setq file-name (concat file-name extension))
     ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
     (when (and (string-prefix-p "@@" file-name)
-               (string-match-p (concat "\\`" denote-id-regexp "\\'") id)) ; This is always true for now.
+               (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id)) ; This is always true for now.
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
@@ -2786,7 +2799,7 @@ If DATE is nil or an empty string, return nil."
        "\\([0-9]\\{4\\}\\)\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\).*"
        "\\1-\\2-\\3"
        identifier)
-    (error "`%s' does not look like a Denote identifier per `denote-id-regexp'" identifier)))
+    (error "`%s' does not look like a Denote identifier per `denote-date-identifier-regexp'" identifier)))
 
 (defun denote--buffer-file-names ()
   "Return file names of Denote buffers."
@@ -2820,7 +2833,7 @@ available id is found."
         (current-id id)
         (iteration 0))
     (while (gethash current-id used-ids)
-      ;; Prevent infinite loop if `denote-id-format' is misconfigured
+      ;; Prevent infinite loop if `denote-date-identifier-format' is misconfigured
       (setq iteration (1+ iteration))
       (when (>= iteration 10000)
         (user-error "A unique identifier could not be found"))
@@ -3228,7 +3241,7 @@ a value that can be parsed by `decode-time' or nil."
        'denote-date-history))))
 
 (defun denote-prompt-for-date-return-id (&optional initial-date prompt-text)
-  "Use `denote-date-prompt' and return it as `denote-id-format'.
+  "Use `denote-date-prompt' and return it as `denote-date-identifier-format'.
 Optional INITIAL-DATE and PROMPT-TEXT have the same meaning as
 `denote-date-prompt'."
   (denote-get-identifier
@@ -5626,7 +5639,7 @@ Return a list with the absoulte path of referenced files."
       (save-restriction
         (narrow-to-region start end)
         (goto-char (point-min))
-        (while (re-search-forward denote-id-regexp nil t)
+        (while (re-search-forward denote-date-identifier-regexp nil t)
           (push (denote-get-path-by-id (match-string 0)) id-list))))
     id-list))
 
@@ -5862,7 +5875,7 @@ search for."
 (defun denote-link-markdown-follow (link)
   "Function to open Denote file present in LINK.
 To be assigned to `markdown-follow-link-functions'."
-  (when (ignore-errors (string-match denote-id-regexp link))
+  (when (ignore-errors (string-match denote-date-identifier-regexp link))
     (funcall denote-open-link-function
              (denote-get-path-by-id (match-string 0 link)))))
 
@@ -5954,7 +5967,7 @@ To be assigned to `markdown-follow-link-functions'."
     (or (get-text-property position 'denote-link-query-part)
         (when-let* ((link-data (get-text-property position 'htmlize-link))
                     (link (cadr link-data)))
-          (string-match denote-id-regexp link)
+          (string-match denote-date-identifier-regexp link)
           (match-string-no-properties 0 link)))))
 
 (defun denote--get-link-file-path-at-point (&optional point)
