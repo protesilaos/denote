@@ -140,22 +140,15 @@ the function `denote-directories' instead."
 (define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
 
 (defcustom denote-save-buffers nil
-  "Control whether commands that handle new notes save their buffer outright.
+  "Control whether to save buffers automatically.
+This applies to commands that create new notes, such as `denote', or
+those that rename existing files, such as `denote-rename-file'.
 
-The default behaviour of commands such as `denote' (or related)
-is to not save the buffer they create.  This gives the user the
-chance to review the text before writing it to a file.  The user
-may choose to delete the unsaved buffer, thus not creating a new
-note.
+By default (a nil value), Denote does not save such buffers, giving
+users the chance to review the text before writing it to the file.
 
-This option also applies to notes affected by the renaming
-commands (`denote-rename-file' and related).
-
-If this user option is set to a non-nil value, such buffers are
-saved automatically.  The assumption is that the user who opts in
-to this feature is familiar with the `denote-rename-file'
-operation (or related) and knows it is reliable.  Data loss may
-occur if the file is modified externally.
+When the value is non-nil, Denote will automatically save the buffers it
+modifies.
 
 Also see `denote-kill-buffers'."
   :group 'denote
