@@ -978,13 +978,13 @@ to override what this function returns."
       denote-directories)))
 
 (defun denote-has-single-denote-directory-p ()
-  "Return non-nil if `denote-directory' is a single item."
+  "Return non-nil if the variable `denote-directory' is a single item."
   (not (cdr (denote-directories))))
 
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory.
 
-This function is obsolete. Use `denote-directories' instead, which
+This function is obsolete.  Use `denote-directories' instead, which
 returns the note directories as a list.  The current function only
 returns the first directory."
   (car (denote-directories)))
