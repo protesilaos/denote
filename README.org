@@ -790,7 +790,7 @@ creating a new file or renaming an existing one.
 - [[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]].
 
 The default behaviour of creation or renaming commands such as
-~denote~ or ~denote-rename-file~ is to not kill the buffer they
+~denote~ and ~denote-rename-file~ is to not kill the buffer they
 create or modify at the end of their operation. The idea is to give
 the user the chance to confirm that everything is in order.
 
@@ -799,13 +799,12 @@ creation or renaming command are not automatically killed.
 
 If set to the symbol =on-creation=, new notes are automatically killed.
 
-If set to the symbol =on-rename=, renamed notes are automatically
-killed.
+If set to the symbol =on-rename=, renamed notes are automatically killed.
 
 If set to t, new and renamed notes are killed.
 
 If a buffer is killed, it is also saved, as if ~denote-save-buffers~
-were t ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]]).
+were set to a non-~nil~ value ([[#h:bf80f4cd-6f56-4f7c-a991-8573161e4511][The ~denote-save-buffers~ option]]).
 
 In all cases, if the buffer already existed before the Denote operation
 it is NOT automatically killed.
