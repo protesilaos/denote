@@ -6410,22 +6410,27 @@ Also see the user option `denote-org-store-link-to-heading'."
                  (concat "denote:" file-id))))
         org-store-link-plist))))
 
+ (defun denote-link--ol-export-get-relative-html (path)
+  "Return relative PATH for Org export purposes.
+Add an .html extension if PATH is an Org file."
+  (file-relative-name
+   (if (string= (file-name-extension path) "org")
+       (concat (file-name-sans-extension path) ".html")
+     path)))
+
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
 The LINK, DESCRIPTION, and FORMAT are handled by the export
 backend."
   (pcase-let* ((`(,path ,query ,file-search) (denote-link--ol-resolve-link-to-target link :full-data))
-               (anchor (when path (file-relative-name (file-name-sans-extension path))))
                (desc (cond
                       (description)
                       (file-search (format "denote:%s::%s" query file-search))
                       (t (concat "denote:" query)))))
     (if path
         (pcase format
-          ('html (if file-search
-                     (format "<a href=\"%s.html%s\">%s</a>" anchor file-search desc)
-                   (format "<a href=\"%s.html\">%s</a>" anchor desc)))
+          ('html (format "<a href=\"%1$s%3$s\">%2$s</a>" (denote-link--ol-export-get-relative-html path) desc (or file-search "")))
           ('latex (format "\\href{%s}{%s}" (replace-regexp-in-string "[\\{}$%&_#~^]" "\\\\\\&" path) desc))
           ('texinfo (format "@uref{%s,%s}" path desc))
           ('ascii (format "[%s] <denote:%s>" desc path))
