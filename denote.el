@@ -2403,7 +2403,7 @@ is a list of strings.  FILETYPE is one of the values of variable
   "Extract identifier from FILE name, if present, else return nil.
 
 To create a new one from a date, refer to the function referred by
-`denote--identifier-generation-function'."
+`denote-get-identifier-function'."
   (let ((filename (file-name-nondirectory file)))
     (cond ((string-match (concat "\\`" denote-date-identifier-regexp) filename)
            (match-string-no-properties 0 filename))
@@ -2417,7 +2417,12 @@ To create a new one from a date, refer to the function referred by
   (or (denote-retrieve-filename-identifier file)
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
-(defvar denote--used-ids nil
+(define-obsolete-variable-alias
+  'denote--used-ids
+  'denote-used-identifiers
+  "4.1.0")
+
+(defvar denote-used-identifiers nil
   "Hash table of used identifiers.
 This variable should be set only for the duration of a command.
 It should stay nil otherwise.")
@@ -2426,6 +2431,8 @@ It should stay nil otherwise.")
   'denote-create-unique-file-identifier
   'denote-get-identifier
   "4.0.0")
+
+(make-obsolete 'denote-get-identifier 'denote-get-identifier-function "4.1.0")
 
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
@@ -2843,7 +2850,7 @@ If ID is already used, increment it 1 second at a time until an
 available id is found."
   (let ((current-id id)
         (iteration 0))
-    (while (gethash current-id denote--used-ids)
+    (while (gethash current-id denote-used-identifiers)
       ;; Prevent infinite loop if `denote-date-identifier-format' is misconfigured
       (setq iteration (1+ iteration))
       (when (>= iteration 10000)
@@ -2859,10 +2866,12 @@ available id is found."
 If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
 possible to derive an identifier from it, return this identifier.
 
-Else, use the DATE.  If it is nil, use `current-time'."
-  (let ((denote--used-ids (or denote--used-ids (denote--get-all-used-ids))))
+Else, use the DATE.  If it is nil, use `current-time'.
+
+This is a reference function for `denote-get-identifier-function'."
+  (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
     (cond ((and initial-identifier
-                (not (gethash initial-identifier denote--used-ids)))
+                (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
           ((and initial-identifier
                 (string-match-p denote-date-identifier-regexp initial-identifier)
@@ -2877,7 +2886,7 @@ Else, use the DATE.  If it is nil, use `current-time'."
 If ID is already used, increment it until an available id is found."
   (let ((current-id id)
         (iteration 0))
-    (while (gethash current-id denote--used-ids)
+    (while (gethash current-id denote-used-identifiers)
       ;; Prevent infinite loop
       (setq iteration (1+ iteration))
       (when (>= iteration 10000)
@@ -2891,10 +2900,12 @@ If ID is already used, increment it until an available id is found."
 If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
 possible to derive an identifier from it, return this identifier.
 
-Else, use the first unused number starting from 1."
-  (let ((denote--used-ids (or denote--used-ids (denote--get-all-used-ids))))
+Else, use the first unused number starting from 1.
+
+This is a reference function for `denote-get-identifier-function'."
+  (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
     (cond ((and initial-identifier
-                (not (gethash initial-identifier denote--used-ids)))
+                (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
           ((and initial-identifier
                 (string-match-p "[1-9][0-9]*" initial-identifier))
@@ -3083,6 +3094,18 @@ is ignored if nil.
 Only ever `let' bind this, otherwise the template will always be the same
 and the template prompt will be skipped.")
 
+(defvar denote-get-identifier-function #'denote-generate-identifier-as-date
+  "The function to generate an identifier as a non-empty string.
+
+The function takes two arguments: an initial identifier and a date.
+Both can be nil.  The initial identifier is used as a reference to
+derive a unique variant of it (e.g. to keep incrementing seconds while
+keeping the rest of the date+time the same).  Existing identifiers are
+stored in the variable `denote-used-identifiers'.  If the initial
+identifier is nil or an identifier cannot be derived from it, then the
+date can be used instead.  The date has the same format as
+`current-time'.  When it is nil, the `current-time' is used.")
+
 (defun denote--creation-get-note-data-from-prompts ()
   "Retrieve the data necessary for note creation.
 
@@ -3120,18 +3143,6 @@ instead."
                       (setq signature (denote-signature-prompt))))))
     (list title keywords file-type directory date identifier template signature)))
 
-(defvar denote--identifier-generation-function #'denote-generate-identifier-as-date
-  "The function to use to generate identifiers.
-
-This function should return an identifier.  It should accept a date
-argument that may be omitted if it is not necessary to generate the
-identifier.
-
-Note that this function should ensure that the identifier is not already
-used.  The variable `denote--used-ids' can be used for this check.
-
-A non-empty identifier should always be returned.")
-
 (defun denote--creation-prepare-note-data (title keywords file-type directory date identifier template signature)
   "Return parameters in a valid form for file creation.
 
@@ -3159,10 +3170,10 @@ instead of that of the parameter."
                      (t (current-time))))
          (identifier (or identifier ""))
          (identifier (cond ((not (string-empty-p identifier))
-                            (funcall denote--identifier-generation-function identifier nil))
+                            (funcall denote-get-identifier-function identifier nil))
                            ((or (eq denote-generate-identifier-automatically t)
                                 (eq denote-generate-identifier-automatically 'on-creation))
-                            (funcall denote--identifier-generation-function nil (or date (current-time))))
+                            (funcall denote-get-identifier-function nil (or date (current-time))))
                            (t "")))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
@@ -4050,7 +4061,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (identifier (if (and (string-empty-p identifier)
                               (or (eq denote-generate-identifier-automatically t)
                                   (eq denote-generate-identifier-automatically 'on-rename)))
-                         (funcall denote--identifier-generation-function
+                         (funcall denote-get-identifier-function
                                   nil
                                   (or date
                                       (file-attribute-modification-time (file-attributes file))
@@ -4060,7 +4071,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                            ((string= old-identifier identifier) identifier)
                            ((denote--file-has-backlinks-p file)
                             (user-error "The identifier cannot be modified because the new identifier has backlinks"))
-                           (t (funcall denote--identifier-generation-function identifier nil))))
+                           (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
     ;; TODO: Remove this when ready to allow custom identifiers.
@@ -4081,8 +4092,8 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
           (denote-rewrite-front-matter new-name title keywords signature date identifier file-type)
         (when (denote-add-front-matter-prompt new-name)
           (denote-prepend-front-matter new-name title keywords signature date identifier file-type))))
-    (when (and denote--used-ids (not (string-empty-p identifier)))
-      (puthash identifier t denote--used-ids))
+    (when (and denote-used-identifiers (not (string-empty-p identifier)))
+      (puthash identifier t denote-used-identifiers))
     (denote--handle-save-and-kill-buffer 'rename new-name initial-state)
     (setq denote-current-data
           (list
@@ -4156,7 +4167,7 @@ The IDENTIFIER is a string that has the format of variable
 `denote-date-identifier-format'.
 
 If there is no identifier, create a new identifier using
-`denote--identifier-generation-function'. By default, it creates a new
+`denote-get-identifier-function'. By default, it creates a new
 identifier using the date parameter, the date of last modification or
 the `current-time'.
 
@@ -4357,7 +4368,7 @@ the changes made to the file: perform them outright (same as
 setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (let ((denote--used-ids (denote--get-all-used-ids))
+  (let ((denote-used-identifiers (denote--get-all-used-ids))
         (denote-rename-confirmations nil))
     (if-let* ((marks (dired-get-marked-files)))
         (progn
@@ -4400,7 +4411,7 @@ This function is an internal implementation function."
       (let ((denote-prompts '())
             (denote-rename-confirmations nil)
             (user-input-keywords (denote-keywords-prompt keywords-prompt))
-            (denote--used-ids (denote--get-all-used-ids)))
+            (denote-used-identifiers (denote--get-all-used-ids)))
         (dolist (file marks)
           (pcase-let* ((`(,title ,keywords ,signature ,date ,identifier)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
@@ -4539,7 +4550,7 @@ they have front matter and what that may be."
                            (denote-file-is-writable-and-supported-p m)
                            (denote-file-has-identifier-p m)))
                     (dired-get-marked-files))))
-      (let ((denote--used-ids (denote--get-all-used-ids)))
+      (let ((denote-used-identifiers (denote--get-all-used-ids)))
         (dolist (file marks)
           (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))

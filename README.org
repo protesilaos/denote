@@ -5267,6 +5267,18 @@ there will be no corresponding prompt.
 :CUSTOM_ID: h:9b32bf7d-1569-4495-801c-8835f022d72e
 :END:
 
+#+vindex: denote-get-identifier-function
++ Variable ~denote-get-identifier-function~ :: The function to
+  generate an identifier as a non-empty string. The function takes two
+  arguments: an initial identifier and a date. Both can be nil. The
+  initial identifier is used as a reference to derive a unique variant
+  of it, if possible (e.g. to keep incrementing seconds while keeping
+  the rest of the date+time the same). Existing identifiers are stored
+  in the variable ~denote-used-identifiers~. If the initial identifier
+  is nil or an identifier cannot be derived from it, then the date can
+  be used instead. The date has the same format as ~current-time~.
+  When it is nil, the ~current-time~ is used. [ Part of {{{development-version}}}. ]
+
 #+findex: denote-get-path-by-id
 + Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
   string in ~denote-directory-files~.
@@ -5289,8 +5301,8 @@ there will be no corresponding prompt.
 #+findex: denote-retrieve-filename-identifier
 + Function ~denote-retrieve-filename-identifier~ :: Extract identifier
   from =FILE= name, if present, else return nil. To create a new one
-  from a date, refer to the ~denote--identifier-generation-function~
-  variable.
+  from a date, refer to the ~denote-identifier-generation-function~
+  variable. [ The ~denote-identifier-generation-function~ is part of {{{development-version}}}. ]
 
 #+findex: denote-retrieve-filename-title
 + Function ~denote-retrieve-filename-title~ ::  Extract Denote title
