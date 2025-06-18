@@ -3350,14 +3350,6 @@ a value that can be parsed by `decode-time' or nil."
        (denote--date-convert initial-date :string)
        'denote-date-history))))
 
-(defun denote-prompt-for-date-return-id (&optional initial-date prompt-text)
-  "Use `denote-date-prompt' and return it as `denote-date-identifier-format'.
-Optional INITIAL-DATE and PROMPT-TEXT have the same meaning as
-`denote-date-prompt'."
-  (denote-get-identifier
-   (denote-valid-date-p
-    (denote-date-prompt (denote-valid-date-p initial-date) prompt-text))))
-
 (make-obsolete
  'denote-prompt-for-date-return-id
  'denote-identifier-prompt
