@@ -1318,6 +1318,11 @@ are not backups."
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
 
+(defvar denote-directory-get-files-function #'denote-directory-get-files
+  "Function to return list of Denote files.
+Each file is a string representing an absolute file system path.  This
+is intended for use in the function `denote-directory-files'.")
+
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
@@ -1339,7 +1344,7 @@ text files that satisfy `denote-file-has-supported-extension-p'.
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
 OMIT-CURRENT have been applied."
-  (let ((files (denote--directory-get-files)))
+  (let ((files (funcall denote-directory-get-files-function)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
