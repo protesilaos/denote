@@ -1299,7 +1299,12 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   (and denote-excluded-files-regexp
        (string-match-p denote-excluded-files-regexp file)))
 
-(defun denote--directory-get-files ()
+(define-obsolete-function-alias
+  'denote--directory-get-files
+  'denote-directory-get-files
+  "4.1.0")
+
+(defun denote-directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-identifier-p' and
 are not backups."

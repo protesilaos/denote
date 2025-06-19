@@ -5104,6 +5104,12 @@ The following sections cover the specifics.
   ~let~ bind the value of the variable ~denote-directory~
   to override what this function returns.
 
+#+findex: denote-directory-get-files
++ Function ~denote-directory-get-files~ :: Return list with full path
+  of valid files in variable ~denote-directory~. Consider files that
+  satisfy ~denote-file-has-identifier-p~ and are not backups. [ Part
+  of {{{development-version}}}. ]
+
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
   paths in variable ~denote-directory~. Files that match
