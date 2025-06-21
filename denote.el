@@ -4081,7 +4081,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                        identifier))
          (identifier (cond ((string-empty-p identifier) identifier)
                            ((string= old-identifier identifier) identifier)
-                           ((denote--file-has-backlinks-p file)
+                           ((and (not (string-empty-p old-identifier)) (denote--file-has-backlinks-p file))
                             (user-error "The identifier cannot be modified because the new identifier has backlinks"))
                            (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
