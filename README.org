@@ -4158,11 +4158,7 @@ commands:
 - ~my-denote-sort-dired-all-empty-files~
 - ~my-denote-sort-dired-without-all-empty-files~
 
-FIXME 2025-06-23: The code here is outdated. I will make the requisite tweaks.
-
 #+begin_src emacs-lisp
-(require 'denote-sort)
-
 (defun my-denote--note-has-no-contents-p (file)
   "Return non-nil if FILE is an empty note.
 This means that FILE conforms with `denote-file-is-note-p' and either
@@ -4177,7 +4173,7 @@ has no contents or has only the front matter."
            ;; "empty" even if it only has front matter.
            (denote--file-empty-p file))))
 
-(defun my-denote-sort-dired-empty-files (files-matching-regexp sort-by-component reverse)
+(defun my-denote-sort-dired-empty-files (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Like `denote-sort-dired' but only cover empty files.
 Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
   (interactive
@@ -4187,31 +4183,19 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                        'identifier))
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
-                          nil)))
+                          nil))
+        (exclude-rx (or exclude-regexp nil)))
     (if-let* ((default-directory (denote-directory))
               (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
               (empty-files (seq-filter #'my-denote--note-has-no-contents-p files))
-              ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-              ;; buffer-name produces an error if the regexp contains a
-              ;; wildcard for a directory. I can reproduce this in emacs
-              ;; -Q and am not sure if it is a bug. Anyway, I will report
-              ;; it upstream, but even if it is fixed we cannot use it
-              ;; for now (whatever fix will be available for Emacs 30+).
-              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
-        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
-          (setq denote-sort--dired-buffer dired-buffer)
+              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component)))
+        (let ((dired-buffer (dired (cons default-directory (mapcar #'file-relative-name empty-files))))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (with-current-buffer dired-buffer
-            (setq-local revert-buffer-function
-                        (lambda (&rest _)
-                          (kill-buffer dired-buffer)
-                          (denote-sort-dired files-matching-regexp component reverse-sort))))
-          ;; Because of the above NOTE, I am printing a message.  Not
-          ;; what I want, but it is better than nothing...
-          (message denote-sort-dired-buffer-name))
+            (rename-buffer buffer-name :unique)))
       (message "No matching files for: %s" files-matching-regexp))))
 
-(defun my-denote-sort-dired-without-empty-files (files-matching-regexp sort-by-component reverse)
+(defun my-denote-sort-dired-without-empty-files (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Like `denote-sort-dired' but only cover empty files.
 Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
   (interactive
@@ -4221,28 +4205,15 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                        'identifier))
         (reverse-sort (or reverse
                           denote-sort-dired-default-reverse-sort
-                          nil)))
+                          nil))
+        (exclude-rx (or exclude-regexp nil)))
     (if-let* ((default-directory (denote-directory))
               (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
-              (empty-files (seq-remove #'my-denote--note-has-no-contents-p files))
-              ;; NOTE 2023-12-04: Passing the FILES-MATCHING-REGEXP as
-              ;; buffer-name produces an error if the regexp contains a
-              ;; wildcard for a directory. I can reproduce this in emacs
-              ;; -Q and am not sure if it is a bug. Anyway, I will report
-              ;; it upstream, but even if it is fixed we cannot use it
-              ;; for now (whatever fix will be available for Emacs 30+).
-              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component))
-              (buffer-name (format "Denote sort by `%s' at %s" component (format-time-string "%T"))))
-        (let ((dired-buffer (dired (cons buffer-name (mapcar #'file-relative-name empty-files)))))
-          (setq denote-sort--dired-buffer dired-buffer)
+              (empty-files (seq-remove #'my-denote--note-has-no-contents-p files)))
+        (let ((dired-buffer (dired (cons default-directory (mapcar #'file-relative-name empty-files))))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (with-current-buffer dired-buffer
-            (setq-local revert-buffer-function
-                        (lambda (&rest _)
-                          (kill-buffer dired-buffer)
-                          (denote-sort-dired files-matching-regexp component reverse-sort))))
-          ;; Because of the above NOTE, I am printing a message.  Not
-          ;; what I want, but it is better than nothing...
-          (message denote-sort-dired-buffer-name))
+            (rename-buffer buffer-name :unique)))
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defun my-denote-sort-dired-all-empty-files ()
@@ -4251,10 +4222,8 @@ This is the same as calling `my-denote-sort-dired' with a
 FILES-MATCHING-REGEXP of \".*\"."
   (declare (interactive-only t))
   (interactive)
-  (let* ((other-prompts (denote-sort-dired--prompts))
-         (sort-key (nth 1 other-prompts))
-         (reverse (nth 2 other-prompts)))
-    (funcall-interactively #'my-denote-sort-dired-empty-files ".*" sort-key reverse)))
+  (pcase-let ((`(,sort-by ,reverse ,exclude-rx) (denote-sort-dired--prompts)))
+    (my-denote-sort-dired-empty-files ".*" sort-by reverse exclude-rx)))
 
 (defun my-denote-sort-dired-without-all-empty-files ()
   "List all empty files in a Dired buffer.
@@ -4262,10 +4231,8 @@ This is the same as calling `my-denote-sort-dired' with a
 FILES-MATCHING-REGEXP of \".*\"."
   (declare (interactive-only t))
   (interactive)
-  (let* ((other-prompts (denote-sort-dired--prompts))
-         (sort-key (nth 1 other-prompts))
-         (reverse (nth 2 other-prompts)))
-    (funcall-interactively #'my-denote-sort-dired-without-empty-files ".*" sort-key reverse)))
+  (pcase-let ((`(,sort-by ,reverse ,exclude-rx) (denote-sort-dired--prompts)))
+    (my-denote-sort-dired-without-empty-files ".*" sort-by reverse exclude-rx)))
 #+end_src
 
 [ In the above snippet, I am purposefully duplicating code to make it
