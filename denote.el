@@ -1773,9 +1773,6 @@ OMIT-CURRENT have been applied."
      (format-prompt "Exclude files matching REGEXP" default)
      default 'denote-sort-exclude-files-history)))
 
-(defvar-local denote-sort--dired-buffer nil
-  "Buffer object of current `denote-sort-dired'.")
-
 (defun denote-sort-dired--prompts ()
   "Return list of prompts per `denote-sort-dired-extra-prompts'."
   (let (sort-by-component reverse-sort exclude-rx)
@@ -1863,7 +1860,6 @@ When called from Lisp, the arguments are a string, a symbol among
               (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx)))
         (let ((dired-buffer (dired (cons default-directory (if single-dir-p (mapcar #'file-relative-name files) files))))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
-          (setq denote-sort--dired-buffer dired-buffer)
           (with-current-buffer dired-buffer
             (rename-buffer buffer-name :unique))
           buffer-name)
