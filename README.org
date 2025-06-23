@@ -4158,6 +4158,8 @@ commands:
 - ~my-denote-sort-dired-all-empty-files~
 - ~my-denote-sort-dired-without-all-empty-files~
 
+FIXME 2025-06-23: The code here is outdated. I will make the requisite tweaks.
+
 #+begin_src emacs-lisp
 (require 'denote-sort)
 
