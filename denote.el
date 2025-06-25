@@ -3678,22 +3678,23 @@ Org.  Otherwise, use the function `denote-file-type' to return the type."
       'org
     (denote-file-type file)))
 
-(defun denote--revert-dired (buf)
-  "Revert BUF if appropriate.
-Do it if BUF is in Dired mode and is either part of the variable
-`denote-directory' or the `current-buffer'."
-  (let ((current (current-buffer)))
-    (with-current-buffer buf
-      (when (and (eq major-mode 'dired-mode)
-                 (or (and default-directory (denote--dir-in-denote-directory-p default-directory))
-                     (eq current buf)))
-        (revert-buffer)))))
+(defun denote--revert-dired (buffer-to-try-revert current-buffer)
+  "Maybe revert BUFFER-TO-TRY-REVERT.
+Do it if BUFFER-TO-TRY-REVERT is in Dired mode and is either part of the
+variable `denote-directory' or equal to the CURRENT-BUFFER."
+  (with-current-buffer buffer-to-try-revert
+    (when (and (eq major-mode 'dired-mode)
+               (or (and default-directory (denote--dir-in-denote-directory-p default-directory))
+                   (eq current-buffer buffer-to-try-revert)))
+      (revert-buffer))))
 
 (defun denote-update-dired-buffers ()
   "Update Dired buffers of variable `denote-directory'.
 Also revert the current Dired buffer even if it is not inside the
 variable `denote-directory'."
-  (mapc #'denote--revert-dired (buffer-list)))
+  (let ((current (current-buffer)))
+    (dolist (buffer (buffer-list))
+      (denote--revert-dired buffer current))))
 
 (defun denote-rename-file-and-buffer (old-name new-name)
   "Rename file named OLD-NAME to NEW-NAME, updating buffer name.
