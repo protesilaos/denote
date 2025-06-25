@@ -1527,7 +1527,7 @@ is a special buffer."
 (defconst denote-sort-comparison-fallback-function #'string-collate-lessp
   "String comparison function used by `denote-sort-files' subroutines.")
 
-(defconst denote-sort-components '(title keywords signature identifier random)
+(defconst denote-sort-components '(title keywords signature identifier random last-modified)
   "List of sorting keys applicable for `denote-sort-files' and related.")
 
 (defcustom denote-sort-identifier-comparison-function denote-sort-comparison-fallback-function
@@ -1650,6 +1650,19 @@ The `%s' performs the comparison."
         (push element shuffled-list)))
     shuffled-list))
 
+(defun denote-sort-modified-time-greaterp (file1 file2)
+  "Return non-nil if FILE1 modified time is greater than that of FILE2."
+  (let* ((attributes1 (file-attributes file1))
+         (mod-time1-raw (file-attribute-modification-time attributes1))
+         (mod-time1-seconds (time-to-seconds mod-time1-raw))
+         (attributes2 (file-attributes file2))
+         (mod-time2-raw (file-attribute-modification-time attributes2))
+         (mod-time2-seconds (time-to-seconds mod-time2-raw)))
+    ;; NOTE 2025-06-23: We normally sort using a "less" approach, but
+    ;; here we want to capture the semantics of "last modified"
+    ;; without relying on a reverse sort.
+    (> mod-time1-seconds mod-time2-seconds)))
+
 ;;;###autoload
 (defun denote-sort-files (files component &optional reverse)
   "Returned sorted list of Denote FILES.
@@ -1673,7 +1686,8 @@ With optional REVERSE as a non-nil value, reverse the sort order."
                         ('identifier #'denote-sort-identifier-lessp)
                         ('title #'denote-sort-title-lessp)
                         ('keywords #'denote-sort-keywords-lessp)
-                        ('signature #'denote-sort-signature-lessp)))
+                        ('signature #'denote-sort-signature-lessp)
+                        ('last-modified #'denote-sort-modified-time-greaterp)))
              (sorted-files (if sort-fn
                                (sort files sort-fn)
                              files-to-sort)))
@@ -1746,9 +1760,10 @@ OMIT-CURRENT have been applied."
                       ("keywords" "The keywords of the file name")
                       ("signature" "The signature of the file name")
                       ("identifier" "The identifier of the file name")
-                      ("random" "Random file sort"))))
+                      ("random" "Random file sort")
+                      ("last-modified" "File last modification time"))))
     (format "%s-- %s"
-            (propertize " " 'display '(space :align-to 12))
+            (propertize " " 'display '(space :align-to 15))
             (propertize text 'face 'completions-annotations))))
 
 (defun denote-sort-component-prompt ()
@@ -5430,7 +5445,8 @@ order to sort file names interactively in the query buffer."
           (const :tag "Sort by title" title)
           (const :tag "Sort by keywords" keywords)
           (const :tag "Sort by signature" signature)
-          (const :tag "Random order" random))
+          (const :tag "Random order" random)
+          (const :tag "Last modified" last-modified))
   :package-version '(denote . "4.1.0")
   :group 'denote-query)
 

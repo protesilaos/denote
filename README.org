@@ -3581,13 +3581,15 @@ Here are some examples:
 :CUSTOM_ID: h:c958e087-1d23-4a25-afdd-db7bf5606b4c
 :END:
 
-When sorting by =title=, =keywords=, =signature=, =identifier=, or
-=random= with the ~denote-dired~ command (alias ~denote-sort-dired~),
+[ The =random= and =last-modified= sort are part of {{{development-version}}}. ]
+
+When sorting by =title=, =keywords=, =signature=, =identifier=,
+=random=, or =last-modified= with the ~denote-dired~ command (alias ~denote-sort-dired~),
 Denote will internally apply a sorting function that is specific to
 each component ([[#h:a34228cb-484f-48fe-9cbc-8e41f313127b][Configure what extra prompts ~denote-sort-dired~ issues]]).
 
-With the exception of =random=, the sorting of file name components
-is subject to user configuration:
+With the exception of =random= and =last-modified=, the sorting of
+file name components is subject to user configuration:
 
 #+vindex: denote-sort-identifier-comparison-function
 - ~denote-sort-identifier-comparison-function~ :: The function to sort
@@ -3786,10 +3788,12 @@ the ~denote-grep~ command:
 By default, no sorting of matching files is performed. They appear in
 the query buffer in the order they were retrieved.
 
-The ~denote-query-sorting~ can be set to a symbol among =title=,
-=keywords=, =signature=, or =identifier= to sort by the given file
-name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). The symbol =random= produces
-a random order each time.
+#+vindex: denote-sort-components
+The ~denote-query-sorting~ can be set to a symbol among those listed
+in the value of the variable ~denote-sort-components~ to sort by the
+given file name component ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). The symbol
+=random= produces a random order each time, while =last-modified=
+relies on the file system to sort by the modification time.
 
 The ~denote-query-sorting~ can also be set to the symbol of a
 function. In that case, the given function is used to perform the
