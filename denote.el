@@ -4095,7 +4095,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                            ((string= old-identifier identifier) identifier)
                            ((and (not (string-empty-p old-identifier)) (denote--file-has-backlinks-p file))
                             (user-error "The identifier cannot be modified because the new identifier has backlinks"))
-                           (t (funcall denote-get-identifier-function identifier nil))))
+                           (t (funcall denote-get-identifier-function identifier date))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
     ;; TODO: Remove this when ready to allow custom identifiers.
