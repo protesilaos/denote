@@ -5609,7 +5609,7 @@ It accepts the same arguments as `denote-make-links-buffer'.")
 \"Last search\" here means any call to `denote-grep',
 `denote-backlinks', `denote-query-contents-link', or, generally, any
 command that relies on the `denote-make-links-buffer'."
-  (interactive (list (denote-grep-query-prompt :focused)) denote-query-mode)
+  (interactive (list (denote-grep-query-prompt "Search (only files matched last): ")) denote-query-mode)
   (unless (derived-mode-p 'denote-query-mode)
     (user-error "Only use this command inside the `denote-query-mode'"))
   (denote-make-links-buffer
@@ -5754,26 +5754,25 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
-(defun denote-grep-query-prompt (&optional type)
+(defun denote-grep-query-prompt (&optional prompt-text)
   "Prompt for a grep query in the minibuffer.
+With optional PROMPT-TEXT use it for the minibuffer prompt.
 
-The prompt assumes a search in all files, unless TYPE is non-nil.
-
-TYPE can be one of :focused (for a focused search (a search among
-matching files), see `denote-query-focus-last-search'), :dired (for a
-search in marked Dired files, see `denote-grep-marked-dired-files') or
-:region (for a search in files referenced in region, see
-`denote-grep-files-referenced-in-region').
-
-TYPE only affects the prompt, not the returned value."
+For backward-compatibility, PROMPT-TEXT can also be a keyword among
+`:focused', `:dired', and `:region', to format the prompt accordingly
+for the given type of search.  Developers should not rely on this, as we
+will remove it in future versions of Denote---just use PROMPT-TEXT as a
+string."
   (read-string
-   (cond ((eq type :focused)
-          "Search (only files matched last): ")
-         ((eq type :dired)
-          "Search (only marked dired files): ")
-         ((eq type :region)
-          "Search (only files referenced in region): ")
-         (t "Search (all Denote files): "))
+   (cond
+    ((stringp prompt-text) prompt-text)
+    ((eq prompt-text :focused)
+     "Search (only files matched last): ")
+    ((eq prompt-text :dired)
+     "Search (only marked dired files): ")
+    ((eq prompt-text :region)
+     "Search (only files referenced in region): ")
+    (t "Search (all Denote files): "))
    nil 'denote-grep-history))
 
 (defvar denote-grep-file-regexp-history nil
@@ -5811,7 +5810,7 @@ You can insert a link to a grep search in any note by using the command
 ;;;###autoload
 (defun denote-grep-marked-dired-files (query)
   "Do the equivalent of `denote-grep' for QUERY in marked Dired files."
-  (interactive (list (denote-grep-query-prompt :dired)))
+  (interactive (list (denote-grep-query-prompt "Search (only marked dired files): ")))
   (if-let* ((files (dired-get-marked-files)))
       (denote-make-links-buffer query files nil denote-grep-display-buffer-action)
     (user-error "No marked files")))
@@ -5846,7 +5845,7 @@ file listings such as those of `dired' and the command-line `ls' program."
   (interactive
    (if (region-active-p)
        (list
-        (denote-grep-query-prompt :region)
+        (denote-grep-query-prompt "Search (only files referenced in region): ")
         (region-beginning)
         (region-end))
      (user-error "No region is active; aborting")))
