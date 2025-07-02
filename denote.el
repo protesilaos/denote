@@ -2782,7 +2782,7 @@ TEMPLATE, and SIGNATURE should be valid for note creation."
   "Return non-nil if DIRECTORY is in variable `denote-directory'."
   (seq-some
    (lambda (d)
-     (string-prefix-p (expand-file-name directory) d))
+     (string-prefix-p d (expand-file-name directory)))
    (denote-directories)))
 
 (defun denote--valid-file-type (filetype)
