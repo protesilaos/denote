@@ -999,7 +999,7 @@ to override what this function returns."
          'denote
          "Silo value must be a string; `local' or `default-directory' are obsolete"
          :error)
-        silo-dir)
+        (list silo-dir))
     (let ((denote-directories (denote-directories--get-paths)))
       (denote-directories--make-paths denote-directories)
       denote-directories)))
