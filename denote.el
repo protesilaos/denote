@@ -4191,7 +4191,7 @@ The IDENTIFIER is a string that has the format of variable
 `denote-date-identifier-format'.
 
 If there is no identifier, create a new identifier using
-`denote-get-identifier-function'. By default, it creates a new
+`denote-get-identifier-function'.  By default, it creates a new
 identifier using the date parameter, the date of last modification or
 the `current-time'.
 
