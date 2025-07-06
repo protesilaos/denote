@@ -2896,7 +2896,7 @@ available id is found."
                         (time-add (date-to-time current-id) 1))))
     current-id))
 
-(defun denote-generate-identifier-as-date (&optional initial-identifier date)
+(defun denote-generate-identifier-as-date (initial-identifier date)
   "Generate an identifier based on DATE.
 
 If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
@@ -2930,7 +2930,7 @@ If ID is already used, increment it until an available id is found."
       (setq current-id (number-to-string (1+ (string-to-number current-id)))))
     current-id))
 
-(defun denote-generate-identifier-as-number (&optional initial-identifier _date)
+(defun denote-generate-identifier-as-number (initial-identifier _date)
   "Generate an increasing number identifier.
 
 If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
