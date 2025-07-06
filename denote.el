@@ -5538,50 +5538,21 @@ Intended to be used as `denote-query-format-heading-function'."
       title
     denote-query-untitled-string))
 
-;; NOTE 2025-03-24: The `&rest' is there because we used to have an
-;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
-;; code, even if we slightly modify the behaviour.
-(defun denote-make-links-buffer (query &optional files buffer-name display-buffer-action &rest _)
-  "Create links' buffer called BUFFER-NAME for QUERY.
+(defun denote--display-buffer-from-xref-alist (xref-alist buffer-name display-buffer-action)
+  "Create buffer called BUFFER-NAME for XREF-ALIST.
 
-Optional FILES can be a list of files to search for.  It can also be a
-regexp, which limits the files accordingly per `denote-directory-files'.
-
-Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
-concomitant alist, such as `denote-backlinks-display-buffer-action'."
+DISPLAY-BUFFER-ACTION is a `display-buffer' action and concomitant
+alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((inhibit-read-only t)
          (file buffer-file-name)
-         (buffer (or buffer-name
-                     (denote-format-buffer-name (format-message "query for `%s'" query) :special-buffer)))
-         ;; We retrieve results in absolute form and change the
-         ;; absolute path to a relative path below. We could add a
-         ;; suitable function and the results would be automatically
-         ;; in relative form, but eventually notes may not be all
-         ;; under a common directory (or project).
-         (xref-alist (denote-retrieve-xref-alist query files))
          (dirs (denote-directories)))
     (unless xref-alist
-      (error "No matches for query `%s'" query))
-    ;; Update internal variables
-    (setq denote-query--last-files nil)
-    (setq denote-query--last-query query)
+      (error "No results to display"))
+    ;; Update group of each item in xref-alist
     (dolist (x xref-alist)
-      (let* ((file-xref (car x))
-             (file
-              ;; NOTE: Unfortunately, the car of the xref construct is
-              ;; not reliable; sometimes it's absolute, sometimes it
-              ;; is not
-              (if (file-name-absolute-p file-xref)
-                  file-xref
-                (xref-location-group
-                 (xref-match-item-location (car (last x)))))))
-        ;; Add to current set of files
-        (push file denote-query--last-files)
-        ;; Format heading
-        (setf (car x) (funcall denote-query-format-heading-function file))))
-    (delete-dups denote-query--last-files)
-    ;; Insert results
-    (with-current-buffer (get-buffer-create buffer)
+      (let* ((file-xref (car x)))
+        (setf (car x) (funcall denote-query-format-heading-function file-xref))))
+    (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
       (denote-query-mode)
       ;; In the links' buffer, the values of variables set in a
@@ -5597,8 +5568,31 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let* ((buffer-file-name file))
-                      (denote-make-links-buffer query files buffer-name display-buffer-action)))))
-    (display-buffer buffer display-buffer-action)))
+                      (denote--display-buffer xref-alist buffer-name display-buffer-action)))))
+    (display-buffer buffer-name display-buffer-action)))
+
+;; NOTE 2025-03-24: The `&rest' is there because we used to have an
+;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
+;; code, even if we slightly modify the behaviour.
+(defun denote-make-links-buffer (query &optional files buffer-name display-buffer-action &rest _)
+  "Create links' buffer called BUFFER-NAME for QUERY.
+
+Optional FILES can be a list of files to search for.  It can also be a
+regexp, which limits the files accordingly per `denote-directory-files'.
+
+Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
+concomitant alist, such as `denote-backlinks-display-buffer-action'."
+  (let* ((inhibit-read-only t)
+         (buffer (or buffer-name
+                     (denote-format-buffer-name (format-message "query for `%s'" query) :special-buffer)))
+         (xref-alist (denote-retrieve-xref-alist query files)))
+    (unless xref-alist
+      (error "No matches for query `%s'" query))
+    (setq denote-query--last-query query)
+    (setq denote-query--last-files
+          (delete-dups
+           (mapcar #'car xref-alist)))
+    (denote--display-buffer-from-xref-alist xref-alist buffer display-buffer-action)))
 
 (defvar denote-query-links-buffer-function #'denote-make-links-buffer
   "Function to make an Xref buffer showing query link results.
