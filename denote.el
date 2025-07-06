@@ -5573,7 +5573,7 @@ alist, such as `denote-backlinks-display-buffer-action'."
       (setq-local revert-buffer-function
                   (lambda (_ignore-auto _noconfirm)
                     (when-let* ((buffer-file-name file))
-                      (denote--display-buffer xref-alist buffer-name display-buffer-action)))))
+                      (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))))
     (display-buffer buffer-name display-buffer-action)))
 
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
