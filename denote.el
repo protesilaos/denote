@@ -2448,6 +2448,11 @@ To create a new one from a date, refer to the function referred by
   (or (denote-retrieve-filename-identifier file)
       (error "Cannot find `%s' as a file with a Denote identifier" file)))
 
+(make-obsolete
+ 'denote-retrieve-filename-identifier-with-error
+ 'denote-retrieve-filename-identifier
+ "4.1.0")
+
 (define-obsolete-variable-alias
   'denote--used-ids
   'denote-used-identifiers
@@ -5872,11 +5877,12 @@ Place the buffer below the current window or wherever the user option
 `denote-backlinks-display-buffer-action' specifies."
   (interactive)
   (if-let* ((file buffer-file-name))
-      (when-let* ((identifier (denote-retrieve-filename-identifier-with-error file)))
-        (funcall denote-query-links-buffer-function
-                 identifier nil
-                 (denote--backlinks-get-buffer-name file identifier)
-                 denote-backlinks-display-buffer-action))
+      (if-let* ((identifier (denote-retrieve-filename-identifier file)))
+          (funcall denote-query-links-buffer-function
+                   identifier nil
+                   (denote--backlinks-get-buffer-name file identifier)
+                   denote-backlinks-display-buffer-action)
+        (user-error "The current file does not have a Denote identifier"))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
@@ -5891,7 +5897,8 @@ Place the buffer below the current window or wherever the user option
   "Return list of backlinks in current or optional FILE.
 Also see `denote-get-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
-              (id (denote-retrieve-filename-identifier-with-error current-file)))
+              (id (or (denote-retrieve-filename-identifier current-file)
+                      (user-error "The file does not have a Denote identifier"))))
     (delete current-file (denote-retrieve-files-xref-query id))))
 
 ;; TODO 2024-09-04: Instead of using `denote-get-backlinks' we
@@ -5910,7 +5917,10 @@ context-sensitive operation, use `denote-find-backlink-with-location'.
 Alo see `denote-find-link'."
   (declare (interactive-only t))
   (interactive)
-  (when-let* ((links (or (denote-get-backlinks)
+  (when-let* ((current-file buffer-file-name)
+              (_ (or (denote-retrieve-filename-identifier current-file)
+                     (user-error "The current file does not have a Denote identifier")))
+              (links (or (denote-get-backlinks current-file)
                          (user-error "No backlinks found")))
               (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
     (find-file selected)))
@@ -5921,7 +5931,8 @@ Alo see `denote-find-link'."
   (declare (interactive-only t))
   (interactive)
   (when-let* ((current-file buffer-file-name)
-              (id (denote-retrieve-filename-identifier-with-error current-file))
+              (id (or (denote-retrieve-filename-identifier current-file)
+                      (user-error "The current file does not have a Denote identifier")))
               (files (denote-directory-files nil :omit-current :text-only))
               (fetcher (lambda () (xref-matches-in-files id files))))
     (xref-show-definitions-completing-read fetcher nil)))
