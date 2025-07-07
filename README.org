@@ -4180,44 +4180,43 @@ has no contents or has only the front matter."
 (defun my-denote-sort-dired-empty-files (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Like `denote-sort-dired' but only cover empty files.
 Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
-  (interactive
-   (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
-  (let ((component (or sort-by-component
-                       denote-sort-dired-default-sort-component
-                       'identifier))
-        (reverse-sort (or reverse
-                          denote-sort-dired-default-reverse-sort
-                          nil))
-        (exclude-rx (or exclude-regexp nil)))
-    (if-let* ((default-directory (denote-directory))
-              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
-              (empty-files (seq-filter #'my-denote--note-has-no-contents-p files))
-              (denote-sort-dired-buffer-name (format "Denote sort `%s' by `%s'" files-matching-regexp component)))
-        (let ((dired-buffer (dired (cons default-directory (mapcar #'file-relative-name empty-files))))
-              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
-          (with-current-buffer dired-buffer
-            (rename-buffer buffer-name :unique)))
+  (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
+  (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
+               (relative-p (denote-has-single-denote-directory-p))
+               (files-fn `(lambda ()
+                           (let* ((files (denote-sort-get-directory-files ,files-matching-regexp ',component ,reverse-sort))
+                                  (empty-files (seq-filter #'my-denote--note-has-no-contents-p files)))
+                             (if relative-p
+                                 (mapcar #'file-relative-name empty-files)
+                               empty-files)))))
+    (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
+                             (car (denote-directories))
+                           (denote-sort-dired--find-common-directory (denote-directories))))
+              (files (funcall files-fn))
+              (dired-name (format-message files-matching-regexp))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
+        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defun my-denote-sort-dired-without-empty-files (files-matching-regexp sort-by-component reverse exclude-regexp)
-  "Like `denote-sort-dired' but only cover empty files.
+  "Like `denote-sort-dired' but omit empty files.
 Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
-  (interactive
-   (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
-  (let ((component (or sort-by-component
-                       denote-sort-dired-default-sort-component
-                       'identifier))
-        (reverse-sort (or reverse
-                          denote-sort-dired-default-reverse-sort
-                          nil))
-        (exclude-rx (or exclude-regexp nil)))
-    (if-let* ((default-directory (denote-directory))
-              (files (denote-sort-get-directory-files files-matching-regexp component reverse-sort))
-              (empty-files (seq-remove #'my-denote--note-has-no-contents-p files)))
-        (let ((dired-buffer (dired (cons default-directory (mapcar #'file-relative-name empty-files))))
-              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
-          (with-current-buffer dired-buffer
-            (rename-buffer buffer-name :unique)))
+  (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
+  (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
+               (relative-p (denote-has-single-denote-directory-p))
+               (files-fn `(lambda ()
+                           (let* ((files (denote-sort-get-directory-files ,files-matching-regexp ',component ,reverse-sort))
+                                  (empty-files (seq-remove #'my-denote--note-has-no-contents-p files)))
+                             (if relative-p
+                                 (mapcar #'file-relative-name empty-files)
+                               empty-files)))))
+    (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
+                             (car (denote-directories))
+                           (denote-sort-dired--find-common-directory (denote-directories))))
+              (files (funcall files-fn))
+              (dired-name (format-message files-matching-regexp))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (OMIT EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
+        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defun my-denote-sort-dired-all-empty-files ()
