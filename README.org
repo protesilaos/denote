@@ -4162,6 +4162,8 @@ commands:
 - ~my-denote-sort-dired-all-empty-files~
 - ~my-denote-sort-dired-without-all-empty-files~
 
+[ The code in this section depends on functions that are available as part of {{{development-version}}}. ]
+
 #+begin_src emacs-lisp
 (defun my-denote--note-has-no-contents-p (file)
   "Return non-nil if FILE is an empty note.
