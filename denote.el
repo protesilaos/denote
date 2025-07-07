@@ -3133,14 +3133,14 @@ and the template prompt will be skipped.")
 (defvar denote-get-identifier-function #'denote-generate-identifier-as-date
   "The function to generate an identifier as a non-empty string.
 
-The function takes two arguments: an initial identifier and a date.
-Both can be nil.  The initial identifier is used as a reference to
-derive a unique variant of it (e.g. to keep incrementing seconds while
-keeping the rest of the date+time the same).  Existing identifiers are
-stored in the variable `denote-used-identifiers'.  If the initial
-identifier is nil or an identifier cannot be derived from it, then the
-date can be used instead.  The date has the same format as
-`current-time'.  When it is nil, the `current-time' is used.")
+The function takes two arguments: an initial identifier and a date.  The
+initial identifier is used as a reference to derive a unique variant of
+it (e.g. to keep incrementing seconds while keeping the rest of the
+date+time the same).  Existing identifiers are stored in the variable
+`denote-used-identifiers'.  If the initial identifier is nil or an
+identifier cannot be derived from it, then the date can be used instead.
+The date has the same format as `current-time'.  When it is nil, the
+`current-time' is used.")
 
 (defun denote--creation-get-note-data-from-prompts ()
   "Retrieve the data necessary for note creation.

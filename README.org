@@ -5255,14 +5255,14 @@ there will be no corresponding prompt.
 #+vindex: denote-get-identifier-function
 + Variable ~denote-get-identifier-function~ :: The function to
   generate an identifier as a non-empty string. The function takes two
-  arguments: an initial identifier and a date. Both can be nil. The
-  initial identifier is used as a reference to derive a unique variant
-  of it, if possible (e.g. to keep incrementing seconds while keeping
-  the rest of the date+time the same). Existing identifiers are stored
-  in the variable ~denote-used-identifiers~. If the initial identifier
-  is nil or an identifier cannot be derived from it, then the date can
-  be used instead. The date has the same format as ~current-time~.
-  When it is nil, the ~current-time~ is used. [ Part of {{{development-version}}}. ]
+  arguments: an initial identifier and a date. The initial identifier
+  is used as a reference to derive a unique variant of it, if possible
+  (e.g. to keep incrementing seconds while keeping the rest of the
+  date+time the same). Existing identifiers are stored in the variable
+  ~denote-used-identifiers~. If the initial identifier is nil or an
+  identifier cannot be derived from it, then the date can be used
+  instead. The date has the same format as ~current-time~. When it is
+  nil, the ~current-time~ is used. [ Part of {{{development-version}}}. ]
 
 #+findex: denote-get-path-by-id
 + Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
