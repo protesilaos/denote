@@ -1876,7 +1876,17 @@ When called from Lisp, the arguments are a string, a symbol among
         (let ((dired-buffer (dired (cons default-directory (if single-dir-p (mapcar #'file-relative-name files) files))))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp component reverse-sort exclude-rx)))
           (with-current-buffer dired-buffer
-            (rename-buffer buffer-name :unique))
+            (rename-buffer buffer-name :unique)
+            (setq-local revert-buffer-function
+                        (lambda (&rest _)
+                          (if-let* ((default-directory (if single-dir-p
+                                                           (car (denote-directories))
+                                                         (denote-sort-dired--find-common-directory (denote-directories))))
+                                    (all-files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-rx))
+                                    (files (if single-dir-p (mapcar #'file-relative-name all-files) all-files)))
+                              (setq-local dired-directory (cons default-directory files)))
+                          (dired-revert)))
+            (revert-buffer))
           buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 

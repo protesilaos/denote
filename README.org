@@ -6435,14 +6435,14 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol Solis, Mark Olson,
   Mirko Hernandez, Morten Kjeldgaard, Niall Dooley, Nick Bell, Oliver
   Epper, Paul van Gelder, Peter Prevos, Peter Smith, Riccardo
-  Giannitrapani, Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas
-  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ
-  Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade
-  Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas, babusri, bdillahu,
-  coherentstate, doolio, duli, drcxd, elge70, elliottw, fingerknight,
-  hpgisler, hyperfocus1337,johkneisl, jtpavlock, juh, leafarbelm,
-  mentalisttraceur, mjkalyan, oatmealm, pRot0ta1p, rbenit68,
-  relict007, sarcom-sar, sienic, skissue, sundar bp,
+  Giannitrapani, Rory Molinari, Samuel W. Flint, Sergio Rey, Suhail
+  Singh, Shreyas Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck,
+  Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni,
+  Wade Mealing, Wilf, Yi Liu, Ypot, atanasj, azegas, babusri,
+  bdillahu, coherentstate, doolio, duli, drcxd, elge70, elliottw,
+  fingerknight, hpgisler, hyperfocus1337,johkneisl, jtpavlock, juh,
+  leafarbelm, mentalisttraceur, mjkalyan, oatmealm, pRot0ta1p,
+  rbenit68, relict007, sarcom-sar, sienic, skissue, sundar bp,
   yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
