@@ -1898,11 +1898,11 @@ When called from Lisp, the arguments are a string, a symbol among
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
                (relative-p (denote-has-single-denote-directory-p))
-               (files-fn (lambda ()
-                           (let ((files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-regexp)))
-                             (if relative-p
-                                 (mapcar #'file-relative-name files)
-                               files)))))
+               (files-fn `(lambda ()
+                            (let ((files (denote-sort-get-directory-files ,files-matching-regexp ',component ,reverse-sort nil ,exclude-regexp)))
+                              (if ,relative-p
+                                  (mapcar #'file-relative-name files)
+                                files)))))
     (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
                              (car (denote-directories))
                            (denote-sort-dired--find-common-directory (denote-directories))))
