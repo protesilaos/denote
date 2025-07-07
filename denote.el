@@ -1828,32 +1828,27 @@ If REVERSE is nil, use the value of the user option
    (or sort-by-component denote-sort-dired-default-sort-component 'identifier)
    (or reverse denote-sort-dired-default-reverse-sort nil)))
 
-(defun denote-sort-dired--prepare-buffer (directory files-fn files-matching-regexp sort-by-component reverse-sort exclude-regexp relative-p dired-name)
+(defun denote-sort-dired--prepare-buffer (directory files-fn dired-name buffer-name)
   "Prepare buffer for `denote-sort-dired'.
 DIRECTORY is an absolute path to the `default-directory' of the Dired
 listing.
 
 FILES-FN is a function that returns the files to be listed in the Dired
-buffer.  It takes FILES-MATCHING-REGEXP, SORT-BY-COMPONENT,
-REVERSE-SORT, and EXCLUDE-REGEXP as arguments and must return the
-results accordingly as a list of strings.
-
-RELATIVE-P determines whether the file paths are absolute or relative to
-DIRECTORY.
+buffer.
 
 DIRED-NAME is a string passed to Dired as (cons DIRED-NAME FILES)),
-where FILES is the return value of FILES-FN."
+where FILES is the return value of FILES-FN.
+
+BUFFER-NAME is the name of the resulting buffer."
   (let* ((default-directory directory)
-         (files (funcall files-fn files-matching-regexp sort-by-component reverse-sort exclude-regexp relative-p))
-         (dired-buffer (dired (cons dired-name files)))
-         (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp)))
+         (files (funcall files-fn))
+         (dired-buffer (dired (cons dired-name files))))
     (with-current-buffer dired-buffer
       (rename-buffer buffer-name :unique)
       (setq-local revert-buffer-function
                   (lambda (&rest _)
                     (if-let* ((default-directory directory)
-                              (files (funcall files-fn files-matching-regexp sort-by-component reverse-sort exclude-regexp relative-p))
-                              (dired-name (format-message files-matching-regexp)))
+                              (files (funcall files-fn)))
                         (setq-local dired-directory (cons dired-name files))
                       (setq-local dired-directory (cons "Denote no files" nil)))
                     (dired-revert))))
@@ -1902,18 +1897,19 @@ When called from Lisp, the arguments are a string, a symbol among
 `denote-sort-components', a non-nil value, and a string, respectively."
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
-               (files-fn (lambda (files-matching-regexp sort-by-component reverse exclude-regexp relative-paths)
-                           (let ((files (denote-sort-get-directory-files files-matching-regexp sort-by-component reverse nil exclude-regexp)))
-                             (if relative-paths
+               (relative-p (denote-has-single-denote-directory-p))
+               (files-fn (lambda ()
+                           (let ((files (denote-sort-get-directory-files files-matching-regexp component reverse-sort nil exclude-regexp)))
+                             (if relative-p
                                  (mapcar #'file-relative-name files)
-                               files))))
-               (relative-p (denote-has-single-denote-directory-p)))
+                               files)))))
     (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
                              (car (denote-directories))
                            (denote-sort-dired--find-common-directory (denote-directories))))
-              (files (funcall files-fn files-matching-regexp component reverse-sort exclude-regexp relative-p))
-              (dired-name (format-message files-matching-regexp)))
-        (denote-sort-dired--prepare-buffer directory files-fn files-matching-regexp component reverse-sort exclude-regexp relative-p dired-name)
+              (files (funcall files-fn))
+              (dired-name (format-message files-matching-regexp))
+              (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp)))
+        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defalias 'denote-dired 'denote-sort-dired
