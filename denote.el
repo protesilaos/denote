@@ -1828,6 +1828,17 @@ If REVERSE is nil, use the value of the user option
    (or sort-by-component denote-sort-dired-default-sort-component 'identifier)
    (or reverse denote-sort-dired-default-reverse-sort nil)))
 
+(defun denote-sort-dired--revert-to-empty ()
+  "Revert current Dired buffer to an empty buffer with a warning."
+  (when (derived-mode-p 'dired-mode)
+    (let ((inhibit-read-only t))
+      (fundamental-mode)
+      (erase-buffer)
+      (delete-all-overlays)
+      (insert (propertize "Denote Dired" 'face 'bold))
+      (insert "\n\n")
+      (insert (propertize "No more matching files" 'face 'warning)))))
+
 (defun denote-sort-dired--prepare-buffer (directory files-fn dired-name buffer-name)
   "Prepare buffer for `denote-sort-dired'.
 DIRECTORY is an absolute path to the `default-directory' of the Dired
@@ -1849,9 +1860,10 @@ BUFFER-NAME is the name of the resulting buffer."
                   (lambda (&rest _)
                     (if-let* ((default-directory directory)
                               (files (funcall files-fn)))
-                        (setq-local dired-directory (cons dired-name files))
-                      (setq-local dired-directory (cons "Denote no files" nil)))
-                    (dired-revert))))
+                        (progn
+                          (setq-local dired-directory (cons dired-name files))
+                          (dired-revert))
+                      (denote-sort-dired--revert-to-empty)))))
     buffer-name))
 
 (defun denote-sort-dired--find-common-directory (directories)
