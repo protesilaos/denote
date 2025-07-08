@@ -2468,8 +2468,8 @@ is a list of strings.  FILETYPE is one of the values of variable
           (when (and (not (denote--component-has-value-p component value))
                      (not (memq component denote-front-matter-components-present-even-if-empty-value))
                      (re-search-forward (funcall component-key-regexp-function filetype) nil t 1))
-              (goto-char (line-beginning-position))
-              (delete-region (line-beginning-position) (line-beginning-position 2)))))
+            (goto-char (line-beginning-position))
+            (delete-region (line-beginning-position) (line-beginning-position 2)))))
       (buffer-string))))
 
 ;;;; Front matter or content retrieval functions
@@ -5327,7 +5327,7 @@ Also see `denote-find-backlink'."
   (when-let* ((links (or (denote-get-links)
                          (user-error "No links found")))
               (selected (denote-select-from-files-prompt links "Select among LINKS")))
-  (find-file selected)))
+    (find-file selected)))
 
 ;;;###autoload
 (defun denote-link-after-creating (&optional id-only)
@@ -6667,7 +6667,7 @@ Also see the user option `denote-org-store-link-to-heading'."
                  (concat "denote:" file-id))))
         org-store-link-plist))))
 
- (defun denote-link--ol-export-get-relative-html (path)
+(defun denote-link--ol-export-get-relative-html (path)
   "Return relative PATH for Org export purposes.
 Add an .html extension if PATH is an Org file."
   (file-relative-name
