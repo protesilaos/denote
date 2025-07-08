@@ -1832,7 +1832,7 @@ If REVERSE is nil, use the value of the user option
   "Revert current Dired buffer to an empty buffer with a warning."
   (when (derived-mode-p 'dired-mode)
     (let ((inhibit-read-only t))
-      (fundamental-mode)
+      (special-mode)
       (erase-buffer)
       (delete-all-overlays)
       (insert (propertize "Denote Dired" 'face 'bold))
