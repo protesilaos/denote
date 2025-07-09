@@ -2199,6 +2199,44 @@ of file names with varying patterns. Consistency makes things
 predictable and thus easier to find. So pick one order and never touch
 it again. When in doubt, leave the default file-naming scheme as-is.
 
+*** Retroactively reorder the components of Denote file names
+:PROPERTIES:
+:CUSTOM_ID: h:c10d2b5f-edb7-4bdf-bc0d-a7c7c91064bf
+:END:
+
+While experimenting with the ~denote-file-name-components-order~ to
+change the way Denote formats file names, you may end up with files
+that look inconsistent. They still work the same way as before, but
+you prefer to enforce the same order across your Denote files. The
+following custom command does just that. It technically "renames" the
+files it is applied to, though only insofar as reordering their Denote
+file name components, but not changing the contents of those
+components.
+
+#+begin_src emacs-lisp
+(defun my-denote-rename-all-to-reorder-components ()
+  "Call `denote-dired-rename-files' without any prompts.
+In other words, preserve the value of each Denote file name component.
+
+Use this command if you want to modify the user option
+`denote-file-name-components-order' and then want your files to
+retroactively follow that order."
+  (interactive)
+  (let ((denote-prompts nil))
+    (call-interactively 'denote-dired-rename-files)))
+#+end_src
+
+Simply go to a Dired buffer, mark the files you wish to operate on,
+and call the command. You may also use the ~denote-dired~ command to
+produce a filtered+sorted flat listing of your Denote files, mark
+them, and then invoke ~my-denote-rename-all-to-reorder-components~
+([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]]).
+
+Video demonstration: <https://protesilaos.com/codelog/2025-07-09-emacs-denote-reorder-components/>.
+
+DEVELOPMENT NOTE: If you have a more specific use-case, then we can
+discuss it and expand the documentation we provide herein.
+
 ** Sluggification of file name components
 :PROPERTIES:
 :CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
