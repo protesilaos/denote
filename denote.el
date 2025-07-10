@@ -1845,9 +1845,11 @@ If REVERSE is nil, use the value of the user option
   (let ((inhibit-read-only t))
     (erase-buffer)
     (delete-all-overlays)
-    (insert (propertize "Denote Dired" 'face 'bold))
-    (insert "\n\n")
-    (insert (propertize "No more matching files" 'face 'warning))))
+    (insert (propertize "Denote Dired" 'face 'bold)
+            "\n"
+            (make-separator-line)
+            "\n"
+            (propertize "No more matching files" 'face 'warning))))
 
 (defun denote-sort-dired--prepare-buffer (directory files-fn dired-name buffer-name)
   "Prepare buffer for `denote-sort-dired'.
