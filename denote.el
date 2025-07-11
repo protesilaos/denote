@@ -4280,8 +4280,8 @@ In interactive use, if there is no entry for a file name
 component in `denote-prompts', keep it as-is.
 
 When called from Lisp, the special symbol `keep-current' can be
-used for the TITLE, KEYWORDS, SIGNATURE and DATE parameters to
-keep them as-is.
+used for the TITLE, KEYWORDS, SIGNATURE, DATE, and IDENTIFIER
+parameters to keep them as-is.
 
 [ NOTE: Please check with your minibuffer user interface how to
   provide an empty input.  The Emacs default setup accepts the
