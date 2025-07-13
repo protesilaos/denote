@@ -6011,9 +6011,7 @@ use the ID."
 (defun denote-backlinks ()
   "Produce a buffer with backlinks to the current note.
 
-Show the names of files linking to the current file.  Include the
-context of each link if the user option `denote-backlinks-show-context'
-is non-nil.
+Show the names of files linking to the current file.
 
 Place the buffer below the current window or wherever the user option
 `denote-backlinks-display-buffer-action' specifies."
