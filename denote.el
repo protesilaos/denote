@@ -5708,6 +5708,16 @@ alist, such as `denote-backlinks-display-buffer-action'."
                       (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))))
     (display-buffer buffer-name display-buffer-action)))
 
+(defun denote-make-backlinks-buffer (identifier buffer-name display-buffer-action)
+  "Create links' buffer called BUFFER-NAME for IDENTIFIER.
+
+Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
+concomitant alist, such as `denote-backlinks-display-buffer-action'."
+  (let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
+    (unless xref-alist
+      (error "No matches for identifier `%s'" identifier))
+    (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))
+
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
 ;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
 ;; code, even if we slightly modify the behaviour.
