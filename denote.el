@@ -2181,6 +2181,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^#\\+date\\s-*:"
      :date-value-function denote-date-org-timestamp
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "[denote:%VALUE%]"
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp)
     (markdown-yaml
@@ -2201,6 +2202,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*:"
      :date-value-function denote-date-rfc3339
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "(denote:%VALUE%)"
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (markdown-toml
@@ -2221,6 +2223,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*="
      :date-value-function denote-date-rfc3339
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "(denote:%VALUE%)"
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (text
@@ -2241,6 +2244,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*:"
      :date-value-function denote-date-iso-8601
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "[denote:%VALUE%]"
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp))
   "Alist of variable `denote-file-type' and their format properties.
@@ -2288,6 +2292,9 @@ PROPERTY-LIST is a plist that consists of the following elements:
 - `:keywords-value-reverse-function' is the function used to
   retrieve the keywords' value from the front matter.  It
   performs the reverse of the `:keywords-value-function'.
+
+- `:link-retrieval-format' is a string, or variable holding a string,
+  that specifies the retrieval format of a link.
 
 - `:link' is a string, or variable holding a string, that
   specifies the format of a link.  See the variables
@@ -2409,6 +2416,15 @@ this list for new note creation.  The default is `org'.")
   (plist-get
    (alist-get file-type denote-file-types)
    :date-value-reverse-function))
+
+(defun denote--link-retrieval-format (file-type)
+  "Return link retrieval format based on FILE-TYPE."
+  (let ((prop (plist-get
+               (alist-get file-type denote-file-types)
+               :link-retrieval-format)))
+    (if (symbolp prop)
+        (symbol-value prop)
+      prop)))
 
 (defun denote--link-format (file-type)
   "Return link format extension based on FILE-TYPE."
