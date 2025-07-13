@@ -6020,10 +6020,10 @@ Place the buffer below the current window or wherever the user option
   (interactive)
   (if-let* ((file buffer-file-name))
       (if-let* ((identifier (denote-retrieve-filename-identifier file)))
-          (funcall denote-query-links-buffer-function
-                   identifier nil
-                   (denote--backlinks-get-buffer-name file identifier)
-                   denote-backlinks-display-buffer-action)
+          (denote-make-backlinks-buffer
+           identifier
+           (denote--backlinks-get-buffer-name file identifier)
+           denote-backlinks-display-buffer-action)
         (user-error "The current file does not have a Denote identifier"))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
