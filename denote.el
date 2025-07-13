@@ -3350,10 +3350,6 @@ instead of that of the parameter."
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
-    ;; TODO: Remove this when ready to allow custom identifiers.
-    (unless (and (string-match-p denote-date-identifier-regexp identifier)
-                 (date-to-time identifier))
-      (user-error "The identifier must have the format of `denote-date-identifier-format'"))
     (list title keywords file-type directory date identifier template signature)))
 
 ;;;###autoload
@@ -4235,10 +4231,6 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                            (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    ;; TODO: Remove this when ready to allow custom identifiers.
-    (unless (and (string-match-p denote-date-identifier-regexp identifier)
-                 (date-to-time identifier))
-      (user-error "The identifier must have the format of `denote-date-identifier-format'"))
     (when (and (file-regular-p new-name)
                (not (string= (expand-file-name file) (expand-file-name new-name))))
       (user-error "The destination file `%s' already exists" new-name))
