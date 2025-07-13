@@ -2743,6 +2743,66 @@ If FILES is not given, use all text files as returned by
         (mapcar (lambda (x) (assoc x data)) files-sorted)
       data)))
 
+(defun denote--get-files-by-file-type (files)
+  "Return hash table of FILES by file type."
+  (let ((file-type-hash-table (make-hash-table))
+        (file-types (denote--file-type-keys)))
+    (dolist (file-type file-types)
+      (puthash file-type '() file-type-hash-table))
+    (dolist (file files)
+      (when-let* ((file-type (denote-file-type file)))
+        (push file (gethash file-type file-type-hash-table))))
+    file-type-hash-table))
+
+(defun denote--get-all-backlinks (files)
+  "Return hash table of all backlinks in FILES by identifier."
+  (let ((links-hash-table (make-hash-table :test 'equal))
+        (file-types (denote--file-type-keys))
+        (files-by-file-type (denote--get-files-by-file-type files)))
+    (dolist (file-type file-types)
+      (let* ((file-type-files (gethash file-type files-by-file-type))
+             (regexp (denote--link-in-context-regexp file-type)))
+        (dolist (file file-type-files)
+          (let* ((file-identifiers
+                  (with-temp-buffer
+                    (insert-file-contents file)
+                    (denote-link--collect-identifiers regexp))))
+            (dolist (file-identifier file-identifiers)
+              (if-let* ((links (gethash file-identifier links-hash-table)))
+                  (puthash file-identifier (push file links) links-hash-table)
+                (puthash file-identifier (list file) links-hash-table)))))))
+    links-hash-table))
+
+(defun denote-retrieve-xref-alist-for-backlinks (identifier)
+  "Return xref alist of absolute file paths of matches for IDENTIFIER."
+  (let* ((files (denote-directory-files))
+         (file-types (denote--file-type-keys))
+         (xref-file-name-display 'abs)
+         (xref-matches '()))
+    (when-let* ((backlinks (gethash identifier (denote--get-all-backlinks files))))
+      (let* ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
+        (dolist (file-type file-types)
+          (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
+                      (format-parts (string-split
+                                     (denote--link-retrieval-format file-type)
+                                     "%VALUE%")) ; Should give two parts
+                      (query-simple (concat
+                                     (regexp-quote (nth 0 format-parts))
+                                     (regexp-quote identifier)
+                                     (regexp-quote (nth 1 format-parts))))
+                      (query-org-link (concat
+                                       (regexp-quote (nth 0 format-parts))
+                                       (regexp-quote identifier)
+                                       "::")))
+            (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
+            (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
+      (let ((data (xref--analyze xref-matches)))
+        (if-let* ((sort denote-query-sorting)
+                  (files-matched (mapcar #'car data))
+                  (files-sorted (denote-sort-files files-matched sort)))
+            (mapcar (lambda (x) (assoc x data)) files-sorted)
+          data)))))
+
 ;;;; New note
 
 ;;;;; Common helpers for new notes
