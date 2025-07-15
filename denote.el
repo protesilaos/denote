@@ -2181,6 +2181,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^#\\+date\\s-*:"
      :date-value-function denote-date-org-timestamp
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "[denote:%VALUE%]"
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp)
     (markdown-yaml
@@ -2201,6 +2202,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*:"
      :date-value-function denote-date-rfc3339
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "(denote:%VALUE%)"
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (markdown-toml
@@ -2221,6 +2223,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*="
      :date-value-function denote-date-rfc3339
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "(denote:%VALUE%)"
      :link denote-md-link-format
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (text
@@ -2241,6 +2244,7 @@ Consult the `denote-file-types' for how this is used."
      :date-key-regexp "^date\\s-*:"
      :date-value-function denote-date-iso-8601
      :date-value-reverse-function denote-extract-date-from-front-matter
+     :link-retrieval-format "[denote:%VALUE%]"
      :link denote-org-link-format
      :link-in-context-regexp denote-org-link-in-context-regexp))
   "Alist of variable `denote-file-type' and their format properties.
@@ -2288,6 +2292,9 @@ PROPERTY-LIST is a plist that consists of the following elements:
 - `:keywords-value-reverse-function' is the function used to
   retrieve the keywords' value from the front matter.  It
   performs the reverse of the `:keywords-value-function'.
+
+- `:link-retrieval-format' is a string, or variable holding a string,
+  that specifies the retrieval format of a link.
 
 - `:link' is a string, or variable holding a string, that
   specifies the format of a link.  See the variables
@@ -2409,6 +2416,15 @@ this list for new note creation.  The default is `org'.")
   (plist-get
    (alist-get file-type denote-file-types)
    :date-value-reverse-function))
+
+(defun denote--link-retrieval-format (file-type)
+  "Return link retrieval format based on FILE-TYPE."
+  (let ((prop (plist-get
+               (alist-get file-type denote-file-types)
+               :link-retrieval-format)))
+    (if (symbolp prop)
+        (symbol-value prop)
+      prop)))
 
 (defun denote--link-format (file-type)
   "Return link format extension based on FILE-TYPE."
@@ -2726,6 +2742,66 @@ If FILES is not given, use all text files as returned by
               (files-sorted (denote-sort-files files-matched sort)))
         (mapcar (lambda (x) (assoc x data)) files-sorted)
       data)))
+
+(defun denote--get-files-by-file-type (files)
+  "Return hash table of FILES by file type."
+  (let ((file-type-hash-table (make-hash-table))
+        (file-types (denote--file-type-keys)))
+    (dolist (file-type file-types)
+      (puthash file-type '() file-type-hash-table))
+    (dolist (file files)
+      (when-let* ((file-type (denote-file-type file)))
+        (push file (gethash file-type file-type-hash-table))))
+    file-type-hash-table))
+
+(defun denote--get-all-backlinks (files)
+  "Return hash table of all backlinks in FILES by identifier."
+  (let ((links-hash-table (make-hash-table :test 'equal))
+        (file-types (denote--file-type-keys))
+        (files-by-file-type (denote--get-files-by-file-type files)))
+    (dolist (file-type file-types)
+      (let* ((file-type-files (gethash file-type files-by-file-type))
+             (regexp (denote--link-in-context-regexp file-type)))
+        (dolist (file file-type-files)
+          (let* ((file-identifiers
+                  (with-temp-buffer
+                    (insert-file-contents file)
+                    (denote-link--collect-identifiers regexp))))
+            (dolist (file-identifier file-identifiers)
+              (if-let* ((links (gethash file-identifier links-hash-table)))
+                  (puthash file-identifier (push file links) links-hash-table)
+                (puthash file-identifier (list file) links-hash-table)))))))
+    links-hash-table))
+
+(defun denote-retrieve-xref-alist-for-backlinks (identifier)
+  "Return xref alist of absolute file paths of matches for IDENTIFIER."
+  (let* ((files (denote-directory-files))
+         (file-types (denote--file-type-keys))
+         (xref-file-name-display 'abs)
+         (xref-matches '()))
+    (when-let* ((backlinks (gethash identifier (denote--get-all-backlinks files))))
+      (let* ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
+        (dolist (file-type file-types)
+          (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
+                      (format-parts (string-split
+                                     (denote--link-retrieval-format file-type)
+                                     "%VALUE%")) ; Should give two parts
+                      (query-simple (concat
+                                     (regexp-quote (nth 0 format-parts))
+                                     (regexp-quote identifier)
+                                     (regexp-quote (nth 1 format-parts))))
+                      (query-org-link (concat
+                                       (regexp-quote (nth 0 format-parts))
+                                       (regexp-quote identifier)
+                                       "::")))
+            (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
+            (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
+      (let ((data (xref--analyze xref-matches)))
+        (if-let* ((sort denote-query-sorting)
+                  (files-matched (mapcar #'car data))
+                  (files-sorted (denote-sort-files files-matched sort)))
+            (mapcar (lambda (x) (assoc x data)) files-sorted)
+          data)))))
 
 ;;;; New note
 
@@ -3274,10 +3350,6 @@ instead of that of the parameter."
                        template
                      (or (alist-get template denote-templates) "")))
          (signature (or signature "")))
-    ;; TODO: Remove this when ready to allow custom identifiers.
-    (unless (and (string-match-p denote-date-identifier-regexp identifier)
-                 (date-to-time identifier))
-      (user-error "The identifier must have the format of `denote-date-identifier-format'"))
     (list title keywords file-type directory date identifier template signature)))
 
 ;;;###autoload
@@ -4159,10 +4231,6 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                            (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
-    ;; TODO: Remove this when ready to allow custom identifiers.
-    (unless (and (string-match-p denote-date-identifier-regexp identifier)
-                 (date-to-time identifier))
-      (user-error "The identifier must have the format of `denote-date-identifier-format'"))
     (when (and (file-regular-p new-name)
                (not (string= (expand-file-name file) (expand-file-name new-name))))
       (user-error "The destination file `%s' already exists" new-name))
@@ -5632,6 +5700,16 @@ alist, such as `denote-backlinks-display-buffer-action'."
                       (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))))
     (display-buffer buffer-name display-buffer-action)))
 
+(defun denote-make-backlinks-buffer (identifier buffer-name display-buffer-action)
+  "Create links' buffer called BUFFER-NAME for IDENTIFIER.
+
+Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
+concomitant alist, such as `denote-backlinks-display-buffer-action'."
+  (let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
+    (unless xref-alist
+      (error "No matches for identifier `%s'" identifier))
+    (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))
+
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
 ;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
 ;; code, even if we slightly modify the behaviour.
@@ -5925,19 +6003,17 @@ use the ID."
 (defun denote-backlinks ()
   "Produce a buffer with backlinks to the current note.
 
-Show the names of files linking to the current file.  Include the
-context of each link if the user option `denote-backlinks-show-context'
-is non-nil.
+Show the names of files linking to the current file.
 
 Place the buffer below the current window or wherever the user option
 `denote-backlinks-display-buffer-action' specifies."
   (interactive)
   (if-let* ((file buffer-file-name))
       (if-let* ((identifier (denote-retrieve-filename-identifier file)))
-          (funcall denote-query-links-buffer-function
-                   identifier nil
-                   (denote--backlinks-get-buffer-name file identifier)
-                   denote-backlinks-display-buffer-action)
+          (denote-make-backlinks-buffer
+           identifier
+           (denote--backlinks-get-buffer-name file identifier)
+           denote-backlinks-display-buffer-action)
         (user-error "The current file does not have a Denote identifier"))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
@@ -5955,7 +6031,7 @@ Also see `denote-get-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
               (id (or (denote-retrieve-filename-identifier current-file)
                       (user-error "The file does not have a Denote identifier"))))
-    (delete current-file (denote-retrieve-files-xref-query id))))
+    (mapcar #'car (denote-retrieve-xref-alist-for-backlinks id))))
 
 ;; TODO 2024-09-04: Instead of using `denote-get-backlinks' we
 ;; should have a function that does not try to find all backlinks but
