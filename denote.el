@@ -5703,8 +5703,8 @@ alist, such as `denote-backlinks-display-buffer-action'."
 (defun denote-make-backlinks-buffer (identifier buffer-name display-buffer-action)
   "Create links' buffer called BUFFER-NAME for IDENTIFIER.
 
-Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
-concomitant alist, such as `denote-backlinks-display-buffer-action'."
+DISPLAY-BUFFER-ACTION is a `display-buffer' action and concomitant
+alist, such as `denote-backlinks-display-buffer-action'."
   (let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
     (unless xref-alist
       (error "No matches for identifier `%s'" identifier))
