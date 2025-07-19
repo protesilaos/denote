@@ -418,6 +418,12 @@ in the front matter template."
           (const :tag "Date" date)
           (const :tag "Identifier" identifier)))
 
+(defcustom denote-identifier-delimiter-always-present-in-file-name nil
+  "Specify if file names always contain the identifier delimiter."
+  :group 'denote
+  :package-version '(denote . "4.1.0")
+  :type 'boolean)
+
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
 
@@ -2858,7 +2864,8 @@ which case it is not added to the base file name."
       (error "There should be at least one file name component"))
     (setq file-name (concat file-name extension))
     ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
-    (when (and (string-prefix-p "@@" file-name)
+    (when (and (not denote-identifier-delimiter-always-present-in-file-name)
+               (string-prefix-p "@@" file-name)
                (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id))
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
