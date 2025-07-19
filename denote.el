@@ -793,7 +793,8 @@ even an empty string to not have any such prefix."
   :group 'denote)
 
 (defcustom denote-file-name-slug-functions
-  '((title . denote-sluggify-title)
+  '((identifier . identity)
+    (title . denote-sluggify-title)
     (signature . denote-sluggify-signature)
     (keyword . denote-sluggify-keyword))
   "Specify the method Denote uses to format the components of the file name.
@@ -801,9 +802,9 @@ even an empty string to not have any such prefix."
 The value is an alist where each element is a cons cell of the
 form (COMPONENT . METHOD).
 
-- The COMPONENT is an unquoted symbol among `title', `signature',
-  `keyword' (notice the absence of `s', see below), which
-  refers to the corresponding component of the file name.
+- The COMPONENT is an unquoted symbol among `identifier', `title',
+  `signature', `keyword' (notice the absence of `s', see below),
+  which refers to the corresponding component of the file name.
 
 - The METHOD is the function to be used to format the given
   component.  This function should take a string as its parameter
@@ -816,8 +817,8 @@ form (COMPONENT . METHOD).
 Note that the `keyword' function is also applied to the keywords
 of the front matter.
 
-By default, if a function is not specified for a component, we
-use `denote-sluggify-title', `denote-sluggify-keyword' and
+By default, if a function is not specified for a component, we use
+`identity', `denote-sluggify-title', `denote-sluggify-keyword' and
 `denote-sluggify-signature'.
 
 Remember that deviating from the default file-naming scheme of Denote
@@ -1124,11 +1125,11 @@ a single one in str, if necessary according to COMPONENT."
   "Make STR an appropriate slug for file name COMPONENT.
 
 Apply the function specified in `denote-file-name-slug-function' to
-COMPONENT which is one of `title', `signature', `keyword'.  If the
-resulting string still contains consecutive -, _, =, or @, they are
-replaced by a single occurence of the character, if necessary according
-to COMPONENT.  If COMPONENT is `keyword', remove underscores from STR as
-they are used as the keywords separator in file names.
+COMPONENT which is one of `identifier', `title', `signature', `keyword'.
+If the resulting string still contains consecutive -, _, =, or @, they
+are replaced by a single occurence of the character, if necessary
+according to COMPONENT.  If COMPONENT is `keyword', remove underscores
+from STR as they are used as the keywords separator in file names.
 
 Also enforce the rules of the file-naming scheme."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
@@ -1139,7 +1140,8 @@ Also enforce the rules of the file-naming scheme."
                            "_" ""
                            (funcall (or slug-function #'denote-sluggify-keyword) str)))
                          ((eq component 'identifier)
-                          (denote--valid-identifier str))
+                          (denote--valid-identifier
+                           (funcall (or slug-function #'identity) str)))
                          ((eq component 'signature)
                           (funcall (or slug-function #'denote-sluggify-signature) str)))))
     (denote--trim-right-token-characters
