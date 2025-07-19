@@ -3072,13 +3072,21 @@ Else, use the first unused number starting from 1.
 
 This is a reference function for `denote-get-identifier-function'."
   (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
-    (cond ((and initial-identifier
+    (cond (;; Always use the supplied initial-identifier if possible,
+           ;; regardless of format.
+           (and initial-identifier
                 (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
-          ((and initial-identifier
+          (;; If the supplied initial-identifier is already used, but
+           ;; it has the right format, make is unique.
+           (and initial-identifier
                 (string-match-p "[1-9][0-9]*" initial-identifier))
            (denote--find-first-unused-id-as-number initial-identifier))
-          (t
+          (;; Else, the supplied initial-identifier is nil or it is
+           ;; already used or it does not match the supplied
+           ;; format. Ignore it and generate a valid identifier with
+           ;; the right format.
+           t
            (denote--find-first-unused-id-as-number "1")))))
 
 (defvar denote-command-prompt-history nil
