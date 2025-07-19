@@ -2859,7 +2859,7 @@ which case it is not added to the base file name."
     (setq file-name (concat file-name extension))
     ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
     (when (and (string-prefix-p "@@" file-name)
-               (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id)) ; This is always true for now.
+               (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id))
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
