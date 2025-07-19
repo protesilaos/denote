@@ -3052,15 +3052,9 @@ This is a reference function for `denote-get-identifier-function'."
 (defun denote--find-first-unused-id-as-number (id)
   "Return the first unused id starting at ID.
 If ID is already used, increment it until an available id is found."
-  (let ((current-id id)
-        (iteration 0))
-    (while (gethash current-id denote-used-identifiers)
-      ;; Prevent infinite loop
-      (setq iteration (1+ iteration))
-      (when (>= iteration 10000)
-        (user-error "A unique identifier could not be found"))
-      (setq current-id (number-to-string (1+ (string-to-number current-id)))))
-    current-id))
+  (while (gethash id denote-used-identifiers)
+    (setq id (number-to-string (1+ (string-to-number id)))))
+  id)
 
 (defun denote-generate-identifier-as-number (initial-identifier _date)
   "Generate an increasing number identifier.
