@@ -1025,19 +1025,13 @@ returns the first directory."
 
 (make-obsolete 'denote-directory 'denote-directories "4.1.0")
 
-;; TODO: Review and fix the features listed in the docstring below before
-;; making this a user option.
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
 
 This applies when a note is created or renamed.  The default is to
 always create an identifier automatically.
 
-Valid values are: t, nil, `on-creation', and `on-rename'.
-
-IMPORTANT: Some features may not work with notes that do not have an
-identifier.  For example, backlinks do not contain files without an
-identifier.")
+Valid values are: t, nil, `on-creation', and `on-rename'.")
 
 (defvar denote-accept-nil-date nil
   "Make creation and renaming commands use `current-time' when date is nil.")
