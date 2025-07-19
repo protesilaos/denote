@@ -1220,6 +1220,9 @@ For our purposes, a note must satisfy `file-regular-p' and
 `denote-filename-is-note-p'."
   (and (file-regular-p file) (denote-filename-is-note-p file)))
 
+(make-obsolete 'denote-filename-is-note-p nil "4.1.0")
+(make-obsolete 'denote-file-is-note-p nil "4.1.0")
+
 (defun denote-file-has-denoted-filename-p (file)
   "Return non-nil if FILE respects the file-naming scheme of Denote.
 
@@ -3006,7 +3009,10 @@ If DATE is nil or an empty string, return nil."
          (lambda (buffer)
            (when-let* (((buffer-live-p buffer))
                        (file (buffer-file-name buffer))
-                       ((denote-filename-is-note-p file)))
+                       ((denote-file-is-in-denote-directory-p file))
+                       ((denote-file-has-supported-extension-p file))
+                       ((denote-file-has-denoted-filename-p file))
+                       ((denote-file-has-identifier-p file)))
              file))
          (buffer-list))))
 
@@ -6323,7 +6329,9 @@ To be used as a `thing-at' provider."
   "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
   (when (and buffer-file-name
              (not (derived-mode-p 'org-mode))
-             (denote-file-is-note-p buffer-file-name))
+             (denote-file-is-in-denote-directory-p buffer-file-name)
+             (denote-file-has-supported-extension-p buffer-file-name)
+             (denote-file-has-denoted-filename-p buffer-file-name))
     (denote-fontify-links-mode)))
 
 ;;;###autoload
@@ -6743,7 +6751,9 @@ Optional INTERACTIVE? is used by `org-store-link'.
 Also see the user option `denote-org-store-link-to-heading'."
   (when interactive?
     (when-let* ((file (buffer-file-name))
-                ((denote-file-is-note-p file))
+                ((file-regular-p file))
+                ((denote-file-is-in-denote-directory-p file))
+                ((denote-file-has-denoted-filename-p file))
                 (file-id (denote-retrieve-filename-identifier file))
                 (description (denote-get-link-description file)))
       (let ((heading-links (and denote-org-store-link-to-heading
