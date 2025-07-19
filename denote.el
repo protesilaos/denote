@@ -1324,14 +1324,14 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
 
 (defun denote-directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
-Consider files that satisfy `denote-file-has-identifier-p' and
+Consider files that satisfy `denote-file-has-denoted-filename-p' and
 are not backups."
   (mapcar
    #'expand-file-name
    (seq-filter
     (lambda (file)
       (and (file-regular-p file)
-           (denote-file-has-identifier-p file)
+           (denote-file-has-denoted-filename-p file)
            (not (denote--file-excluded-p file))
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
