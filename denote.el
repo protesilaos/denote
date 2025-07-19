@@ -1341,7 +1341,7 @@ are not backups."
 Each file is a string representing an absolute file system path.  This
 is intended for use in the function `denote-directory-files'.")
 
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp)
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1361,7 +1361,10 @@ text files that satisfy `denote-file-has-supported-extension-p'.
 
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
-OMIT-CURRENT have been applied."
+OMIT-CURRENT have been applied.
+
+With optional HAS-IDENTIFIER as a non-nil value, limit the results to
+files that have an identifier."
   (let ((files (funcall denote-directory-get-files-function)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
@@ -1372,6 +1375,8 @@ OMIT-CURRENT have been applied."
                    files)))
     (when text-only
       (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
+    (when has-identifier
+      (setq files (seq-filter #'denote-file-has-identifier-p files)))
     (when exclude-regexp
       (setq files (seq-remove
                    (lambda (file)
@@ -1434,7 +1439,7 @@ something like .org even if the actual file extension is
          (seq-filter
           (lambda (file)
             (string= id (denote-retrieve-filename-identifier file)))
-          (denote-directory-files))))
+          (denote-directory-files nil nil nil nil :has-identifier))))
     (if (length< files 2)
         (car files)
       (seq-find
@@ -1469,7 +1474,7 @@ the title prompt of `denote-open-or-create' and related commands.")
 Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
-(defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match)
+(defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match has-identifier)
   "Prompt for file in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1482,13 +1487,16 @@ select a file.
 
 With optional NO-REQUIRE-MATCH, accept the given input as-is.
 
+With optional HAS-IDENTIFIER, only show candidates that have an
+identifier.
+
 Return the absolute path to the matching file."
   (let* (;; Some external program may use `default-directory' with the
          ;; relative file paths of the completion candidates.
          (default-directory (car (denote-directories)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                 :omit-current))
+                 :omit-current nil nil has-identifier))
          (relative-files (mapcar
                           #'denote-get-file-name-relative-to-denote-directory
                           files))
@@ -3014,7 +3022,7 @@ It checks files in variable `denote-directory' and active buffer files."
   (let* ((ids (make-hash-table :test 'equal))
          (file-names (mapcar
                       (lambda (file) (file-name-nondirectory file))
-                      (denote-directory-files)))
+                      (denote-directory-files nil nil nil nil :has-identifier)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
       (when-let* ((id (denote-retrieve-filename-identifier name)))
@@ -5322,7 +5330,7 @@ path.  FILE-TYPE is a symbol as described in the user option
 `denote-file-type'.  DESCRIPTION is a string.  Whether the caller treats
 the active region specially, is up to it."
   (interactive
-   (let* ((file (denote-file-prompt nil "Link to FILE"))
+   (let* ((file (denote-file-prompt nil "Link to FILE" nil :has-identifier))
           (file-type (denote-filetype-heuristics buffer-file-name))
           (description (when (file-exists-p file)
                          (denote-get-link-description file))))
@@ -5395,7 +5403,7 @@ Also see `denote-get-backlinks'."
               ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
-              (files (or files (denote-directory-files)))
+              (files (or files (denote-directory-files nil nil nil nil :has-identifier)))
               (file-identifiers
                (with-temp-buffer
                  (insert-file-contents current-file)
@@ -5486,7 +5494,7 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
-   (let* ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match)))
+   (let* ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match :has-identifier)))
      (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
@@ -6406,7 +6414,7 @@ inserts links with just the identifier."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
-    (if-let* ((files (denote-directory-files regexp :omit-current)))
+    (if-let* ((files (denote-directory-files regexp :omit-current nil nil :has-identifier)))
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
@@ -6700,7 +6708,7 @@ Uses the function `denote-directory' to establish the path to the file."
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
-  (if-let* ((file (denote-file-prompt)))
+  (if-let* ((file (denote-file-prompt nil nil nil :has-identifier)))
       (concat "denote:" (denote-retrieve-filename-identifier file))
     (user-error "No files in `denote-directory'")))
 
