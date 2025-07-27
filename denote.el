@@ -418,6 +418,12 @@ in the front matter template."
           (const :tag "Date" date)
           (const :tag "Identifier" identifier)))
 
+(defcustom denote-identifier-delimiter-always-present-in-file-name nil
+  "Specify if file names always contain the identifier delimiter."
+  :group 'denote
+  :package-version '(denote . "4.1.0")
+  :type 'boolean)
+
 (defcustom denote-sort-keywords t
   "Whether to sort keywords in new files.
 
@@ -787,7 +793,8 @@ even an empty string to not have any such prefix."
   :group 'denote)
 
 (defcustom denote-file-name-slug-functions
-  '((title . denote-sluggify-title)
+  '((identifier . identity)
+    (title . denote-sluggify-title)
     (signature . denote-sluggify-signature)
     (keyword . denote-sluggify-keyword))
   "Specify the method Denote uses to format the components of the file name.
@@ -795,9 +802,9 @@ even an empty string to not have any such prefix."
 The value is an alist where each element is a cons cell of the
 form (COMPONENT . METHOD).
 
-- The COMPONENT is an unquoted symbol among `title', `signature',
-  `keyword' (notice the absence of `s', see below), which
-  refers to the corresponding component of the file name.
+- The COMPONENT is an unquoted symbol among `identifier', `title',
+  `signature', `keyword' (notice the absence of `s', see below),
+  which refers to the corresponding component of the file name.
 
 - The METHOD is the function to be used to format the given
   component.  This function should take a string as its parameter
@@ -810,8 +817,8 @@ form (COMPONENT . METHOD).
 Note that the `keyword' function is also applied to the keywords
 of the front matter.
 
-By default, if a function is not specified for a component, we
-use `denote-sluggify-title', `denote-sluggify-keyword' and
+By default, if a function is not specified for a component, we use
+`identity', `denote-sluggify-title', `denote-sluggify-keyword' and
 `denote-sluggify-signature'.
 
 Remember that deviating from the default file-naming scheme of Denote
@@ -1018,19 +1025,13 @@ returns the first directory."
 
 (make-obsolete 'denote-directory 'denote-directories "4.1.0")
 
-;; TODO: Review and fix the features listed in the docstring below before
-;; making this a user option.
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
 
 This applies when a note is created or renamed.  The default is to
 always create an identifier automatically.
 
-Valid values are: t, nil, `on-creation', and `on-rename'.
-
-IMPORTANT: Some features may not work with notes that do not have an
-identifier.  For example, backlinks do not contain files without an
-identifier.")
+Valid values are: t, nil, `on-creation', and `on-rename'.")
 
 (defvar denote-accept-nil-date nil
   "Make creation and renaming commands use `current-time' when date is nil.")
@@ -1118,11 +1119,11 @@ a single one in str, if necessary according to COMPONENT."
   "Make STR an appropriate slug for file name COMPONENT.
 
 Apply the function specified in `denote-file-name-slug-function' to
-COMPONENT which is one of `title', `signature', `keyword'.  If the
-resulting string still contains consecutive -, _, =, or @, they are
-replaced by a single occurence of the character, if necessary according
-to COMPONENT.  If COMPONENT is `keyword', remove underscores from STR as
-they are used as the keywords separator in file names.
+COMPONENT which is one of `identifier', `title', `signature', `keyword'.
+If the resulting string still contains consecutive -, _, =, or @, they
+are replaced by a single occurence of the character, if necessary
+according to COMPONENT.  If COMPONENT is `keyword', remove underscores
+from STR as they are used as the keywords separator in file names.
 
 Also enforce the rules of the file-naming scheme."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
@@ -1133,7 +1134,8 @@ Also enforce the rules of the file-naming scheme."
                            "_" ""
                            (funcall (or slug-function #'denote-sluggify-keyword) str)))
                          ((eq component 'identifier)
-                          (denote--valid-identifier str))
+                          (denote--valid-identifier
+                           (funcall (or slug-function #'identity) str)))
                          ((eq component 'signature)
                           (funcall (or slug-function #'denote-sluggify-signature) str)))))
     (denote--trim-right-token-characters
@@ -1217,6 +1219,9 @@ use one of the extensions implied by the variable `denote-file-type'."
 For our purposes, a note must satisfy `file-regular-p' and
 `denote-filename-is-note-p'."
   (and (file-regular-p file) (denote-filename-is-note-p file)))
+
+(make-obsolete 'denote-filename-is-note-p nil "4.1.0")
+(make-obsolete 'denote-file-is-note-p nil "4.1.0")
 
 (defun denote-file-has-denoted-filename-p (file)
   "Return non-nil if FILE respects the file-naming scheme of Denote.
@@ -1316,14 +1321,14 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
 
 (defun denote-directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
-Consider files that satisfy `denote-file-has-identifier-p' and
+Consider files that satisfy `denote-file-has-denoted-filename-p' and
 are not backups."
   (mapcar
    #'expand-file-name
    (seq-filter
     (lambda (file)
       (and (file-regular-p file)
-           (denote-file-has-identifier-p file)
+           (denote-file-has-denoted-filename-p file)
            (not (denote--file-excluded-p file))
            (not (backup-file-name-p file))))
     (denote--directory-all-files-recursively))))
@@ -1333,7 +1338,7 @@ are not backups."
 Each file is a string representing an absolute file system path.  This
 is intended for use in the function `denote-directory-files'.")
 
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp)
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1353,7 +1358,10 @@ text files that satisfy `denote-file-has-supported-extension-p'.
 
 With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
-OMIT-CURRENT have been applied."
+OMIT-CURRENT have been applied.
+
+With optional HAS-IDENTIFIER as a non-nil value, limit the results to
+files that have an identifier."
   (let ((files (funcall denote-directory-get-files-function)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
@@ -1364,6 +1372,8 @@ OMIT-CURRENT have been applied."
                    files)))
     (when text-only
       (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
+    (when has-identifier
+      (setq files (seq-filter #'denote-file-has-identifier-p files)))
     (when exclude-regexp
       (setq files (seq-remove
                    (lambda (file)
@@ -1426,7 +1436,7 @@ something like .org even if the actual file extension is
          (seq-filter
           (lambda (file)
             (string= id (denote-retrieve-filename-identifier file)))
-          (denote-directory-files))))
+          (denote-directory-files nil nil nil nil :has-identifier))))
     (if (length< files 2)
         (car files)
       (seq-find
@@ -1461,7 +1471,7 @@ the title prompt of `denote-open-or-create' and related commands.")
 Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
-(defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match)
+(defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match has-identifier)
   "Prompt for file in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1474,13 +1484,16 @@ select a file.
 
 With optional NO-REQUIRE-MATCH, accept the given input as-is.
 
+With optional HAS-IDENTIFIER, only show candidates that have an
+identifier.
+
 Return the absolute path to the matching file."
   (let* (;; Some external program may use `default-directory' with the
          ;; relative file paths of the completion candidates.
          (default-directory (car (denote-directories)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                 :omit-current))
+                 :omit-current nil nil has-identifier))
          (relative-files (mapcar
                           #'denote-get-file-name-relative-to-denote-directory
                           files))
@@ -2858,8 +2871,9 @@ which case it is not added to the base file name."
       (error "There should be at least one file name component"))
     (setq file-name (concat file-name extension))
     ;; Do not prepend identifier with @@ if it is the first component and has the format 00000000T000000.
-    (when (and (string-prefix-p "@@" file-name)
-               (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id)) ; This is always true for now.
+    (when (and (not denote-identifier-delimiter-always-present-in-file-name)
+               (string-prefix-p "@@" file-name)
+               (string-match-p (concat "\\`" denote-date-identifier-regexp "\\'") id))
       (setq file-name (substring file-name 2)))
     (concat dir-path file-name)))
 
@@ -2995,7 +3009,10 @@ If DATE is nil or an empty string, return nil."
          (lambda (buffer)
            (when-let* (((buffer-live-p buffer))
                        (file (buffer-file-name buffer))
-                       ((denote-filename-is-note-p file)))
+                       ((denote-file-is-in-denote-directory-p file))
+                       ((denote-file-has-supported-extension-p file))
+                       ((denote-file-has-denoted-filename-p file))
+                       ((denote-file-has-identifier-p file)))
              file))
          (buffer-list))))
 
@@ -3005,7 +3022,7 @@ It checks files in variable `denote-directory' and active buffer files."
   (let* ((ids (make-hash-table :test 'equal))
          (file-names (mapcar
                       (lambda (file) (file-name-nondirectory file))
-                      (denote-directory-files)))
+                      (denote-directory-files nil nil nil nil :has-identifier)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
       (when-let* ((id (denote-retrieve-filename-identifier name)))
@@ -3052,15 +3069,9 @@ This is a reference function for `denote-get-identifier-function'."
 (defun denote--find-first-unused-id-as-number (id)
   "Return the first unused id starting at ID.
 If ID is already used, increment it until an available id is found."
-  (let ((current-id id)
-        (iteration 0))
-    (while (gethash current-id denote-used-identifiers)
-      ;; Prevent infinite loop
-      (setq iteration (1+ iteration))
-      (when (>= iteration 10000)
-        (user-error "A unique identifier could not be found"))
-      (setq current-id (number-to-string (1+ (string-to-number current-id)))))
-    current-id))
+  (while (gethash id denote-used-identifiers)
+    (setq id (number-to-string (1+ (string-to-number id)))))
+  id)
 
 (defun denote-generate-identifier-as-number (initial-identifier _date)
   "Generate an increasing number identifier.
@@ -3072,13 +3083,21 @@ Else, use the first unused number starting from 1.
 
 This is a reference function for `denote-get-identifier-function'."
   (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
-    (cond ((and initial-identifier
+    (cond (;; Always use the supplied initial-identifier if possible,
+           ;; regardless of format.
+           (and initial-identifier
                 (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
-          ((and initial-identifier
+          (;; If the supplied initial-identifier is already used, but
+           ;; it has the right format, make is unique.
+           (and initial-identifier
                 (string-match-p "[1-9][0-9]*" initial-identifier))
            (denote--find-first-unused-id-as-number initial-identifier))
-          (t
+          (;; Else, the supplied initial-identifier is nil or it is
+           ;; already used or it does not match the supplied
+           ;; format. Ignore it and generate a valid identifier with
+           ;; the right format.
+           t
            (denote--find-first-unused-id-as-number "1")))))
 
 (defvar denote-command-prompt-history nil
@@ -5311,7 +5330,7 @@ path.  FILE-TYPE is a symbol as described in the user option
 `denote-file-type'.  DESCRIPTION is a string.  Whether the caller treats
 the active region specially, is up to it."
   (interactive
-   (let* ((file (denote-file-prompt nil "Link to FILE"))
+   (let* ((file (denote-file-prompt nil "Link to FILE" nil :has-identifier))
           (file-type (denote-filetype-heuristics buffer-file-name))
           (description (when (file-exists-p file)
                          (denote-get-link-description file))))
@@ -5384,7 +5403,7 @@ Also see `denote-get-backlinks'."
               ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
-              (files (or files (denote-directory-files)))
+              (files (or files (denote-directory-files nil nil nil nil :has-identifier)))
               (file-identifiers
                (with-temp-buffer
                  (insert-file-contents current-file)
@@ -5475,7 +5494,7 @@ With optional ID-ONLY as a prefix argument create a link that
 consists of just the identifier.  Else try to also include the
 file's title.  This has the same meaning as in `denote-link'."
   (interactive
-   (let* ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match)))
+   (let* ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match :has-identifier)))
      (unless (and target (file-exists-p target))
        (setq target (denote--command-with-features #'denote :use-file-prompt-as-def-title :ignore-region :save :in-background)))
      (list target current-prefix-arg)))
@@ -6320,7 +6339,9 @@ To be used as a `thing-at' provider."
   "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
   (when (and buffer-file-name
              (not (derived-mode-p 'org-mode))
-             (denote-file-is-note-p buffer-file-name))
+             (denote-file-is-in-denote-directory-p buffer-file-name)
+             (denote-file-has-supported-extension-p buffer-file-name)
+             (denote-file-has-denoted-filename-p buffer-file-name))
     (denote-fontify-links-mode)))
 
 ;;;###autoload
@@ -6405,7 +6426,7 @@ inserts links with just the identifier."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
-    (if-let* ((files (denote-directory-files regexp :omit-current)))
+    (if-let* ((files (denote-directory-files regexp :omit-current nil nil :has-identifier)))
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
@@ -6699,7 +6720,7 @@ Uses the function `denote-directory' to establish the path to the file."
   "Like `denote-link' but for Org integration.
 This lets the user complete a link through the `org-insert-link'
 interface by first selecting the `denote:' hyperlink type."
-  (if-let* ((file (denote-file-prompt)))
+  (if-let* ((file (denote-file-prompt nil nil nil :has-identifier)))
       (concat "denote:" (denote-retrieve-filename-identifier file))
     (user-error "No files in `denote-directory'")))
 
@@ -6740,7 +6761,9 @@ Optional INTERACTIVE? is used by `org-store-link'.
 Also see the user option `denote-org-store-link-to-heading'."
   (when interactive?
     (when-let* ((file (buffer-file-name))
-                ((denote-file-is-note-p file))
+                ((file-regular-p file))
+                ((denote-file-is-in-denote-directory-p file))
+                ((denote-file-has-denoted-filename-p file))
                 (file-id (denote-retrieve-filename-identifier file))
                 (description (denote-get-link-description file)))
       (let ((heading-links (and denote-org-store-link-to-heading
