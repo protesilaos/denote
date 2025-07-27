@@ -5735,14 +5735,21 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
   "Function to make an Xref buffer showing query link results.
 It accepts the same arguments as `denote-make-links-buffer'.")
 
+(defun denote--user-error-if-not-major-mode (mode)
+  "Signal `user-error' is MODE is not `derived-mode-p'."
+  (unless (derived-mode-p mode)
+    (user-error "Only use this command inside the `%s'" mode)))
+
 (defun denote-query-focus-last-search (query)
   "Search QUERY in the content of files which matched the last search.
 \"Last search\" here means any call to `denote-grep',
 `denote-backlinks', `denote-query-contents-link', or, generally, any
 command that relies on the `denote-make-links-buffer'."
-  (interactive (list (denote-grep-query-prompt "Search (only files matched last): ")) denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (interactive
+   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+       (list (denote-grep-query-prompt "Search (only files matched last): ")))
+   denote-query-mode)
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (denote-make-links-buffer
    query denote-query--last-files
    nil '(display-buffer-same-window))
@@ -5766,9 +5773,11 @@ a list of fixed strings (NOT regexps) to check against last matched
 files.  Files that match any of the strings get excluded.  Internally,
 the list is processed using `regexp-opt'.  For an example of this usage,
 see `denote-query-exclude-files-with-keywords'."
-  (interactive (list (denote-grep-file-regexp-prompt)) denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (interactive
+   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+       (list (denote-grep-file-regexp-prompt)))
+   denote-query-mode)
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (let (final-files)
     (dolist (file denote-query--last-files)
       (unless (string-match
@@ -5790,9 +5799,11 @@ see `denote-query-exclude-files-with-keywords'."
 
 See `denote-query-exclude-files' for details, including the behaviour
 when REGEXP is a list."
-  (interactive (list (denote-grep-file-regexp-prompt :include)) denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (interactive
+   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+       (list (denote-grep-file-regexp-prompt :include)))
+   denote-query-mode)
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (let (final-files)
     (dolist (file denote-query--last-files)
       (when (string-match
@@ -5817,10 +5828,10 @@ KEYWORDS should be a list of keywords (without underscore).
 Interactively, KEYWORDS are read from the minibuffer using
 `completing-read-multiple', which see."
   (interactive
-   (list (denote-keywords-prompt "Exclude files with keywords"))
+   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+       (list (denote-keywords-prompt "Exclude files with keywords")))
    denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (denote-query-exclude-files
    (mapcar (lambda (kw) (concat "_" kw)) keywords)))
 
@@ -5829,10 +5840,10 @@ Interactively, KEYWORDS are read from the minibuffer using
 
 See `denote-query-exclude-files-with-keywords' for details."
   (interactive
-   (list (denote-keywords-prompt "Only include files with keywords"))
+   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+       (list (denote-keywords-prompt "Only include files with keywords")))
    denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (denote-query-only-include-files
    (mapcar (lambda (kw) (concat "_" kw)) keywords)))
 
@@ -5842,8 +5853,7 @@ See `denote-query-exclude-files-with-keywords' for details."
 This effectively gets ride of any interactive filter applied (by the
 means of e.g. `denote-query-exclude-files')."
   (interactive nil denote-query-mode)
-  (unless (derived-mode-p 'denote-query-mode)
-    (user-error "Only use this command inside the `denote-query-mode'"))
+  (denote--user-error-if-not-major-mode 'denote-query-mode)
   (denote-make-links-buffer denote-query--last-query nil
                             (and (eq major-mode 'denote-query-mode) (buffer-name))
                             '(display-buffer-same-window))
