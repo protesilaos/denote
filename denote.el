@@ -5905,15 +5905,15 @@ for the given type of search.  Developers should not rely on this, as we
 will remove it in future versions of Denote---just use PROMPT-TEXT as a
 string."
   (read-string
-   (cond
-    ((stringp prompt-text) prompt-text)
-    ((eq prompt-text :focused)
-     "Search (only files matched last): ")
-    ((eq prompt-text :dired)
-     "Search (only marked dired files): ")
-    ((eq prompt-text :region)
-     "Search (only files referenced in region): ")
-    (t "Search (all Denote files): "))
+   (pcase prompt-text
+     ((pred stringp) prompt-text)
+     (:focus
+      "Search (only files matched last): ")
+     (:dired
+      "Search (only marked dired files): ")
+     (:region
+      "Search (only files referenced in region): ")
+     (_ "Search (all Denote files): "))
    nil 'denote-grep-history))
 
 (defvar denote-grep-file-regexp-history nil
