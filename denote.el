@@ -5720,17 +5720,16 @@ regexp, which limits the files accordingly per `denote-directory-files'.
 
 Optional DISPLAY-BUFFER-ACTION is a `display-buffer' action and
 concomitant alist, such as `denote-backlinks-display-buffer-action'."
-  (let* ((inhibit-read-only t)
-         (buffer (or buffer-name
-                     (denote-format-buffer-name (format-message "query for `%s'" query) :special-buffer)))
-         (xref-alist (denote-retrieve-xref-alist query files)))
-    (unless xref-alist
-      (error "No matches for query `%s'" query))
-    (setq denote-query--last-query query)
-    (setq denote-query--last-files
-          (delete-dups
-           (mapcar #'car xref-alist)))
-    (denote--display-buffer-from-xref-alist xref-alist buffer display-buffer-action)))
+  (if-let* ((inhibit-read-only t)
+            (buffer (or buffer-name
+                        (denote-format-buffer-name (format-message "query for `%s'" query) :special-buffer)))
+            (xref-alist (denote-retrieve-xref-alist query files))
+            (files (delete-dups (mapcar #'car xref-alist))))
+      (progn
+        (setq denote-query--last-query query)
+        (setq denote-query--last-files files)
+        (denote--display-buffer-from-xref-alist xref-alist buffer display-buffer-action))
+    (error "No matches for query `%s'" query)))
 
 (defvar denote-query-links-buffer-function #'denote-make-links-buffer
   "Function to make an Xref buffer showing query link results.
