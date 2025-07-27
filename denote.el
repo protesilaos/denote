@@ -5926,9 +5926,9 @@ Also see `denote-grep-history'.")
 The prompt assumes the user wants to exclude files, unless INCLUDE is
 non-nil."
   (read-string
-   (if (not include)
-       "Exclude file names matching: "
-     "Only include file names matching: ")
+   (if include
+       "Only include file names matching: "
+     "Exclude file names matching: ")
    nil 'denote-grep-file-regexp-history))
 
 ;;;###autoload
