@@ -5705,10 +5705,9 @@ alist, such as `denote-backlinks-display-buffer-action'."
 
 DISPLAY-BUFFER-ACTION is a `display-buffer' action and concomitant
 alist, such as `denote-backlinks-display-buffer-action'."
-  (let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
-    (unless xref-alist
-      (error "No matches for identifier `%s'" identifier))
-    (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))
+  (if-let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
+      (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)
+    (error "No matches for identifier `%s'" identifier)))
 
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
 ;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
