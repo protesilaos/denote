@@ -6031,8 +6031,9 @@ Also see `denote-get-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
               (_ (denote-file-is-in-denote-directory-p current-file))
               (id (or (denote-retrieve-filename-identifier current-file)
-                      (user-error "The file does not have a Denote identifier"))))
-    (mapcar #'car (denote-retrieve-xref-alist-for-backlinks id))))
+                      (user-error "The file does not have a Denote identifier")))
+              (xrefs (denote-retrieve-xref-alist-for-backlinks id)))
+    (mapcar #'car xrefs)))
 
 ;; TODO 2024-09-04: Instead of using `denote-get-backlinks' we
 ;; should have a function that does not try to find all backlinks but
