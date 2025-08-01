@@ -3913,7 +3913,7 @@ concepts and relevant commands in further detail:
 :END:
 
 The ~denote-markdown~ package (by Protesilaos) provides some
-convenience functions to better integrate Markdown with Deonte. This
+convenience functions to better integrate Markdown with Denote. This
 is mostly about converting links from one type to another so that they
 can work in different applications (because Markdown does not have a
 standardised way to define custom link types).
