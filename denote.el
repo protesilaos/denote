@@ -2917,10 +2917,10 @@ Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote-format-file-name
                 directory id keywords title (denote--file-extension file-type) signature))
-         (buffer (find-file path))
+         (buffer (if (file-regular-p path)
+                     (user-error "A file named `%s' already exists" path)
+                   (find-file path)))
          (header (denote--format-front-matter title date keywords id signature file-type)))
-    (when (file-regular-p path)
-      (user-error "A file named `%s' already exists" path))
     (with-current-buffer buffer
       (insert header)
       (insert (cond
