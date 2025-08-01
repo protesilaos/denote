@@ -6062,9 +6062,9 @@ Also see `denote-get-links'."
               (xrefs (denote-retrieve-xref-alist-for-backlinks id)))
     (mapcar #'car xrefs)))
 
-;; TODO 2024-09-04: Instead of using `denote-get-backlinks' we
-;; should have a function that does not try to find all backlinks but
-;; simply exits as soon as it finds one.
+;; FIXME 2025-08-01: Instead of using `denote-get-backlinks' we should
+;; have a function that does not try to find all backlinks but simply
+;; exits as soon as it finds one.
 (defun denote--file-has-backlinks-p (file)
   "Return non-nil if FILE has backlinks."
   (not (zerop (length (denote-get-backlinks file)))))
