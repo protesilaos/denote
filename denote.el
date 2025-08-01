@@ -6056,9 +6056,9 @@ Place the buffer below the current window or wherever the user option
   "Return list of backlinks in current or optional FILE.
 Also see `denote-get-links'."
   (when-let* ((current-file (or file (buffer-file-name)))
-              (_ (denote-file-is-in-denote-directory-p current-file))
               (id (or (denote-retrieve-filename-identifier current-file)
                       (user-error "The file does not have a Denote identifier")))
+              (_ (denote-file-is-in-denote-directory-p current-file))
               (xrefs (denote-retrieve-xref-alist-for-backlinks id)))
     (mapcar #'car xrefs)))
 
