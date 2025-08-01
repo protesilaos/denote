@@ -3467,32 +3467,7 @@ When combined all together, the above are written thus:
 
 : %<flags><width><precision>SPECIFIER-CHARACTER
 
-Any other string it taken as-is.  Users may want, for example, to
-include some text that makes Denote buffers stand out, such as
-a =[D]= prefix.  Examples:
-
-#+begin_src emacs-lisp
-;; The following is the default value.  Use a literal [D] prefix,
-;; followed by the title and then the backlinks indicator.  If there
-;; is no title, use the identifier in its human-readable date
-;; representation, and if that is not possible, use the identifier
-;; as-is.
-(setq denote-rename-buffer-format "[D] %D%b")
-
-;; Customize what the backlink indicator looks like.  This two-faced
-;; arrow is the default.
-(setq denote-rename-buffer-backlinks-indicator  "<-->")
-
-;; Use just the title and keywords with some emoji in between, because
-;; why not?
-(setq denote-rename-buffer-format "%t 🤨 %k")
-
-;; Use the title with a literal "[D]" before it.
-(setq denote-rename-buffer-format "[D] %t")
-
-;; As above, but also add the `denote-rename-buffer-backlinks-indicator' at the end.
-(setq denote-rename-buffer-format "[D] %t%b")
-#+end_src
+Any other string it taken as-is.
 
 Users who need yet more flexibility are best served by writing their
 own function and assigning it to the ~denote-rename-buffer-function~.
