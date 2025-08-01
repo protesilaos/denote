@@ -6959,7 +6959,7 @@ option `denote-templates'."
   :package-version '(denote . "3.1.0")
   :group 'denote-rename-buffer)
 
-(defcustom denote-rename-buffer-format "%D%b"
+(defcustom denote-rename-buffer-format "%D"
   "The format of the buffer name `denote-rename-buffer' should use.
 This also covers the `denote-rename-buffer-mode'.  The resulting buffer
 name will also include the `denote-buffer-name-prefix'.
