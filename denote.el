@@ -2917,8 +2917,11 @@ Arguments TITLE, KEYWORDS, DATE, ID, DIRECTORY, FILE-TYPE,
 TEMPLATE, and SIGNATURE should be valid for note creation."
   (let* ((path (denote-format-file-name
                 directory id keywords title (denote--file-extension file-type) signature))
-         (buffer (if (file-regular-p path)
-                     (user-error "A file named `%s' already exists" path)
+         ;; NOTE 2025-08-02: Is it safe to assume that an
+         ;; existing+empty file is good for us to use?  Otherwise, we
+         ;; should have a `y-or-n-p' prompt here.
+         (buffer (if (and (file-regular-p path) (not (denote--file-empty-p path)))
+                     (user-error "A file named `%s' already exists and is not empty" path)
                    (find-file path)))
          (header (denote--format-front-matter title date keywords id signature file-type)))
     (with-current-buffer buffer

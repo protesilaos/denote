@@ -6458,7 +6458,7 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   fingerknight, hpgisler, hyperfocus1337,johkneisl, jtpavlock, juh,
   leafarbelm, mentalisttraceur, mjkalyan, oatmealm, pRot0ta1p,
   rbenit68, relict007, sarcom-sar, sienic, skissue, sundar bp,
-  yetanotherfossman, zadca123
+  wuzhihao, yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
