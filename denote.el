@@ -1802,7 +1802,7 @@ OMIT-CURRENT have been applied."
      default 'denote-sort-exclude-files-history)))
 
 (defun denote-sort-dired--prompts ()
-  "Return list of prompts per `denote-sort-dired-extra-prompts'."
+  "Return list of prompt symbols per `denote-sort-dired-extra-prompts'."
   (let (sort-by-component reverse-sort exclude-rx)
     (dolist (prompt denote-sort-dired-extra-prompts)
       (pcase prompt
@@ -6862,7 +6862,7 @@ the standard front matter we define."
   :group 'denote-org-capture)
 
 (defun denote--org-capture-link-specifiers-p ()
-  "Return non-nil if `denote-org-capture-specifiers' uses link specifiers."
+  "Return non-nil if `denote-org-capture-specifiers' has link specifiers."
   (when (stringp denote-org-capture-specifiers)
     (string-match-p "%^?[aAlL]" denote-org-capture-specifiers)))
 
