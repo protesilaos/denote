@@ -1039,11 +1039,31 @@ to override what this function returns."
 ;; prompt for one when one is absolutely necessary (is this ever the
 ;; case?) or fall back to the common root as in the function
 ;; `denote-directories-get-common-root'.
+
 (defun denote-directory ()
-  "Return the `car' of `denote-directories'.
-Unless this is definitely what you need, use the `denote-directories'
-instead.  Also see `denote-directories-get-common-root'."
+  "Return the `car` of `denote-directories`.
+DEPRECATED: This function is deprecated because it is misleading when
+multiple directories are configured.  Use `denote-directories` or
+`denote-directories-get-common-root` instead.
+
+Unless this is definitely what you need, use the `denote-directories`
+instead.  Also see `denote-directories-get-common-root`."
+  (display-warning 'denote "`denote-directory` is deprecated. Use `denote-directories` instead." :warning)
   (car (denote-directories)))
+
+(make-obsolete 'denote-directory 'denote-directories "4.1.0")
+
+(defvar denote-directories-maybe-prompt-history nil
+  "Minibuffer history for `denote-directories-maybe-prompt'.")
+
+(defun denote-directories-maybe-prompt ()
+  "Prompt for a directory among `denote-directories' if needed.
+If `denote-directories' has only one directory, return it outright."
+  (let ((directories (denote-directories)))
+    (if (denote-has-single-denote-directory-p)
+        (car directories)
+      (let ((default (car denote-directories-maybe-prompt-history)))
+        (completing-read "Select a directory: " directories nil t nil 'denote-directories-maybe-prompt-history default)))))
 
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
@@ -1508,26 +1528,26 @@ With optional HAS-IDENTIFIER, only show candidates that have an
 identifier.
 
 Return the absolute path to the matching file."
-  (let* (;; Some external program may use `default-directory' with the
+  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+         ;; Some external program may use `default-directory' with the
          ;; relative file paths of the completion candidates.
-         (default-directory (car (denote-directories)))
+         (default-directory (if single-dir-p
+                                (car (denote-directories))
+                              (denote-directories-get-common-root)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
                  :omit-current nil nil has-identifier))
-         (relative-files (mapcar
-                          #'denote-get-file-name-relative-to-denote-directory
-                          files))
-         (prompt (if (denote-has-single-denote-directory-p)
+         (relative-files (if single-dir-p
+                             (mapcar #'denote-get-file-name-relative-to-denote-directory files)
+                           files))
+         (prompt (if single-dir-p
                      (format "%s in %s:"
                              (or prompt-text "Select FILE")
-                             (propertize (car (denote-directories)) 'face 'denote-faces-prompt-current-name))
+                             (propertize default-directory 'face 'denote-faces-prompt-current-name))
                    (format "%s: " (or prompt-text "Select FILE"))))
          (input (completing-read
                  prompt
-                 (denote--completion-table 'file
-                                           (if (denote-has-single-denote-directory-p)
-                                               relative-files
-                                             files))
+                 (denote--completion-table 'file relative-files)
                  nil (unless no-require-match :require-match)
                  nil 'denote-file-history))
          (absolute-file (if (denote-has-single-denote-directory-p)
@@ -3373,7 +3393,7 @@ instead of that of the parameter."
                            (t "")))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
-                      (car (denote-directories))))
+                      (denote-directories-maybe-prompt)))
          (template (if (or (stringp template) (functionp template))
                        template
                      (or (alist-get template denote-templates) "")))
