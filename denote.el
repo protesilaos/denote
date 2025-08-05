@@ -1022,14 +1022,10 @@ to override what this function returns."
 ;; case?) or fall back to the common root as in the function
 ;; `denote-sort-dired--find-common-directory'.
 (defun denote-directory ()
-  "Return path of variable `denote-directory' as a proper directory.
-
-This function is obsolete.  Use `denote-directories' instead, which
-returns the note directories as a list.  The current function only
-returns the first directory."
+  "Return the `car' of `denote-directories'.
+Unless this is definitely what you need, use the `denote-directories'
+instead.  Also see `denote-directories-get-common-root'."
   (car (denote-directories)))
-
-(make-obsolete 'denote-directory 'denote-directories "4.1.0")
 
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
