@@ -1015,6 +1015,12 @@ to override what this function returns."
   "Return non-nil if the variable `denote-directory' is a single item."
   (not (cdr (denote-directories))))
 
+;; FIXME 2025-08-05: There are many parts in the code where we
+;; hardcode `(car (denote-directories))' and others where
+;; `(denote-directory)' is used.  This is flawed.  We need to either
+;; prompt for one when one is absolutely necessary (is this ever the
+;; case?) or fall back to the common root as in the function
+;; `denote-sort-dired--find-common-directory'.
 (defun denote-directory ()
   "Return path of variable `denote-directory' as a proper directory.
 
