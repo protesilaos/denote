@@ -4206,7 +4206,7 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                                empty-files)))))
     (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
                              (car (denote-directories))
-                           (denote-sort-dired--find-common-directory (denote-directories))))
+                           (denote-directories-get-common-root)))
               (files (funcall files-fn))
               (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
@@ -4227,7 +4227,7 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                                empty-files)))))
     (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
                              (car (denote-directories))
-                           (denote-sort-dired--find-common-directory (denote-directories))))
+                           (denote-directories-get-common-root)))
               (files (funcall files-fn))
               (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (OMIT EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
