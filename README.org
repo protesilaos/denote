@@ -5084,12 +5084,20 @@ The following sections cover the specifics.
   value they do not recognise. If =DATE= is nil, return nil.
 
 #+findex: denote-directory
-+ Function ~denote-directory~ :: Return path of the variable
-  ~denote-directory~ as a proper directory, also because it accepts a
-  directory-local value for what we internally refer to as "silos"
-  ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directories for notes]]).  Custom Lisp code can
-  ~let~ bind the value of the variable ~denote-directory~
-  to override what this function returns.
++ Function ~denote-directory~ :: Return the ~car~ of
+  ~denote-directories~. Unless this is definitely what you need, use
+  the ~denote-directories~ instead. Also see
+  ~denote-directories-get-common-root~. [ Updated as part of
+  {{{development-version}}} because the user option ~denote-directory~
+  can now also accept a list of directories. ]
+
+#+findex: denote-directories
++ Function ~denote-directories~ :: Return list of paths to the
+  variable ~denote-directory~. [ Part of {{{development-version}}}. ]
+
+#+findex: denote-directories-get-common-root
++ Function ~denote-directories-get-common-root~ :: Return the closest
+  common root of the ~denote-directories~. [ Part of {{{development-version}}}. ]
 
 #+findex: denote-directory-get-files
 + Function ~denote-directory-get-files~ :: Return list with full path
@@ -5886,15 +5894,6 @@ I, Protesilaos, am happy to help anyone who wants to do any of this.
   alternative to what we have for the menu bar. Perhaps this interface
   can used to toggle various options, such as to call ~denote~ with a
   different set of prompts.
-
-- A ~denote-directories~ user option :: This can be either an
-  extension of the ~denote-directory~ (accept a list of file paths
-  value) or a new variable. The idea is to let the user define
-  separate Denote directories which do know about the presence of each
-  other (unlike silos). This way, a user can have an entry in
-  =~/Documents/notes/= link to something =~/Git/projects/= and
-  everything work as if the ~denote-directory~ is set to the =~/=
-  (with the status quo as of 2024-02-18 08:27 +0200).
 
 - Encode the day in the identifier :: The idea is to use some coded
   reference for Monday, Tuesday, etc. instead of having the generic
