@@ -1528,7 +1528,7 @@ Return the absolute path to the matching file."
                             (expand-file-name input default-directory)
                           input)))
     ;; NOTE: This block is executed when no-require-match is t. It is useful
-    ;; for commands such as `denote-open-or-create` or similar.
+    ;; for commands such as `denote-open-or-create' or similar.
     (unless (file-exists-p absolute-file)
       (setq denote-file-prompt-latest-input input)
       (setq denote-file-history (delete input denote-file-history)))
