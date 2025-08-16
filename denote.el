@@ -1039,6 +1039,8 @@ Unless this is definitely what you need, use the `denote-directories'
 instead.  Also see `denote-directories-get-common-root'."
   (car (denote-directories)))
 
+(make-obsolete 'denote-directory 'denote-directories "4.2.0")
+
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
 
@@ -1506,7 +1508,7 @@ Return the absolute path to the matching file."
          ;; Some external program may use `default-directory' with the
          ;; relative file paths of the completion candidates.
          (default-directory (if single-dir-p
-                                (denote-directory)
+                                (car (denote-directories))
                               (denote-directories-get-common-root)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
@@ -1941,7 +1943,7 @@ When called from Lisp, the arguments are a string, a symbol among
                                   (mapcar #'file-relative-name files)
                                 files)))))
     (if-let* ((directory (if relative-p ; see comment in `denote-file-prompt'
-                             (denote-directory)
+                             (car (denote-directories))
                            (denote-directories-get-common-root)))
               (files (funcall files-fn))
               (dired-name (format-message files-matching-regexp))
@@ -3367,7 +3369,7 @@ instead of that of the parameter."
                            (t "")))
          (directory (if (and directory (denote--dir-in-denote-directory-p directory))
                         (file-name-as-directory directory)
-                      (denote-directory)))
+                      (car (denote-directories))))
          (template (if (or (stringp template) (functionp template))
                        template
                      (or (alist-get template denote-templates) "")))
@@ -5388,7 +5390,7 @@ the generic one."
                     (denote--completion-table 'file file-names)
                     nil t nil 'denote-link-find-file-history)))
     (if (denote-has-single-denote-directory-p)
-        (expand-file-name selected (denote-directory))
+        (expand-file-name selected (car (denote-directories)))
       selected)))
 
 (define-obsolete-function-alias
@@ -6485,7 +6487,7 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
                     (denote--completion-table 'file file-names)
                     nil t)))
     (if (denote-has-single-denote-directory-p)
-        (expand-file-name selected (denote-directory))
+        (expand-file-name selected (car (denote-directories)))
       selected)))
 
 (defun denote-link--map-over-notes ()

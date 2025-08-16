@@ -5099,14 +5099,6 @@ The following sections cover the specifics.
   or ~date-to-time~ .Those functions signal an error if =DATE= is a
   value they do not recognise. If =DATE= is nil, return nil.
 
-#+findex: denote-directory
-+ Function ~denote-directory~ :: Return the ~car~ of
-  ~denote-directories~. Unless this is definitely what you need, use
-  the ~denote-directories~ instead. Also see
-  ~denote-directories-get-common-root~. [ Updated as part of
-  {{{development-version}}} because the user option ~denote-directory~
-  can now also accept a list of directories. ]
-
 #+findex: denote-directories
 + Function ~denote-directories~ :: Return list of paths to the
   variable ~denote-directory~. [ Part of {{{development-version}}}. ]
