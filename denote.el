@@ -1039,7 +1039,7 @@ Unless this is definitely what you need, use the `denote-directories'
 instead.  Also see `denote-directories-get-common-root'."
   (car (denote-directories)))
 
-(make-obsolete 'denote-directory 'denote-directories "4.2.0")
+(make-obsolete 'denote-directory 'denote-directories "4.1.0")
 
 (defvar denote-generate-identifier-automatically t
   "Make creation and renaming commands automatically create and identifier.
