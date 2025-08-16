@@ -1517,7 +1517,7 @@ Return the absolute path to the matching file."
                              (mapcar #'denote-get-file-name-relative-to-denote-directory files)
                            files))
          (prompt (if single-dir-p
-                     (format "%s in %s:"
+                     (format "%s in %s: "
                              (or prompt-text "Select FILE")
                              (propertize default-directory 'face 'denote-faces-prompt-current-name))
                    (format "%s: " (or prompt-text "Select FILE"))))
