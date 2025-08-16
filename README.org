@@ -254,6 +254,10 @@ other metadata.  Denote basically streamlines the creation of such
 files or file names while providing facilities to link between them
 (where those files are editable).
 
+A typical note produced by Denote looks like:
+
+: 20240322T131856--some-title__topic1_topic2.org
+
 Denote's file-naming scheme is not limited to "notes".  It can be used
 for all types of file, including those that are not editable in Emacs,
 such as videos.  Naming files in a consistent way makes their
@@ -2045,6 +2049,8 @@ minibuffer prompts:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
 :END:
 
+[Customization of the identifier format is part of {{{development-version}}}.]
+
 #+vindex: denote-directory
 Notes are stored in the ~denote-directory~.  The default path is
 =~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
@@ -2056,13 +2062,14 @@ directories.
 Every note produced by Denote follows this pattern by default
 ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]):
 
-: ID==SIGNATURE--TITLE__KEYWORDS.EXTENSION
+: @@ID==SIGNATURE--TITLE__KEYWORDS.EXTENSION
 
 The =ID= field represents the identifier which, by default, is the
 date in year-month-day format followed by the capital letter =T= (for
 "time") and the current time in hour-minute-second notation. The
-presentation is compact: =20220531T091625=. The =ID= serves as the
-unique identifier of each note and, as such, is also known as the
+presentation is compact: =20220531T091625=. When it has this format
+(the default), the delimiter (=@@=) is optional. The =ID= serves as
+the unique identifier of each note and, as such, is also known as the
 file's ID or identifier.
 
 File names can include an arbitrary string of alphanumeric characters
@@ -2079,10 +2086,10 @@ demand, with the command ~denote-signature~, or by modifying the value
 of the user option ~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
 
 The =TITLE= field is the title of the note, as provided by the user.
-It automatically gets downcased by default and is also hyphenated
-([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]).  An entry about "Economics
-in the Euro Area" produces an =economics-in-the-euro-area= string for
-the =TITLE= of the file name.
+It can contain any character, though the default is to have it
+downcased and hyphenated ([[#h:ae8b19a1-7f67-4258-96b3-370a72c43f4e][Sluggification of file name components]]). An
+entry about "Economics in the Euro Area" produces an
+=economics-in-the-euro-area= string for the =TITLE= of the file name.
 
 The =KEYWORDS= field consists of one or more entries demarcated by an
 underscore (the separator is inserted automatically).  Each keyword is
@@ -2120,8 +2127,8 @@ invoking =M-x re-builder=).
 
 [[#h:1a953736-86c2-420b-b566-fb22c97df197][Features of the file-naming scheme for searching or filtering]].
 
-The ~denote-prompts~ can be configured in such ways to yield the
-following file name permutations:
+All file name fields can contain any character, are optional and can
+appear in any order. The following permutations are valid:
 
 : ID.EXT
 : ID--TITLE.EXT
@@ -2130,6 +2137,9 @@ following file name permutations:
 : ID==SIGNATURE--TITLE.EXT
 : ID==SIGNATURE--TITLE__KEYWORDS.EXT
 : ID==SIGNATURE__KEYWORDS.EXT
+
+Commands such as ~denote~ or ~denote-rename-file~ will prompt for the
+file name fields configured in ~denote-prompts~.
 
 When in doubt, stick to the default design, which is carefully
 considered and works well ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
@@ -2153,11 +2163,12 @@ reorder them as they see fit.
 
 The value of this user option is a list of the following symbols:
 
-- ~identifier~: This is the combination of the date and time. When it
-  is the first on the list, it looks like =20240519T073456= and does
-  not have a component separator of its own due its unambiguous
-  format. When it is placed anywhere else in the file name, it is
-  prefixed with =@@=, so it looks like =@@20240519T073456=.
+- ~identifier~: By default, this is the combination of the date and
+  time. When it is the first on the list, it looks like
+  =20240519T073456= and does not have a component separator of its own
+  due to its unambiguous format. When it is placed anywhere else in
+  the file name, it is prefixed with =@@=, so it looks like
+  =@@20240519T073456=.
 
 - ~signature~: This is an arbitrary string that can be used to qualify
   the file in some way, according to the user's methodology (e.g. to
@@ -2173,7 +2184,11 @@ The value of this user option is a list of the following symbols:
   with =__=.
 
 All four symbols must appear exactly once. Duplicates are ignored. Any
-missing symbol is added automatically.
+missing symbol is added automatically. Note that even though all four
+symbols must appear in the user option
+~denote-file-name-components-order~, actual files may not contain a
+specific component. For instance, a note without keywords or signature
+is valid.
 
 Some examples:
 
@@ -2192,7 +2207,8 @@ Some examples:
 #+end_src
 
 Also see how to configure the Denote prompts, which affect which
-components are actually used in the order specified herein ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
+components are actually prompted for in creation or renaming commands
+([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
 
 Before deciding on this, please consider the longer-term implications
 of file names with varying patterns. Consistency makes things
@@ -2242,8 +2258,8 @@ discuss it and expand the documentation we provide herein.
 :CUSTOM_ID: h:ae8b19a1-7f67-4258-96b3-370a72c43f4e
 :END:
 
-Files names can contain any character that the file system
-permits. Denote imposes a few additional restrictions:
+File names can contain any character that the file system permits.
+Denote imposes a few additional restrictions:
 
 + The tokens "==", =__= and =--= are interpreted by Denote and should
   appear only once.
@@ -2256,10 +2272,10 @@ By default, Denote enforces other rules to file names through the user
 option ~denote-file-name-slug-functions~. These rules are applied to
 file names by default:
 
-+ What we count as "illegal characters" are removed.
++ Many "special characters" are removed.
 
 + Input for a file title is hyphenated.  The original value is
-  preserved in the note's contents ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
+  preserved in the note's content ([[#h:13218826-56a5-482a-9b91-5b6de4f14261][Front matter]]).
 
 + Spaces or other delimiters are removed from keywords, meaning that
   =hello-world= becomes =helloworld=.  This is because hyphens in
