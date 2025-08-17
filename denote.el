@@ -6253,6 +6253,37 @@ To be assigned to `markdown-follow-link-functions'."
     map)
   "Keymap for mouse actions over fontified Denote links.")
 
+;; Adapted from `org-in-regexp'.
+(defun denote--inside-link-regexp-p (regexp)
+  "Check if point is inside a Denote link REGEXP.
+Return either nil or a list whose elements are two cons cells:
+
+- The first cons cell has the link target and the link description,
+  like (\"denote:20250816T080008\" . \"This is a test\").
+
+- The second cons cell consists of two buffer positions, pointing to the
+  beginning and end of REGEXP."
+  (catch 'exit
+    (let ((point (point))
+          (line-end (line-end-position)))
+      (save-excursion
+        (forward-line 0)
+        (while (and (re-search-forward regexp line-end t)
+                    (<= (match-beginning 0) point))
+          (when (>= (match-end 0) point)
+            (throw 'exit (list (cons
+                                (match-string-no-properties 1)
+                                (match-string-no-properties 2))
+                               (cons
+                                (match-beginning 0)
+                                (match-end 0))))))))))
+
+(defun denote--link-at-point-get-data ()
+  "Return matching data for the link at point."
+  (when-let* ((file buffer-file-name)
+              (regexp (denote--link-in-context-regexp (denote-filetype-heuristics file))))
+    (denote--inside-link-regexp-p regexp)))
+
 (defun denote--link-open-at-point-subr ()
   "Open link at point."
   (let ((query (get-text-property (point) 'denote-link-query-part)))
