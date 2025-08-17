@@ -6286,10 +6286,11 @@ Return either nil or a list whose elements are two cons cells:
 
 (defun denote--link-open-at-point-subr ()
   "Open link at point."
-  (let ((query (get-text-property (point) 'denote-link-query-part)))
-    (if-let* ((path (denote-get-path-by-id query)))
+  (pcase-let* ((data (denote--link-at-point-get-data))
+               (`(,target . ,_) (car data)))
+    (if-let* ((path (denote-get-path-by-id target)))
         (funcall denote-open-link-function path)
-      (denote--act-on-query-link query))))
+      (denote--act-on-query-link target))))
 
 (defun denote-link-open-at-point ()
   "Open Denote link at point."
