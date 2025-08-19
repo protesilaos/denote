@@ -6342,7 +6342,7 @@ This is the subroutine of `denote-link-open-at-point' and
               (add-text-properties visible-end end hidden)
               (dolist (pos (list end visible-start visible-end))
                 (add-text-properties (1- pos) pos non-sticky-props)))
-            (throw :exit t))))      ; signal success
+            (throw :exit t))))
       nil)))
 
 (define-obsolete-function-alias
