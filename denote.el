@@ -6352,15 +6352,15 @@ This is the subroutine of `denote-link-open-at-point' and
 
 (defun denote-get-link-identifier-or-query-term-at-point (&optional position)
   "Return the Denote identifier or query term at point or optional POSITION."
-  (pcase-let* ((data (denote--link-at-point-get-data (or position (point))))
-               (`(,target . ,_) (car data)))
+  (let* ((data (denote--link-at-point-get-data (or position (point))))
+         (target (caar data)))
     target))
 
 (defun denote--get-link-file-path-at-point ()
   "Return target file path of the Denote link at point.
 To be used as a `thing-at' provider."
-  (pcase-let* ((data (denote--link-at-point-get-data (point)))
-               (`(,target . ,_) (car data)))
+  (let* ((data (denote--link-at-point-get-data (point)))
+         (target (caar data)))
     (when-let* ((path (denote-get-path-by-id target)))
       (concat "file:" path))))
 
@@ -6850,8 +6850,8 @@ backend."
 
 (defun denote-link-ol-help-echo (_window _object position)
   "Echo the full file path of the identifier at POSITION."
-  (pcase-let* ((data (denote--link-at-point-get-data position))
-               (`(,target . ,_) (car data)))
+  (let* ((data (denote--link-at-point-get-data position))
+         (target (caar data)))
     (denote-get-path-by-id target)))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
