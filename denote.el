@@ -6850,11 +6850,9 @@ backend."
 
 (defun denote-link-ol-help-echo (_window _object position)
   "Echo the full file path of the identifier at POSITION."
-  (when-let* ((htmlize-link (get-text-property position 'htmlize-link))
-              (string (plist-get htmlize-link :uri))
-              (identifier (replace-regexp-in-string "denote:\\(.*?\\)\\(#.*\\)?" "\\1" string))
-              (path (denote-get-path-by-id identifier)))
-    path))
+  (pcase-let* ((data (denote--link-at-point-get-data position))
+               (`(,target . ,_) (car data)))
+    (denote-get-path-by-id target)))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
 ;; Elfeed: <https://github.com/skeeto/elfeed/>.
