@@ -6350,17 +6350,11 @@ This is the subroutine of `denote-link-open-at-point' and
   'denote-get-link-identifier-or-query-term-at-point
   "4.0.0")
 
-(defun denote-get-link-identifier-or-query-term-at-point (&optional point)
-  "Return the Denote identifier or query term at point or optional POINT."
-  (when-let* ((position (or point (point)))
-              (face-at-point (get-text-property position 'face))
-              ((or (eq face-at-point 'denote-faces-link)
-                   (member 'denote-faces-link face-at-point))))
-    (or (get-text-property position 'denote-link-query-part)
-        (when-let* ((link-data (get-text-property position 'htmlize-link))
-                    (link (cadr link-data)))
-          (string-match denote-date-identifier-regexp link)
-          (match-string-no-properties 0 link)))))
+(defun denote-get-link-identifier-or-query-term-at-point (&optional position)
+  "Return the Denote identifier or query term at point or optional POSITION."
+  (pcase-let* ((data (denote--link-at-point-get-data (or position (point))))
+               (`(,target . ,_) (car data)))
+    target))
 
 (defun denote--get-link-file-path-at-point ()
   "Return target file path of the Denote link at point.
