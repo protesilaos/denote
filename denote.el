@@ -6284,7 +6284,9 @@ Return either nil or a list whose elements are two cons cells:
     (denote--inside-link-regexp-p regexp position)))
 
 (defun denote--link-open-at-point-subr (position)
-  "Open link at POSITION."
+  "Open link at POSITION.
+This is the subroutine of `denote-link-open-at-point' and
+`denote-link-open-at-mouse'."
   (pcase-let* ((data (denote--link-at-point-get-data position))
                (`(,target . ,_) (car data)))
     (if-let* ((path (denote-get-path-by-id target)))
