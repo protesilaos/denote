@@ -6362,13 +6362,13 @@ This is the subroutine of `denote-link-open-at-point' and
           (string-match denote-date-identifier-regexp link)
           (match-string-no-properties 0 link)))))
 
-(defun denote--get-link-file-path-at-point (&optional point)
-  "Return link to the Denote file path at point or optional POINT.
+(defun denote--get-link-file-path-at-point ()
+  "Return target file path of the Denote link at point.
 To be used as a `thing-at' provider."
-  (when-let* ((position (or point (point)))
-              (id (get-text-property position 'denote-link-query-part))
-              (path (denote-get-path-by-id id)))
-    (concat "file:" path)))
+  (pcase-let* ((data (denote--link-at-point-get-data (point)))
+               (`(,target . ,_) (car data)))
+    (when-let* ((path (denote-get-path-by-id target)))
+      (concat "file:" path))))
 
 (defvar thing-at-point-provider-alist)
 
