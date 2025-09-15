@@ -6287,7 +6287,8 @@ Return either nil or a list whose elements are two cons cells:
 (defun denote--link-at-point-get-data (position)
   "Return matching data for the link at POSITION."
   (when-let* ((file buffer-file-name)
-              (regexp (denote--link-in-context-regexp (denote-filetype-heuristics file))))
+              (file-type (denote-filetype-heuristics file))
+              (regexp (denote--link-in-context-regexp file-type)))
     (denote--inside-link-regexp-p regexp position)))
 
 (defun denote--link-open-at-point-subr (position)
