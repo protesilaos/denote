@@ -2471,6 +2471,87 @@ will thus interfere with the above: either set the user option
 ~denote-allow-multi-word-keywords~ to nil or simply insert single
 words at the relevant prompts.
 
+** Define a completely custom identifier
+
+WORK-IN-PROGRESS
+
+#+begin_src emacs-lisp
+;; (let* ((denote-used-identifiers (make-hash-table :test #'equal))
+;;        (_ (progn
+;;             (puthash "2000E1AprotFbookPmaxT20250918" t denote-used-identifiers)
+;;             (puthash "2000E1AprotFbookPmaxT20250919" t denote-used-identifiers)
+;;             (puthash "2000E1AprotFbookPmaxT20250920" t denote-used-identifiers))))
+;;   (my-denote-get-identifier "2000E1AprotFbookPmaxT20250918" nil))
+;; 
+;; (let* ((denote-used-identifiers (make-hash-table :test #'equal))
+;;        (_ (progn
+;;             (puthash "2000E1AprotFbookPmaxT20250918" t denote-used-identifiers)
+;;             (puthash "2000E1AprotFbookPmaxT20250919" t denote-used-identifiers)
+;;             (puthash "2000E1AprotFbookPmaxT20250920" t denote-used-identifiers))))
+;;   (my-denote-custom-identifier--make-unique-identifier "2000E1AprotFbookPmax" (format-time-string "%Y%m%d") denote-used-identifiers))
+
+
+
+
+;; The code herein is a custom function for use with `denote-get-identifier-function'.
+;; (setq denote-get-identifier-function #'my-denote-get-identifier)
+
+;; FIXME 2025-09-18: We cannot use the base-identifier in tandem with
+;; the hash map in this way because what we want is to compare only
+;; the final bits, not the whole thing.  I think we can do without the
+;; hash map here.
+(defun my-denote-custom-identifier--make-unique-identifier (base-identifier date-string identifiers)
+  (let* ((current-date-str date-string)
+         (id (format "%s%s" base-identifier current-date-str)))
+    (while (gethash id identifiers)
+      (let* ((year (string-to-number (substring current-date-str 0 4)))
+             (month (string-to-number (substring current-date-str 4 6)))
+             (day (string-to-number (substring current-date-str 6 8)))
+             (time (encode-time 0 0 0 day month year))
+             (next-day-time (seconds-to-time (+ (time-to-seconds time) 86400)))
+             (next-date-str (format-time-string "%Y%m%d" next-day-time)))
+        (setq current-date-str next-date-str)
+        (setq id (format "%s%s" base-identifier current-date-str))))
+    id))
+
+(defvar my-denote-custom-identifier-year-history nil)
+(defvar my-denote-custom-identifier-edition-history nil)
+(defvar my-denote-custom-identifier-format-history nil)
+(defvar my-denote-custom-identifier-publisher-history nil)
+
+(defvar my-denote-custom-identifier-author-history nil
+  "Minibuffer history for `my-denote-custom-identifier-author-prompt'.")
+
+;; TODO 2025-09-18: Flesh out the other prompts as well.  Some can
+;; benefit from a `completing-read' approach.
+(defun my-denote-custom-identifier-author-prompt ()
+  "Prompt for one or more authors.
+Multiple authors are separated by a space or comma."
+  (read-string "Author (space or comma for many): " nil 'my-denote-custom-identifier-author-history))
+
+(defun my-denote-custom-identifier-author-format (author)
+  "Format AUTHOR to use an A delimiter before each name."
+  (let ((authors (split-string author "[ ,]+" t "[\s\f\t\n\r\v]+")))
+    (format "A%s" (mapconcat #'identity authors "A"))))
+
+(defun my-denote-get-identifier (initial-identifier date)
+  (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
+    (cond
+     ((and initial-identifier (not (gethash initial-identifier denote-used-identifiers)))
+      initial-identifier)
+     (t
+      (let ((base-id (concat
+                      (read-string "Year: " nil 'my-denote-custom-identifier-year-history)
+                      "E" (read-string "Edition: " nil 'my-denote-custom-identifier-edition-history)
+                      (my-denote-custom-identifier-author-format (my-denote-custom-identifier-author-prompt))
+                      "F" (read-string "Format: " nil 'my-denote-custom-identifier-format-history)
+                      "P" (read-string "Publisher: " nil 'my-denote-custom-identifier-publisher-history))))
+        (my-denote-custom-identifier--make-unique-identifier
+         base-id
+         (format-time-string "%Y%m%d" (or date (current-time)))
+         denote-used-identifiers))))))
+#+end_src
+
 * Front matter
 :PROPERTIES:
 :CUSTOM_ID: h:13218826-56a5-482a-9b91-5b6de4f14261
