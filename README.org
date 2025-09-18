@@ -2049,8 +2049,6 @@ minibuffer prompts:
 :CUSTOM_ID: h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d
 :END:
 
-[Customization of the identifier format is part of {{{development-version}}}.]
-
 #+vindex: denote-directory
 Notes are stored in the ~denote-directory~.  The default path is
 =~/Documents/notes=.  The ~denote-directory~ can be a flat listing,
@@ -2070,7 +2068,8 @@ date in year-month-day format followed by the capital letter =T= (for
 presentation is compact: =20220531T091625=. When it has this format
 (the default), the delimiter (=@@=) is optional. The =ID= serves as
 the unique identifier of each note and, as such, is also known as the
-file's ID or identifier.
+file's ID or identifier. The =ID= can be any string: it does not need
+to be associated with a date ([[#h:3048f558-7d84-45d6-9ef2-53055483e801][Define a completely custom identifier scheme]]). [ Custom identifiers are part of {{{development-version}}}. ]
 
 File names can include an arbitrary string of alphanumeric characters
 in the =SIGNATURE= field. Signatures have no clearly defined purpose
@@ -2471,11 +2470,69 @@ will thus interfere with the above: either set the user option
 ~denote-allow-multi-word-keywords~ to nil or simply insert single
 words at the relevant prompts.
 
-** Define a completely custom identifier
+** Define a completely custom identifier scheme
+:PROPERTIES:
+:CUSTOM_ID: h:3048f558-7d84-45d6-9ef2-53055483e801
+:END:
 
-WORK-IN-PROGRESS
+[ The following is possible as part of {{{development-version}}}. ]
+
+[ DEVELOPER NOTE: This is for advanced users. If you really need
+  custom identifiers but are not sure how to proceed, please ask and I
+  will help you. ]
+
+By default, the Denote identifier consists of the date and time in a
+compact format ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]). Denote, however, can work
+with identifiers of an arbitrary format, provided each identifier is
+unique. Any string will do.
+
+#+vindex: denote-get-identifier-function
+The variable ~denote-get-identifier-function~ specifies the function
+that Denote uses to derive a new identifier. The return value is a
+string. This function is called while creating new files and when
+renaming an existing file:
+
+- [[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]
+- [[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]
+
+#+vindex: denote-used-identifiers
+The function assigned to ~denote-get-identifier-function~ takes two
+arguments: an initial identifier and a date. The initial identifier is
+used as a reference to derive a unique variant of it (e.g. to keep
+incrementing seconds while keeping the rest of the date+time the
+same). Existing identifiers are stored in the variable
+~denote-used-identifiers~. If the initial identifier is nil or an
+identifier cannot be derived from it, then the date can be used
+instead. The date has the same format as ‘current-time’. When it is
+nil, the ‘current-time’ is used.
+
+In the following code block, we provide an example of an identifier
+scheme that encodes information related to publications: the year, the
+edition, the author or authors, the format (e.g. book or paper), and
+the publisher. For users who maintain a library of academic works, for
+example, this kind of identifier is more useful than the default
+date+time scheme.
+
+This custom identifier cannot be derived programmatically though, so
+the function ~my-denote-get-identifier~ makes a series of prompts to
+get the relevant data. Then it joins them all together with the
+current date to create a unique identifier. The helper function
+~my-denote-custom-identifier--make-unique-identifier~ makes sure to
+make small tweaks to the "current date" part of this identifier so
+that it is always unique.
+
+We can always flesh out this example with, for example, prompts that
+leverage ~completing-read~, though the point is to show how custom
+identifiers can be implemented in full. Everything else Denote does
+with identifiers, namely, links and backlinks, should work as
+intended.
+
+Good luck!
 
 #+begin_src emacs-lisp
+;; NOTE 2025-09-18: This is for testing the following custom code.
+;; The dates will need to be updated to match the test day.
+;;
 ;; (let* ((denote-used-identifiers (make-hash-table :test #'equal))
 ;;        (_ (progn
 ;;             (puthash "2000E1AprotFbookPmaxT20250918" t denote-used-identifiers)
@@ -2493,25 +2550,21 @@ WORK-IN-PROGRESS
 
 
 
-;; The code herein is a custom function for use with `denote-get-identifier-function'.
-;; (setq denote-get-identifier-function #'my-denote-get-identifier)
+;; The code herein is a custom function for use with `denote-get-identifier-function':
+(setq denote-get-identifier-function #'my-denote-get-identifier)
 
-;; FIXME 2025-09-18: We cannot use the base-identifier in tandem with
-;; the hash map in this way because what we want is to compare only
-;; the final bits, not the whole thing.  I think we can do without the
-;; hash map here.
 (defun my-denote-custom-identifier--make-unique-identifier (base-identifier date-string identifiers)
-  (let* ((current-date-str date-string)
-         (id (format "%s%s" base-identifier current-date-str)))
+  (let* ((current-date-string date-string)
+         (id (format "%sT%s" base-identifier current-date-string)))
     (while (gethash id identifiers)
-      (let* ((year (string-to-number (substring current-date-str 0 4)))
-             (month (string-to-number (substring current-date-str 4 6)))
-             (day (string-to-number (substring current-date-str 6 8)))
+      (let* ((year (string-to-number (substring current-date-string 0 4)))
+             (month (string-to-number (substring current-date-string 4 6)))
+             (day (string-to-number (substring current-date-string 6 8)))
              (time (encode-time 0 0 0 day month year))
              (next-day-time (seconds-to-time (+ (time-to-seconds time) 86400)))
-             (next-date-str (format-time-string "%Y%m%d" next-day-time)))
-        (setq current-date-str next-date-str)
-        (setq id (format "%s%s" base-identifier current-date-str))))
+             (next-date-string (format-time-string "%Y%m%d" next-day-time)))
+        (setq current-date-string next-date-string)
+        (setq id (format "%sT%s" base-identifier current-date-string))))
     id))
 
 (defvar my-denote-custom-identifier-year-history nil)
