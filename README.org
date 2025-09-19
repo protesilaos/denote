@@ -2599,6 +2599,46 @@ An alternative for the above:
            (my-denote--find-first-unused-id-as-number "1")))))
 #+end_src
 
+*** A custom identifier that is a simple string given at the prompt each time
+:PROPERTIES:
+:CUSTOM_ID: h:197f83af-6149-4262-a186-14d0eab24f1e
+:END:
+
+This is a sample implementation of custom Denote identifiers ([[#h:3048f558-7d84-45d6-9ef2-53055483e801][Define a completely custom identifier scheme]]).
+
+While it is possible to implement a certain automatic scheme for the
+Denote identifier, users may prefer to have a prompt each time that
+asks them for a simple string which is then used as-is. This can be
+done by modifying the user option ~denote-prompts~ to include the
+=identifier= in the list of file name components to prompt for ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
+
+For example:
+
+#+begin_src emacs-lisp
+;; The default is '(title keywords)
+(setq denote-prompts '(identifier title keywords))
+#+end_src
+
+With the above, each time Denote needs to produce a new file name it
+will prompt for the identifier. Note that it is then up to the user to
+guarantee the uniqueness of the resulting identifiers. With this code,
+Denote will fall back to using the current date as the identifier if
+the provided string is not yielding a unique match.
+
+In practice, the identifier prompt is a useful tool for wrapper
+functions that need to do something special in a given context. For
+example, in a folder with some ancient photos the user wants to have
+an identifier scheme that is =PLACE+PEOPLE+N= where it is easier to
+prompt for that value each time than write some extra code to do the
+work. To this end, here is a sample wrapper function of ~denote-rename-file~:
+
+#+begin_src emacs-lisp
+(defun my-denote-rename-file-with-identifier-prompt ()
+  (interactive)
+  (let ((denote-prompts '(identifier title keywords)))
+    (call-interactively 'denote-rename-file)))
+#+end_src
+
 *** A custom identifier to encode publisher data
 :PROPERTIES:
 :CUSTOM_ID: h:f92cd454-51f4-4403-9061-3b2efaef2851
