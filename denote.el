@@ -3071,40 +3071,6 @@ This is a reference function for `denote-get-identifier-function'."
            (denote--find-first-unused-id-as-date
             (format-time-string denote-date-identifier-format (or date (current-time))))))))
 
-(defun denote--find-first-unused-id-as-number (id)
-  "Return the first unused id starting at ID.
-If ID is already used, increment it until an available id is found."
-  (while (gethash id denote-used-identifiers)
-    (setq id (number-to-string (1+ (string-to-number id)))))
-  id)
-
-(defun denote-generate-identifier-as-number (initial-identifier _date)
-  "Generate an increasing number identifier.
-
-If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
-possible to derive an identifier from it, return this identifier.
-
-Else, use the first unused number starting from 1.
-
-This is a reference function for `denote-get-identifier-function'."
-  (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
-    (cond (;; Always use the supplied initial-identifier if possible,
-           ;; regardless of format.
-           (and initial-identifier
-                (not (gethash initial-identifier denote-used-identifiers)))
-           initial-identifier)
-          (;; If the supplied initial-identifier is already used, but
-           ;; it has the right format, make is unique.
-           (and initial-identifier
-                (string-match-p "[1-9][0-9]*" initial-identifier))
-           (denote--find-first-unused-id-as-number initial-identifier))
-          (;; Else, the supplied initial-identifier is nil or it is
-           ;; already used or it does not match the supplied
-           ;; format. Ignore it and generate a valid identifier with
-           ;; the right format.
-           t
-           (denote--find-first-unused-id-as-number "1")))))
-
 (defvar denote-command-prompt-history nil
   "Minibuffer history for `denote-command-prompt'.")
 
