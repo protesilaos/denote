@@ -473,8 +473,8 @@ of the following:
   [[#h:e7ef08d6-af1b-4ab3-bb00-494a653e6d63][The denote-date-prompt-use-org-read-date option]].
 
 - =identifier=: Prompts with completion for the identifier of the new
-  note. It expects a string that has the format of
-  ~denote-date-identifier-format~.
+  note. It expects a string that has the format of ~denote-date-identifier-format~.
+  [ Also see: [[#h:197f83af-6149-4262-a186-14d0eab24f1e][A custom identifier that is a simple string given at the prompt each time]]. ]
 
 - =template=: Prompts for a KEY among the ~denote-templates~.  The value
   of that KEY is used to populate the new note with content, which is
