@@ -2513,6 +2513,71 @@ the publisher. For users who maintain a library of academic works, for
 example, this kind of identifier is more useful than the default
 date+time scheme.
 
+*** A custom identifier that is a simple incrementing number scheme
+:PROPERTIES:
+:CUSTOM_ID: h:8b8a4fa9-09fe-4d5c-a003-8808fe292e8b
+:END:
+
+This is a sample implementation of custom Denote identifiers ([[#h:3048f558-7d84-45d6-9ef2-53055483e801][Define a completely custom identifier scheme]]).
+
+In its simplest form, a custom Denote identifier can be an integer
+that is incremented each time a new file name is produced. In the
+following code block, ~my~denote-get-identifier~ is the function we
+bind to the variable ~denote-get-identifier-function~, which then
+makes Denote use the custom identifier scheme.
+
+#+begin_src emacs-lisp
+(setq denote-get-identifier-function #'my-denote-get-identifier)
+
+(defun my-denote--get-all-used-ids ()
+  (when-let* ((ids (make-hash-table :test 'equal))
+              (files (denote-directory-files nil nil nil nil :has-identifier))
+              (file-names (mapcar #'file-name-nondirectory files))
+              (names (append file-names (denote--buffer-file-names))))
+    (dolist (name names)
+      (when-let* ((id (denote-retrieve-filename-identifier name)))
+        (puthash id t ids)))
+    ids))
+
+(defun my-denote-get-identifier (initial-identifier _date)
+  (let ((identifiers (or denote-used-identifiers (my-denote--get-all-used-ids))))
+    (cond
+     ((and initial-identifier (not (gethash initial-identifier identifiers)))
+      initial-identifier)
+     (t
+      (number-to-string
+       (let ((keys nil))
+         ;; NOTE 2025-09-19: The `string-to-number' is done with the
+         ;; assumption that this is always an integer.  It will break
+         ;; with the default Denote identifier scheme or, indeed,
+         ;; anything that is not strictly numeric.
+         (when identifiers (maphash (lambda (key value) (push (string-to-number key) keys)) identifiers))
+         (if keys
+             (+ (apply #'max keys) 1)
+           1)))))))
+
+
+
+;; And this is for testing purposes
+
+;; (let ((denote-directory "/tmp/"))
+;;   (my-denote-get-identifier nil nil))
+;;
+;; (let* ((denote-used-identifiers (make-hash-table :test #'equal))
+;;        (_ (progn
+;;             (puthash "1" 1 denote-used-identifiers)
+;;             (puthash "2" 2 denote-used-identifiers)
+;;             (puthash "3" 3 denote-used-identifiers))))
+;;   (my-denote-get-identifier "1" nil))
+#+end_src
+
+*** A custom identifier to encode publisher data
+:PROPERTIES:
+:CUSTOM_ID: h:f92cd454-51f4-4403-9061-3b2efaef2851
+:END:
+
+This is a sample implementation of custom Denote identifiers ([[#h:3048f558-7d84-45d6-9ef2-53055483e801][Define a completely custom identifier scheme]]).
+
 This custom identifier cannot be derived programmatically though, so
 the function ~my-denote-get-identifier~ makes a series of prompts to
 get the relevant data. Then it joins them all together with the
