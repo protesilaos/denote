@@ -2639,6 +2639,103 @@ work. To this end, here is a sample wrapper function of ~denote-rename-file~:
     (call-interactively 'denote-rename-file)))
 #+end_src
 
+*** A custom identifier to include the day of the week as a capital letter
+:PROPERTIES:
+:CUSTOM_ID: h:5bd49896-b0d4-4176-ad7b-27285182bdb2
+:END:
+
+The default Denote identifier is a compact version of the date and
+time. The letter =T= is placed between the two to delimit where the
+date ends and the time starts. This =T= does not have any special
+meaning in itself. Users may prefer to have other letters there to
+represent the day of the week. For example, Monday is =A=, Tuesday is
+=B=, and so on.
+
+Here is a function that takes a number or numeric string argument and
+returns the corresponding capital letter for the day of the week. We
+will see further below how this function goes together with the rest
+of the code necessary for a custom identifier scheme.
+
+#+begin_src emacs-lisp
+(defun my-denote-get-day-of-week-as-alpha (day)
+  "Return the corresponding capital letter for DAY.
+DAY is a string holding a number, as the return value of the %u
+specifier in `format-time-string'.
+
+If DAY is a number, convert it to a string and then return its
+corresponding letter."
+  (pcase (if (numberp day) (number-to-string day) day)
+    ("1" "A")
+    ("2" "B")
+    ("3" "C")
+    ("4" "D")
+    ("5" "E")
+    ("6" "F")
+    ("7" "G")
+    (_ (error "The day `%S' is not among 1-7" day))))
+#+end_src
+
+What we then need is to have a variant of the standard ~denote-date-identifier-format~
+where the letter =T= is replaced by the =%u= ~format-time-string~
+specifier. That is what gives us the numeric representation of the day
+of the week. Then we copy the default ~denote-generate-identifier-as-date~
+and modify it to use our format, making the small adjustments
+necessary to recreate the identifier as one string.
+
+Putting it all together:
+
+#+begin_src emacs-lisp
+(setq denote-get-identifier-function #'my-denote-generate-identifier-as-date)
+
+(defun my-denote-get-day-of-week-as-alpha (day)
+  "Return the corresponding capital letter for DAY.
+DAY is a string holding a number, as the return value of the %u
+specifier in `format-time-string'.
+
+If DAY is a number, convert it to a string and then return its
+corresponding letter."
+  (pcase (if (numberp day) (number-to-string day) day)
+    ("1" "A")
+    ("2" "B")
+    ("3" "C")
+    ("4" "D")
+    ("5" "E")
+    ("6" "F")
+    ("7" "G")
+    (_ (error "The day `%S' is not among 1-7" day))))
+
+(defconst my-denote-date-identifier-format
+  (replace-regexp-in-string "T" " %u " denote-date-identifier-format t))
+
+(defun my-denote-format-date (date)
+  "Format DATE using `my-denote-date-identifier-format'."
+  (pcase-let* ((identifier-string (format-time-string my-denote-date-identifier-format date))
+               (`(,date ,day-of-week ,time) (split-string identifier-string))
+               (day-as-letter (my-denote-get-day-of-week-as-alpha day-of-week)))
+    (concat date day-as-letter time)))
+
+(defun my-denote-generate-identifier-as-date (initial-identifier date)
+  "Generate an identifier based on DATE.
+
+If INITIAL-IDENTIFIER is not already used, return it.  Else, if it is
+possible to derive an identifier from it, return this identifier.
+
+Else, use the DATE.  If it is nil, use `current-time'.
+
+Slightly modified version of `denote-generate-identifier-as-date'."
+  (let ((denote-used-identifiers (or denote-used-identifiers (denote--get-all-used-ids))))
+    (cond ((and initial-identifier
+                (not (gethash initial-identifier denote-used-identifiers)))
+           initial-identifier)
+          ((and initial-identifier
+                (string-match-p denote-date-identifier-regexp initial-identifier)
+                (date-to-time initial-identifier))
+           (denote--find-first-unused-id-as-date initial-identifier))
+          (t
+           (denote--find-first-unused-id-as-date
+            (my-denote-format-date (or date (current-time))))))))
+#+end_src
+
 *** A custom identifier to encode publisher data
 :PROPERTIES:
 :CUSTOM_ID: h:f92cd454-51f4-4403-9061-3b2efaef2851
