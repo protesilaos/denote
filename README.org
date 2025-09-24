@@ -4194,8 +4194,8 @@ sorting. This is for advanced users, who may refer to the
 documentation of the ~denote-sort-files~ for the technicalities.
 
 Whatever the value of ~denote-query-sorting~, users may change the
-sort of query buffers by calling the command ~denote-query-sort-last-search~
-([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]).
+sorting of query buffers on demand by calling the command
+~denote-query-sort-last-search~ ([[#h:435592bc-e896-429f-a599-9f1bcd5ab9b8][Interact with the links buffer]]).
 
 * Minibuffer histories
 :PROPERTIES:
