@@ -4171,15 +4171,17 @@ they can perform.
 #+vindex: denote-query-sorting
 The user option ~denote-query-sorting~ controls the order of matching
 files in a query buffer (buffers that use the ~denote-query-mode~. The
-applies to the buffer that is produced by query links, backlinks, and
-the ~denote-grep~ command:
+applies to the buffer that is produced by query links for file
+contents, backlinks, and the ~denote-grep~ command:
 
 - [[#h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d][Add a query link]].
 - [[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]].
 - [[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]].
 
-By default, no sorting of matching files is performed. They appear in
-the query buffer in the order they were retrieved.
+By default (a ~nil~ value), no sorting of matching files is performed.
+Files are displayed in the order they are returned by the search
+program (which often, but not always, means they are sorted by file
+name).
 
 #+vindex: denote-sort-components
 The ~denote-query-sorting~ can be set to a symbol among those listed
