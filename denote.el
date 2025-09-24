@@ -5566,7 +5566,8 @@ order to sort file names interactively in the query buffer."
           (const :tag "Sort by keywords" keywords)
           (const :tag "Sort by signature" signature)
           (const :tag "Random order" random)
-          (const :tag "Last modified" last-modified))
+          (const :tag "Last modified" last-modified)
+          (function :tag "Custom function that take two arguments for `sort'"))
   :package-version '(denote . "4.1.0")
   :group 'denote-query)
 
