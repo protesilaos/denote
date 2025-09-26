@@ -1,5 +1,10 @@
 # denote: Simple notes with an efficient file-naming scheme
 
+New to Denote? Start reading this from the manual:
+<https://protesilaos.com/emacs/denote#h:c54bedb4-5377-4dbd-853c-5870ace6eb33>.
+
+* * *
+
 Denote is a simple note-taking tool for Emacs.  It is based on the idea
 that notes should follow a predictable and descriptive file-naming
 scheme.  The file name must offer a clear indication of what the note is
