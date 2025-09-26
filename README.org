@@ -134,8 +134,9 @@ enough to be highly productive ([[#h:998ae528-9276-47ec-b642-3d7355a38f27][Get s
 :CUSTOM_ID: h:998ae528-9276-47ec-b642-3d7355a38f27
 :END:
 
-If you are new to Denote, this a good place to start. Then work your
-way through the manual and expand your configuration accordingly. Only
+If you are new to Denote, this a good configuration to get a feel for
+some main features ([[#h:c54bedb4-5377-4dbd-853c-5870ace6eb33][Getting started with Denote]]). Then work your way
+through the manual and expand your configuration accordingly. Only
 include commands/variables that are useful to you. We provide another
 code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][More comprehensive sample configuration]]).
 
@@ -238,6 +239,40 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
   ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
   (denote-rename-buffer-mode 1))
 #+end_src
+
+* Getting started with Denote
+:PROPERTIES:
+:CUSTOM_ID: h:c54bedb4-5377-4dbd-853c-5870ace6eb33
+:END:
+
+At its core, Denote is a file-naming scheme ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
+It is applies to new text files that Denote creates or to existing
+files of any type (videos, PDFs, images, ...). Here is the big picture
+view on how to get started with Denote:
+
+1. Create new text files with =M-x denote= ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+2. Rename any file anywhere with =M-x denote-rename-file=. There are
+   many variations of this command, such as ~denote-dired-rename-marked-files~ ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
+3. Link to another Denote file with =M-x denote-link= ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Add a single direct link using a file name prompt]]).
+4. From any file with a Denote file name, view backlinks with =M-x
+   denote-backlinks= ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
+5. Instead of linking to a file, create a "link" to a search through
+   file contents with =M-x denote-query-contents-link=. This searches
+   the contents of text files in the ~denote-directory~. To only
+   search against file names (not file contents!), use =M-x
+   denote-query-filenames-link= ([[#h:d9a84289-2f73-4ef9-b4f0-9a0aa3e9bf0d][Add a query link]]).
+6. To produce a Dired buffer with matching files and preferred
+   sorting, do =M-x denote-dired= ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]]).
+7. To search directly in the contents of your files, do =M-x
+   denote-grep= ([[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]]).
+8. To use shorter buffer names for Denote files, enable the
+   ~denote-rename-buffer-mode~ ([[#h:3ca4db16-8f26-4d7d-b748-bac48ae32d69][Automatically rename Denote file buffers]]).
+
+There are many more features documented in this manual. Also, we have
+standalone packages that provide support for Org dynamic blocks (part
+of the ~denote-org~ package), fully fledged journaling with
+~denote-journal~, writing of "sequence notes" with ~denote-sequence~,
+and many more ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]])!
 
 * Overview
 :PROPERTIES:
