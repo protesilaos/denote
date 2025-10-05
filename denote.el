@@ -6050,8 +6050,12 @@ Also see `denote-get-links'."
           (with-temp-buffer
             (insert-file-contents file)
             (goto-char (point-min))
-            (when (re-search-forward link-regexp nil t)
-              (throw 'has-backlinks t))))))))
+            (while (re-search-forward link-regexp nil t)
+              (when
+                  (string-equal
+                   (caar (denote--inside-link-regexp-p link-regexp (point)))
+                   id)
+                (throw 'has-backlinks t)))))))))
 
 ;;;###autoload
 (defun denote-find-backlink ()
