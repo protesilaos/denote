@@ -6520,9 +6520,11 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 
 (defun denote-link--map-over-notes ()
   "Return list of `denote-file-has-denoted-filename-p' from Dired marked items."
-  (seq-filter (lambda (file) (and (denote-file-has-denoted-filename-p file)
-                                  (denote-file-has-identifier-p file)))
-              (dired-get-marked-files)))
+  (seq-filter
+   (lambda (file)
+     (and (denote-file-has-denoted-filename-p file)
+          (denote-file-has-identifier-p file)))
+   (dired-get-marked-files)))
 
 ;;;###autoload
 (defun denote-link-dired-marked-notes (files buffer &optional id-only)
