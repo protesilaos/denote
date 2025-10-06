@@ -3528,10 +3528,7 @@ a value that can be parsed by `decode-time' or nil."
   "Prompt for subdirectory of the variable `denote-directory'.
 The table uses the `file' completion category (so it works with
 packages such as `marginalia' and `embark')."
-  (let* ((roots (mapcar
-                 (lambda (d)
-                   (directory-file-name d))
-                 (denote-directories)))
+  (let* ((roots (mapcar #'directory-file-name (denote-directories)))
          (subdirs (denote-directory-subdirectories))
          (dirs (append roots subdirs)))
     (denote--subdirs-completion-table dirs)))
