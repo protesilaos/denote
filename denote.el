@@ -6042,17 +6042,11 @@ Also see `denote-get-links'."
               (files (denote-directory-files nil :omit-current :text-only)))
     (catch 'has-backlinks
       (dolist (file files)
-        (when-let* ((file-type (denote-filetype-heuristics file))
-                    (link-regexp (denote--link-in-context-regexp file-type)))
-          (with-temp-buffer
-            (insert-file-contents file)
-            (goto-char (point-min))
-            (while (re-search-forward link-regexp nil t)
-              (when
-                  (string-equal
-                   (caar (denote--inside-link-regexp-p link-regexp (point)))
-                   id)
-                (throw 'has-backlinks t)))))))))
+        (with-temp-buffer
+          (insert-file-contents file)
+          (goto-char (point-min))
+          (when (search-forward (format "[denote:%s]" id) nil t)
+            (throw 'has-backlinks t)))))))
 
 ;;;###autoload
 (defun denote-find-backlink ()
