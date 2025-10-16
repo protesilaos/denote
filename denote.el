@@ -1627,7 +1627,8 @@ minibuffer prompt for which file name component to sort by."
           (const :tag "Sort by title" title)
           (const :tag "Sort by keywords" keywords)
           (const :tag "Sort by signature" signature)
-          (const :tag "Random order" random))
+          (const :tag "Random order" random)
+          (const :tag "Last modified" last-modified))
   :package-version '(denote . "4.1.0")
   :group 'denote-sort)
 
