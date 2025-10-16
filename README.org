@@ -4179,7 +4179,7 @@ of files that were returned by whichever command produced the buffer
   the last search. The user option ~denote-query-sorting~ controlls
   the default sort ([[#h:ec3d009a-518b-439f-a3e5-38342b1c13fe][Control the default sort of a query buffer]]).
 
-  [ Both the command ~denote-query-sorting~ and the user option
+  [ Both the command ~denote-query-sort-last-search~ and the user option
     ~denote-query-sorting~ are part of {{{development-version}}}. ]
 
 Remember that these are easy to use even without knowledge of regular
