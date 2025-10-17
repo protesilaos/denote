@@ -31,7 +31,7 @@ their own packages. I cover their changes further down after I
 elaborate on all the changes to the core Denote package:
 
 - [[#h:ce5befb1-0401-4b06-ad4f-64c567b15b91][~denote-journal~ version 0.2.0]]
-- [[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]
+- [[#h:1403c3b9-280d-4033-a930-5364bf7b5e90][~denote-org~ version 0.2.0]]
 - [[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]
 
 Note that I write all the release notes by hand. The reason is that I
