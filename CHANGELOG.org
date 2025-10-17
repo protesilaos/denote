@@ -13,6 +13,479 @@ the manual: <https://protesilaos.com/emacs/denote>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 4.1.0 on 2025-10-17
+:PROPERTIES:
+:CUSTOM_ID: h:385847d5-4990-4c1f-9869-82113fe1b47f
+:END:
+
+The overarching theme of version =4.1.0= is that of continuing to
+deliver on the highly hackable/flexible/powerful potential of Denote.
+All the core functionality is the same as before and you still only
+need a tiny configuration to use Denote productively. We are adding
+more refinements and subtle improvements under the hood, while making
+it even easier for advanced users/developers to piece together a
+workflow that matches their particular needs.
+
+Since version =4.0.0=, we have moved the "Denote extras" files into
+their own packages. I cover their changes further down after I
+elaborate on all the changes to the core Denote package:
+
+- [[#h:ce5befb1-0401-4b06-ad4f-64c567b15b91][~denote-journal~ version 0.2.0]]
+- [[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]
+- [[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]
+
+Note that I write all the release notes by hand. The reason is that I
+consider this process an essential part of my role as a maintainer.
+Taking the time to review and document everything ensures that (i) I am
+well informed about the state of the package, (ii) I did not forget
+anything about this development cycle, and (iii) I take another look
+at the changes we made to ensure everything is in order.
+
+** Overview of the new features for core Denote
+:PROPERTIES:
+:CUSTOM_ID: h:47ec2fca-8fd4-4f96-af89-454e0a001e46
+:END:
+
+- The user option ~denote-directory~ can be assigned to a list of
+  directories. The original string value is also acceptable and
+  remains the default.
+
+- Advanced users can define a completely custom scheme for
+  identifiers. This can be as simple as automatically assigned ordinal
+  numbers to increasingly complex patterns that may also involve user
+  input.
+
+- The command ~denote-find-backlink-with-location~ is like
+  ~denote-find-backlink~ except it also moves to the exact location of
+  the link in the corresponding file.
+
+- All Denote buffer names share a common prefix, which is subject to
+  the user option ~denote-buffer-name-prefix~. This makes it easier to
+  spot them in the buffer list.
+
+- The command ~denote-dired~ (alias ~denote-sort-dired~) can sort
+  files by =random= and =last-modified= in addition to the methods
+  that involve Denote file name components.
+
+- The user option ~denote-query-sorting~ controls how files in all
+  query buffers are sorted by default. This covers backlinks, query
+  links for file contents, and any buffer produced by the
+  ~denote-grep~ command. It benefits from the internal "Denote sort"
+  mechanism, which is also used by ~denote-dired~ and the Org dynamic
+  blocks of the ~denote-org~ package.
+
+Remember that the release notes are true only at the time of
+publication. The single source of truth always is the official manual.
+
+** Set ~denote-directory~ to a list of directories
+:PROPERTIES:
+:CUSTOM_ID: h:60ed9223-a092-4d2a-a6b6-3ba72150648b
+:END:
+
+The user option ~denote-directory~ can optionally be bound to a list
+of file system paths, each of which represents a directory root, such
+as ='("/home/prot/Documents/work/" "=/home/prot/Git/hut/")= (Denote
+has always supported subdirectories, even for a singular ~denote-directory~).
+
+When creating new files, such as with the ~denote~ command, the first
+directory on the list will be selected. This can be changed by
+modifying the ~denote-prompts~ user option so that it asks for a
+directory or subdirectory thereof. Or by writing small wrapper
+commands that put files in a predefined directory, like this:
+
+#+begin_src emacs-lisp
+(defun my-denote-for-work ()
+  "Like `denote' but always use the ~/Documents/work/ directory."
+  (interactive)
+  (let ((denote-use-directory "~/Documents/work/"))
+    (call-interactively 'denote)))
+#+end_src
+
+Why have many directories as part of the ~denote-directory~? Some
+users want to maintain separate directories with Denote files, while
+retaining the option of establishing links between (unlike the concept
+of "silos" we support, where the directories are self-contained).
+Those two directories can be their own Git repositories, for example,
+and have different syncing policies for access across multiple
+devices.
+
+Thanks to Jean-Philippe Gagné Guay for providing the core
+functionality in pull request 609: <https://github.com/protesilaos/denote/pull/609>.
+
+Jean-Philippe is a long-time contributor who has assigned copyright to
+the Free Software Foundation. I made several changes on top, such as
+to allow ~denote-dired~ (alias ~denote-sort-dired~) to work with many
+directories, by finding their common root (which would ultimately be
+=/=).
+
+** Define completely custom Denote identifiers
+:PROPERTIES:
+:CUSTOM_ID: h:e15ef74b-d86e-4c36-812b-2ebd0f4b7dcf
+:END:
+
+The default Denote identifier should work for most people in most
+cases. I have considered the Denote file-naming scheme carefully and
+know it is reliable. Advanced users who have a clear use-case of
+something out-of-the-ordinary can now get "Denoted" file names with
+arbitrary identifiers. Since this is an advanced feature, I will not
+elaborate here on the technicalities. Though I have taken the time to
+write at length in the manual about it, with concrete examples ranging
+from simple to more complex scenaria. Start with this introduction:
+<https://protesilaos.com/emacs/denote#h:3048f558-7d84-45d6-9ef2-53055483e801>.
+
+This feature has been discussed and requested for a long time, across
+several related issues:
+
+- <https://github.com/protesilaos/denote/issues/278>.
+- <https://github.com/protesilaos/denote/issues/474>.
+- <https://github.com/protesilaos/denote/issues/581>.
+
+Thanks, in no particular order, to mentalisttraceur, juh2, Christian
+Tietze, and Jean-Philippe Gagné Guay for sharing their thoughts. Also
+thanks to Jean-Philippe Gagné Guay for contributing the patches that
+made this possible, the last of which is in pull request 586:
+<https://github.com/protesilaos/denote/issues/586>.
+
+** Find a backlink at its exact location in the file
+:PROPERTIES:
+:CUSTOM_ID: h:f0388079-05f6-417b-b232-42aee3447909
+:END:
+
+Denote has two ways of working with backlinks: (i) to display them in
+a dedicated buffer and (ii) to use a minibuffer prompt that supports
+completion in order to pick one file out of the list. The new command
+~denote-find-backlink-with-location~ is of the latter kind. Like its
+more generic ~denote-find-backlink~ counterpart, it uses the
+minibuffer to pick a file that links to the current one. Then, it also
+moves the cursor to where the link is.
+
+I did this is in response to issue 471 as reported by johkneisl:
+<https://github.com/protesilaos/denote/issues/471>.
+
+** Denote buffer names use the ~denote-buffer-name-prefix~
+:PROPERTIES:
+:CUSTOM_ID: h:9057709b-8e5f-4628-9463-8bd938a8e92e
+:END:
+
+This is a new user option that takes an arbitrary string. Its value is
+="[D]"= by default. It consolidates how we name all of our buffers.
+Out-of-the-box, this applies to special buffers, like those produced
+by the commands ~denote-backlinks~ and ~denote-dired~. When the
+optional minor mode ~denote-rename-buffer-mode~ is enabled, all
+buffers whose file naming scheme is that of Denote will get the
+~denote-buffer-name-prefix~ in addition to their own ~denote-rename-buffer-format~.
+
+This is related to pull request 597 by James Kalyan:
+<https://github.com/protesilaos/denote/pull/597>. James has assigned
+copyright to the Free Software Foundation.
+
+** The Denote sort mechanism can sort by =random= and =last-modified=
+:PROPERTIES:
+:CUSTOM_ID: h:f6ea4714-1ed4-4db7-ad4b-c040b6c60c6d
+:END:
+
+In core Denote, this is used internally by the ~denote-dired~ command
+(alias ~denote-sort-dired~) and the query buffers (more in the next
+section). By default, ~denote-dired~ prompts for the sort method and
+whether to reverse the order. Though there are user options to tweak
+its behaviour (consult the manual). The Org dynamic blocks of the
+~denote-org~ package also rely on this mechanism ([[#h:1403c3b9-280d-4033-a930-5364bf7b5e90][~denote-org~ version 0.2.0]]).
+
+** Control the default sort of files in query buffers
+:PROPERTIES:
+:CUSTOM_ID: h:42bd3513-98fa-4653-9e4b-b0918938ae3b
+:END:
+
+Query buffers are those of ~denote-backlinks~, ~denote-grep~, and
+~denote-query-contents-link~ (in the latter case, the query buffer is
+produced when you click on the link). Users can now modify how they
+sort matching files via the option ~denote-query-sorting~. The sorting
+methods are by any of the Denote file names components (per
+~denote-sort-components~), random order, last modified, or an
+arbitrary function.
+
+Thanks to Lucas Quintana for the contribution in pull request 594:
+<https://github.com/protesilaos/denote/pull/594>. Lucas has assigned
+copyright to the Free Software Foundation.
+
+** Miscellaneous for core Denote
+:PROPERTIES:
+:CUSTOM_ID: h:889e72d5-3532-431d-a691-2e2ca7237d58
+:END:
+
+- The ~denote-dired~ command (alias ~denote-sort-dired~) sets up its
+  ~revert-buffer-function~ in a more robust way, such that it does not
+  affect the window layout under certain conditions.
+
+- Fixed a bug with the menu entry of Denote that broke
+  ~context-menu-mode~. It addresses issue 592, as reported by artelse:
+  <https://github.com/protesilaos/denote/issues/592>. Thanks to Lucas
+  Quintana for the patch. Lucas has assigned copyright to the Free
+  Software Foundation.
+
+- Thanks to ryota for refining the documentation of the variable
+  ~denote-use-template~ and its potential interference with
+  ~denote-org-capture-identifiers~ in custom user code. We discussed
+  this in issue 545 and the patch was sent as pull request 598:
+  - <https://github.com/protesilaos/denote/issues/545>.
+  - <https://github.com/protesilaos/denote/pull/598>. The change is
+    small, meaning that ryota does not need to assign copyright to
+    the Free Software Foundation.
+
+- An internal check to determine if a file has backlinks is now faster
+  than before: it exits with a non-~nil~ value as soon as it finds one
+  match, instead of trying to collect all the backlinks. Thanks to
+  Yann Dutrieux for addressing an omission of mine in the original
+  implementation and then for discussing with me some further
+  refinements. Yann's contribution was sent as pull request 637:
+  <https://github.com/protesilaos/denote/pull/637>.
+
+- Thanks to Alan Schmitt and Ashish Panigrahi for fixing a couple of
+  typos, in pull requests 623 and 626, respectively:
+  - <https://github.com/protesilaos/denote/pull/623>.
+  - <https://github.com/protesilaos/denote/pull/626>.
+
+** Git commits for core Denote
+:PROPERTIES:
+:CUSTOM_ID: h:ef286c08-8e04-4d33-b72c-696c026c8183
+:END:
+
+#+begin_src sh
+~/Git/Projects/denote $ git shortlog 4.0.0..4.1.0  --summary --numbered
+   156	Protesilaos Stavrou
+    29	Jean-Philippe Gagné Guay
+     4	Lucas Quintana
+     2	James Kalyan
+     1	Alan Schmitt
+     1	Ashish Panigrahi
+     1	Hanwen Guo
+     1	Ryota
+     1	Yann Dutrieux
+#+end_src
+
+** Changes to the extensions of Denote I maintain
+:PROPERTIES:
+:CUSTOM_ID: h:dec0751e-6757-46e8-9982-718cc454b1ed
+:END:
+
+This concerns all the former "Denote extras" that were shipped with
+core Denote as well as ~consult-denote~.
+
+*** ~consult-denote~ version 0.4.0
+:PROPERTIES:
+:CUSTOM_ID: h:52525fbf-6801-4676-91da-095a7439e582
+:END:
+
+- The commands ~consult-denote-grep~ and ~consult-denote-find~ also
+  work when ~denote-directory~ is set to a list value, as explained
+  further above ([[#h:60ed9223-a092-4d2a-a6b6-3ba72150648b][Set ~denote-directory~ to a list of directories]]).
+
+- There is a Consult-powered counterpart to the
+  ~denote-sequence-file-prompt~. It is for users of the
+  ~denote-sequence~ package and comes into effect when the
+  ~consult-denote-mode~ is enabled (that mode "Consults" all relevant
+  minibuffer prompts Denote uses so they get the familiar preview
+  functionality). The ~denote-sequence-file-prompt~ is used by
+  commands such as ~denote-sequence~, ~denote-sequence-find~, and
+  ~denote-sequence-link~, among others ([[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]).
+
+- The command ~consult-denote-find~ sorts its files by default. We
+  discussed this with Gianluca Della Vedova and Gianluca implemented
+  the tweak in pull request 18:
+  <https://github.com/protesilaos/consult-denote/pull/18>. The change
+  is small, meaning that Gianluca does not need to assign copyright to
+  the Free Software Foundation.
+
+*** ~denote-journal~ version 0.2.0
+:PROPERTIES:
+:CUSTOM_ID: h:ce5befb1-0401-4b06-ad4f-64c567b15b91
+:END:
+
+- It is now possible to specify the desired interval used by the
+  command ~denote-journal-new-or-existing-entry~ to determine what
+  "new" and "existing" mean. Users may want to, for example, maintain
+  one file per month, with daily entries as headings or as free-form
+  text. The user option ~denote-journal-interval~ specifies the
+  interval as a symbol among =daily=, =weekly=, =monthly=, and
+  =yearly=. Thanks to Ning Xu for floating the idea of non-daily
+  journaling in issue 18: <https://github.com/protesilaos/denote-journal/issues/18>.
+  - Thanks to Alan Schmitt for catching a couple of errors in my
+    original implementation and for suggesting fixes in pull requests
+    20 and 21. Also thanks to Abdelhak Bougouffa for addressing
+    another problem in pull request 23. Further changes by me.
+    - <https://github.com/protesilaos/denote-journal/pull/20>.
+    - <https://github.com/protesilaos/denote-journal/pull/21>.
+    - <https://github.com/protesilaos/denote-journal/pull/23>.
+
+- The new user option ~denote-journal-signature~ specifies a signature
+  that will be applied to all new journal entries. It is the
+  counterpart of ~denote-journal-keyword~. Possible values are ~nil~,
+  for no predefined signature, a string for a constant signature, and a
+  function that returns a string which is then used as-is. Thanks to
+  Halogen3576 for suggesting an option for a signature in issue 13:
+  <https://github.com/protesilaos/denote-journal/issues/13>.
+
+  In the case of a function value, users may wish to integrate the
+  ~denote-journal~ package with the ~denote-sequence~ package
+  ([[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]). For example, each new journal
+  entry should be defined as a new parent sequence. Thus:
+
+  #+begin_src emacs-lisp
+  (setq denote-journal-signature
+        (lambda ()
+          (denote-sequence-get-new 'parent)))
+  #+end_src
+
+- The user option ~denote-journal-keyword~ is extended to support a
+  function value which should return a string or list of strings.
+
+- The integration with =M-x calendar= (when the minor mode
+  ~denote-journal-calendar-mode~ is enabled) is more robust when
+  highlighting dates that have a Denote journal entry. Thanks to Alan
+  Schmitt for the patch that improves the check for visible dates
+  only. This was done in pull request 12: <https://github.com/protesilaos/denote-journal/pull/12>.
+
+- The ~denote-journal-calendar~ face is extended to also work when
+  Emacs is ran in a TTY. Thanks to Ettore Berardi for the original
+  contribution and for discussing this with me. It was done in pull
+  request 14: <https://github.com/protesilaos/denote-journal/pull/14>.
+  The contribution is less than 15 lines of code, meaning that Ettore
+  does not need to assign copyright to the Free Software Foundation.
+
+- The function ~denote-journal-path-to-new-or-existing-entry~ is
+  tweaked to not kill the buffer of the new file it might generate.
+  Thanks to jbwfu for the change in pull request 17:
+  <https://github.com/protesilaos/denote-journal/pull/17>. The change
+  is small, meaning that the author does not need to assign copyright
+  to the Free Software Foundation.
+
+- Dates with a single digit in the title of a new journal entry no
+  longer have a space where the second digit normally is. So something
+  like =October 1= instead of =October  1=. Thanks to Josh Kingsley for
+  the patch. The change is small, meaning that Josh does not need to
+  assign copyright to the Free Software Foundation. It was done in
+  pull request 24: <https://github.com/protesilaos/denote-journal/pull/24>.
+
+- Thanks to gk2803 for renaming a couple of old symbols to their
+  current names in the commentary of the package. This was done in
+  pull request 10: <https://github.com/protesilaos/denote-journal/pull/10>.
+
+#+begin_src sh
+~/Git/Projects/denote-journal $ git shortlog 0.1.0..0.2.0  --summary --numbered
+    35	Protesilaos Stavrou
+     3	Alan Schmitt
+     2	Ettore Berardi
+     1	Abdelhak Bougouffa
+     1	Josh Kingsley
+     1	gk2803
+     1	jbwfu
+#+end_src
+
+*** ~denote-org~ version 0.2.0
+:PROPERTIES:
+:CUSTOM_ID: h:1403c3b9-280d-4033-a930-5364bf7b5e90
+:END:
+
+- A new Org dynamic block integrates with the ~denote-sequence~
+  package ([[#h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c][~denote-sequence~ version 0.2.0]]). The block is called
+  ~denote-sequence~ and can be inserted at point with the command
+  ~denote-org-dblock-insert-sequence~. What this block does is list
+  the descendants of a given sequence up to a maximum depth. The
+  presentation is a typographic list of lists to visualise the
+  hierarchy of the complete sequence, with each set of children nested
+  under its parent. Thanks to Peter Prevos for the original
+  implementation in pull request 9 and for subsequent tweaks in pull
+  request 13. Other changes by me are done to ensure tighter
+  integration with the ~denote-sequence~ package.
+
+  - <https://github.com/protesilaos/denote-org/pull/9>.
+  - <https://github.com/protesilaos/denote-org/pull/13>.
+
+- All Org dynamic blocks that have a =:sort-by-component= parameter
+  can now sort by =random= and =last-modified=. This is made possible
+  by the aforementioned improvements to the core Denote sort mechanism
+  ([[#h:f6ea4714-1ed4-4db7-ad4b-c040b6c60c6d][The Denote sort mechanism can sort by =random= and =last-modified=]]).
+
+- The ~denote-missing-links~ Org dynamic block, which can be inserted
+  at point with the command ~denote-org-dblock-insert-missing-links~
+  takes an optional =:not-regexp= parameter. This is a regular
+  expression of files to omit from the results. Same for the
+  ~denote-backlinks~ block, which can be inserted at point with the
+  command ~denote-org-dblock-insert-backlinks~.
+
+- The ~denote-files-as-headings~ Org dynamic block, which can be
+  inserted at point with the command ~denote-org-dblock-insert-files-as-headings~
+  now also accepts an optional =:exclude-tags= parameter. It is either
+  ~nil~ or non-~nil~ and determines whether the heading will have the
+  file's =#+filetags= as its own tags. Thanks to Matt Nolan for
+  suggesting this idea in issue 14: <https://github.com/protesilaos/denote-org/issues/14>.
+
+#+begin_src sh
+~/Git/Projects/denote-org $ git shortlog 0.1.0..0.2.0  --summary --numbered
+    42	Protesilaos Stavrou
+     8	Peter Prevos
+#+end_src
+
+*** ~denote-sequence~ version 0.2.0
+:PROPERTIES:
+:CUSTOM_ID: h:d2e18b7d-dc8d-48ad-a0d7-71f291d5aa7c
+:END:
+
+- The new commands ~denote-sequence-find-next-sibling~ and
+  ~denote-sequence-find-previous-sibling~ move to the next or previous
+  sibling in the given sequence. When called interactively, they work
+  relative to the current file. When called from Lisp, they expect a
+  =SEQUENCE= argument and its corresponding =RELATIVES=.
+
+- The ~denote-sequence-dired~ command is updated to (i) work with a
+  list value for ~denote-directory~ ([[#h:60ed9223-a092-4d2a-a6b6-3ba72150648b][Set ~denote-directory~ to a list of directories]]),
+  as noted further above and (ii) benefit from the refinements done to
+  ~denote-dired~ with regard to its ~revert-buffer-function~.
+
+- The new command ~denote-sequence-rename-as-parent~ makes it easier
+  to apply the Denote file-naming scheme to an existing file and make
+  it a new parent sequence. Thanks to Alex Carney for requesting
+  something along those lines in issue 4:
+  <https://github.com/protesilaos/denote-sequence/issues/4>.
+
+  [ Remember that Denote is highly adaptable/hackable, meaning that
+    many of these convenience commands build on top of the core with small
+    extensions to it. The body of ~denote-sequence-rename-as-parent~ is
+    only 4 lines long, two of which are for an error check. This is
+    typical of much of what we provide and is how users can always
+    extend Denote to do something slightly different than what we
+    support out-of-the-box. ]
+
+- Made several other refinements under the hood, including the
+  addition of more tests. In this regard, thanks to Rory Molinari,
+  Peter Prevos, and Ashton Wiersdorf for fixing three bugs in pull
+  requests 5, 8, and 11, respectively:
+  - <https://github.com/protesilaos/denote-sequence/pull/5>.
+  - <https://github.com/protesilaos/denote-sequence/pull/8>.
+  - <https://github.com/protesilaos/denote-sequence/pull/11>.
+
+#+begin_src sh
+~/Git/Projects/denote-sequence $ git shortlog 0.1.0..0.2.0  --summary --numbered
+    61	Protesilaos Stavrou
+     1	Ashton Wiersdorf
+     1	Peter Prevos
+     1	Rory Molinari
+#+end_src
+
+*** Changes to ~denote-markdown~
+:PROPERTIES:
+:CUSTOM_ID: h:6c5aa212-226f-4f14-a4e9-2d1eb00d7707
+:END:
+
+Nothing of substance.
+
+*** Changes to ~denote-silo~
+:PROPERTIES:
+:CUSTOM_ID: h:f5f6675e-fbbe-45c8-9a05-dbcc611c6dab
+:END:
+
+Nothing of substance.
+
 * Version 4.0.0 on 2025-04-15
 :PROPERTIES:
 :CUSTOM_ID: h:8a134846-72cc-4fbf-830d-6ca9fd0f9ec8
