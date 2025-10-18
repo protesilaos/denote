@@ -230,7 +230,7 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
   (setq denote-sort-keywords t)
   (setq denote-prompts '(title keywords))
   (setq denote-excluded-directories-regexp nil)
-  (setq denote-excluded-keywords-regexp nil)
+  (setq denote-keywords-to-not-infer-regexp nil)
   (setq denote-rename-confirmations '(rewrite-front-matter modify-file-name))
 
   ;; Pick dates, where relevant, with Org's advanced interface:
@@ -1489,9 +1489,12 @@ The match is performed with ~string-match-p~.
 :CUSTOM_ID: h:69e518ee-ed43-40ab-a5f4-c780a23e5358
 :END:
 
-#+vindex: denote-excluded-keywords-regexp
-The user option ~denote-excluded-keywords-regexp~ omits keywords that
-match a regular expression from the list of inferred keywords.
+#+vindex: denote-keywords-to-not-infer-regexp
+The user option ~denote-keywords-to-not-infer-regexp~ omits keywords
+that match a regular expression from the list of inferred keywords.
+
+[ The ~denote-excluded-keywords-regexp~ is an obsolete alias for
+  ~denote-keywords-to-not-infer-regexp~ as part of {{{development-version}}}. ]
 
 Keywords are inferred from file names and provided at relevant prompts
 as completion candidates when the user option ~denote-infer-keywords~
@@ -5462,7 +5465,9 @@ The following sections cover the specifics.
   ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). In the case of keyword inferrence, use
   optional =FILES-MATCHING-REGEXP=, to extract keywords only from the
   matching files. Otherwise, do it for all files. Filter inferred
-  keywords with the user option ~denote-excluded-keywords-regexp~.
+  keywords with the user option ~denote-keywords-to-not-infer-regexp~.
+  [ The ~denote-excluded-keywords-regexp~ is an obsolete alias for
+    ~denote-keywords-to-not-infer-regexp~ as part of {{{development-version}}}. ]
 
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if

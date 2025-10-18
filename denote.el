@@ -676,7 +676,12 @@ The match is performed with `string-match-p'."
   :package-version '(denote . "1.2.0")
   :type 'string)
 
-(defcustom denote-excluded-keywords-regexp nil
+(define-obsolete-variable-alias
+  'denote-excluded-keywords-regexp
+  'denote-keywords-to-not-infer-regexp
+  "4.2.0")
+
+(defcustom denote-keywords-to-not-infer-regexp nil
   "Regular expression of keywords to not infer.
 Keywords are inferred from file names and provided at relevant
 prompts as completion candidates when the user option
@@ -684,7 +689,7 @@ prompts as completion candidates when the user option
 
 The match is performed with `string-match-p'."
   :group 'denote
-  :package-version '(denote . "1.2.0")
+  :package-version '(denote . "4.2.0")
   :type 'string)
 
 (defcustom denote-excluded-files-regexp nil
@@ -2012,7 +2017,7 @@ Keep any duplicates.  Users who do not want duplicates should refer to
 the functions `denote-keywords'."
   (when-let* ((files (denote-directory-files files-matching-regexp))
               (keywords (mapcan #'denote-extract-keywords-from-path files)))
-    (if-let* ((regexp denote-excluded-keywords-regexp))
+    (if-let* ((regexp denote-keywords-to-not-infer-regexp))
         (seq-remove
          (lambda (k)
            (string-match-p regexp k))
@@ -2029,7 +2034,7 @@ In the case of keyword inferrence, use optional FILES-MATCHING-REGEXP,
 to extract keywords only from the matching files.  Otherwise, do it for
 all files.
 
-Filter inferred keywords with the user option `denote-excluded-keywords-regexp'."
+Filter inferred keywords per `denote-keywords-to-not-infer-regexp'."
   (delete-dups
    (if denote-infer-keywords
        (append (denote-infer-keywords-from-files files-matching-regexp) denote-known-keywords)
