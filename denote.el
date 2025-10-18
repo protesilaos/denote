@@ -125,17 +125,44 @@
 
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (listp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
-  "Directory for storing personal notes.
+  "Directory, as a string, for storing personal notes.
+This is the destination `denote' and all other file-creating Denote
+commands use.
 
-This can also be a list of directories.
+The value can also be a list of directories as strings.  In that case,
+`denote' and related commands will pick the first one among them, unless
+the user option `denote-prompts' is configured to prompt for a
+directory, among other possible prompts.  Files within those directories
+can link to each other, as they are considered part of one expansive
+`denote-directory'.
 
-If you intend to reference this variable in Lisp, consider using
-the function `denote-directories' instead."
+Whether the value is a string or a list of strings, all relevant Denote
+commands work with the subdirectories of those directories as well.  In
+other words, a list value is not needed to enumerate all the
+subdirectories of a common parent directory: simply specify the parent.
+
+To create a \"silo\", i.e. a self-contained `denote-directory' whose
+files do no link to any file outside of it, set the value of this user
+option in a .dir-locals file.  Read Info node `(denote) Maintain
+separate directory silos for notes'.
+
+If the target directory does not exist, `denote' and related commands
+will create it.
+
+The value of this variable is read by commands other than `denote', such
+as `denote-link', `denote-backlinks', `denote-dired', and `denote-grep',
+among others.  File-renaming commands such as `denote-rename-file' and
+`denote-dired-rename-marked-files' can still be used on any file
+anywhere on the file system.
+
+To use the value of this variable from Lisp, call the function
+`denote-directories'."
   :group 'denote
   :safe (lambda (val) (or (stringp val) (listp val) (eq val 'local) (eq val 'default-directory)))
-  :package-version '(denote . "2.0.0")
+  :package-version '(denote . "4.1.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
-  :type 'directory)
+  :type '(choice (directory :tag "Single directory")
+                 (repeat :tag "List of directories" directory)))
 
 (define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
 
