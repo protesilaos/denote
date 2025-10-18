@@ -1529,6 +1529,11 @@ something like this in their configuration:
 (setq denote-known-keywords (list "politics" "economics" "emacs" "philosophy"))
 #+end_src
 
+[ As part of {{{development-version}}}, setting ~denote-infer-keywords~
+  to ~nil~ also makes the ~denote-keywords-prompt~ demand that the
+  input matches one of the keywords in ~denote-known-keywords~. In
+  previous versions, the prompt would accept arbitrary text. ]
+
 ** Use Denote commands from the menu bar or context menu
 :PROPERTIES:
 :CUSTOM_ID: h:c4290e15-e97e-4a9b-b8db-6b9738e37e78

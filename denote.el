@@ -214,9 +214,19 @@ it is NOT automatically killed."
 ;;;###autoload (put 'denote-known-keywords 'safe-local-variable #'listp)
 (defcustom denote-known-keywords
   '("emacs" "philosophy" "politics" "economics")
-  "List of strings with predefined keywords for `denote'.
-Also see user options: `denote-infer-keywords',
-`denote-sort-keywords', `denote-file-name-slug-functions'."
+  "List of strings with predefined keywords.
+This is used by the `denote-keywords-prompt' to get keywords when
+creating or renaming a file, such as via the commands `denote' and
+`denote-rename-file'.
+
+The `denote-keywords-prompt' does not enforce the keywords defined in
+`denote-known-keywords', as users can input arbitrary text.  Those newly
+introduced keywords are then available for completion, if
+`denote-infer-keywords' is set to a non-nil value (its default).  If
+`denote-infer-keywords' is nil, then the `denote-keywords-prompt' only
+accepts input that is among the `denote-known-keywords'.
+
+Also see: `denote-sort-keywords', `denote-file-name-slug-functions'."
   :group 'denote
   :safe #'listp
   :package-version '(denote . "0.1.0")
@@ -226,30 +236,26 @@ Also see user options: `denote-infer-keywords',
 (defcustom denote-infer-keywords t
   "Whether to infer keywords from existing notes' file names.
 
-When non-nil, search the file names of existing notes in the
-variable `denote-directory' for their keyword field and extract
-the entries as \"inferred keywords\".  These are combined with
-`denote-known-keywords' and are presented as completion
-candidates while using `denote' and related commands
-interactively.
+When non-nil (the default), search the file names of existing notes in
+the variable `denote-directory' for their keyword field and extract the
+entries as \"inferred keywords\".  These are combined with
+`denote-known-keywords' and are presented as completion candidates while
+using `denote' and related commands interactively.
 
-If nil, refrain from inferring keywords.  The aforementioned
-completion prompt only shows the `denote-known-keywords'.  Use
-this if you want to enforce a restricted vocabulary.
+If nil, refrain from inferring keywords.  In this case, make the
+aforementioned completion prompt show just the `denote-known-keywords'
+and enforce them as the only acceptable input.  Use this if you want to
+work with a controlled vocabulary.
 
-The user option `denote-excluded-keywords-regexp' can be used to
+The user option `denote-keywords-to-not-infer-regexp' can be used to
 exclude keywords that match a regular expression.
 
 Inferred keywords are specific to the value of the variable
-`denote-directory'.  If a silo with a local value is used, as
-explained in that variable's doc string, the inferred keywords
-are specific to the given silo.
-
-For advanced Lisp usage, the function `denote-keywords' returns
-the appropriate list of strings."
+`denote-directory'.  In a silo, as explained in that variable's doc
+string, the inferred keywords are specific to the silo."
   :group 'denote
   :safe (lambda (val) (or val (null val)))
-  :package-version '(denote . "0.1.0")
+  :package-version '(denote . "4.2.0")
   :type 'boolean)
 
 (defcustom denote-prompts '(title keywords)
@@ -2055,11 +2061,20 @@ Filter inferred keywords per `denote-keywords-to-not-infer-regexp'."
   "Use `completing-read-multiple' for KEYWORDS.
 With optional PROMPT, use it instead of a generic text for file
 keywords.  With optional INITIAL, add it to the minibuffer as
-initial input."
-  (delete-dups
-   (completing-read-multiple
-    (format-prompt (or prompt "New file KEYWORDS") nil)
-    keywords nil nil initial 'denote-keyword-history)))
+initial input.
+
+When `denote-infer-keywords' is nil, pass REQUIRE-MATCH to the
+completion prompt.  Otherwise, use nil for that parameter."
+  (let* ((restricted-p (null denote-infer-keywords))
+         (initial-prompt (or prompt "New file KEYWORDS"))
+         (final-prompt (if restricted-p
+                           (format "%s %s" initial-prompt
+                                   (propertize "(controlled vocabulary)" 'face 'denote-faces-prompt-current-name))
+                         initial-prompt)))
+    (delete-dups
+     (completing-read-multiple
+      (format-prompt final-prompt nil)
+      keywords nil restricted-p initial 'denote-keyword-history))))
 
 (defun denote-keywords-prompt (&optional prompt-text initial-keywords infer-from-files-matching-regexp)
   "Prompt for one or more keywords.
