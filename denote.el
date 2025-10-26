@@ -680,7 +680,8 @@ and `denote-directory-subdirectories'.
 The match is performed with `string-match-p'."
   :group 'denote
   :package-version '(denote . "1.2.0")
-  :type 'string)
+  :type '(choice (const :tag "Do not filter out anything (default)" nil)
+                 (string :tag "Regular expression")))
 
 (define-obsolete-variable-alias
   'denote-excluded-keywords-regexp
@@ -696,7 +697,8 @@ prompts as completion candidates when the user option
 The match is performed with `string-match-p'."
   :group 'denote
   :package-version '(denote . "4.2.0")
-  :type 'string)
+  :type '(choice (const :tag "Do not filter out anything (default)" nil)
+                 (string :tag "Regular expression")))
 
 (defcustom denote-excluded-files-regexp nil
   "Regular expression of files that are excluded from Denote file prompts.
@@ -706,7 +708,8 @@ and `denote-open-or-create'.
 The match is performed with `string-match-p' on the full file path."
   :group 'denote
   :package-version '(denote . "3.0.0")
-  :type 'string)
+  :type '(choice (const :tag "Do not filter out anything (default)" nil)
+                 (string :tag "Regular expression")))
 
 (defcustom denote-after-new-note-hook nil
   "Normal hook that runs after the `denote' command.
