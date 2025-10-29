@@ -1184,20 +1184,17 @@ from STR as they are used as the keywords separator in file names.
 
 Also enforce the rules of the file-naming scheme."
   (let* ((slug-function (alist-get component denote-file-name-slug-functions))
-         (str-slug (cond ((eq component 'title)
-                          (funcall (or slug-function #'denote-sluggify-title) str))
-                         ((eq component 'keyword)
-                          (replace-regexp-in-string
-                           "_" ""
-                           (funcall (or slug-function #'denote-sluggify-keyword) str)))
-                         ((eq component 'identifier)
-                          (denote--valid-identifier
-                           (funcall (or slug-function #'identity) str)))
-                         ((eq component 'signature)
-                          (funcall (or slug-function #'denote-sluggify-signature) str)))))
-    (denote--trim-right-token-characters
-     (denote--replace-consecutive-token-characters
-      (denote--remove-dot-characters str-slug) component) component)))
+         (str-slug (pcase component
+                     ('title (funcall (or slug-function #'denote-sluggify-title) str))
+                     ('keyword (replace-regexp-in-string
+                                "_" ""
+                                (funcall (or slug-function #'denote-sluggify-keyword) str)))
+                     ('identifier (denote--valid-identifier (funcall (or slug-function #'identity) str)))
+                     ('signature (funcall (or slug-function #'denote-sluggify-signature) str)))))
+    (thread-first
+      (denote--remove-dot-characters str-slug)
+      (denote--replace-consecutive-token-characters component)
+      (denote--trim-right-token-characters component))))
 
 (defalias 'denote-sluggify 'denote-sluggify-and-apply-rules
   "Alias for the function `denote-sluggify-and-apply-rules'.")
