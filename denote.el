@@ -5393,14 +5393,15 @@ selected one.
 
 With optional PROMPT-TEXT use it for the minibuffer prompt instead of
 the generic one."
-  (let* ((file-names (if (denote-has-single-denote-directory-p)
+  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+         (file-names (if single-dir-p
                          (mapcar #'denote-get-file-name-relative-to-denote-directory files)
                        files))
          (selected (completing-read
                     (format-prompt (or prompt-text "Select file among files") nil)
                     (denote--completion-table 'file file-names)
                     nil t nil 'denote-link-find-file-history)))
-    (if (denote-has-single-denote-directory-p)
+    (if single-dir-p
         (expand-file-name selected (car (denote-directories)))
       selected)))
 
