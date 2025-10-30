@@ -6550,14 +6550,15 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-file-prompt (buffer-file-names)
   "Select file from BUFFER-FILE-NAMES of Denote notes."
-  (let* ((file-names (if (denote-has-single-denote-directory-p)
+  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+         (file-names (if single-dir-p
                          (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)
                        buffer-file-names))
          (selected (completing-read
                     "Select open note to add links to: "
                     (denote--completion-table 'file file-names)
                     nil t)))
-    (if (denote-has-single-denote-directory-p)
+    (if single-dir-p
         (expand-file-name selected (car (denote-directories)))
       selected)))
 
