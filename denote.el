@@ -2819,7 +2819,7 @@ If FILES is not given, use all text files as returned by
 
 (defun denote--get-all-backlinks (files)
   "Return hash table of all backlinks in FILES by identifier."
-  (let ((links-hash-table (make-hash-table :test 'equal))
+  (let ((links-hash-table (make-hash-table :test #'equal))
         (file-types (denote--file-type-keys))
         (files-by-file-type (denote--get-files-by-file-type files)))
     (dolist (file-type file-types)
@@ -3072,7 +3072,7 @@ If DATE is nil or an empty string, return nil."
 (defun denote--get-all-used-ids ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
-  (let* ((ids (make-hash-table :test 'equal))
+  (let* ((ids (make-hash-table :test #'equal))
          (file-names (mapcar
                       (lambda (file) (file-name-nondirectory file))
                       (denote-directory-files nil nil nil nil :has-identifier)))
@@ -5424,7 +5424,7 @@ Also see `denote-get-backlinks'."
                (with-temp-buffer
                  (insert-file-contents current-file)
                  (denote-link--collect-identifiers regexp)))
-              (file-identifiers-hash-table (make-hash-table :test 'equal)))
+              (file-identifiers-hash-table (make-hash-table :test #'equal)))
     (dolist (id file-identifiers)
       (puthash id t file-identifiers-hash-table))
     (let ((found-files))
