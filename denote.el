@@ -5209,7 +5209,7 @@ The format of such links is `denote-md-link-format'.")
 (defvar denote-id-only-link-in-context-regexp
   (concat "\\[\\[" "denote:"  "\\(?1:[^][]*?\\)" "]]")
   "Regexp to match an identifier-only link in its context.
-The format of such links is `denote-id-only-link-format'."  )
+The format of such links is `denote-id-only-link-format'.")
 
 (defun denote-format-link (file description file-type id-only)
   "Prepare link to FILE using DESCRIPTION.
