@@ -134,14 +134,14 @@ The value can also be a list of directories as strings.  In that case,
 the user option `denote-prompts' is configured to prompt for a
 directory, among other possible prompts.  Files within those directories
 can link to each other, as they are considered part of one expansive
-`denote-directory'.
+Denote directory.
 
 Whether the value is a string or a list of strings, all relevant Denote
 commands work with the subdirectories of those directories as well.  In
 other words, a list value is not needed to enumerate all the
 subdirectories of a common parent directory: simply specify the parent.
 
-To create a \"silo\", i.e. a self-contained `denote-directory' whose
+To create a \"silo\", i.e. a self-contained Denote directory whose
 files do no link to any file outside of it, set the value of this user
 option in a .dir-locals file.  Read Info node `(denote) Maintain
 separate directory silos for notes'.
