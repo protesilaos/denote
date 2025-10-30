@@ -1564,7 +1564,7 @@ Return the absolute path to the matching file."
                  (denote--completion-table 'file relative-files)
                  nil (unless no-require-match :require-match)
                  nil 'denote-file-history))
-         (absolute-file (if (denote-has-single-denote-directory-p)
+         (absolute-file (if single-dir-p
                             (expand-file-name input default-directory)
                           input)))
     ;; NOTE: This block is executed when no-require-match is t. It is useful
