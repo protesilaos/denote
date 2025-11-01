@@ -4262,7 +4262,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
          (identifier (cond ((string-empty-p identifier) identifier)
                            ((string= old-identifier identifier) identifier)
                            ((and (not (string-empty-p old-identifier)) (denote--file-has-backlinks-p file))
-                            (user-error "The identifier cannot be modified because the new identifier has backlinks"))
+                            (user-error "The identifier cannot be modified: that will break existing links"))
                            (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
          (max-mini-window-height denote-rename-max-mini-window-height))
@@ -4515,6 +4515,9 @@ Modify an identifier in one go.  Do this by prepopulating the
 minibuffer prompt with the existing identifier.  The user can then modify
 it accordingly.  An empty input means to remove the identifier
 altogether.
+
+An identifier that is already used in links cannot be modified,
+otherwise all links will break.
 
 Please check the documentation of `denote-rename-file' with regard to
 how a completion User Interface may accept an empty input."
