@@ -1274,8 +1274,15 @@ For our purposes, a note must satisfy `file-regular-p' and
 `denote-filename-is-note-p'."
   (and (file-regular-p file) (denote-filename-is-note-p file)))
 
-(make-obsolete 'denote-filename-is-note-p nil "4.1.0")
-(make-obsolete 'denote-file-is-note-p nil "4.1.0")
+(define-obsolete-function-alias
+  'denote-filename-is-note-p
+  'denote-file-has-denoted-filename-p
+  "4.1.0")
+
+(define-obsolete-function-alias
+  'denote-file-is-note-p
+  'denote-file-has-denoted-filename-p
+  "4.1.0")
 
 (defun denote-file-has-denoted-filename-p (file)
   "Return non-nil if FILE respects the file-naming scheme of Denote.
