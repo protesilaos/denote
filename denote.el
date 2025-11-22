@@ -5271,7 +5271,7 @@ This is useful as the value of the user option
 
 (defun denote--delete-active-region-content ()
   "Delete the content of the active region, if any."
-  (when-let* (((region-active-p))
+  (when-let* ((_ (region-active-p))
               (beg (region-beginning))
               (end (region-end)))
     (delete-region beg end)))
