@@ -5262,7 +5262,7 @@ This is useful as the value of the user option
 
 (defun denote--get-active-region-content ()
   "Return the text of the active region, else nil."
-  (when-let* (((region-active-p))
+  (when-let* ((_ (region-active-p))
               (beg (region-beginning))
               (end (region-end))
               (contents (buffer-substring-no-properties beg end))
