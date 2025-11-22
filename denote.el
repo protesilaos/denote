@@ -5264,8 +5264,10 @@ This is useful as the value of the user option
   "Return the text of the active region, else nil."
   (when-let* (((region-active-p))
               (beg (region-beginning))
-              (end (region-end)))
-    (string-trim (buffer-substring-no-properties beg end))))
+              (end (region-end))
+              (contents (buffer-substring-no-properties beg end))
+              (_ (not (string-blank-p contents))))
+    (string-trim contents)))
 
 (defun denote--delete-active-region-content ()
   "Delete the content of the active region, if any."
