@@ -5246,6 +5246,9 @@ See the `:link' property of `denote-file-types'."
 
 This is useful as the value of the user option
 `denote-link-description-function'."
+  ;; FIXME 2025-11-22: Hwere we are doing `denote-filetype-heuristics'
+  ;; when `denote-link' has already done it.  We have to avoid such
+  ;; duplication.
   (let* ((file-type (denote-filetype-heuristics file))
          (signature (denote-retrieve-filename-signature file))
          (title (denote-retrieve-title-or-filename file file-type))
