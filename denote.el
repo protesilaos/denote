@@ -907,11 +907,14 @@ This determines how `denote-link' and related functions create a link
 description by default.
 
 The value can be either a function or a string.  If it is a function, it
-is called with one argument, the file, and should return a string
-representing the link description.
+is called with two arguments, the file and file type as a symbol among
+`denote-file-types'.  It should return a string representing the link
+description.  The default is a function that returns the active region
+or the title of the note (with the signature if present).
 
-The default is a function that returns the active region or the title of
-the note (with the signature if present).
+For backward compatibility, the function can also take a single
+parameter, the given file.  In that case, it is responsible for figuring
+out the file type in order to return the correct description.
 
 If the value is a string, it treats specially the following specifiers:
 
@@ -5233,8 +5236,13 @@ See the `:link' property of `denote-file-types'."
    (denote-retrieve-filename-identifier file)
    description))
 
-(defun denote-link-description-with-signature-and-title (file)
-  "Return link description for FILE.
+;; NOTE 2025-11-23: The only reason I have &optional is because I want
+;; it to be backward compatible.  We used to have a single FILE
+;; parameter.
+(defun denote-link-description-with-signature-and-title (file &optional file-type)
+  "Return link description for FILE with FILE-TYPE.
+For backward compatibility, FILE-TYPE is an optional parameter.  If it
+is nil, then compute FILE-TYPE internally.
 
 - If the region is active, use it as the description.
 
@@ -5244,14 +5252,14 @@ See the `:link' property of `denote-file-types'."
 - If FILE does not have a signature, then use its title as the
   description.
 
-This is useful as the value of the user option
-`denote-link-description-function'."
-  ;; FIXME 2025-11-22: Hwere we are doing `denote-filetype-heuristics'
-  ;; when `denote-link' has already done it.  We have to avoid such
-  ;; duplication.
-  (let* ((file-type (denote-filetype-heuristics file))
+- If none of the above works, return an empty string.
+
+This function is useful as the value of the user option
+`denote-link-description-format' (which can optionally be bound to a
+function)."
+  (let* ((type (or file-type (denote-filetype-heuristics file)))
          (signature (denote-retrieve-filename-signature file))
-         (title (denote-retrieve-title-or-filename file file-type))
+         (title (denote-retrieve-title-or-filename file type))
          (region-text (denote--get-active-region-content)))
     (cond
      (region-text region-text)
@@ -5276,24 +5284,38 @@ This is useful as the value of the user option
               (end (region-end)))
     (delete-region beg end)))
 
-(defun denote-get-link-description (file)
+(defun denote-get-link-description (file &optional file-type)
   "Return a link description for FILE.
 
-If `denote-link-description-format' is a function, call it with FILE as
-an argument.  The function should return a string, representing the link
+If `denote-link-description-format' is a function, call it with FILE and
+FILE-TYPE as argument.  It should return a string, representing the link
 description.
 
 If the user option `denote-link-description-format' is a string, parse
 it to substitute any format specifiers therein with their respective
 values (see the documentation of that user option).  If the region is
-active, use it as the description."
+active, use it as the description.
+
+For backward compatibility, support the scenario where the function
+assigned to `denote-link-description-format' accepts a single FILE
+argument.  In that case, the function takes care to find the TYPE on its
+own to return the appropriate description."
   (cond
+   ((when-let* ((_ (and file-type (functionp denote-link-description-format)))
+                ;; NOTE 2025-11-23: We used to have
+                ;; `denote-link-description-format' accept a function
+                ;; with a single parameter.  Now we expect two
+                ;; arguments, but must be backward compatible.
+                (description (ignore-error wrong-number-of-arguments
+                               (funcall denote-link-description-format file file-type))))
+      description))
    ((functionp denote-link-description-format)
+    (display-warning 'denote "The `denote-link-description-format' function is now called with FILE and FILE-TYPE" :warning)
     (funcall denote-link-description-format file))
    ((stringp denote-link-description-format)
     (if-let* ((region (denote--get-active-region-content)))
         region
-      (let ((type (denote-filetype-heuristics file)))
+      (let ((type (or file-type (denote-filetype-heuristics file))))
         (string-trim
          (format-spec denote-link-description-format
                       (list (cons ?t (cond
