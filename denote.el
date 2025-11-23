@@ -5306,6 +5306,15 @@ own to return the appropriate description."
                 ;; `denote-link-description-format' accept a function
                 ;; with a single parameter.  Now we expect two
                 ;; arguments, but must be backward compatible.
+                ;;
+                ;; By the way, this is how I found `wrong-number-of-arguments':
+                ;;
+                ;;     (let ((errors nil))
+                ;;       (mapatoms
+                ;;        (lambda (symbol)
+                ;;          (when (get symbol 'error-conditions)
+                ;;            (push symbol errors))))
+                ;;       errors)
                 (description (ignore-error wrong-number-of-arguments
                                (funcall denote-link-description-format file file-type))))
       description))
