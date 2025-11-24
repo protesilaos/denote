@@ -5315,6 +5315,10 @@ own to return the appropriate description."
                 ;;          (when (get symbol 'error-conditions)
                 ;;            (push symbol errors))))
                 ;;       errors)
+                ;;
+                ;; As for `error-conditions', I looked into the source
+                ;; of `define-error' to figure out what an "error" is
+                ;; and saw the property there.
                 (description (ignore-error wrong-number-of-arguments
                                (funcall denote-link-description-format file file-type))))
       description))
