@@ -5,7 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
-;; Version: 4.1.2
+;; Version: 4.1.3
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -5301,7 +5301,7 @@ assigned to `denote-link-description-format' accepts a single FILE
 argument.  In that case, the function takes care to find the TYPE on its
 own to return the appropriate description."
   (cond
-   ((when-let* ((_ (and file-type (functionp denote-link-description-format)))
+   ((when-let* ((_ (functionp denote-link-description-format))
                 ;; NOTE 2025-11-23: We used to have
                 ;; `denote-link-description-format' accept a function
                 ;; with a single parameter.  Now we expect two
