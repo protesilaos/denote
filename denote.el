@@ -5668,7 +5668,10 @@ sorting of query buffers on demand by calling the command
 (defcustom denote-backlinks-display-buffer-action
   '((display-buffer-reuse-mode-window display-buffer-below-selected)
     (mode . denote-query-mode)
-    (window-height . fit-window-to-buffer))
+    (dedicated . t)
+    (preserve-size . (t . t))
+    (window-height . fit-window-to-buffer)
+    (body-function . select-window))
   "The action used to display the current file's backlinks buffer.
 
 The value has the form (FUNCTION . ALIST), where FUNCTION is
@@ -5697,14 +5700,16 @@ and/or the documentation string of `display-buffer'."
                          (function :tag "Matcher function"))
                  :value-type ,display-buffer--action-custom-type)
           (function :tag "Custom function to return an action alist"))
-  :package-version '(denote . "3.1.0")
+  :package-version '(denote . "4.2.0")
   :group 'denote-query)
 
 (defcustom denote-query-links-display-buffer-action
   '((display-buffer-reuse-mode-window display-buffer-below-selected)
     (mode . (denote-query-mode dired))
-    (window-height . 0.3)
-    (preserve-size . (t . t)))
+    (dedicated . t)
+    (preserve-size . (t . t))
+    (window-height . fit-window-to-buffer)
+    (body-function . select-window))
   "The action used to display query links.
 This is the same as `denote-backlinks-display-buffer-action'.  Refer to
 its documentation for the technicalities."
@@ -5716,7 +5721,7 @@ its documentation for the technicalities."
                          (function :tag "Matcher function"))
                  :value-type ,display-buffer--action-custom-type)
           (function :tag "Custom function to return an action alist"))
-  :package-version '(denote . "4.0.0")
+  :package-version '(denote . "4.2.0")
   :group 'denote-query)
 
 (defcustom denote-query-format-heading-function #'denote-get-file-name-relative-to-denote-directory
