@@ -6299,15 +6299,14 @@ search for."
 
 (make-obsolete 'denote-link--find-file-at-button nil "4.0.0")
 
-;; NOTE 2025-03-24: This does not work for query links because of how
-;; `markdown-follow-link-at-point' is implemented to always check for
-;; links.
-(defun denote-link-markdown-follow (link)
-  "Function to open Denote file present in LINK.
+;; NOTE 2025-12-12: The `markdown-follow-link-functions' assumes that
+;; the link of a specific format, but this is not good enough for us
+;; because of the query links we support.  I think it is okay to
+;; ignore LINK and just act on the link at point.
+(defun denote-link-markdown-follow (_link)
+  "Function for to act on Markdown link at point.
 To be assigned to `markdown-follow-link-functions'."
-  (when (ignore-errors (string-match denote-date-identifier-regexp link))
-    (funcall denote-open-link-function
-             (denote-get-path-by-id (match-string 0 link)))))
+  (denote-link-open-at-point))
 
 (eval-after-load 'markdown-mode
   '(add-hook 'markdown-follow-link-functions #'denote-link-markdown-follow))
