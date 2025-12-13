@@ -6408,31 +6408,29 @@ Use optional DATA, else get the data with `denote-fontify-links--get-data'."
     (when (and type query)
       (catch 'exit
         (while (re-search-forward query limit t)
-          (save-match-data  ; to return the matches to font-lock
-            (let* ((start (match-beginning 0))
-                   (end (match-end 0))
-                   (visible-start (or (match-beginning 2) start))
-                   (visible-end (or (match-end 2) end))
-                   (query (match-string-no-properties 1)))
-              (let* ((properties `( face ,(denote-get-link-face query)
-                                    mouse-face highlight
-                                    keymap ,denote-link-mouse-map
-                                    denote-link-query-part ,query
-                                    help-echo query
-                                    htmlize-link (:uri ,query)
-                                    font-lock-multiline t))
-                     (non-sticky-props
-                      '(rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo htmlize-link)))
-                     (face-property 'link)
-                     (hidden (append '(invisible 'denote-link) properties)))
-                (remove-text-properties start end '(invisible nil))
-                (add-text-properties start visible-start hidden)
-                (add-face-text-property start end face-property)
-                (add-text-properties visible-start visible-end properties)
-                (add-text-properties visible-end end hidden)
-                (dolist (pos (list end visible-start visible-end))
-                  (add-text-properties (1- pos) pos non-sticky-props)))
-              (throw 'exit t))))
+          (let* ((start (match-beginning 0))
+                 (end (match-end 0))
+                 (visible-start (or (match-beginning 2) start))
+                 (visible-end (or (match-end 2) end))
+                 (query (match-string-no-properties 1)))
+            (let* ((properties `( mouse-face highlight
+                                  keymap ,denote-link-mouse-map
+                                  denote-link-query-part ,query
+                                  help-echo query
+                                  htmlize-link (:uri ,query)
+                                  font-lock-multiline t))
+                   (non-sticky-props
+                    '(rear-nonsticky (mouse-face highlight keymap invisible help-echo htmlize-link)))
+                   (face-property (denote-get-link-face query))
+                   (hidden (append '(invisible 'denote-fontified-link) properties)))
+              (remove-text-properties start end '(invisible nil))
+              (add-text-properties start visible-start hidden)
+              (add-face-text-property start end face-property)
+              (add-text-properties visible-start visible-end properties)
+              (add-text-properties visible-end end hidden)
+              (dolist (pos (list end visible-start visible-end))
+                (add-text-properties (1- pos) pos non-sticky-props)))
+            (throw 'exit t)))
         nil))))
 
 (define-obsolete-function-alias
@@ -6479,13 +6477,13 @@ major mode is not `org-mode' (or derived therefrom).  Consider using
   (require 'thingatpt)
   (if denote-fontify-links-mode
       (progn
-        (add-to-invisibility-spec 'denote-link)
+        (add-to-invisibility-spec 'denote-fontified-link)
         (denote-fontify-links--set-data)
         (font-lock-add-keywords nil '((denote-fontify-links)))
         (setq-local thing-at-point-provider-alist
                     (append thing-at-point-provider-alist
                             '((url . denote--get-link-file-path-at-point)))))
-    (remove-from-invisibility-spec 'denote-link)
+    (remove-from-invisibility-spec 'denote-fontified-link)
     (kill-local-variable 'denote-fontify-links--data)
     (font-lock-remove-keywords nil '((denote-fontify-links)))
     (setq-local thing-at-point-provider-alist
