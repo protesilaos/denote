@@ -6321,7 +6321,6 @@ To be assigned to `markdown-follow-link-functions'."
   (let ((map (make-sparse-keymap)))
     (define-key map [mouse-2] #'denote-link-open-at-mouse)
     (define-key map [mouse-3] #'denote-link-open-at-mouse)
-    (define-key map [follow-link] 'mouse-face)
     map)
   "Keymap for mouse actions over fontified Denote links.")
 
