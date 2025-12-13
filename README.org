@@ -4135,10 +4135,14 @@ the same window where the command ~denote-grep~ is called from.
 :CUSTOM_ID: h:435592bc-e896-429f-a599-9f1bcd5ab9b8
 :END:
 
+#+vindex: denote-query-format-heading-function
 Denote commands, such as ~denote-grep~, ~denote-backlinks~, and
 ~denote-query-contents-link~, produce an Xref buffer with search
 results ([[#h:893eec49-d7be-4603-bcff-fcc247244011][Speed up backlinks' or query links' buffer creation?]]).
-Matching lines are grouped by the file name they belong to.
+Matching lines are grouped by the file name they belong to. File names
+are formatted according to the function bound to the user option
+~denote-query-format-heading-function~. By default, file names are
+rendered relative to the ~denote-directory~.
 
 - [[#h:e71c9d14-7e88-4386-91d0-9ad249947077][Use ~denote-grep~ to search inside files]].
 - [[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]].
