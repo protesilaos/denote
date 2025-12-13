@@ -5719,12 +5719,15 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
-(defcustom denote-query-format-heading-function #'identity
+(defcustom denote-query-format-heading-function #'denote-get-file-name-relative-to-denote-directory
   "Function used to construct headings for files matched by a query.
 
 It is called with a single argument, the path to the note file, and it
-should always return a string."
-  :package-version '(denote . "4.0.0")
+should always return a string.
+
+This is used in the buffer that shows backlinks, query links for file
+contents, or the results of `denote-grep'."
+  :package-version '(denote . "4.2.0")
   :link '(info-link "(denote) Use denote-grep to search inside files")
   :group 'denote-query
   :type 'function)
