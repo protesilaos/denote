@@ -5971,6 +5971,9 @@ When called from Lisp, COMPONENT has the same meaning as in the function
   "Minibuffer history of content searches performed by `denote-grep'.
 Also see `denote-grep-file-regexp-history'.")
 
+;; NOTE 2025-12-12: Unlike `denote-query-links-display-buffer-action'
+;; we want `denote-grep' to behave like `denote-dired', whereby
+;; `dired' normally works in the current window.
 (defcustom denote-grep-display-buffer-action
   '((display-buffer-same-window)
     (mode . denote-query-mode))
