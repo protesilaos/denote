@@ -1538,6 +1538,23 @@ the title prompt of `denote-open-or-create' and related commands.")
 Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
+(defun denote-file-prompt-group (file transform)
+  "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
+  (cond
+   (transform
+    file)
+   ((string-match-p (regexp-opt denote-encryption-file-extensions) file)
+    "Encrypted")
+   ((string-match-p (regexp-opt (denote-file-type-extensions)) file)
+    "Notes")
+   ((string-match-p "\\.\\(pdf\\|epub\\)" file)
+    "Documents")
+   (t "Other files")))
+
+(defun denote-file-prompt-sort (files)
+  "Sort FILES for `denote-file-prompt', per `completion-metadata'."
+  (sort files #'denote-sort-modified-time-greaterp))
+
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match has-identifier)
   "Prompt for file in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
@@ -1574,7 +1591,11 @@ Return the absolute path to the matching file."
                              (propertize default-directory 'face 'denote-faces-prompt-current-name))))
          (input (completing-read
                  prompt
-                 (denote-get-completion-table relative-files '(category . file))
+                 (denote-get-completion-table
+                  relative-files
+                  '(category . file)
+                  '(group-function . denote-file-prompt-group)
+                  '(display-sort-function . denote-file-prompt-sort))
                  nil (unless no-require-match :require-match)
                  nil 'denote-file-history))
          (absolute-file (if single-dir-p
