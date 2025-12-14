@@ -1349,8 +1349,11 @@ Return t if FILE is valid, else return nil."
      ((denote--exclude-directory-regexp-p rel) nil)
      ((file-readable-p file)))))
 
-(defun denote--directory-all-files-recursively ()
-  "Return list of all files in variable `denote-directory'.
+;; FIXME 2025-12-14: The parameter should not be optional.  I am doing
+;; it like this for now because there are places where the function is
+;; called without an argument.
+(defun denote--directory-all-files-recursively (&optional directories)
+  "Return list of all files in DIRECTORIES or `denote-directories'.
 Avoids traversing dotfiles (unconditionally) and whatever matches
 `denote-excluded-directories-regexp'."
   (apply #'append
@@ -1362,7 +1365,7 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
              :include-directories
              #'denote--directory-files-recursively-predicate
              :follow-symlinks))
-          (denote-directories))))
+          (or directories (denote-directories)))))
 
 (defun denote--file-excluded-p (file)
   "Return non-file if FILE matches `denote-excluded-files-regexp'."
