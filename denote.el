@@ -1316,6 +1316,9 @@ what remains."
   (and (file-writable-p file)
        (denote-file-has-supported-extension-p file)))
 
+;; FIXME 2025-12-14: We are hardcoding the `denote-directories'.  What
+;; we need is a simpler function to get a relative path.  Otherwise we
+;; are probably computing the `denote-directories' multiple times.
 (defun denote-get-file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
