@@ -1064,9 +1064,9 @@ to override what this function returns."
       (format "/%s/" (mapconcat #'identity common-parent "/"))
     "/"))
 
-(defun denote-directories-get-common-root ()
-  "Get the common root directory of `denote-directories'."
-  (denote--get-common-root-directory (denote-directories)))
+(defun denote-directories-get-common-root (&optional directories)
+  "Get the common root directory of DIRECTORIES or `denote-directories'."
+  (denote--get-common-root-directory (or directories (denote-directories))))
 
 (defun denote-directory ()
   "Return the `car' of `denote-directories'.
