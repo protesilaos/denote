@@ -3571,23 +3571,31 @@ a value that can be parsed by `decode-time' or nil."
 (defalias 'denote--subdir-history 'denote-subdirectory-history
   "Compatibility alias for `denote-subdirectory-history'.")
 
-;; Making it a completion table is useful for packages that read the
-;; metadata, such as `marginalia' and `embark'.
-(defun denote--subdirs-completion-table (dirs)
-  "Match DIRS as a completion table."
-  (let* ((def (car denote-subdirectory-history))
-         (table (denote-get-completion-table dirs '(category . file)))
-         (prompt (format-prompt "Select SUBDIRECTORY" def)))
-    (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
-
+;; NOTE 2025-12-14: I have written several FIXME comments about how we
+;; get files and directories.  We should only be computing the target
+;; directories once.
+;;
+;; TODO 2025-12-14: Explore if we can have relative paths here.  The
+;; problem is that we also return the root `denote-directory', so how
+;; should that be presented?  Maybe as "."?
 (defun denote-subdirectory-prompt ()
   "Prompt for subdirectory of the variable `denote-directory'.
 The table uses the `file' completion category (so it works with
 packages such as `marginalia' and `embark')."
-  (let* ((roots (mapcar #'directory-file-name (denote-directories)))
-         (subdirs (denote-directory-subdirectories))
-         (dirs (append roots subdirs)))
-    (denote--subdirs-completion-table dirs)))
+  (let* ((default (car denote-subdirectory-history))
+         (roots (denote-directories))
+         (single-dir-p (null (cdr roots)))
+         ;; Some external program may use `default-directory' with the
+         ;; relative file paths of the completion candidates.
+         (default-directory (if single-dir-p
+                                (car roots)
+                              (denote-directories-get-common-root roots)))
+         (subdirectories (denote-directory-subdirectories roots))
+         (directories (append roots subdirectories)))
+    (completing-read
+     (format-prompt "Select SUBDIRECTORY" default)
+     (denote-get-completion-table directories '(category . file))
+     nil t nil 'denote-subdirectory-history default)))
 
 (defvar denote-template-history nil
   "Minibuffer history of `denote-template-prompt'.")
