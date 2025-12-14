@@ -1442,8 +1442,11 @@ files that have an identifier."
                    files)))
     files))
 
-(defun denote-directory-subdirectories ()
-  "Return list of subdirectories in variable `denote-directory'.
+;; FIXME 2025-12-14: The parameter should not be optional.  Also see
+;; the same kind of comment for `denote-directory-get-files' and
+;; `denote--directory-all-files-recursively'.
+(defun denote-directory-subdirectories (&optional directories)
+  "Return list of subdirectories in DIRECTORIES or variable `denote-directory'.
 Omit dotfiles (such as .git) unconditionally.  Also exclude
 whatever matches `denote-excluded-directories-regexp'."
   (seq-remove
@@ -1453,7 +1456,7 @@ whatever matches `denote-excluded-directories-regexp'."
            (string-match-p "\\`\\." rel)
            (string-match-p "/\\." rel)
            (denote--exclude-directory-regexp-p rel))))
-   (denote--directory-all-files-recursively)))
+   (denote--directory-all-files-recursively directories)))
 
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
 ;; option, but I am keeping it as a generic variable for now.
