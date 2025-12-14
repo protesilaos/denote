@@ -1377,6 +1377,9 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   'denote-directory-get-files
   "4.1.0")
 
+;; FIXME 2025-12-14: This should accept DIRECTORIES, which it would
+;; pass to `denote--directory-all-files-recursively'.  I have a
+;; relevant FIXME for `denote--directory-all-files-recursively'.
 (defun denote-directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-denoted-filename-p' and
@@ -1389,7 +1392,7 @@ are not backups."
            (denote-file-has-denoted-filename-p file)
            (not (denote--file-excluded-p file))
            (not (backup-file-name-p file))))
-    (denote--directory-all-files-recursively))))
+    (denote--directory-all-files-recursively (denote-directories)))))
 
 (defvar denote-directory-get-files-function #'denote-directory-get-files
   "Function to return list of Denote files.
