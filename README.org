@@ -1919,6 +1919,20 @@ difference between old and new file names.
 This command constructs the file name in accordance with the user option
 ~denote-file-name-components-order~ ([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]).
 
+** Rename a file by changing only its identifier
+:PROPERTIES:
+:CUSTOM_ID: h:10c16536-0535-4b4c-b0dc-d106bdc951a1
+:END:
+
+#+findex: denote-rename-file-identifier
+The command ~denote-rename-file-identifier~ prompts for a new
+identifier to apply to the given file. The current identifier is added
+as the initial minibuffer text. An empty input means to remove the
+identifier altogether.
+
+An identifier that is already used in links cannot be modified,
+otherwise all links will break.
+
 ** Rename a file by adding or removing a title interactively
 :PROPERTIES:
 :CUSTOM_ID: h:a26e28c7-8222-4377-92e9-3b0a709010a5
