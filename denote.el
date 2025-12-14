@@ -993,20 +993,13 @@ The note's ID is derived from the date and time of its creation.")
 
 ;;;; File helper functions
 
-(defun denote--completion-table (category candidates)
-  "Pass appropriate metadata CATEGORY to completion CANDIDATES."
+(defun denote-get-completion-table (candidates &rest metadata)
+  "Return completion table with CANDIDATES and METADATA.
+CANDIDATES is a list of strings.  METADATA is described in
+`completion-metadata'."
   (lambda (string pred action)
     (if (eq action 'metadata)
-        `(metadata (category . ,category))
-      (complete-with-action action candidates string pred))))
-
-(defun denote--completion-table-no-sort (category candidates)
-  "Pass appropriate metadata CATEGORY to completion CANDIDATES.
-Like `denote--completion-table' but also disable sorting."
-  (lambda (string pred action)
-    (if (eq action 'metadata)
-        `(metadata (category . ,category)
-                   (display-sort-function . ,#'identity))
+        (cons 'metadata metadata)
       (complete-with-action action candidates string pred))))
 
 (defun denote--default-directory-is-silo-p ()
@@ -1569,7 +1562,7 @@ Return the absolute path to the matching file."
                              (propertize default-directory 'face 'denote-faces-prompt-current-name))))
          (input (completing-read
                  prompt
-                 (denote--completion-table 'file relative-files)
+                 (denote-get-completion-table relative-files '(category . file))
                  nil (unless no-require-match :require-match)
                  nil 'denote-file-history))
          (absolute-file (if single-dir-p
@@ -1849,7 +1842,7 @@ OMIT-CURRENT have been applied."
     (intern
      (completing-read
       (format-prompt "Sort by file name component" default)
-      (denote--completion-table 'denote-sort-component denote-sort-components)
+      (denote-get-completion-table denote-sort-components '(category . denote-sort-component))
       nil :require-match nil 'denote-sort-component-history default))))
 
 (defvar denote-sort-exclude-files-history nil
@@ -3571,7 +3564,7 @@ a value that can be parsed by `decode-time' or nil."
 (defun denote--subdirs-completion-table (dirs)
   "Match DIRS as a completion table."
   (let* ((def (car denote-subdirectory-history))
-         (table (denote--completion-table 'file dirs))
+         (table (denote-get-completion-table dirs '(category . file)))
          (prompt (format-prompt "Select SUBDIRECTORY" def)))
     (completing-read prompt table nil t nil 'denote-subdirectory-history def)))
 
@@ -5442,7 +5435,7 @@ the generic one."
                        files))
          (selected (completing-read
                     (format-prompt (or prompt-text "Select file among files") nil)
-                    (denote--completion-table 'file file-names)
+                    (denote-get-completion-table file-names '(category . file))
                     nil t nil 'denote-link-find-file-history)))
     (if single-dir-p
         (expand-file-name selected (car (denote-directories)))
@@ -6565,7 +6558,7 @@ to files matching QUERY.  Optional ID-ONLY has the same meaning as in
             (file (completing-read
                    (format "Select FILE with contents `%s': "
                            (propertize query 'face 'denote-faces-prompt-current-name))
-                   (denote--completion-table 'file files)
+                   (denote-get-completion-table files '(category . file))
                    nil t nil 'denote-file-history)))
       (denote-link file
                    (denote-filetype-heuristics buffer-file-name)
@@ -6599,7 +6592,7 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
                        buffer-file-names))
          (selected (completing-read
                     "Select open note to add links to: "
-                    (denote--completion-table 'file file-names)
+                    (denote-get-completion-table file-names '(category . file))
                     nil t)))
     (if single-dir-p
         (expand-file-name selected (car (denote-directories)))
