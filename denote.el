@@ -3184,8 +3184,8 @@ This is a reference function for `denote-get-identifier-function'."
     (intern
      (completing-read
       (format-prompt "Run note-creating Denote command" default)
-      denote-commands-for-new-notes nil :require-match
-      nil 'denote-command-prompt-history default))))
+      (denote-get-completion-table denote-commands-for-new-notes '(category . command))
+       nil t nil 'denote-command-prompt-history default))))
 
 ;;;;; The `denote' command and its prompts
 
