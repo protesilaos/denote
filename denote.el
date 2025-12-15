@@ -1600,12 +1600,13 @@ With optional HAS-IDENTIFIER, only show candidates that have an
 identifier.
 
 Return the absolute path to the matching file."
-  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+  (let* ((roots (denote-directories))
+         (single-dir-p (null (cdr roots)))
          ;; Some external program may use `default-directory' with the
          ;; relative file paths of the completion candidates.
          (default-directory (if single-dir-p
-                                (car (denote-directories))
-                              (denote-directories-get-common-root)))
+                                (car roots)
+                              (denote-directories-get-common-root roots)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
                  :omit-current nil nil has-identifier))
@@ -1615,8 +1616,8 @@ Return the absolute path to the matching file."
          (prompt (if single-dir-p
                      (format "%s: " (or prompt-text "Select FILE"))
                    (format "%s in %s: "
-                             (or prompt-text "Select FILE")
-                             (propertize default-directory 'face 'denote-faces-prompt-current-name))))
+                           (or prompt-text "Select FILE")
+                           (propertize default-directory 'face 'denote-faces-prompt-current-name))))
          (input (completing-read
                  prompt
                  (apply 'denote-get-completion-table relative-files denote-file-prompt-extra-metadata)
@@ -2033,15 +2034,16 @@ When called from Lisp, the arguments are a string, a symbol among
 `denote-sort-components', a non-nil value, and a string, respectively."
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
-               (single-dir-p (denote-has-single-denote-directory-p))
+               (roots (denote-directories))
+               (single-dir-p (null (cdr roots)))
                (files-fn `(lambda ()
                             (let ((files (denote-sort-get-directory-files ,files-matching-regexp ',component ,reverse-sort nil ,exclude-regexp)))
                               (if ,single-dir-p
                                   (mapcar #'file-relative-name files)
                                 files)))))
     (if-let* ((directory (if single-dir-p ; see comment in `denote-file-prompt'
-                             (car (denote-directories))
-                           (denote-directories-get-common-root)))
+                             (car roots)
+                           (denote-directories-get-common-root roots)))
               (files (funcall files-fn))
               (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp)))
@@ -5494,7 +5496,8 @@ selected one.
 
 With optional PROMPT-TEXT use it for the minibuffer prompt instead of
 the generic one."
-  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+  (let* ((roots (denote-directories))
+         (single-dir-p (null (cdr roots)))
          (file-names (if single-dir-p
                          (mapcar #'denote-get-file-name-relative-to-denote-directory files)
                        files))
@@ -5503,7 +5506,7 @@ the generic one."
                     (denote-get-completion-table file-names '(category . file))
                     nil t nil 'denote-link-find-file-history)))
     (if single-dir-p
-        (expand-file-name selected (car (denote-directories)))
+        (expand-file-name selected (car roots))
       selected)))
 
 (define-obsolete-function-alias
@@ -6651,7 +6654,8 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
 ;; NOTE 2022-07-21: I don't think we need a history for this one.
 (defun denote-link--buffer-file-prompt (buffer-file-names)
   "Select file from BUFFER-FILE-NAMES of Denote notes."
-  (let* ((single-dir-p (denote-has-single-denote-directory-p))
+  (let* ((roots (denote-directories))
+         (single-dir-p (null (cdr roots)))
          (file-names (if single-dir-p
                          (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)
                        buffer-file-names))
@@ -6660,7 +6664,7 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
                     (denote-get-completion-table file-names '(category . file))
                     nil t)))
     (if single-dir-p
-        (expand-file-name selected (car (denote-directories)))
+        (expand-file-name selected roots)
       selected)))
 
 (defun denote-link--map-over-notes ()
