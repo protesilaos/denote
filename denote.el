@@ -1900,7 +1900,7 @@ OMIT-CURRENT have been applied."
      (completing-read
       (format-prompt "Sort by file name component" default)
       (denote-get-completion-table denote-sort-components '(category . denote-sort-component))
-      nil :require-match nil 'denote-sort-component-history default))))
+      nil t nil 'denote-sort-component-history default))))
 
 (defvar denote-sort-exclude-files-history nil
   "Minibuffer history for `denote-sort-exclude-files-prompt'.")
