@@ -1542,7 +1542,7 @@ there.")
   "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
   (cond
    (transform
-    file)
+    (or (denote-retrieve-filename-title file) file))
    ((string-match-p (regexp-opt denote-encryption-file-extensions) file)
     "Encrypted")
    ((string-match-p (regexp-opt (denote-file-type-extensions)) file)
@@ -1551,9 +1551,37 @@ there.")
     "Documents")
    (t "Other files")))
 
+(defun denote-file-prompt-affixate (files)
+  "Affixate FILES.
+Use the identifier as a prefix and the keywords as a suffix."
+  (mapcar
+   (lambda (file)
+     (list
+      file
+      (format "%s " (propertize (denote-id-to-date (denote-retrieve-filename-identifier file)) 'face 'completions-annotations))
+      (format " %s%s"
+              (if (eq completions-format 'one-column)
+                  (propertize " " 'display '(space :align-to 90))
+                " ")
+              (propertize (or (denote-retrieve-filename-keywords file) "") 'face 'completions-annotations))))
+   files))
+
 (defun denote-file-prompt-sort (files)
   "Sort FILES for `denote-file-prompt', per `completion-metadata'."
   (sort files #'denote-sort-modified-time-greaterp))
+
+(defvar denote-file-prompt-extra-metadata
+  (list
+   ;; NOTE 2025-12-15: If we use the `file' category, then we are
+   ;; subject to the `completion-category-overrides'.  This is a
+   ;; problem because the user will want to, for example, sort
+   ;; directories before files, but then we cannot have our sort here.
+   (cons 'category 'file)
+   (cons 'group-function #'denote-file-prompt-group)
+   (cons 'affixation-function #'denote-file-prompt-affixate)
+   (cons 'display-sort-function #'denote-file-prompt-sort))
+  "Extra `completion-metadata' for the `denote-file-prompt'.
+This is in addition to the completion category, which is constant.")
 
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match has-identifier)
   "Prompt for file in variable `denote-directory'.
@@ -1591,12 +1619,8 @@ Return the absolute path to the matching file."
                              (propertize default-directory 'face 'denote-faces-prompt-current-name))))
          (input (completing-read
                  prompt
-                 (denote-get-completion-table
-                  relative-files
-                  '(category . file)
-                  '(group-function . denote-file-prompt-group)
-                  '(display-sort-function . denote-file-prompt-sort))
-                 nil (unless no-require-match :require-match)
+                 (apply 'denote-get-completion-table relative-files denote-file-prompt-extra-metadata)
+                 nil (unless no-require-match t)
                  nil 'denote-file-history))
          (absolute-file (if single-dir-p
                             (expand-file-name input default-directory)
