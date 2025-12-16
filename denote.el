@@ -1473,6 +1473,8 @@ there.")
 (defun denote-file-prompt-group (file transform)
   "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
   (cond
+   ;; FIXME 2025-12-16: Why do we not get highlights of matched
+   ;; visible words?  It works if I just return FILE.
    (transform (or (denote-retrieve-filename-title file) file))
    ((file-name-directory file))
    ((file-name-extension file))
