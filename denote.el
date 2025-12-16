@@ -1475,7 +1475,7 @@ there.")
   (cond
    (transform
     (if-let* ((title (denote-retrieve-filename-title file)))
-        (if-let* ((in-subdir-p (string-match-p "/" file))
+        (if-let* ((_ (string-match-p "/" file))
                   (components (split-string file "/"))
                   (dir (string-join (butlast components) "/")))
             (format "%s: %s" (propertize dir 'face 'shadow) title)
