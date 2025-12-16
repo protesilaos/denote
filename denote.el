@@ -1473,20 +1473,9 @@ there.")
 (defun denote-file-prompt-group (file transform)
   "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
   (cond
-   (transform
-    (if-let* ((title (denote-retrieve-filename-title file)))
-        (if-let* ((_ (string-match-p "/" file))
-                  (components (split-string file "/"))
-                  (dir (string-join (butlast components) "/")))
-            (format "%s: %s" (propertize dir 'face 'shadow) title)
-          title)
-      file))
-   ((string-match-p (regexp-opt denote-encryption-file-extensions) file)
-    "Encrypted")
-   ((string-match-p (regexp-opt (denote-file-type-extensions)) file)
-    "Notes")
-   ((string-match-p "\\.\\(pdf\\|epub\\)" file)
-    "Documents")
+   (transform (or (denote-retrieve-filename-title file) file))
+   ((file-name-directory file))
+   ((file-name-extension file))
    (t "Other files")))
 
 (defun denote-file-prompt-affixate (files)
