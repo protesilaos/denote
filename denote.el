@@ -1474,7 +1474,13 @@ there.")
   "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
   (cond
    (transform
-    (or (denote-retrieve-filename-title file) file))
+    (if-let* ((title (denote-retrieve-filename-title file)))
+        (if-let* ((in-subdir-p (string-match-p "/" file))
+                  (components (split-string file "/"))
+                  (dir (string-join (butlast components) "/")))
+            (format "%s: %s" dir title)
+          title)
+      file))
    ((string-match-p (regexp-opt denote-encryption-file-extensions) file)
     "Encrypted")
    ((string-match-p (regexp-opt (denote-file-type-extensions)) file)
