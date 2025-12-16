@@ -1576,12 +1576,22 @@ Use the identifier as a prefix and the keywords as a suffix."
    ;; subject to the `completion-category-overrides'.  This is a
    ;; problem because the user will want to, for example, sort
    ;; directories before files, but then we cannot have our sort here.
-   (cons 'category 'file)
+   (cons 'category 'denote-file)
    (cons 'group-function #'denote-file-prompt-group)
    (cons 'affixation-function #'denote-file-prompt-affixate)
    (cons 'display-sort-function #'denote-file-prompt-sort))
   "Extra `completion-metadata' for the `denote-file-prompt'.
 This is in addition to the completion category, which is constant.")
+
+(with-eval-after-load 'all-the-icons
+  (cl-defmethod all-the-icons-completion-get-icon (cand (_cat (eql denote-file)))
+    "Return the icon for the candidate CAND of completion category denote-file."
+    (all-the-icons-completion-get-icon cand 'file)))
+
+(with-eval-after-load 'nerd-icons
+  (cl-defmethod nerd-icons-completion-get-icon (cand (_cat (eql denote-file)))
+    "Return the icon for the candidate CAND of completion category denote-file."
+    (nerd-icons-completion-get-icon cand 'file)))
 
 (defun denote-file-prompt (&optional files-matching-regexp prompt-text no-require-match has-identifier)
   "Prompt for file in variable `denote-directory'.
