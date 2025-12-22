@@ -1248,21 +1248,18 @@ what remains."
   (and (file-writable-p file)
        (denote-file-has-supported-extension-p file)))
 
-;; FIXME 2025-12-14: We are hardcoding the `denote-directories'.  What
-;; we need is a simpler function to get a relative path.  Otherwise we
-;; are probably computing the `denote-directories' multiple times.
-(defun denote-get-file-name-relative-to-denote-directory (file)
-  "Return name of FILE relative to the variable `denote-directory'.
-FILE must be an absolute path."
+(defun denote-get-file-name-relative-to-denote-directory (file &optional directories)
+  "Return FILE relative to the variable `denote-directory'.
+With optional DIRECTORIES, as a list of directories, return FILE
+relative to whichever one of those it belongs to."
   (unless (file-name-absolute-p file)
     (error "The file `%s' is not absolute" file))
-  (when-let* ((directories (denote-directories))
-              (file-name (expand-file-name file))
+  (when-let* ((dirs (or directories (denote-directories)))
               (directory (seq-find
                           (lambda (d)
-                            (string-prefix-p d file-name))
-                          directories)))
-    (substring-no-properties file-name (length directory))))
+                            (string-prefix-p d file))
+                          dirs)))
+    (substring-no-properties file (length directory))))
 
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
@@ -1274,34 +1271,28 @@ FILE must be an absolute path."
   (and (stringp denote-excluded-directories-regexp)
        (string-match-p denote-excluded-directories-regexp file)))
 
-(defun denote--directory-files-recursively-predicate (file)
-  "Predicate used by `directory-files-recursively' on FILE.
-
-Return t if FILE is valid, else return nil."
-  (let ((rel (denote-get-file-name-relative-to-denote-directory file)))
-    (cond
-     ((string-match-p "\\`\\." rel) nil)
-     ((string-match-p "/\\." rel) nil)
-     ((denote--exclude-directory-regexp-p rel) nil)
-     ((file-readable-p file)))))
-
-;; FIXME 2025-12-14: The parameter should not be optional.  I am doing
-;; it like this for now because there are places where the function is
-;; called without an argument.
-(defun denote--directory-all-files-recursively (&optional directories)
+(defun denote--directory-all-files-recursively (directories)
   "Return list of all files in DIRECTORIES or `denote-directories'.
 Avoids traversing dotfiles (unconditionally) and whatever matches
 `denote-excluded-directories-regexp'."
-  (apply #'append
-         (mapcar
-          (lambda (directory)
-            (directory-files-recursively
-             directory
-             directory-files-no-dot-files-regexp
-             :include-directories
-             #'denote--directory-files-recursively-predicate
-             :follow-symlinks))
-          (or directories (denote-directories)))))
+  (let ((predicate-fn
+         (lambda (file)
+           (let ((rel (denote-get-file-name-relative-to-denote-directory file directories)))
+             (cond
+              ((string-match-p "\\`\\." rel) nil)
+              ((string-match-p "/\\." rel) nil)
+              ((denote--exclude-directory-regexp-p rel) nil)
+              ((file-readable-p file)))))))
+    (apply #'append
+           (mapcar
+            (lambda (directory)
+              (directory-files-recursively
+               directory
+               directory-files-no-dot-files-regexp
+               :include-directories
+               predicate-fn
+               :follow-symlinks))
+            directories))))
 
 (defun denote--file-excluded-p (file)
   "Return non-file if FILE matches `denote-excluded-files-regexp'."
@@ -1313,28 +1304,30 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   'denote-directory-get-files
   "4.1.0")
 
-;; FIXME 2025-12-14: This should accept DIRECTORIES, which it would
-;; pass to `denote--directory-all-files-recursively'.  I have a
-;; relevant FIXME for `denote--directory-all-files-recursively'.
-(defun denote-directory-get-files ()
+(defun denote-directory-get-files (&optional directories)
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-denoted-filename-p' and
-are not backups."
-  (mapcar
-   #'expand-file-name
-   (seq-filter
-    (lambda (file)
-      (and (file-regular-p file)
-           (denote-file-has-denoted-filename-p file)
-           (not (denote--file-excluded-p file))
-           (not (backup-file-name-p file))))
-    (denote--directory-all-files-recursively (denote-directories)))))
+are not backups.
+
+With optional DIRECTORIES, as a list of directories, perform the
+operation therein."
+  (when-let* ((dirs (or directories (denote-directories))))
+    (seq-filter
+     (lambda (file)
+       (and (file-regular-p file)
+            (denote-file-has-denoted-filename-p file)
+            (not (denote--file-excluded-p file))
+            (not (backup-file-name-p file))))
+     (denote--directory-all-files-recursively dirs))))
 
 (defvar denote-directory-get-files-function #'denote-directory-get-files
   "Function to return list of Denote files.
 Each file is a string representing an absolute file system path.  This
 is intended for use in the function `denote-directory-files'.")
 
+;; NOTE 2025-12-22: The HAS-IDENTIFIER is there because we provide the
+;; `denote-directory-get-files-function'.  For core Denote, the
+;; `denote-directory-get-files' already does `denote-file-has-identifier-p'.
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
@@ -1378,21 +1371,18 @@ files that have an identifier."
                    files)))
     files))
 
-;; FIXME 2025-12-14: The parameter should not be optional.  Also see
-;; the same kind of comment for `denote-directory-get-files' and
-;; `denote--directory-all-files-recursively'.
 (defun denote-directory-subdirectories (&optional directories)
   "Return list of subdirectories in DIRECTORIES or variable `denote-directory'.
 Omit dotfiles (such as .git) unconditionally.  Also exclude
 whatever matches `denote-excluded-directories-regexp'."
   (seq-remove
    (lambda (filename)
-     (let ((rel (denote-get-file-name-relative-to-denote-directory filename)))
+     (let ((rel (denote-get-file-name-relative-to-denote-directory filename directories)))
        (or (not (file-directory-p filename))
            (string-match-p "\\`\\." rel)
            (string-match-p "/\\." rel)
            (denote--exclude-directory-regexp-p rel))))
-   (denote--directory-all-files-recursively directories)))
+   (denote--directory-all-files-recursively (or directories (denote-directories)))))
 
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
 ;; option, but I am keeping it as a generic variable for now.
@@ -1568,7 +1558,10 @@ Return the absolute path to the matching file."
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
                  :omit-current nil nil has-identifier))
          (relative-files (if single-dir-p
-                             (mapcar #'denote-get-file-name-relative-to-denote-directory files)
+                             (mapcar
+                              (lambda (file)
+                                (denote-get-file-name-relative-to-denote-directory file roots))
+                              files)
                            files))
          (prompt (if single-dir-p
                      (format "%s: " (or prompt-text "Select FILE"))
@@ -3575,10 +3568,6 @@ a value that can be parsed by `decode-time' or nil."
 (defalias 'denote--subdir-history 'denote-subdirectory-history
   "Compatibility alias for `denote-subdirectory-history'.")
 
-;; NOTE 2025-12-14: I have written several FIXME comments about how we
-;; get files and directories.  We should only be computing the target
-;; directories once.
-;;
 ;; TODO 2025-12-14: Explore if we can have relative paths here.  The
 ;; problem is that we also return the root `denote-directory', so how
 ;; should that be presented?  Maybe as "."?
@@ -5456,7 +5445,10 @@ the generic one."
   (let* ((roots (denote-directories))
          (single-dir-p (null (cdr roots)))
          (file-names (if single-dir-p
-                         (mapcar #'denote-get-file-name-relative-to-denote-directory files)
+                         (mapcar
+                          (lambda (file)
+                            (denote-get-file-name-relative-to-denote-directory file roots))
+                          files)
                        files))
          (selected (completing-read
                     (format-prompt (or prompt-text "Select file among files") nil)
@@ -6614,7 +6606,10 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
   (let* ((roots (denote-directories))
          (single-dir-p (null (cdr roots)))
          (file-names (if single-dir-p
-                         (mapcar #'denote-get-file-name-relative-to-denote-directory buffer-file-names)
+                         (mapcar
+                          (lambda (file)
+                            (denote-get-file-name-relative-to-denote-directory file roots))
+                          buffer-file-names)
                        buffer-file-names))
          (selected (completing-read
                     "Select open note to add links to: "
