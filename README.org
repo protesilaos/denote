@@ -5527,12 +5527,6 @@ The following sections cover the specifics.
   of valid files in variable ~denote-directory~. Consider files that
   satisfy ~denote-file-has-identifier-p~ and are not backups.
 
-#+vindex: denote-directory-get-files-function
-+ Variable ~denote-directory-get-files-function~ :: Function to return
-  list of Denote files. Each file is a string representing an absolute
-  file system path. This is intended for use in the function
-  ~denote-directory-files~.
-
 #+findex: denote-directory-files
 + Function ~denote-directory-files~ :: Return list of absolute file
   paths in variable ~denote-directory~. Files that match
@@ -5546,7 +5540,10 @@ The following sections cover the specifics.
   files that satisfy ~denote-file-is-note-p~. With optional
   =EXCLUDE-REGEXP= exclude the files that match the given regular
   expression. This is done after =FILES-MATCHING-REGEXP= and
-  =OMIT-CURRENT= have been applied.
+  =OMIT-CURRENT= have been applied. Optional =DIRECTORIES= is a list
+  of directories to search through instead of looking into the
+  variable ~denote-directory~. [ The =DIRECTORIES= is part of
+  {{{development-version}}}. ]
 
 #+findex: denote-directory-subdirectories
 + Function ~denote-directory-subdirectories~ :: Return list of

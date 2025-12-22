@@ -1320,15 +1320,12 @@ operation therein."
             (not (backup-file-name-p file))))
      (denote--directory-all-files-recursively dirs))))
 
-(defvar denote-directory-get-files-function #'denote-directory-get-files
-  "Function to return list of Denote files.
-Each file is a string representing an absolute file system path.  This
-is intended for use in the function `denote-directory-files'.")
+(make-obsolete-variable
+ 'denote-directory-get-files-function
+ "advanced users should write an advice for `denote-directory-files'"
+ "4.2.0")
 
-;; NOTE 2025-12-22: The HAS-IDENTIFIER is there because we provide the
-;; `denote-directory-get-files-function'.  For core Denote, the
-;; `denote-directory-get-files' already does `denote-file-has-identifier-p'.
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp directories)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1350,9 +1347,9 @@ With optional EXCLUDE-REGEXP exclude the files that match the given
 regular expression.  This is done after FILES-MATCHING-REGEXP and
 OMIT-CURRENT have been applied.
 
-With optional HAS-IDENTIFIER as a non-nil value, limit the results to
-files that have an identifier."
-  (let ((files (funcall denote-directory-get-files-function)))
+With optional DIRECTORIES, search through them instead of in the
+variable `denote-directory'."
+  (let ((files (denote-directory-get-files directories)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
@@ -1362,8 +1359,6 @@ files that have an identifier."
                    files)))
     (when text-only
       (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
-    (when has-identifier
-      (setq files (seq-filter #'denote-file-has-identifier-p files)))
     (when exclude-regexp
       (setq files (seq-remove
                    (lambda (file)
@@ -1426,7 +1421,7 @@ something like .org even if the actual file extension is
          (seq-filter
           (lambda (file)
             (string= id (denote-retrieve-filename-identifier file)))
-          (denote-directory-files nil nil nil nil :has-identifier))))
+          (denote-directory-files))))
     (if (length< files 2)
         (car files)
       (seq-find
@@ -1556,7 +1551,7 @@ Return the absolute path to the matching file."
                               (denote-directories-get-common-root roots)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                 :omit-current nil nil has-identifier))
+                 :omit-current nil nil roots))
          (relative-files (if single-dir-p
                              (mapcar
                               (lambda (file)
@@ -3080,7 +3075,7 @@ It checks files in variable `denote-directory' and active buffer files."
   (let* ((ids (make-hash-table :test #'equal))
          (file-names (mapcar
                       (lambda (file) (file-name-nondirectory file))
-                      (denote-directory-files nil nil nil nil :has-identifier)))
+                      (denote-directory-files)))
          (names (append file-names (denote--buffer-file-names))))
     (dolist (name names)
       (when-let* ((id (denote-retrieve-filename-identifier name)))
@@ -5473,7 +5468,7 @@ Also see `denote-get-backlinks'."
               ((denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
-              (files (or files (denote-directory-files nil nil nil nil :has-identifier)))
+              (files (or files (denote-directory-files)))
               (file-identifiers
                (with-temp-buffer
                  (insert-file-contents current-file)
@@ -6555,7 +6550,7 @@ inserts links with just the identifier."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (let ((file-type (denote-filetype-heuristics (buffer-file-name))))
-    (if-let* ((files (denote-directory-files regexp :omit-current nil nil :has-identifier)))
+    (if-let* ((files (denote-directory-files regexp :omit-current)))
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
