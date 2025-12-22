@@ -5459,7 +5459,7 @@ the generic one."
                        files))
          (selected (completing-read
                     (format-prompt (or prompt-text "Select file among files") nil)
-                    (denote-get-completion-table file-names '(category . file))
+                    (apply 'denote-get-completion-table file-names denote-file-prompt-extra-metadata)
                     nil t nil 'denote-link-find-file-history)))
     (if single-dir-p
         (expand-file-name selected (car roots))
