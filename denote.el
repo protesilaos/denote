@@ -1254,8 +1254,9 @@ what remains."
 (defun denote-get-file-name-relative-to-denote-directory (file)
   "Return name of FILE relative to the variable `denote-directory'.
 FILE must be an absolute path."
+  (unless (file-name-absolute-p file)
+    (error "The file `%s' is not absolute" file))
   (when-let* ((directories (denote-directories))
-              ((file-name-absolute-p file))
               (file-name (expand-file-name file))
               (directory (seq-find
                           (lambda (d)
