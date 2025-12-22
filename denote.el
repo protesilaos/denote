@@ -1480,6 +1480,27 @@ there.")
    ((file-name-extension file))
    (t "Other files")))
 
+(defun denote-file-prompt--format-identifier (file)
+  "Return identifier of FILE for `denote-file-prompt-affixate'."
+  (let* ((identifier (denote-retrieve-filename-identifier file))
+         (date-or-id (or (ignore-errors (denote-id-to-date identifier)) identifier))
+         (propertized (propertize date-or-id 'face 'completions-annotations)))
+    (format "%s " propertized)))
+
+(defun denote-file-prompt--format-keywords-and-signature (file)
+  "Return keywords and signature of FILE for `denote-file-prompt-affixate'."
+  (let ((keywords (denote-retrieve-filename-keywords file))
+        (signature (denote-retrieve-filename-signature file)))
+    (when-let* ((combined (cond
+                           ((and keywords signature) (concat "=" signature "  " keywords))
+                           (keywords)
+                           (signature))))
+      (format " %s%s"
+              (if (eq completions-format 'one-column)
+                  (propertize " " 'display '(space :align-to 90))
+                " ")
+              (propertize combined 'face 'completions-annotations)))))
+
 (defun denote-file-prompt-affixate (files)
   "Affixate FILES.
 Use the identifier as a prefix and the keywords as a suffix."
@@ -1487,12 +1508,8 @@ Use the identifier as a prefix and the keywords as a suffix."
    (lambda (file)
      (list
       file
-      (format "%s " (propertize (denote-id-to-date (denote-retrieve-filename-identifier file)) 'face 'completions-annotations))
-      (format " %s%s"
-              (if (eq completions-format 'one-column)
-                  (propertize " " 'display '(space :align-to 90))
-                " ")
-              (propertize (or (denote-retrieve-filename-keywords file) "") 'face 'completions-annotations))))
+      (denote-file-prompt--format-identifier file)
+      (denote-file-prompt--format-keywords-and-signature file)))
    files))
 
 (defun denote-file-prompt-sort (files)
