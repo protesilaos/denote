@@ -7040,7 +7040,7 @@ Consult the manual for template samples."
 ;; by passing a single PROMPTS that is the same value as `denote-prompts'?
 
 ;;;###autoload
-(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
+(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template signature)
   "Like `denote-org-capture' but with optional prompt parameters.
 
 When called without arguments, do not prompt for anything.  Just
@@ -7050,8 +7050,7 @@ name consist of only the identifier plus the Org file name
 extension.
 
 Otherwise produce a minibuffer prompt for every non-nil value
-that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, and
-TEMPLATE arguments.  The prompts are those used by the standard
+that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, TEMPLATE, SIGNATURE arguments.  The prompts are those used by the standard
 `denote' command and all of its utility commands.
 
 When returning the contents that fill in the Org capture
@@ -7063,6 +7062,7 @@ must exist---Denote does not create them.  Same principle for
 TEMPLATE as templates must exist and are specified in the user
 option `denote-templates'."
   (let ((denote-prompts '()))
+    (when signature (push 'signature denote-prompts))
     (when template (push 'template denote-prompts))
     (when date (push 'date denote-prompts))
     (when subdirectory (push 'subdirectory denote-prompts))
