@@ -991,8 +991,7 @@ the date and identifier fields specified.  It also makes the file name
 consist of only the identifier plus the Org file name extension ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 Otherwise, it produces a minibuffer prompt for every non-nil value
-that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
-and =TEMPLATE= arguments.  The prompts are those used by the standard
+that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=, =TEMPLATE=, and =SIGNATURE= arguments.  The prompts are those used by the standard
 ~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
 When returning the contents that fill in the Org capture template, the
