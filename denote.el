@@ -1320,15 +1320,14 @@ operation therein."
             (not (backup-file-name-p file))))
      (denote--directory-all-files-recursively dirs))))
 
-(defvar denote-directory-get-files-function #'denote-directory-get-files
-  "Function to return list of Denote files.
-Each file is a string representing an absolute file system path.  This
-is intended for use in the function `denote-directory-files'.")
+(make-obsolete-variable
+ 'denote-directory-get-files-function
+ "advanced users should write an advice for `denote-directory-files'"
+ "4.2.0")
 
-;; NOTE 2025-12-22: The HAS-IDENTIFIER is there because we provide the
-;; `denote-directory-get-files-function'.  For core Denote, the
-;; `denote-directory-get-files' already does `denote-file-has-identifier-p'.
-(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
+;; The HAS-IDENTIFIER is there because we support cases where files do
+;; not have an identifier.
+(defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier directories)
   "Return list of absolute file paths in variable `denote-directory'.
 Files that match `denote-excluded-files-regexp' are excluded from the
 list.
@@ -1351,8 +1350,11 @@ regular expression.  This is done after FILES-MATCHING-REGEXP and
 OMIT-CURRENT have been applied.
 
 With optional HAS-IDENTIFIER as a non-nil value, limit the results to
-files that have an identifier."
-  (let ((files (funcall denote-directory-get-files-function)))
+files that have an identifier.
+
+With optional DIRECTORIES, search through them instead of in the
+variable `denote-directory'."
+  (let ((files (denote-directory-get-files directories)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
@@ -1556,7 +1558,7 @@ Return the absolute path to the matching file."
                               (denote-directories-get-common-root roots)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                 :omit-current nil nil has-identifier))
+                 :omit-current nil nil has-identifier roots))
          (relative-files (if single-dir-p
                              (mapcar
                               (lambda (file)
