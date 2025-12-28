@@ -7049,8 +7049,9 @@ the date and identifier fields specified.  Also make the file
 name consist of only the identifier plus the Org file name
 extension.
 
-Otherwise produce a minibuffer prompt for every non-nil value
-that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, TEMPLATE, SIGNATURE arguments.  The prompts are those used by the standard
+Otherwise produce a minibuffer prompt for every non-nil value that
+corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, TEMPLATE,
+SIGNATURE arguments.  The prompts are those used by the standard
 `denote' command and all of its utility commands.
 
 When returning the contents that fill in the Org capture

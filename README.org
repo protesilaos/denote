@@ -991,8 +991,9 @@ the date and identifier fields specified.  It also makes the file name
 consist of only the identifier plus the Org file name extension ([[#h:4e9c7512-84dc-4dfb-9fa9-e15d51178e5d][The file-naming scheme]]).
 
 Otherwise, it produces a minibuffer prompt for every non-nil value
-that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=, =TEMPLATE=, and =SIGNATURE= arguments.  The prompts are those used by the standard
-~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
+=TEMPLATE=, and =SIGNATURE= arguments. The prompts are those used by
+the standard ~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 
 When returning the contents that fill in the Org capture template, the
 sequence is as follows: front matter, =TEMPLATE=, and then the value
@@ -6848,11 +6849,11 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Maikol Solis, Marc Fargas, Matthew Lemon, Noboru Ota (nobiot),
   Norwid Behrnd, Octavian, Peter Prevos, Philip Kaludercic, Ryota,
   Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing,
-  Thibaut Benjamin, Tomasz Hołubowicz, TomoeMami , Vedang Manerikar,
-  Wesley Harvey, Yann Dutrieux, Zhenxu Xu, arsaber101, bryanrinders,
-  eum3l, experimental-code-86, ezchi, jarofromel, leinfink (Henrik),
-  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
-  pmenair, relict007, skissue.
+  Thibaut Benjamin, Tobias Lidman-Strauss, Tomasz Hołubowicz,
+  TomoeMami , Vedang Manerikar, Wesley Harvey, Yann Dutrieux, Zhenxu
+  Xu, arsaber101, bryanrinders, eum3l, experimental-code-86, ezchi,
+  jarofromel, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
+  maxbrieiev, mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
