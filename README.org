@@ -994,6 +994,7 @@ Otherwise, it produces a minibuffer prompt for every non-nil value
 that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
 =TEMPLATE=, and =SIGNATURE= arguments. The prompts are those used by
 the standard ~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
+[ The =SIGNATURE= was missing in previous versions and is now part of {{{development-version}}}. ]
 
 When returning the contents that fill in the Org capture template, the
 sequence is as follows: front matter, =TEMPLATE=, and then the value
