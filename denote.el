@@ -1292,7 +1292,7 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
                :include-directories
                predicate-fn
                :follow-symlinks))
-            directories))))
+            (ensure-list directories)))))
 
 (defun denote--file-excluded-p (file)
   "Return non-file if FILE matches `denote-excluded-files-regexp'."
