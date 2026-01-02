@@ -6323,11 +6323,16 @@ To be assigned to `markdown-follow-link-functions'."
 
 ;;;;; Link fontification
 
-;; TODO 2024-06-19: We need to bind RET and maybe even C-c C-o to a
-;; command that opens the link at point.  Then we may also rename this
-;; keymap.
-(defvar denote-link-mouse-map
+(define-obsolete-variable-alias
+  'denote-link-mouse-map
+  'denote-fontify-links-map
+  "4.2.0")
+
+(defvar denote-fontify-links-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET") #'denote-link-open-at-point)
+    (define-key map (kbd "C-c C-o") #'denote-link-open-at-point)
+    (define-key map [mouse-1] #'denote-link-open-at-mouse)
     (define-key map [mouse-2] #'denote-link-open-at-mouse)
     (define-key map [mouse-3] #'denote-link-open-at-mouse)
     map)
@@ -6423,7 +6428,7 @@ Use optional DATA, else get the data with `denote-fontify-links--get-data'."
                  (visible-end (or (match-end 2) end))
                  (query (match-string-no-properties 1)))
             (let* ((properties `( mouse-face highlight
-                                  keymap ,denote-link-mouse-map
+                                  keymap ,denote-fontify-links-map
                                   denote-link-query-part ,query
                                   help-echo query
                                   htmlize-link (:uri ,query)
