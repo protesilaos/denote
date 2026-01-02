@@ -6540,7 +6540,7 @@ Optional NO-SORT is passed to `denote-link--prepare-links'."
 
 ;;;###autoload
 (defun denote-add-links (regexp &optional id-only)
-  "Insert links to all files whose file names match REGEXP.
+  "Insert links to all files whose file name matches REGEXP.
 Use this command to reference multiple files at once.  Particularly
 useful for the creation of metanotes (read the manual for more on the
 matter).
