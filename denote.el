@@ -6465,9 +6465,10 @@ To be used as a `thing-at' provider."
 
 ;;;###autoload
 (defun denote-fontify-links-mode-maybe ()
-  "Enable `denote-fontify-links-mode' in a denote file unless in `org-mode'."
+  "Enable `denote-fontify-links-mode' unless in Org or Markdown.
+Org or Markdown buffers automatically recognise Denote links."
   (when (and buffer-file-name
-             (not (derived-mode-p 'org-mode))
+             (not (derived-mode-p 'org-mode 'markdown-mode))
              (denote-file-is-in-denote-directory-p buffer-file-name)
              (denote-file-has-supported-extension-p buffer-file-name)
              (denote-file-has-denoted-filename-p buffer-file-name))
