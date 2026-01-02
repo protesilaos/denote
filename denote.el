@@ -3171,27 +3171,25 @@ command that needs to supply a default title before calling
 COMMAND is the symbol of a file-creating command to call, such as
 `denote' or `denote-signature'.
 
-With non-nil FORCE-USE-FILE-PROMPT-AS-DEFAULT-TITLE, use the last
-item of `denote-file-history' as the default title of the title
-prompt.  This is useful in a command such as `denote-link' where
-the entry of the file prompt can be reused as the default title.
+With non-nil FORCE-USE-FILE-PROMPT-AS-DEFAULT-TITLE, use the last item
+of `denote-file-history' as the default title of the title prompt.  This
+is useful in a command such as `denote-link' where the entry of the file
+prompt can be reused as the default title.
 
-With non-nil FORCE-IGNORE-REGION, the region is ignore when
-creating the note, i.e. it will not be used as the initial title
-in a title prompt.  Else, the value of
-`denote-ignore-region-in-denote-command' is respected.
+With non-nil FORCE-IGNORE-REGION, ignore the region when creating the
+note: do not use its text as the initial title in a title prompt.  Else,
+do whatever `denote-ignore-region-in-denote-command' entails.
 
-With non-nil FORCE-SAVE, the file is saved at the end of the note
-creation.  Else, the value of `denote-save-buffers' is respected.
+With non-nil FORCE-SAVE, save the file at the end of the note creation.
+Else, do whatever the value of `denote-save-buffers' entails.
 
-With non-nil IN-BACKGROUND, the note creation happens in the
-background, i.e. the note's buffer will not be displayed after
-the note is created.
+With non-nil IN-BACKGROUND, create the note in the background: do not
+display the note's buffer after it is created.
 
 Note that if all parameters except COMMAND are nil, this is
 equivalent to `(call-interactively command)'.
 
-The path of the newly created file is returned."
+Return the path of the newly created file."
   (let ((denote-save-buffers
          (or force-save denote-save-buffers))
         (denote-ignore-region-in-denote-command
