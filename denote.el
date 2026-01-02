@@ -6561,6 +6561,9 @@ Also see `denote-link-to-all-files-with-contents'."
         (denote-link--insert-links files file-type id-only)
       (message "No links matching `%s'" regexp))))
 
+(defalias 'denote-link-to-all-files-with-regexp 'denote-add-links
+  "Alias for `denote-add-links'.")
+
 ;;;;; Link to file with matching contents
 
 ;;;###autoload

@@ -3213,6 +3213,7 @@ the active theme).
 :END:
 
 #+findex: denote-add-links
+#+findex: denote-link-to-all-files-with-regexp
 The command ~denote-add-links~ adds links at point to all file names
 in the ~denote-directory~ that match a regular expression or plain
 string. This is similar to the ~denote-link~ command, which
@@ -3225,6 +3226,9 @@ as a typographic list, such as:
 - link2
 - link3
 #+end_example
+
+[ The ~denote-link-to-all-files-with-regexp~ is an alias for
+  ~denote-add-links~ as part of {{{development-version}}}. ]
 
 Each link is formatted according to the file type of the current note,
 as explained further above about the ~denote-link~ command.  The current
