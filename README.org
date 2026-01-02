@@ -253,7 +253,10 @@ view on how to get started with Denote:
 1. Create new text files with =M-x denote= ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
 2. Rename any file anywhere with =M-x denote-rename-file=. There are
    many variations of this command, such as ~denote-dired-rename-marked-files~ ([[#h:532e8e2a-9b7d-41c0-8f4b-3c5cbb7d4dca][Renaming files]]).
-3. Link to another Denote file with =M-x denote-link= ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Add a single direct link using a file name prompt]]).
+3. Link to another Denote file with a given file name using the
+   command =M-x denote-link= ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Add a single direct link using a file name prompt]]).
+   Or link to a file whose contents match a query with the command
+   ~denote-link-to-file-with-contents~ ([[#h:25a983ca-049e-43d4-8f6e-06a2325e2c3c][Add a direct link to a file whose contents include the given query]]).
 4. From any file with a Denote file name, view backlinks with =M-x
    denote-backlinks= ([[#h:c73f1f68-e214-49d5-b369-e694f6a5d708][The backlinks' buffer]]).
 5. Instead of linking to a file, create a "link" to a search through
