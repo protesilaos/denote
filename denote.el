@@ -6468,47 +6468,53 @@ To be used as a `thing-at' provider."
 
 (defvar thing-at-point-provider-alist)
 
-;;;###autoload
-(defun denote-fontify-links-mode-maybe ()
-  "Enable `denote-fontify-links-mode' unless in Org or Markdown.
-Org or Markdown buffers automatically recognise Denote links."
-  (when (and buffer-file-name
-             (not (derived-mode-p 'org-mode 'markdown-mode))
-             (denote-file-is-in-denote-directory-p buffer-file-name)
-             (denote-file-has-supported-extension-p buffer-file-name)
-             (denote-file-has-denoted-filename-p buffer-file-name))
-    (denote-fontify-links-mode)))
+(define-obsolete-function-alias
+  'denote-fontify-links-mode-maybe
+  'denote-fontify-links-mode
+  "4.2.0")
 
 ;;;###autoload
 (define-minor-mode denote-fontify-links-mode
   "Fontify Denote links in plain text buffers.
-
-Enable this mode only when the current buffer is a Denote note and the
-major mode is not `org-mode' or `markdown-mode' (or any major mode
-derived therefrom).  Consider using `denote-fontify-links-mode-maybe'
-instead of calling the function `denote-fontify-links-mode' directly
-because `denote-fontify-links-mode-maybe' will activate the mode only if
-necessary."
+Do so only when the current buffer is a Denote note and the major mode
+is not `org-mode' or `markdown-mode' (or any major mode derived
+therefrom)."
   :init-value nil
   :global nil
   :group 'denote
   (require 'thingatpt)
-  (if denote-fontify-links-mode
+  (if (and buffer-file-name
+           (not (derived-mode-p 'org-mode 'markdown-mode))
+           (denote-file-is-in-denote-directory-p buffer-file-name)
+           (denote-file-has-supported-extension-p buffer-file-name)
+           (denote-file-has-denoted-filename-p buffer-file-name))
       (progn
-        (add-to-invisibility-spec 'denote-fontified-link)
-        (denote-fontify-links--set-data)
-        (font-lock-add-keywords nil '((denote-fontify-links)))
-        (setq-local thing-at-point-provider-alist
-                    (append thing-at-point-provider-alist
-                            '((url . denote--get-link-file-path-at-point)))))
-    (remove-from-invisibility-spec 'denote-fontified-link)
-    (kill-local-variable 'denote-fontify-links--data)
-    (font-lock-remove-keywords nil '((denote-fontify-links)))
-    (setq-local thing-at-point-provider-alist
-                (delete
-                 '(url . denote--get-link-file-path-at-point)
-                 thing-at-point-provider-alist)))
-  (font-lock-update))
+        (if denote-fontify-links-mode
+            (progn
+              (add-to-invisibility-spec 'denote-fontified-link)
+              (denote-fontify-links--set-data)
+              (font-lock-add-keywords nil '((denote-fontify-links)))
+              (setq-local thing-at-point-provider-alist
+                          (append thing-at-point-provider-alist
+                                  '((url . denote--get-link-file-path-at-point)))))
+          (remove-from-invisibility-spec 'denote-fontified-link)
+          (kill-local-variable 'denote-fontify-links--data)
+          (font-lock-remove-keywords nil '((denote-fontify-links)))
+          (setq-local thing-at-point-provider-alist
+                      (delete
+                       '(url . denote--get-link-file-path-at-point)
+                       thing-at-point-provider-alist)))
+        (font-lock-update))
+    ;; NOTE 2026-01-02: If we do not set the value here, then it is
+    ;; toggled on/off even though the above `if' never reaches its
+    ;; THEN branch.
+    (setq denote-fontify-links-mode nil)
+    ;; NOTE 2026-01-02: In interactive use, we get a message that the
+    ;; mode is disabled if we call it in non-supported buffers.  I
+    ;; tried to `let' bind the `inhibit-message' but that did not
+    ;; work.  So I am doing this instead...
+    (when (called-interactively-p 'interactive)
+      (message "`denote-fontify-links-mode' works only in plain text buffers inside the `denote-directory'"))))
 
 ;;;;; Add links matching regexp
 

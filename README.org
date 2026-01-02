@@ -184,10 +184,10 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
 (use-package denote
   :ensure t
   :hook
-  ( ;; If you use Markdown or plain text files, then you want to make
-   ;; the Denote links clickable (Org renders links as buttons right
-   ;; away)
-   (text-mode . denote-fontify-links-mode-maybe)
+  (;; If you use plain text files (.txt), then you want to make the
+   ;; Denote links clickable (Org mode and Markdown mode render links
+   ;; as buttons right away and provide commands to open them)
+   (text-mode . denote-fontify-links-mode)
    ;; Apply colours to Denote names in Dired.  This applies to all
    ;; directories.  Check `denote-dired-directories' for the specific
    ;; directories you may prefer instead.  Then, instead of
@@ -3618,38 +3618,28 @@ appropriate than the other.
 :CUSTOM_ID: h:156c5ea3-147b-4f9d-a404-86a00558c60a
 :END:
 
+[ Revised as part of {{{development-version}}} to only target the
+  generic ~text-mode~. Org mode and Markdown mode are both excluded
+  because they work with Denote links by default. This revision also
+  inlcudes the =RET= and =C-c C-o= key bindings for fontified links. ]
+
 #+findex: denote-fontify-links-mode
-Denote links are automatically fontified in Org buffers ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]).
-This means that Org recognises the link and applies the relevant
-properties to it to make it clickable/actionable. Other major modes,
-such as ~markdown-mode~ (for =.md= files) or ~text-mode~ (for =.txt=
-files) do not have this feature built into them. Users can still get
-the same behaviour as with Org by activating the ~denote-fontify-links-mode~.
-
-The ~denote-fontify-links-mode~ is a buffer-local minor mode. Users can enable
-it automatically in plain text files that correspond to denote notes with
-something like this:
-
-#+begin_src emacs-lisp
-(add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
-#+end_src
-
-The ~text-mode-hook~ applies to all modes derived from ~text-mode~, including
-~markdown-mode~. Though a more explicit setup does no harm:
+Denote links are automatically fontified in Org mode and Markdown mode
+buffers ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]). This means that the given major mode
+recognises the link and applies to it the relevant properties that
+make it clickable/actionable. The generic ~text-mode~ (for =.txt=
+files) does not have this capability, hence the ~denote-fontify-links-mode~:
+it makes all Denote links actionable with the mouse, =RET=, or =C-c C-o=.
+The ~denote-fontify-links-mode~ is a buffer-local minor mode. Users
+can enable it automatically in plain text files that correspond to
+denote notes with something like this:
 
 #+begin_src emacs-lisp
-(add-hook 'markdown-mode-hook #'denote-fontify-links-mode-maybe)
+(add-hook 'text-mode-hook #'denote-fontify-links-mode)
 #+end_src
 
-Because Org already recognises =denote:= links, the function
-~denote-fontify-links-mode-maybe~ will not enable the mode
-~denote-fontify-links-mode~ in Org buffers.
-
-#+findex: denote-link-markdown-follow
-In files whose major mode is ~markdown-mode~, the default key binding
-=C-c C-o= (which calls the command ~markdown-follow-thing-at-point~)
-correctly resolves =denote:= links. Interested users can refer to the
-function ~denote-link-markdown-follow~ for the implementation details.
+Fontified links can be opened with =RET=, =C-c C-o=, or a mouse click
+(=C-c C-o= is also the default for Org and Markdown).
 
 ** The ~denote-link-description-format~ to format link descriptions
 :PROPERTIES:
