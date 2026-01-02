@@ -1501,8 +1501,8 @@ Use the identifier as a prefix and the keywords as a suffix."
    (lambda (file)
      (list
       file
-      (denote-file-prompt--format-identifier file)
-      (denote-file-prompt--format-keywords-and-signature file)))
+      (or (denote-file-prompt--format-identifier file) "")
+      (or (denote-file-prompt--format-keywords-and-signature file) "")))
    files))
 
 (defun denote-file-prompt-sort (files)
