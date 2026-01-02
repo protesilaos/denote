@@ -6476,11 +6476,14 @@ Org or Markdown buffers automatically recognise Denote links."
 
 ;;;###autoload
 (define-minor-mode denote-fontify-links-mode
-  "A minor mode to fontify and fold Denote links.
+  "Fontify Denote links in plain text buffers.
 
-Enabled this mode only when the current buffer is a Denote note and the
-major mode is not `org-mode' (or derived therefrom).  Consider using
-`denote-fontify-links-mode-maybe' for this purpose."
+Enable this mode only when the current buffer is a Denote note and the
+major mode is not `org-mode' or `markdown-mode' (or any major mode
+derived therefrom).  Consider using `denote-fontify-links-mode-maybe'
+instead of calling the function `denote-fontify-links-mode' directly
+because `denote-fontify-links-mode-maybe' will activate the mode only if
+necessary."
   :init-value nil
   :global nil
   :group 'denote
