@@ -6546,7 +6546,9 @@ useful for the creation of metanotes (read the manual for more on the
 matter).
 
 Optional ID-ONLY has the same meaning as in `denote-link': it
-inserts links with just the identifier."
+inserts links with just the identifier.
+
+Also see `denote-link-to-all-files-with-contents'."
   (interactive
    (list
     (denote-files-matching-regexp-prompt "Insert links to files matching REGEXP")
