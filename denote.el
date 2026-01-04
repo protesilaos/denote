@@ -1300,12 +1300,7 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   (and denote-excluded-files-regexp
        (string-match-p denote-excluded-files-regexp file)))
 
-(define-obsolete-function-alias
-  'denote--directory-get-files
-  'denote-directory-get-files
-  "4.1.0")
-
-(defun denote-directory-get-files ()
+(defun denote--directory-get-files ()
   "Return list with full path of valid files in variable `denote-directory'.
 Consider files that satisfy `denote-file-has-denoted-filename-p' and
 are not backups."
@@ -1348,7 +1343,7 @@ OMIT-CURRENT have been applied.
 
 With optional HAS-IDENTIFIER as a non-nil value, limit the results to
 files that have an identifier."
-  (let ((files (denote-directory-get-files)))
+  (let ((files (denote--directory-get-files)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
