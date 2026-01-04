@@ -1248,18 +1248,19 @@ what remains."
   (and (file-writable-p file)
        (denote-file-has-supported-extension-p file)))
 
-(defun denote-get-file-name-relative-to-denote-directory (file &optional directories)
-  "Return FILE relative to the variable `denote-directory'.
-With optional DIRECTORIES, as a list of directories, return FILE
-relative to whichever one of those it belongs to."
+(defun denote--get-file-name-relative-to-directories (file directories)
+  "Return FILE relative to one of the DIRECTORIES."
   (unless (file-name-absolute-p file)
     (error "The file `%s' is not absolute" file))
-  (when-let* ((dirs (or directories (denote-directories)))
-              (directory (seq-find
+  (when-let* ((directory (seq-find
                           (lambda (d)
                             (string-prefix-p d file))
-                          dirs)))
+                          directories)))
     (substring-no-properties file (length directory))))
+
+(defun denote-get-file-name-relative-to-denote-directory (file)
+  "Return FILE relative to the variable `denote-directory'."
+  (denote--get-file-name-relative-to-directories file (denote-directories)))
 
 (defun denote-extract-id-from-string (string)
   "Return existing Denote identifier in STRING, else nil."
@@ -1278,7 +1279,7 @@ Avoids traversing dotfiles (unconditionally) and whatever matches
   (let* ((directories (denote-directories))
          (predicate-fn
           (lambda (file)
-            (let ((rel (denote-get-file-name-relative-to-denote-directory file directories)))
+            (let ((rel (denote--get-file-name-relative-to-directories file directories)))
               (cond
                ((string-match-p "\\`\\." rel) nil)
                ((string-match-p "/\\." rel) nil)
@@ -1347,10 +1348,11 @@ files that have an identifier."
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
-      (setq files (seq-filter
-                   (lambda (f)
-                     (string-match-p files-matching-regexp (denote-get-file-name-relative-to-denote-directory f)))
-                   files)))
+      (let ((dirs (denote-directories)))
+        (setq files (seq-filter
+                     (lambda (f)
+                       (string-match-p files-matching-regexp (denote--get-file-name-relative-to-directories f dirs)))
+                     files))))
     (when text-only
       (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
     (when has-identifier
@@ -1366,14 +1368,15 @@ files that have an identifier."
   "Return list of subdirectories in variable `denote-directory'.
 Omit dotfiles (such as .git) unconditionally.  Also exclude
 whatever matches `denote-excluded-directories-regexp'."
-  (seq-remove
-   (lambda (filename)
-     (let ((rel (denote-get-file-name-relative-to-denote-directory filename (denote-directories))))
-       (or (not (file-directory-p filename))
-           (string-match-p "\\`\\." rel)
-           (string-match-p "/\\." rel)
-           (denote--exclude-directory-regexp-p rel))))
-   (denote--directory-all-files-recursively)))
+  (let ((dirs (denote-directories)))
+    (seq-remove
+     (lambda (filename)
+       (let ((rel (denote--get-file-name-relative-to-directories filename dirs)))
+         (or (not (file-directory-p filename))
+             (string-match-p "\\`\\." rel)
+             (string-match-p "/\\." rel)
+             (denote--exclude-directory-regexp-p rel))))
+     (denote--directory-all-files-recursively))))
 
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
 ;; option, but I am keeping it as a generic variable for now.
@@ -1551,7 +1554,7 @@ Return the absolute path to the matching file."
          (relative-files (if single-dir-p
                              (mapcar
                               (lambda (file)
-                                (denote-get-file-name-relative-to-denote-directory file roots))
+                                (denote--get-file-name-relative-to-directories file roots))
                               files)
                            files))
          (prompt (if single-dir-p
@@ -5436,7 +5439,7 @@ the generic one."
          (file-names (if single-dir-p
                          (mapcar
                           (lambda (file)
-                            (denote-get-file-name-relative-to-denote-directory file roots))
+                            (denote--get-file-name-relative-to-directories file roots))
                           files)
                        files))
          (selected (completing-read
@@ -6617,7 +6620,7 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
          (file-names (if single-dir-p
                          (mapcar
                           (lambda (file)
-                            (denote-get-file-name-relative-to-denote-directory file roots))
+                            (denote--get-file-name-relative-to-directories file roots))
                           buffer-file-names)
                        buffer-file-names))
          (selected (completing-read
