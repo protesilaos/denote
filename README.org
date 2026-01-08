@@ -4635,9 +4635,8 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                              (car (denote-directories))
                            (denote-directories-get-common-root)))
               (files (funcall files-fn))
-              (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
-        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
+        (denote-sort-dired--prepare-buffer directory files-fn buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defun my-denote-sort-dired-without-empty-files (files-matching-regexp sort-by-component reverse exclude-regexp)
@@ -4656,9 +4655,8 @@ Empty files are those that satisfy `my-denote--note-has-no-contents-p'."
                              (car (denote-directories))
                            (denote-directories-get-common-root)))
               (files (funcall files-fn))
-              (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function (format "%s (OMIT EMPTY)" files-matching-regexp) sort-by-component reverse-sort exclude-regexp)))
-        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
+        (denote-sort-dired--prepare-buffer directory files-fn buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defun my-denote-sort-dired-all-empty-files ()
