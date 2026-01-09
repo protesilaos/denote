@@ -1922,7 +1922,7 @@ If REVERSE is nil, use the value of the user option
             "\n"
             (propertize "No more matching files" 'face 'warning))))
 
-(defun denote-sort-dired--prepare-buffer (directory files-fn dired-name buffer-name)
+(defun denote-sort-dired--prepare-buffer (directory files-fn buffer-name)
   "Prepare buffer for `denote-sort-dired'.
 DIRECTORY is an absolute path to the `default-directory' of the Dired
 listing.
@@ -1930,13 +1930,10 @@ listing.
 FILES-FN is a function that returns the files to be listed in the Dired
 buffer.
 
-DIRED-NAME is a string passed to Dired as (cons DIRED-NAME FILES)),
-where FILES is the return value of FILES-FN.
-
 BUFFER-NAME is the name of the resulting buffer."
   (let* ((default-directory directory)
          (files (funcall files-fn))
-         (dired-buffer (dired (cons dired-name files))))
+         (dired-buffer (dired (cons directory files))))
     (with-current-buffer dired-buffer
       (rename-buffer buffer-name :unique)
       (setq-local revert-buffer-function
@@ -1944,7 +1941,7 @@ BUFFER-NAME is the name of the resulting buffer."
                     (if-let* ((default-directory directory)
                               (files (funcall files-fn)))
                         (progn
-                          (setq-local dired-directory (cons dired-name files))
+                          (setq-local dired-directory (cons directory files))
                           (dired-revert))
                       (denote-dired-empty-mode)))))
     buffer-name))
@@ -1989,9 +1986,8 @@ When called from Lisp, the arguments are a string, a symbol among
                              (car roots)
                            (denote-directories-get-common-root)))
               (files (funcall files-fn))
-              (dired-name (format-message files-matching-regexp))
               (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp)))
-        (denote-sort-dired--prepare-buffer directory files-fn dired-name buffer-name)
+        (denote-sort-dired--prepare-buffer directory files-fn buffer-name)
       (message "No matching files for: %s" files-matching-regexp))))
 
 (defalias 'denote-dired 'denote-sort-dired
