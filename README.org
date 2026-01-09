@@ -6830,12 +6830,12 @@ Denote is meant to be a collective effort.  Every bit of help matters.
 + Author/maintainer :: Protesilaos Stavrou.
 
 + Contributions to code or the manual :: Abdul-Lateef Haji-Ali, Abin
-  Simon, Adam Růžička, Alan Schmitt, Alexandre Rousseau, Ashish
-  Panigrahi, Ashton Wiersdorf, Aziz, Benjamin Kästner, Bruno Boal,
-  Charanjit Singh, Claudio Migliorelli, Clemens Radermacher, Colin
-  McLear, Damien Cassou, Eduardo Grajeda, Elias Storms, Eshel Yaron,
-  Florian, Glenna D., Graham Marlow, Hilde Rhyne, Ivan Sokolov, Jack
-  Baty, Jakub Szczerbowski, James Kalyan, Jean-Charles Bagneris,
+  Simon, Adam Růžička, Alan Schmitt, Alexandre Rousseau, Alvin Hsu,
+  Ashish Panigrahi, Ashton Wiersdorf, Aziz, Benjamin Kästner, Bruno
+  Boal, Charanjit Singh, Claudio Migliorelli, Clemens Radermacher,
+  Colin McLear, Damien Cassou, Eduardo Grajeda, Elias Storms, Eshel
+  Yaron, Florian, Glenna D., Graham Marlow, Hilde Rhyne, Ivan Sokolov,
+  Jack Baty, Jakub Szczerbowski, James Kalyan, Jean-Charles Bagneris,
   Jean-Philippe Gagné Guay, Jianwei Hou, Joseph Turner, Jürgen Hötzel,
   Kaushal Modi, Kai von Fintel, Kierin Bell, Kostas Andreadis,
   Kristoffer Balintona, Kyle Meyer, Laurent Gatto, Lucas Quintana,
