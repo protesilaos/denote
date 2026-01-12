@@ -4514,6 +4514,23 @@ package provides commands to interact with the list of notes, such as
 to filter them and to transition from the tabular list to Dired.  Its
 documentation expands on the technicalities.
 
+** Use the ~denote-review~ package
+:PROPERTIES:
+:CUSTOM_ID: h:46294e0c-4155-425f-abd8-b6f83bc29f53
+:END:
+
+The [[https://codeberg.org/mattof/denote-review][~denote-review~]] package by Matto Fransen implements a a simple
+review process for Denote notes.
+
+The package provides options to extend the frontmatter of some notes
+with a ~reviewdate~ field. It also provides an ordered tabulated list
+of notes and their review date. The user is prompted to select either
+all notes in a directory or to narrow to a single keyword.
+
+Select a note in this list to edit, or request a random note from the
+list to edit. Update the ~reviewdate~ of the note with a single
+command.
+
 ** Use the ~denote-zettel-interface~ package
 :PROPERTIES:
 :CUSTOM_ID: h:b57f73fc-ac4d-4df2-bd7a-8d47cb202647
