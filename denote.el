@@ -994,10 +994,10 @@ DIRECTORIES are absolute file system paths."
     (error "DIRECTORIES must be a list of absolute filesystem paths, not `%S'" directories))
    ((null (cdr directories))
     (car directories))
-   ((when-let* ((parts (mapcar
-                        (lambda (dir)
-                          (split-string dir "/" :omit-nulls))
-                        directories)))
+   ((let* ((parts (mapcar
+                   (lambda (dir)
+                     (split-string dir "/" :omit-nulls))
+                   directories)))
       (let ((common-prefix (car parts)))
         (dolist (part (cdr parts))
           (let ((new-common-prefix nil))
