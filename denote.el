@@ -997,20 +997,20 @@ DIRECTORIES are absolute file system paths."
    ((let* ((parts (mapcar
                    (lambda (dir)
                      (split-string dir "/" :omit-nulls))
-                   directories)))
-      (let ((common-prefix (car parts)))
-        (dolist (part (cdr parts))
-          (let ((new-common-prefix nil))
-            (while (and common-prefix
-                        part
-                        (string= (car common-prefix) (car part)))
-              (push (car common-prefix) new-common-prefix)
-              (setq common-prefix (cdr common-prefix))
-              (setq part (cdr part)))
-            (setq common-prefix (nreverse new-common-prefix))))
-        (if common-prefix
-            (format "/%s/" (mapconcat #'identity common-prefix "/"))
-          "/"))))))
+                   directories))
+           (common-prefix (car parts)))
+      (dolist (part (cdr parts))
+        (let ((new-common-prefix nil))
+          (while (and common-prefix
+                      part
+                      (string= (car common-prefix) (car part)))
+            (push (car common-prefix) new-common-prefix)
+            (setq common-prefix (cdr common-prefix))
+            (setq part (cdr part)))
+          (setq common-prefix (nreverse new-common-prefix))))
+      (if common-prefix
+          (format "/%s/" (mapconcat #'identity common-prefix "/"))
+        "/")))))
 
 (defun denote-directories-get-common-root ()
   "Get the common root directory of `denote-directories'."
