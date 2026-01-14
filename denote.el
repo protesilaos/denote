@@ -989,8 +989,9 @@ DIRECTORIES are absolute file system paths."
    ;; FIXME 2026-01-14: The `file-name-absolute-p' actually returns
    ;; non-nil for ~/PATH.  This will not work here.  Does the prefix
    ;; check work on all operating systems?  Linux is fine.
-   ((not (seq-every-p (lambda (d) (string-prefix-p "/" d)) directories))
-    (error "All directories must be absolute paths"))
+   ((or (null directories)
+        (not (seq-every-p (lambda (d) (string-prefix-p "/" d)) directories)))
+    (error "DIRECTORIES must be a list of absolute filesystem paths, not `%S'" directories))
    ((null (cdr directories))
     (car directories))
    ((when-let* ((parts (mapcar
