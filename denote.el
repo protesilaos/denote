@@ -2645,14 +2645,13 @@ Subroutine of `denote--file-with-temp-buffer'."
          (file-exists (file-exists-p file))
          (buffer-modified (buffer-modified-p buffer)))
     (cond
-     ((or (and file-exists
-               buffer
-               (not buffer-modified)
-               (not (eq buffer-modified 'autosaved)))
-          (and file-exists (not buffer)))
-      (cons #'insert-file-contents file))
-     (buffer
+     ((and file-exists
+           buffer
+           (not buffer-modified))
       (cons #'insert-buffer buffer))
+     ((and file-exists
+           (or (null buffer) buffer-modified))
+      (cons #'insert-file-contents file))
      ;; (t
      ;;  (error "Cannot find anything about file `%s'" file))
      )))
