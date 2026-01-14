@@ -7237,7 +7237,9 @@ This is called if `denote-rename-buffer-rename-function' is nil."
 (defun denote-rename-buffer-rename-function-or-fallback ()
   "Call `denote-rename-buffer-function' or its fallback to rename with title.
 Add this to `find-file-hook' and `denote-after-new-note-hook'."
-  (funcall (or denote-rename-buffer-function #'denote-rename-buffer--fallback)))
+  (when-let* ((file (buffer-file-name))
+              ((denote-file-has-identifier-p file)))
+    (funcall (or denote-rename-buffer-function #'denote-rename-buffer--fallback))))
 
 ;;;###autoload
 (define-minor-mode denote-rename-buffer-mode
