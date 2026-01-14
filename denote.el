@@ -983,18 +983,33 @@ to override what this function returns."
   (not (cdr (denote-directories))))
 
 (defun denote--get-common-root-directory (directories)
-  "Return common root directory among DIRECTORIES."
-  (if-let* ((parts (mapcar (lambda (directory) (split-string directory "/" :omit-nulls)) directories))
-            (common-parent (seq-reduce
-                            (lambda (dir-parts comparison-parts)
-                              (let ((common nil))
-                                (dolist (part dir-parts)
-                                  (when (member part comparison-parts)
-                                    (push part common)))
-                                (nreverse common)))
-                            parts (car parts))))
-      (format "/%s/" (mapconcat #'identity common-parent "/"))
-    "/"))
+  "Return common root directory among DIRECTORIES.
+DIRECTORIES are absolute file system paths."
+  (cond
+   ;; FIXME 2026-01-14: The `file-name-absolute-p' actually returns
+   ;; non-nil for ~/PATH.  This will not work here.  Does the prefix
+   ;; check work on all operating systems?  Linux is fine.
+   ((unless (seq-every-p (lambda (d) (string-prefix-p "/" d)) directories)
+      (error "All directories must be absolute paths")))
+   ((length= directories 1)
+    (car directories))
+   ((when-let* ((parts (mapcar
+                        (lambda (dir)
+                          (split-string dir "/" :omit-nulls))
+                        directories)))
+      (let ((common-prefix (car parts)))
+        (dolist (part (cdr parts))
+          (let ((new-common-prefix nil))
+            (while (and common-prefix
+                        part
+                        (string= (car common-prefix) (car part)))
+              (push (car common-prefix) new-common-prefix)
+              (setq common-prefix (cdr common-prefix))
+              (setq part (cdr part)))
+            (setq common-prefix (nreverse new-common-prefix))))
+        (if common-prefix
+            (format "/%s/" (mapconcat #'identity common-prefix "/"))
+          "/"))))))
 
 (defun denote-directories-get-common-root ()
   "Get the common root directory of `denote-directories'."

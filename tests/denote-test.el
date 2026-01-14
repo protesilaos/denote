@@ -531,6 +531,34 @@ does not involve the time zone."
   (should-error (denote--date-convert '(26454 45206 461174 657000) :not-valid-type))
   (should-error (denote--date-convert nil :not-valid-type)))
 
+(ert-deftest dt-denote--get-common-root-directory ()
+  "Test that `denote--get-common-root-directory' returns the right path."
+  (should (string=
+           (denote--get-common-root-directory
+            '("/home/prot/Documents/notes/"
+              "/home/prot/Documents/notes/attachments"))
+           "/home/prot/Documents/notes/"))
+  (should (string=
+           (denote--get-common-root-directory
+            '("/home/prot/Documents/"
+              "/home/prot/Documents/notes/attachments"))
+           "/home/prot/Documents/"))
+  (should (string=
+           (denote--get-common-root-directory
+            '("/home/prot/Books/"
+              "/home/prot/Documents/notes/"))
+           "/home/prot/"))
+  (should (string=
+           (denote--get-common-root-directory
+            '("/tmp/notes/"
+              "/home/prot/Documents/notes/"))
+           "/"))
+  (should (string=
+           (denote--get-common-root-directory
+            '("/home/prot/Documents/notes/"))
+           "/home/prot/Documents/notes/"))
+  (should-error (denote--get-common-root-directory '("~/Documents/notes/"))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 
