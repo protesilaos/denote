@@ -5758,7 +5758,7 @@ Used only by `denote-query-extract-title'."
 
 When no title is found, return title found in FILE name.
 
-When that doesn't work, return `denote-grep-untitled-string'.
+When that doesn't work, return `denote-query-untitled-string'.
 
 Intended to be used as `denote-query-format-heading-function'."
   (if-let* ((type (denote-filetype-heuristics file))
