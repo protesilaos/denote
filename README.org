@@ -6856,15 +6856,15 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Jean-Philippe Gagné Guay, Jianwei Hou, Joseph Turner, Jürgen Hötzel,
   Kaushal Modi, Kai von Fintel, Kierin Bell, Kostas Andreadis,
   Kristoffer Balintona, Kyle Meyer, Laurent Gatto, Lucas Quintana,
-  Maikol Solis, Marc Fargas, Matthew Lemon, Matto Fransen, Noboru Ota
-  (nobiot), Norwid Behrnd, Octavian, Peter Prevos, Philip Kaludercic,
-  Ryota, Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan
-  Thesing, Thibaut Benjamin, Tobias Lidman-Strauss, Tomasz Hołubowicz,
-  TomoeMami , Vedang Manerikar, Wesley Harvey, Yann Dutrieux, Zhenxu
-  Xu, alvmts, arsaber101, bryanrinders, dulikiles, eum3l,
-  experimental-code-86, ezchi, jarofromel, leinfink (Henrik), l-o-l-h
-  (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur, pmenair,
-  relict007, skissue.
+  Maikol Solis, Marc Fargas, Matthew Batson, Matthew Lemon, Matto
+  Fransen, Noboru Ota (nobiot), Norwid Behrnd, Octavian, Peter Prevos,
+  Philip Kaludercic, Ryota, Quiliro Ordóñez, Stephen R. Kifer, Stefan
+  Monnier, Stefan Thesing, Thibaut Benjamin, Tobias Lidman-Strauss,
+  Tomasz Hołubowicz, TomoeMami , Vedang Manerikar, Wesley Harvey, Yann
+  Dutrieux, Zhenxu Xu, alvmts, arsaber101, bryanrinders, dulikiles,
+  eum3l, experimental-code-86, ezchi, jarofromel, leinfink (Henrik),
+  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
+  pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
