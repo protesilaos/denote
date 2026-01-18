@@ -2624,30 +2624,17 @@ Also see `denote-extract-keywords-from-path' (alias
     (when (string-match denote-title-regexp filename)
       (match-string 1 filename))))
 
-(defun denote--file-with-temp-buffer-subr (file)
-  "Return path to FILE or its buffer together with the appropriate function.
-Subroutine of `denote--file-with-temp-buffer'."
-  (let* ((buffer (get-file-buffer file))
-         (file-exists (file-exists-p file))
-         (buffer-modified (buffer-modified-p buffer)))
-    (cond
-     ((and file-exists
-           buffer
-           (not buffer-modified))
-      (cons #'insert-buffer buffer))
-     ((and file-exists
-           (or (null buffer) buffer-modified))
-      (cons #'insert-file-contents file))
-     ;; (t
-     ;;  (error "Cannot find anything about file `%s'" file))
-     )))
-
 (defmacro denote--file-with-temp-buffer (file &rest body)
-  "If FILE exists, insert its contents in a temp buffer and call BODY."
+  "If a buffer is visiting FILE, insert its contents into a temporary
+buffer. Otherwise, insert the contents of FILE. Then call BODY."
   (declare (indent 1))
-  `(when-let* ((file-and-function (denote--file-with-temp-buffer-subr ,file)))
+  `(let* ((buffer (get-file-buffer ,file))
+          (file-exist (file-exists-p ,file)))
      (with-temp-buffer
-       (funcall (car file-and-function) (cdr file-and-function))
+       (cond
+        (buffer (insert-buffer buffer))
+        (file-exist (insert-file-contents ,file))
+        (t (error "Cannot find anything about file `%s'" ,file)))
        (goto-char (point-min))
        ,@body)))
 
