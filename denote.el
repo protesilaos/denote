@@ -2634,7 +2634,7 @@ BODY."
           (file-exist (file-exists-p ,file)))
      (with-temp-buffer
        (cond
-        (buffer (insert-buffer buffer))
+        (buffer (insert-buffer-substring buffer))
         (file-exist (insert-file-contents ,file))
         (t (error "Cannot find anything about file `%s'" ,file)))
        (goto-char (point-min))
