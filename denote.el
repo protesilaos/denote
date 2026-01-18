@@ -2625,8 +2625,10 @@ Also see `denote-extract-keywords-from-path' (alias
       (match-string 1 filename))))
 
 (defmacro denote--file-with-temp-buffer (file &rest body)
-  "If a buffer is visiting FILE, insert its contents into a temporary
-buffer. Otherwise, insert the contents of FILE. Then call BODY."
+  "Evaluate BODY with FILE contents in scope.
+If a buffer is visiting FILE, insert the buffer contents into a
+temporary buffer.  Otherwise, insert the contents of FILE.  Then call
+BODY."
   (declare (indent 1))
   `(let* ((buffer (get-file-buffer ,file))
           (file-exist (file-exists-p ,file)))
