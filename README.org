@@ -4548,6 +4548,29 @@ their files, navigate around, and the like.
 Note that the package is in early development as of this writing
 (2024-12-03 10:18 +0200).
 
+** Use the ~mir~ package for incremental reading
+:PROPERTIES:
+:ID:       01d39cb6-63ec-4c14-8b10-9fdf02058a30
+:END:
+
+The [[https://github.com/gvalson/mir.el][mir package]] builds on top of ~denote~, ~denote-sequence~ and
+Emacs' SQLite support to provide a workflow for prioritizing,
+scheduling and reading a massive amount of text and extracting the
+most useful parts out of it. This is accomplished using a process
+called incremental reading (for more information, see the package's
+README). ~denote~ is used as a backbone for storing imported
+documents such that they are easily modifiable, uniquely identifiable
+and easy to genealogically query. In particular, the file's ID is
+used to store scheduling information in the database and the keyword
+component is used to build a tree-like hierarchy (i.e. a sequence of
+notes) that makes it easy to see where the source of a given
+extracted note is.
+
+As of writing this (January 2026), ~mir~ is still in heavy development
+and does not feature all the functionality that would make it a valid
+replacement of other incremental reading tools. However, work is
+underway to make it feature-complete.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
