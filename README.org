@@ -3474,6 +3474,12 @@ this end, Denote provides two convenience commands:
   This command has the alias ~denote-link-to-existing-or-new-note~,
   which helps with discoverability.
 
+#+findex: denote-link-or-create-with-command
++ ~denote-link-or-create-with-command~ :: This command is the same
+  concept as ~denote-link-or-create~ except it prompts for the
+  specific command for creating a new note ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
+  [ The ~denote-link-or-create-with-command~ is part of {{{development-version}}}. ]
+
 In all of the above, an optional prefix argument (=C-u= by default)
 creates a link that consists of just the identifier.  This has the
 same meaning as in the regular ~denote-link~ command.
