@@ -5565,6 +5565,36 @@ file's title.  This has the same meaning as in `denote-link'."
 (defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
   "Alias for `denote-link-or-create' command.")
 
+;;;###autoload
+(defun denote-link-or-create-with-command (&optional id-only)
+  "Like `denote-link-or-create' but prompt for a note-making command.
+Use this to, for example, call `denote-signature' when the target file
+does not exist, so that the newly created note has a signature as part
+of its file name.
+
+Optional ID-ONLY has the same meaning as in the command
+`denote-link-or-create'."
+  (declare (interactive-only t))
+  (interactive "P")
+  (let ((target (denote-file-prompt nil
+                                    "Select file (RET on no match to create it)"
+                                    :no-require-match
+                                    :has-identifier)))
+    (unless (file-exists-p target)
+      (setq target (denote--command-with-features (denote-command-prompt)
+                                                  :use-file-prompt-as-def-title
+                                                  :ignore-region
+                                                  :save
+                                                  :in-background)))
+    (unless (or (denote--file-type-org-extra-p)
+                (and buffer-file-name
+                     (denote-file-has-supported-extension-p buffer-file-name)))
+      (user-error "The current file type is not recognized by Denote"))
+    (denote-link target
+                 (denote-filetype-heuristics (buffer-file-name))
+                 (denote-get-link-description target)
+                 id-only)))
+
 ;;;;; Links' buffer (query links and backlinks using `denote-query-mode')
 
 (define-obsolete-function-alias
@@ -6749,6 +6779,9 @@ This command is meant to be used from a Dired buffer."
      :enable (derived-mode-p 'text-mode)]
     ["Link to existing note or newly created one" denote-link-or-create
      :help "Insert a link to an existing file, else create it and link to it"
+     :enable (derived-mode-p 'text-mode)]
+    ["Link to existing note or newly created one with the chosen command" denote-link-or-create-with-command
+     :help "Insert a link to an existing file, else create it with the given command and link to it"
      :enable (derived-mode-p 'text-mode)]
     ["Create note in the background and link to it directly" denote-link-after-creating
      :help "Create new note and link to it from the current file"
