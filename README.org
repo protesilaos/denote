@@ -1260,9 +1260,9 @@ to, for example, make further edits to the available text.
 
 The ~denote-open-or-create-with-command~ is like the above, except
 when it is about to create the new note it first prompts for the
-specific file-creating command to use ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  For example,
-the user may want to specify a signature for this new file, so they
-can select the ~denote-signature~ command.
+specific file-creating command to use ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
+For example, the user may want to specify a signature for this
+new file, so they can select the ~denote-signature~ command.
 
 Denote provides similar functionality for linking to an existing note
 or creating a new one ([[#h:b6056e6b-93df-4e6b-a778-eebd105bac46][Link to a note or create it if missing]]).
@@ -3449,10 +3449,10 @@ this end, Denote provides two convenience commands:
 #+findex: denote-link-after-creating-with-command
 + ~denote-link-after-creating-with-command~ :: This command is like
   ~denote-link-after-creating~ except it prompts for a note-creating
-  command ([[*Points of entry][Points of entry]]).  Use this to, for example, call
-  ~denote-signature~ so that the newly created note has a signature as
-  part of its file name.  Optional =ID-ONLY= has the same meaning as
-  in the command ~denote-link-after-creating~.
+  command ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]). Use this to, for
+  example, call ~denote-signature~ so that the newly created note has
+  a signature as part of its file name. Optional =ID-ONLY= has the
+  same meaning as in the command ~denote-link-after-creating~.
 
 #+findex: denote-link-or-create
 + ~denote-link-or-create~ :: Use ~denote-link~ on =TARGET= file,
