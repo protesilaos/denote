@@ -5576,16 +5576,9 @@ Optional ID-ONLY has the same meaning as in the command
 `denote-link-or-create'."
   (declare (interactive-only t))
   (interactive "P")
-  (let ((target (denote-file-prompt nil
-                                    "Select file (RET on no match to create it)"
-                                    :no-require-match
-                                    :has-identifier)))
+  (let ((target (denote-file-prompt nil "Select file (RET on no match to create it)" :no-require-match :has-identifier)))
     (unless (file-exists-p target)
-      (setq target (denote--command-with-features (denote-command-prompt)
-                                                  :use-file-prompt-as-def-title
-                                                  :ignore-region
-                                                  :save
-                                                  :in-background)))
+      (setq target (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title :ignore-region :save :in-background)))
     (unless (or (denote--file-type-org-extra-p)
                 (and buffer-file-name
                      (denote-file-has-supported-extension-p buffer-file-name)))
