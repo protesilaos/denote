@@ -4550,7 +4550,7 @@ Note that the package is in early development as of this writing
 
 ** Use the ~mir~ package for incremental reading
 :PROPERTIES:
-:ID:       01d39cb6-63ec-4c14-8b10-9fdf02058a30
+:CUSTOM_ID: h:0560dbf3-25a1-4eae-aa9e-5900d7e37a2e
 :END:
 
 The [[https://github.com/gvalson/mir.el][mir package]] builds on top of ~denote~, ~denote-sequence~ and
@@ -6885,9 +6885,9 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Monnier, Stefan Thesing, Thibaut Benjamin, Tobias Lidman-Strauss,
   Tomasz Hołubowicz, TomoeMami , Vedang Manerikar, Wesley Harvey, Yann
   Dutrieux, Zhenxu Xu, alvmts, arsaber101, bryanrinders, dulikiles,
-  eum3l, experimental-code-86, ezchi, jarofromel, leinfink (Henrik),
-  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
-  pmenair, relict007, skissue.
+  eum3l, experimental-code-86, ezchi, gvalson, jarofromel, leinfink
+  (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
+  mentalisttraceur, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
