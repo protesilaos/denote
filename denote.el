@@ -240,8 +240,7 @@ of the following:
   home and work, or even priorities like a, b, c. One other use-case is
   to implement a sequencing scheme that makes notes have hierarchical
   relationships.  This is handled by our optional extension
-  denote-sequence.el, which is part of the denote package (read the
-  manual).
+  denote-sequence.el, which is its own package (read the manual).
 
 The prompts occur in the given order.
 

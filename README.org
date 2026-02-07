@@ -521,8 +521,7 @@ of the following:
   contexts like =home= and =work=, or even priorities like =a=, =b=,
   =c=. One other use-case is to implement a sequencing scheme that
   makes notes have hierarchical relationships. This is handled by our
-  optional extension =denote-sequence.el=, which is part of the
-  ~denote~ package ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
+  optional extension =denote-sequence.el=, which is its own package ([[#h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f][Write sequence notes or "folgezettel"]]).
 
 The prompts occur in the given order.
 
