@@ -4587,6 +4587,53 @@ operations the user is advised to rely on standard Emacs facilities or
 specialised third-party packages ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]]). This
 section covers the details.
 
+** Define a custom file type to automatically encrypt new notes
+:PROPERTIES:
+:CUSTOM_ID: h:647ea7d0-7168-4ef7-8043-40403d924789
+:END:
+
+#+vindex: denote-file-types
+Denote can work with any file type. By default, it works with those
+defined in the variable ~denote-file-types~. The documentation string
+of that variable explains the technicalities.
+
+Users who simply want to write files with something like a =.org.gpg=
+extension can add the following to their configuration:
+
+#+begin_src emacs-lisp
+;; This is the same as the default `denote-file-types' entry for
+;; `org', except for the :extension.  I gave it a different name (the
+;; `org-gpg'), to distinguish it from the default.
+(add-to-list 'denote-file-types
+             '(org-gpg
+               :extension ".org.gpg"
+               :front-matter denote-org-front-matter
+               :title-key-regexp "^#\\+title\\s-*:"
+               :title-value-function denote-format-string-for-org-front-matter
+               :title-value-reverse-function denote-trim-whitespace
+               :keywords-key-regexp "^#\\+filetags\\s-*:"
+               :keywords-value-function denote-format-keywords-for-org-front-matter
+               :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+               :signature-key-regexp "^#\\+signature\\s-*:"
+               :signature-value-function denote-format-string-for-org-front-matter
+               :signature-value-reverse-function denote-trim-whitespace
+               :identifier-key-regexp "^#\\+identifier\\s-*:"
+               :identifier-value-function denote-format-string-for-org-front-matter
+               :identifier-value-reverse-function denote-trim-whitespace
+               :date-key-regexp "^#\\+date\\s-*:"
+               :date-value-function denote-date-org-timestamp
+               :date-value-reverse-function denote-extract-date-from-front-matter
+               :link-retrieval-format "[denote:%VALUE%]"
+               :link denote-org-link-format
+               :link-in-context-regexp denote-org-link-in-context-regexp))
+#+end_src
+
+With this in place, the command ~denote-type~ will include the
+=org-gpg= file type in its minibuffer prompt for a file type
+([[#h:887bdced-9686-4e80-906f-789e407f2e8f][Convenience commands for note creation]]). Same principle if the user
+option ~denote-prompts~ is configured to include the =file-type=
+prompt ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The ~denote-prompts~ option]]).
+
 ** Access the data of the latest note
 :PROPERTIES:
 :CUSTOM_ID: h:a947908e-1847-4471-ba07-377ee2f4b36c
@@ -6905,17 +6952,18 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Valk, Jens Östlund, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö,
   Jonas Großekathöfer, Jousimies, Juanjo Presa, Julian Hoch, Kai von
   Fintel, Kaushal Modi, Kolmas, Lukas C. Bossert, M. Hadi Timachi,
-  Maikol Solis, Mark Olson, Mirko Hernandez, Morten Kjeldgaard, Niall
-  Dooley, Nick Bell, Oliver Epper, Paul van Gelder, Peter Prevos,
-  Peter Smith, Riccardo Giannitrapani, Rory Molinari, Samuel W. Flint,
-  Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan Thesing, Summer
-  Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick (VicZz), Viktor Haag,
-  Vineet C. Kulkarni, Wade Mealing, Wilf, Yi Liu, Ypot, atanasj,
-  azegas, babusri, bdillahu, coherentstate, doolio, duli, drcxd,
-  elge70, elliottw, fingerknight, hpgisler, hyperfocus1337,johkneisl,
-  jtpavlock, juh, leafarbelm, mentalisttraceur, mjkalyan, oatmealm,
-  pRot0ta1p, rbenit68, relict007, sarcom-sar, sienic, skissue, sundar
-  bp, wuzhihao, yetanotherfossman, zadca123
+  Maikol Solis, Mark Olson, Michael Jones, Mirko Hernandez, Morten
+  Kjeldgaard, Niall Dooley, Nick Bell, Oliver Epper, Paul van Gelder,
+  Peter Prevos, Peter Smith, Riccardo Giannitrapani, Rory Molinari,
+  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
+  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
+  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi
+  Liu, Ypot, atanasj, azegas, babusri, bdillahu, coherentstate,
+  doolio, duli, drcxd, elge70, elliottw, fingerknight, hpgisler,
+  hyperfocus1337,johkneisl, jtpavlock, juh, leafarbelm,
+  mentalisttraceur, mjkalyan, oatmealm, pRot0ta1p, rbenit68,
+  relict007, sarcom-sar, sienic, skissue, sundar bp, wuzhihao,
+  yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.
