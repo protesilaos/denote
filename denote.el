@@ -6367,10 +6367,11 @@ Return either nil or a list whose elements are two cons cells:
 This is the subroutine of `denote-link-open-at-point' and
 `denote-link-open-at-mouse'."
   (pcase-let* ((data (denote--link-at-point-get-data position))
-               (`(,target . ,_) (car data)))
-    (if-let* ((path (denote-get-path-by-id target)))
-        (funcall denote-open-link-function path)
-      (denote--act-on-query-link target))))
+               (`(,target . ,_) (car data))
+               (path (denote-get-path-by-id target)))
+    (cond
+     (path (funcall denote-open-link-function path))
+     (target (denote--act-on-query-link target)))))
 
 (defun denote-link-open-at-point ()
   "Open Denote link at point."
