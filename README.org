@@ -6974,8 +6974,8 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tobias
   Lidman-Strauss, Tomasz Hołubowicz, TomoeMami , Vedang Manerikar,
   Wesley Harvey, Yann Dutrieux, Zhenxu Xu, alvmts, arsaber101,
-  bryanrinders, dulikiles, eum3l, experimental-code-86, ezchi,
-  gvalson, jarofromel, leinfink (Henrik), l-o-l-h (Lincoln),
+  bplubell, bryanrinders, dulikiles, eum3l, experimental-code-86,
+  ezchi, gvalson, jarofromel, leinfink (Henrik), l-o-l-h (Lincoln),
   mattyonweb, maxbrieiev, mentalisttraceur, pmenair, relict007,
   skissue.
 
