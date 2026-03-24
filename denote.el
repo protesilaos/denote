@@ -6287,7 +6287,9 @@ search for."
     ;; Here we handle the buffer and window state to make it behave
     ;; like the Xref buffer.  Otherwise, Dired does not reuse its
     ;; buffer (which is generally okay).
-    (let ((buffer (save-window-excursion (denote-sort-dired query nil nil nil))))
+    (let ((buffer (save-window-excursion
+                    (denote-sort-dired query nil nil nil)
+                    (current-buffer))))
       (when (bufferp denote--query-last-dired-buffer)
         (when-let* ((window (get-buffer-window denote--query-last-dired-buffer))
                     (_ (window-live-p window)))
