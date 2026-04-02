@@ -400,26 +400,27 @@ If nil, show the keywords in their given order."
   :package-version '(denote . "0.1.0")
   :type 'boolean)
 
-(defcustom denote-file-type nil
+(defcustom denote-file-type 'org
   "The file type extension for new notes.
 
-By default (a nil value), the file type is that of Org mode.
-Though the `org' symbol can be specified for the same effect.
+When the value is `org' (the default), the file type is that of Org
+mode.
 
-When the value is the symbol `markdown-yaml', the file type is
-that of Markdown mode and the front matter uses YAML notation.
-Similarly, `markdown-toml' is Markdown but has TOML syntax in the
-front matter.
+When the value is the symbol `markdown-yaml', the file type is that of
+Markdown mode and the front matter uses YAML notation.  Similarly,
+`markdown-toml' is Markdown but has TOML syntax in the front matter.
 
 When the value is `text', the file type is that of Text mode.
 
-Any other non-nil value is the same as the default.
+Any other value makes Denote use the first element of the
+`denote-file-types', which is the registry with all the supported file
+types (Org is the first there out-of-the-box, but users may modify it).
 
-NOTE: Expert users can change the supported file-types by editing
-the value of `denote-file-types'.  That variable, which is not a
-user option, controls the behaviour of all file-type-aware
+NOTE: Expert users can change the supported file-types by editing the
+value of `denote-file-types'.  That variable, which is not a user
+option, controls the behaviour of all file-type-aware
 functions (creating notes, renaming them, inserting front matter,
-formatting a link, etc.). Consult its documentation for the
+formatting a link, etc.).  Consult its documentation for the
 technicalities."
   :type '(choice
           (const :tag "Unspecified (defaults to Org)" nil)
@@ -427,7 +428,7 @@ technicalities."
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
-  :package-version '(denote . "0.6.0")
+  :package-version '(denote . "4.2.0")
   :group 'denote)
 
 (defcustom denote-date-format nil

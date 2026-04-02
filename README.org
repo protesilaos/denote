@@ -2939,8 +2939,13 @@ includes the title and keywords (aka "tags" or "filetags", depending on
 the file type) which the user specified at the relevant prompt, as well
 as the date and unique identifier, which are derived automatically.
 
-This is how it looks for Org mode (when ~denote-file-type~ is nil or the
-=org= symbol):
+This is how it looks for Org mode (when ~denote-file-type~ is set to
+the =org= symbol, which is the default):
+
+[ The ~org~ symbol is made the default as of {{{development-version}}}.
+  Previous versions were also defaulting to Org, but the ~denote-file-type~
+  was not explicitly set to ~org~, which could lead to unpredictable
+  results in certain cases. ]
 
 #+begin_example
 #+title:      This is a sample note
