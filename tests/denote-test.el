@@ -437,6 +437,12 @@ does not involve the time zone."
            "/home/prot/Documents/notes/"))
   (should-error (denote--get-common-root-directory '("~/Documents/notes/"))))
 
+(ert-deftest dt-denote-query--keywords-as-regexp ()
+  "Test that `denote-query--keywords-as-regexp' works as intended."
+  (should (string= (denote-query--keywords-as-regexp '("one" "two")) "_\\(?:one\\|two\\)"))
+  (should-error (denote-query--keywords-as-regexp "one"))
+  (should-error (denote-query--keywords-as-regexp '("one" 1))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 

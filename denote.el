@@ -5915,71 +5915,52 @@ generally, any command that relies on the `denote-make-links-buffer'."
   (denote-make-links-buffer query denote-query--last-files nil '(display-buffer-same-window))
   (message "Searching `%s' in files: `%S'" query denote-query--last-files))
 
+;; TODO 2026-04-06: The `denote-query-exclude-files' and
+;; `denote-query-only-include-files' can be defined with a macro.
 (defun denote-query-exclude-files (regexp)
-  "Exclude files whose name matches REGEXP from current search buffer.
-
-This is useful even if you don't know regular expressions, given the
-Denote file-naming scheme.  For instance, to exclude notes with the
-keyword \"philosophy\" from current search buffer, type
-‘\\<denote-query-mode-map>\\[denote-query-exclude-files] _philosophy
-RET’.
-
-Internally, this works by generating a new call to
-`denote-make-links-buffer' with the same QUERY as the last one, but with
-a set of files gotten from checking REGEXP against last matched files.
-
-When called from Lisp, REGEXP can be a list; in that case, it should be
-a list of fixed strings (NOT regexps) to check against last matched
-files.  Files that match any of the strings get excluded.  Internally,
-the list is processed using `regexp-opt'.  For an example of this usage,
-see `denote-query-exclude-files-with-keywords'."
+  "Exclude files matching REGEXP from the current Denote query buffer.
+REGEXP is matched against the file name."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
        (list (denote-query-prompt :exclude)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (let (final-files)
+  (let ((final-files nil))
     (dolist (file denote-query--last-files)
-      (unless (string-match
-               ;; Support list of strings as REGEXP
-               (if (listp regexp)
-                   (regexp-opt regexp)
-                 regexp)
-               file)
+      (unless (string-match-p regexp file)
         (push file final-files)))
     (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files
-                                  (and (eq major-mode 'denote-query-mode) (buffer-name))
-                                  '(display-buffer-same-window))
+        (denote-make-links-buffer denote-query--last-query final-files (buffer-name) '(display-buffer-same-window))
       (user-error "No remaining files when applying that filter"))
     (message "Excluding files matching `%s'" regexp)))
 
 (defun denote-query-only-include-files (regexp)
-  "Exclude file names not matching REGEXP from current query buffer.
-
-See `denote-query-exclude-files' for details, including the behaviour
-when REGEXP is a list."
+  "Only show files matching REGEXP in the current Denote query buffer.
+REGEXP is matched against the file name."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
        (list (denote-query-prompt :include)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (let (final-files)
+  (let ((final-files nil))
     (dolist (file denote-query--last-files)
-      (when (string-match
-             ;; Support list of strings as REGEXP
-             (if (listp regexp)
-                 (regexp-opt regexp)
-               regexp)
-             file)
+      (when (string-match-p regexp file)
         (push file final-files)))
     (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files
-                                  (and (eq major-mode 'denote-query-mode) (buffer-name))
-                                  '(display-buffer-same-window))
+        (denote-make-links-buffer denote-query--last-query final-files (buffer-name) '(display-buffer-same-window))
       (user-error "No remaining files when applying that filter"))
     (message "Only including files matching `%s'" regexp)))
 
+(defun denote-query--keywords-as-regexp (keywords)
+  "Return KEYWORDS as a single regular expression.
+KEYWORDS is a list of strings."
+  (if (seq-every-p #'stringp keywords)
+      (format "_%s" (regexp-opt keywords))
+    (error "KEYWORDS must be a list of strings; got `%S'" keywords)))
+
+;; TODO 2026-04-06: The `denote-query-exclude-files-with-keywords' and
+;; the `denote-query-include-files-with-keywords' can be defined via a
+;; macro.
 (defun denote-query-exclude-files-with-keywords (keywords)
   "Exclude files with KEYWORDS from current query buffer.
 
@@ -5992,8 +5973,7 @@ Interactively, KEYWORDS are read from the minibuffer using
        (list (denote-keywords-prompt "Exclude files with keywords")))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-query-exclude-files
-   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
+  (denote-query-exclude-files (denote-query--keywords-as-regexp keywords)))
 
 (defun denote-query-only-include-files-with-keywords (keywords)
   "Exclude files without KEYWORDS from current query buffer.
@@ -6004,8 +5984,7 @@ See `denote-query-exclude-files-with-keywords' for details."
        (list (denote-keywords-prompt "Only include files with keywords")))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-query-only-include-files
-   (mapcar (lambda (kw) (concat "_" kw)) keywords)))
+  (denote-query-only-include-files (denote-query--keywords-as-regexp keywords)))
 
 (defun denote-query-clear-all-filters ()
   "Run last search with the full set of files in the variable `denote-directory'.
@@ -6014,9 +5993,7 @@ This effectively gets ride of any interactive filter applied (by the
 means of e.g. `denote-query-exclude-files')."
   (interactive nil denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-make-links-buffer denote-query--last-query nil
-                            (and (eq major-mode 'denote-query-mode) (buffer-name))
-                            '(display-buffer-same-window))
+  (denote-make-links-buffer denote-query--last-query nil (buffer-name) '(display-buffer-same-window))
   (message "Cleared all filters"))
 
 (defun denote-query-sort-last-search (component)
@@ -6028,9 +6005,7 @@ When called from Lisp, COMPONENT has the same meaning as in the function
 `denote-sort-files'."
   (interactive (list (denote-sort-component-prompt)))
   (let ((denote-query-sorting component))
-    (denote-make-links-buffer denote-query--last-query denote-query--last-files
-                              (and (eq major-mode 'denote-query-mode) (buffer-name))
-                              '(display-buffer-same-window))))
+    (denote-make-links-buffer denote-query--last-query denote-query--last-files (buffer-name) '(display-buffer-same-window))))
 
 ;;;;;; Additional features for searching file contents
 
