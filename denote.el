@@ -5866,6 +5866,38 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
   "Function to make an Xref buffer showing query link results.
 It accepts the same arguments as `denote-make-links-buffer'.")
 
+(define-obsolete-function-alias
+  'denote-grep-query-prompt
+  'denote-query-prompt
+  "4.2.0")
+
+(defvar denote-query-prompt-history nil
+  "Minibuffer history for `denote-query-prompt'.")
+
+(defun denote-query-prompt (&optional prompt-text)
+  "Prompt for a grep query in the minibuffer.
+With optional PROMPT-TEXT use it for the minibuffer prompt.
+
+For backward-compatibility, PROMPT-TEXT can also be a keyword among
+`:focused', `:dired', and `:region', to format the prompt accordingly
+for the given type of search.  Developers should not rely on this, as we
+will remove it in future versions of Denote---just use PROMPT-TEXT as a
+string."
+  (let ((default (car denote-query-prompt-history)))
+    (read-string
+     (format-prompt
+      (pcase prompt-text
+        ((pred stringp) prompt-text)
+        (:focus
+         "Search in files matching REGEXP")
+        (:dired
+         "Search in marked DIRED FILES")
+        (:region
+         "Search in files IN REGION")
+        (_ "Search (all Denote files)"))
+      default)
+     nil 'denote-grep-history default)))
+
 (defun denote-query-focus-last-search (query)
   "Search QUERY in the content of files which matched the last search.
 \"Last search\" here means any call to `denote-grep',
@@ -5873,7 +5905,7 @@ It accepts the same arguments as `denote-make-links-buffer'.")
 command that relies on the `denote-make-links-buffer'."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
-       (list (denote-grep-query-prompt "Search (only files matched last): ")))
+       (list (denote-query-prompt :focus)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
   (denote-make-links-buffer
@@ -6024,27 +6056,7 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
-(defun denote-grep-query-prompt (&optional prompt-text)
-  "Prompt for a grep query in the minibuffer.
-With optional PROMPT-TEXT use it for the minibuffer prompt.
-
-For backward-compatibility, PROMPT-TEXT can also be a keyword among
-`:focused', `:dired', and `:region', to format the prompt accordingly
-for the given type of search.  Developers should not rely on this, as we
-will remove it in future versions of Denote---just use PROMPT-TEXT as a
-string."
-  (read-string
-   (pcase prompt-text
-     ((pred stringp) prompt-text)
-     (:focus
-      "Search (only files matched last): ")
-     (:dired
-      "Search (only marked dired files): ")
-     (:region
-      "Search (only files referenced in region): ")
-     (_ "Search (all Denote files): "))
-   nil 'denote-grep-history))
-
+;; FIXME 2026-04-06: Do we need an extra prompt in light of `denote-query-prompt'?
 (defvar denote-grep-file-regexp-history nil
   "Minibuffer history for `denote-grep' commands asking for a file regexp.
 Also see `denote-grep-history'.")
@@ -6073,14 +6085,14 @@ filtering (see the manual for details).
 
 You can insert a link to a grep search in any note by using the command
 `denote-query-contents-link'."
-  (interactive (list (denote-grep-query-prompt)))
+  (interactive (list (denote-query-prompt)))
   (let (denote-query--omit-current)
     (denote-make-links-buffer query nil nil denote-grep-display-buffer-action)))
 
 ;;;###autoload
 (defun denote-grep-marked-dired-files (query)
   "Do the equivalent of `denote-grep' for QUERY in marked Dired files."
-  (interactive (list (denote-grep-query-prompt "Search (only marked dired files): ")))
+  (interactive (list (denote-query-prompt :dired)))
   (if-let* ((files (dired-get-marked-files)))
       (denote-make-links-buffer query files nil denote-grep-display-buffer-action)
     (user-error "No marked files")))
@@ -6115,7 +6127,7 @@ file listings such as those of `dired' and the command-line `ls' program."
   (interactive
    (if (region-active-p)
        (list
-        (denote-grep-query-prompt "Search (only files referenced in region): ")
+        (denote-query-prompt :region)
         (region-beginning)
         (region-end))
      (user-error "No region is active; aborting")))
