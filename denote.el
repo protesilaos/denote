@@ -2703,6 +2703,11 @@ or `line', referring to what the function should retrieve."
 (denote--define-retrieve-front-matter date value)
 (denote--define-retrieve-front-matter date line)
 
+(defun denote--regexp-in-file-p (regexp file)
+  "Return t if REGEXP matches in the FILE."
+  (denote--file-with-temp-buffer file
+    (re-search-forward regexp nil t 1)))
+
 ;; These are private front matter retrieval functions, working with a content parameter
 
 (defmacro denote--define-retrieve-front-matter-from-content (component scope)
@@ -3933,11 +3938,6 @@ if appropriate."
     (with-current-buffer (find-file-noselect file)
       (goto-char (point-min))
       (insert new-front-matter))))
-
-(defun denote--regexp-in-file-p (regexp file)
-  "Return t if REGEXP matches in the FILE."
-  (denote--file-with-temp-buffer file
-    (re-search-forward regexp nil t 1)))
 
 (defun denote-rewrite-keywords (file keywords file-type &optional save-buffer)
   "Rewrite KEYWORDS in FILE outright according to FILE-TYPE.
