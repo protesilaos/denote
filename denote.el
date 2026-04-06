@@ -951,12 +951,15 @@ Make any parent directories as well."
     (unless (file-directory-p directory)
       (make-directory directory :parents))))
 
-(defun denote-directories--get-paths ()
-  "Return variable `denote-directory' as a list of directory paths."
+(defun denote-directories--get-paths (directory-or-directories)
+  "Return DIRECTORY-OR-DIRECTORIES as a list of absolute paths."
+  (unless (or (seq-every-p #'stringp directory-or-directories)
+              (stringp directory-or-directories))
+    (error "The `%S' has to be a string or a list of strings" directory-or-directories))
   (let ((get-dir (lambda (directory) (file-name-as-directory (expand-file-name directory)))))
-    (if (listp denote-directory)
-        (mapcar get-dir denote-directory)
-      (list (funcall get-dir denote-directory)))))
+    (if (listp directory-or-directories)
+        (mapcar get-dir directory-or-directories)
+      (list (funcall get-dir directory-or-directories)))))
 
 (defun denote-directories ()
   "Return path of variable `denote-directory' as a proper directory.
@@ -974,7 +977,7 @@ to override what this function returns."
          "Silo value must be a string; `local' or `default-directory' are obsolete"
          :error)
         (list silo-dir))
-    (let ((denote-directories (denote-directories--get-paths)))
+    (let ((denote-directories (denote-directories--get-paths denote-directory)))
       (denote-directories--make-paths denote-directories)
       denote-directories)))
 
