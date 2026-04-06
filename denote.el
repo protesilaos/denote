@@ -5894,6 +5894,10 @@ string."
          "Search for REGEXP in marked Dired files")
         (:region
          "Search for REGEXP in the active region files")
+        (:include
+         "Only show files whose name matches REGEXP")
+        (:exclude
+         "Exclude files whose name matches REGEXP")
         (_ "Search (all Denote files)"))
       default)
      nil 'denote-grep-history default)))
@@ -5931,7 +5935,7 @@ the list is processed using `regexp-opt'.  For an example of this usage,
 see `denote-query-exclude-files-with-keywords'."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
-       (list (denote-grep-file-regexp-prompt)))
+       (list (denote-query-prompt :exclude)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
   (let (final-files)
@@ -5957,7 +5961,7 @@ See `denote-query-exclude-files' for details, including the behaviour
 when REGEXP is a list."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
-       (list (denote-grep-file-regexp-prompt :include)))
+       (list (denote-query-prompt :include)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
   (let (final-files)
@@ -6031,8 +6035,7 @@ When called from Lisp, COMPONENT has the same meaning as in the function
 ;;;;;; Additional features for searching file contents
 
 (defvar denote-grep-history nil
-  "Minibuffer history of content searches performed by `denote-grep'.
-Also see `denote-grep-file-regexp-history'.")
+  "Minibuffer history of content searches performed by `denote-grep'.")
 
 ;; NOTE 2025-12-12: Unlike `denote-query-links-display-buffer-action'
 ;; we want `denote-grep' to behave like `denote-dired', whereby
@@ -6054,21 +6057,8 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
-;; FIXME 2026-04-06: Do we need an extra prompt in light of `denote-query-prompt'?
-(defvar denote-grep-file-regexp-history nil
-  "Minibuffer history for `denote-grep' commands asking for a file regexp.
-Also see `denote-grep-history'.")
-
-(defun denote-grep-file-regexp-prompt (&optional include)
-  "Prompt for a file regexp in the minibuffer.
-
-The prompt assumes the user wants to exclude files, unless INCLUDE is
-non-nil."
-  (read-string
-   (if include
-       "Only include file names matching: "
-     "Exclude file names matching: ")
-   nil 'denote-grep-file-regexp-history))
+(make-obsolete-variable 'denote-grep-file-regexp-history nil "4.2.0")
+(make-obsolete 'denote-grep-file-regexp-prompt nil "4.2.0")
 
 ;;;###autoload
 (defun denote-grep (query)
