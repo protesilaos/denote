@@ -1236,11 +1236,11 @@ For our purposes, a note must satisfy `file-regular-p' and
   "4.1.0")
 
 (defun denote-file-has-denoted-filename-p (file)
-  "Return non-nil if FILE respects the file-naming scheme of Denote.
+  "Return non-nil if FILE respects the Denote file-naming scheme.
 
-This tests the rules of Denote's file-naming scheme.  Sluggification is
-ignored.  It is done by removing all file name components and validating
-what remains."
+Test the rules of Denote's file-naming scheme, notwithstanding the
+`denote-file-name-slug-functions'.  As such, ignore sluggification, by
+removing all file name components and validating what remains."
   (let* ((initial-filename (file-name-nondirectory file))
          (filename initial-filename)
          (title (denote-retrieve-filename-title file))
