@@ -5899,19 +5899,17 @@ string."
      nil 'denote-grep-history default)))
 
 (defun denote-query-focus-last-search (query)
-  "Search QUERY in the content of files which matched the last search.
-\"Last search\" here means any call to `denote-grep',
-`denote-backlinks', `denote-query-contents-link', or, generally, any
-command that relies on the `denote-make-links-buffer'."
+  "Search QUERY in the content of files in the current Denote query buffer.
+A query buffer is one that contains the results of commands such as
+`denote-grep', `denote-backlinks', `denote-query-contents-link', or,
+generally, any command that relies on the `denote-make-links-buffer'."
   (interactive
    (or (denote--user-error-if-not-major-mode 'denote-query-mode)
        (list (denote-query-prompt :focus)))
    denote-query-mode)
   (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (denote-make-links-buffer
-   query denote-query--last-files
-   nil '(display-buffer-same-window))
-  (message "Searching `%s' in files matched previously" query))
+  (denote-make-links-buffer query denote-query--last-files nil '(display-buffer-same-window))
+  (message "Searching `%s' in files: `%S'" query denote-query--last-files))
 
 (defun denote-query-exclude-files (regexp)
   "Exclude files whose name matches REGEXP from current search buffer.
