@@ -5889,11 +5889,11 @@ string."
       (pcase prompt-text
         ((pred stringp) prompt-text)
         (:focus
-         "Search in files matching REGEXP")
+         "Search for REGEXP in all files")
         (:dired
-         "Search in marked DIRED FILES")
+         "Search for REGEXP in marked Dired files")
         (:region
-         "Search in files IN REGION")
+         "Search for REGEXP in the active region files")
         (_ "Search (all Denote files)"))
       default)
      nil 'denote-grep-history default)))
