@@ -1939,6 +1939,36 @@ If REVERSE is nil, use the value of the user option
             "\n"
             (propertize "No more matching files" 'face 'warning))))
 
+(defun denote-sort-dired--get-files (regexp component reverse-sort exclude-regexp)
+  "Do the work of `denote-sort-dired' to match and sort the FILES.
+If FILES is nil, search for them in the variable `denote-directory',
+applying REGEXP and then EXCLUDE-REGEXP.  Finally, sort them by
+COMPONENT and perform a REVERSE-SORT if it is non-nil."
+  (when-let* ((files (denote-sort-get-directory-files regexp component reverse-sort nil exclude-regexp)))
+    (mapcar
+     (lambda (file)
+       (let ((directory (denote-directories-get-common-root)))
+         (when (string-prefix-p directory file)
+           (substring file (length directory)))))
+     files)))
+
+(defvar-local denote-sort-dired--last-arguments nil
+  "The last `denote-sort-dired' arguments.")
+
+(defun denote-sort-dired-revert (&rest _)
+  "Revert the current `denote-sort-dired' buffer.
+This is used as the `revert-buffer-function' for `denote-sort-dired'
+buffers.  It uses the values stored in the buffer-local variable
+`denote-sort-dired--last-arguments'."
+  (pcase-let* ((`(,regexp ,component ,reverse-sort ,exclude-regexp) denote-sort-dired--last-arguments))
+    (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
+      (if-let* ((directory (denote-directories-get-common-root))
+                (files (denote-sort-dired--get-files regexp component reverse-sort exclude-regexp)))
+          (progn
+            (setq-local dired-directory (cons directory files))
+            (dired-revert))
+        (denote-dired-empty-mode)))))
+
 ;;;###autoload
 (defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
@@ -1967,30 +1997,24 @@ also prompt for SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
 When called from Lisp, the arguments are a string, a symbol among
 `denote-sort-components', a non-nil value, and a string, respectively."
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
-  (pcase-let* ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse))
-               (files-fn `(lambda ()
-                            (let ((files (denote-sort-get-directory-files ,files-matching-regexp ',component ,reverse-sort nil ,exclude-regexp))
-                                  (partial-relative-fn ,(let ((directory (denote-directories-get-common-root)))
-                                                          (lambda (file)
-                                                            (when (string-prefix-p directory file)
-                                                              (substring file (length directory)))))))
-                              (mapcar partial-relative-fn files)))))
+  (pcase-let ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse)))
     (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
       (if-let* ((directory (and (not (null (denote-directories)))
                                 (denote-directories-get-common-root)))
-                (files (funcall files-fn))
+                (files (denote-sort-dired--get-files files-matching-regexp component reverse-sort exclude-regexp))
                 (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp))
                 (dired-buffer (dired (cons directory files))))
           (with-current-buffer dired-buffer
             (rename-buffer buffer-name :unique)
-            (setq-local revert-buffer-function
-                        (lambda (&rest _)
-                          (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
-                            (if-let* ((files (funcall files-fn)))
-                                (progn
-                                  (setq-local dired-directory (cons directory files))
-                                  (dired-revert))
-                              (denote-dired-empty-mode))))))
+            ;; NOTE 2026-04-06: I am adding the `denote-sort-dired--last-arguments' because the previous implementation
+            ;; was not updating the existing Dired buffer after a subsequent `denote-sort-dired' call.
+            (cond
+             ((null denote-sort-dired--last-arguments)
+              (setq-local denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
+             ((not (equal denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
+              (setq-local denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp))
+              (denote-sort-dired-revert)))
+            (setq-local revert-buffer-function #'denote-sort-dired-revert))
         (message "No matching files for: %s" files-matching-regexp)))))
 
 (defalias 'denote-dired 'denote-sort-dired
