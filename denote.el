@@ -1036,6 +1036,11 @@ Valid values are: t, nil, `on-creation', and `on-rename'.")
 (defvar denote-accept-nil-date nil
   "Make creation and renaming commands use `current-time' when date is nil.")
 
+(defun denote--user-error-if-not-major-mode (mode)
+  "Signal `user-error' is MODE is not `derived-mode-p'."
+  (unless (derived-mode-p mode)
+    (user-error "Only use this command in a `%s' buffer" mode)))
+
 ;;;;; Sluggification functions
 
 (defun denote-slug-keep-only-ascii (str)
@@ -5856,11 +5861,6 @@ concomitant alist, such as `denote-backlinks-display-buffer-action'."
 (defvar denote-query-links-buffer-function #'denote-make-links-buffer
   "Function to make an Xref buffer showing query link results.
 It accepts the same arguments as `denote-make-links-buffer'.")
-
-(defun denote--user-error-if-not-major-mode (mode)
-  "Signal `user-error' is MODE is not `derived-mode-p'."
-  (unless (derived-mode-p mode)
-    (user-error "Only use this command inside the `%s'" mode)))
 
 (defun denote-query-focus-last-search (query)
   "Search QUERY in the content of files which matched the last search.
