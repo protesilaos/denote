@@ -1947,45 +1947,55 @@ If REVERSE is nil, use the value of the user option
             "\n"
             (propertize "No more matching files" 'face 'warning))))
 
-(defun denote-sort-dired--get-files (regexp component reverse-sort exclude-regexp)
+(defun denote-sort-dired--get-files (regexp component reverse-sort exclude-regexp files directory)
   "Do the work of `denote-sort-dired' to match and sort the FILES.
+Apply REGEXP to narrow FILES and EXCLUDE-REGEXP to omit matches from the
+resulting list.
+
 If FILES is nil, search for them in the variable `denote-directory',
-applying REGEXP and then EXCLUDE-REGEXP.  Finally, sort them by
-COMPONENT and perform a REVERSE-SORT if it is non-nil."
-  (when-let* ((files (denote-sort-get-directory-files regexp component reverse-sort nil exclude-regexp)))
+and then collect them relative to DIRECTORY.
+
+At all times, sort by COMPONENT and do REVERSE-SORT if it is non-nil."
+  (if files
+      (setq files (denote-sort-files files component reverse-sort)
+            files (seq-filter (lambda (file) (string-match-p regexp file)) files)
+            files (seq-remove (lambda (file) (when exclude-regexp (string-match-p exclude-regexp file))) files))
     (mapcar
      (lambda (file)
-       (let ((directory (denote-directories-get-common-root)))
-         (when (string-prefix-p directory file)
-           (substring file (length directory)))))
-     files)))
+       (if (string-prefix-p directory file)
+           (substring file (length directory))
+         file))
+     (denote-sort-get-directory-files regexp component reverse-sort nil exclude-regexp))))
 
 (defvar-local denote-sort-dired--last-arguments nil
   "The last `denote-sort-dired' arguments.")
+
+(defvar-local denote-sort-dired--last-files nil
+  "The last `denote-sort-dired' matched files (absolute paths).")
 
 (defun denote-sort-dired-revert (&rest _)
   "Revert the current `denote-sort-dired' buffer.
 This is used as the `revert-buffer-function' for `denote-sort-dired'
 buffers.  It uses the values stored in the buffer-local variable
 `denote-sort-dired--last-arguments'."
-  (pcase-let* ((`(,regexp ,component ,reverse-sort ,exclude-regexp) denote-sort-dired--last-arguments))
+  (pcase-let* ((`(,regexp ,component ,reverse-sort ,exclude-regexp ,files) denote-sort-dired--last-arguments))
     (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
       (if-let* ((directory (denote-directories-get-common-root))
-                (files (denote-sort-dired--get-files regexp component reverse-sort exclude-regexp)))
+                (matched-files (denote-sort-dired--get-files regexp component reverse-sort exclude-regexp files directory)))
           (progn
-            (setq-local dired-directory (cons directory files))
+            (setq-local dired-directory (cons directory matched-files))
             (dired-revert))
         (denote-dired-empty-mode)))))
 
 ;;;###autoload
-(defun denote-sort-dired (files-matching-regexp sort-by-component reverse exclude-regexp)
+(defun denote-sort-dired (regexp sort-by-component reverse exclude-regexp &optional files)
   "Produce Dired buffer with sorted files from variable `denote-directory'.
-When called interactively, prompt for FILES-MATCHING-REGEXP and,
-depending on the value of the user option `denote-sort-dired-extra-prompts',
-also prompt for SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
+When called interactively, prompt for REGEXP and, depending on the value
+of the user option `denote-sort-dired-extra-prompts', also prompt for
+SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
 
-1. FILES-MATCHING-REGEXP limits the list of Denote files to
-   those matching the provided regular expression.
+1. REGEXP limits the list of Denote files to those matching the provided
+   regular expression.
 
 2. SORT-BY-COMPONENT sorts the files by their file name component (one
    among `denote-sort-components').  If it is nil, sorting is performed
@@ -1999,35 +2009,64 @@ also prompt for SORT-BY-COMPONENT, REVERSE, and EXCLUDE-REGEXP.
    nil (i.e. no reverse sort).
 
 4. EXCLUDE-REGEXP excludes the files that match the given regular
-   expression.  This is done after FILES-MATCHING-REGEXP and
-   OMIT-CURRENT have been applied.
+   expression.  This is done after REGEXP and OMIT-CURRENT have been
+   applied.
 
-When called from Lisp, the arguments are a string, a symbol among
-`denote-sort-components', a non-nil value, and a string, respectively."
+5. Optional FILES is a list of file paths.  If it is provided,
+  REGEXP and EXCLUDE-REGEXP are applied to it.  In
+  interactive use, FILES is ignored.
+
+When called from Lisp, the mandatory arguments are (i) a string,(ii) a
+symbol among `denote-sort-components', (iii) a nil or non-nil value,
+and (iv) a string, respectively."
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (pcase-let ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse)))
     (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
       (if-let* ((directory (and (not (null (denote-directories)))
                                 (denote-directories-get-common-root)))
-                (files (denote-sort-dired--get-files files-matching-regexp component reverse-sort exclude-regexp))
-                (buffer-name (funcall denote-sort-dired-buffer-name-function files-matching-regexp sort-by-component reverse-sort exclude-regexp))
-                (dired-buffer (dired (cons directory files))))
+                (matched-files (denote-sort-dired--get-files regexp component reverse-sort exclude-regexp files directory))
+                (buffer-name (funcall denote-sort-dired-buffer-name-function regexp sort-by-component reverse-sort exclude-regexp))
+                (dired-buffer (dired (cons directory matched-files))))
           (with-current-buffer dired-buffer
             (rename-buffer buffer-name :unique)
             ;; NOTE 2026-04-06: I am adding the `denote-sort-dired--last-arguments' because the previous implementation
             ;; was not updating the existing Dired buffer after a subsequent `denote-sort-dired' call.
-            (let ((last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
+            (let ((last-arguments (list regexp component reverse-sort exclude-regexp files)))
               (cond
                ((null denote-sort-dired--last-arguments)
                 (setq-local denote-sort-dired--last-arguments last-arguments))
                ((not (equal denote-sort-dired--last-arguments last-arguments))
                 (setq-local denote-sort-dired--last-arguments last-arguments)
                 (denote-sort-dired-revert))))
+            (setq-local denote-sort-dired--last-files matched-files)
             (setq-local revert-buffer-function #'denote-sort-dired-revert))
-        (message "No matching files for: %s" files-matching-regexp)))))
+        (message "No matching files for: %s" regexp)))))
 
 (defalias 'denote-dired 'denote-sort-dired
   "Alias for `denote-sort-dired' command.")
+
+(defun denote-sort-dired-focus (regexp &optional exclude-match)
+  "Filter the current `denote-dired' buffer to include only files matching REGEXP.
+With optional EXCLUDE-MATCH remove the files matching REGEXP."
+  (interactive
+   (or (denote--user-error-if-not-major-mode 'dired-mode)
+       (let ((exclude-p current-prefix-arg))
+         (list
+          (denote-files-matching-regexp-prompt
+           (if exclude-p
+               "Remove files matching REGEXP in Denote Dired buffer"
+             "Show only files matching REGEXP in Denote Dired buffer"))
+          exclude-p))))
+  (denote--user-error-if-not-major-mode 'dired-mode)
+  (if-let* ((files denote-sort-dired--last-files))
+      (pcase-let* ((`(,last-regexp ,component ,reverse-sort ,exclude-regexp ,_) denote-sort-dired--last-arguments))
+        (if exclude-match
+            (denote-sort-dired last-regexp component reverse-sort regexp files)
+          (denote-sort-dired regexp component reverse-sort exclude-regexp files)))
+    (user-error "No last `denote-sort-dired' results to focus on")))
+
+(defalias 'denote-dired-focus 'denote-sort-dired-focus
+  "Alias for `denote-sort-dired-focus'.")
 
 ;;;; Keywords
 
