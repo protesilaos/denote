@@ -6009,6 +6009,9 @@ When called from Lisp, COMPONENT has the same meaning as in the function
 
 ;;;;;; Additional features for searching file contents
 
+;; TODO 2026-04-06: I need to review `denote-grep' and all its
+;; ancillary functions.
+
 (defvar denote-grep-history nil
   "Minibuffer history of content searches performed by `denote-grep'.")
 
