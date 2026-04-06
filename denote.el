@@ -3862,7 +3862,8 @@ Return nil if the file type is not recognized."
       (caar types))
      ((car (seq-find
             (lambda (type)
-              (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file))
+              (ignore-errors
+                (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file)))
             types)))
      ;; If the user has picked something like `markdown-toml' and this
      ;; is an ".md" file, we can fall back to this.
