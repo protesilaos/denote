@@ -2008,12 +2008,13 @@ When called from Lisp, the arguments are a string, a symbol among
             (rename-buffer buffer-name :unique)
             ;; NOTE 2026-04-06: I am adding the `denote-sort-dired--last-arguments' because the previous implementation
             ;; was not updating the existing Dired buffer after a subsequent `denote-sort-dired' call.
-            (cond
-             ((null denote-sort-dired--last-arguments)
-              (setq-local denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
-             ((not (equal denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
-              (setq-local denote-sort-dired--last-arguments (list files-matching-regexp component reverse-sort exclude-regexp))
-              (denote-sort-dired-revert)))
+            (let ((last-arguments (list files-matching-regexp component reverse-sort exclude-regexp)))
+              (cond
+               ((null denote-sort-dired--last-arguments)
+                (setq-local denote-sort-dired--last-arguments last-arguments))
+               ((not (equal denote-sort-dired--last-arguments last-arguments))
+                (setq-local denote-sort-dired--last-arguments last-arguments)
+                (denote-sort-dired-revert))))
             (setq-local revert-buffer-function #'denote-sort-dired-revert))
         (message "No matching files for: %s" files-matching-regexp)))))
 
