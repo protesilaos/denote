@@ -4013,6 +4013,28 @@ ends. As an example, the dynamic Org blocks that the ~denote-org~
 package (by Protesilaos) defines also use this feature internally by
 means of the non-interactive function ~denote-sort-files~.
 
+** Focus the ~denote-dired~ buffer with ~denote-dired-focus~
+:PROPERTIES:
+:CUSTOM_ID: h:738b4895-00e3-47a5-a1de-bb0eeef93998
+:END:
+
+[ This is part of {{{development-version}}}. The specifics may change. ]
+
+#+findex: denote-sort-dired-focus
+#+findex: denote-dired-focus
+The command ~denote-dired-focus~ (alias ~denote-sort-dired-focus~)
+gives users the option to further filter an existing Dired buffer that
+was produced by the ~denote-dired~ command ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]]).
+
+Call ~denote-dired-focus~ from inside such a Dired buffer to further
+limit its contents to files matching the given regular expression or
+plain string. This is not a new query. It builds on top of the current
+Dired buffer's file list to operate only on those files.
+
+Call ~denote-dired-focus~ with a prefix argument (=C-u= by default) to
+invert the logic: all the files that match the given regular
+expression are removed from the Dired buffer.
+
 ** Configure what extra prompts ~denote-sort-dired~ issues
 :PROPERTIES:
 :CUSTOM_ID: h:a34228cb-484f-48fe-9cbc-8e41f313127b

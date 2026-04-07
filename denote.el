@@ -2048,7 +2048,11 @@ and (iv) a string, respectively."
 
 (defun denote-sort-dired-focus (regexp &optional exclude-match)
   "Filter the current `denote-dired' buffer to include only files matching REGEXP.
-With optional EXCLUDE-MATCH remove the files matching REGEXP."
+With optional EXCLUDE-MATCH as a prefix argument remove the files
+matching REGEXP from the buffer.
+
+This is not a new query.  It builds on top of the current `denote-dired'
+buffer's file list to operate only on those files."
   (interactive
    (or (denote--user-error-if-not-major-mode 'dired-mode)
        (let ((exclude-p current-prefix-arg))
