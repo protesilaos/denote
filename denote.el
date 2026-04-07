@@ -6050,7 +6050,7 @@ filtering (see the manual for details).
 You can insert a link to a grep search in any note by using the command
 `denote-query-contents-link'."
   (interactive (list (denote-query-prompt)))
-  (let (denote-query--omit-current)
+  (let ((denote-query--omit-current nil))
     (denote-make-links-buffer query nil nil denote-grep-display-buffer-action)))
 
 ;;;###autoload
@@ -6067,7 +6067,7 @@ START and END are buffer positions, as integers.  A reference to a file
 is the mere presence of its identifier.
 
 Return a list with the absoulte path of referenced files."
-  (let (id-list)
+  (let ((id-list nil))
     (save-excursion
       (save-restriction
         (narrow-to-region start end)
