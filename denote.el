@@ -2021,7 +2021,8 @@ symbol among `denote-sort-components', (iii) a nil or non-nil value,
 and (iv) a string, respectively."
   (interactive (append (list (denote-files-matching-regexp-prompt)) (denote-sort-dired--prompts)))
   (pcase-let ((`(,component . ,reverse-sort) (denote-sort-dired--get-sort-parameters sort-by-component reverse)))
-    (dlet ((ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
+    (dlet ((dired-buffers nil)
+           (ls-lisp-use-insert-directory-program (progn (require 'ls-lisp) nil)))
       (if-let* ((directory (and (not (null (denote-directories)))
                                 (denote-directories-get-common-root)))
                 (matched-files (denote-sort-dired--get-files regexp component reverse-sort exclude-regexp files directory))
