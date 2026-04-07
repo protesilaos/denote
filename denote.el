@@ -6018,7 +6018,7 @@ When called from Lisp, COMPONENT has the same meaning as in the function
 (defcustom denote-grep-display-buffer-action
   '((display-buffer-same-window)
     (mode . denote-query-mode))
-  "The action used to display search results from `denote-grep'.
+  "`display-buffer' action for the results of `denote-grep'.
 This is the same as `denote-backlinks-display-buffer-action'.  Refer to
 its documentation for the technicalities."
   :risky t
