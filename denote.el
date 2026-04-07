@@ -6035,8 +6035,8 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
-(make-obsolete-variable 'denote-grep-file-regexp-history nil "4.2.0")
-(make-obsolete 'denote-grep-file-regexp-prompt nil "4.2.0")
+(make-obsolete-variable 'denote-grep-file-regexp-history 'denote-query-prompt-history "4.2.0")
+(make-obsolete 'denote-grep-file-regexp-prompt 'denote-query-prompt "4.2.0")
 
 ;;;###autoload
 (defun denote-grep (query)
