@@ -5900,7 +5900,7 @@ string."
          "Exclude files whose name matches REGEXP")
         (_ "Search (all Denote files)"))
       default)
-     nil 'denote-grep-history default)))
+     nil 'denote-query-prompt-history default)))
 
 (defun denote-query-focus-last-search (query)
   "Search QUERY in the content of files in the current Denote query buffer.
@@ -6012,9 +6012,6 @@ When called from Lisp, COMPONENT has the same meaning as in the function
 ;; TODO 2026-04-06: I need to review `denote-grep' and all its
 ;; ancillary functions.
 
-(defvar denote-grep-history nil
-  "Minibuffer history of content searches performed by `denote-grep'.")
-
 ;; NOTE 2025-12-12: Unlike `denote-query-links-display-buffer-action'
 ;; we want `denote-grep' to behave like `denote-dired', whereby
 ;; `dired' normally works in the current window.
@@ -6035,6 +6032,7 @@ its documentation for the technicalities."
   :package-version '(denote . "4.0.0")
   :group 'denote-query)
 
+(make-obsolete-variable 'denote-grep-history 'denote-query-prompt-history "4.2.0")
 (make-obsolete-variable 'denote-grep-file-regexp-history 'denote-query-prompt-history "4.2.0")
 (make-obsolete 'denote-grep-file-regexp-prompt 'denote-query-prompt "4.2.0")
 
