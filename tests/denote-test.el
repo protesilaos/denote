@@ -307,7 +307,7 @@ does not involve the time zone."
          (kws '("one" "two")))
     (should-error (denote-format-file-name nil id kws title ext ""))
     (should-error (denote-format-file-name "" id kws title ext ""))
-    ;; NOTE tht `denote-directory' is the `let' bound value without the suffix
+    ;; NOTE that `denote-directory' is the `let' bound value without the suffix
     (should-error (denote-format-file-name denote-directory id kws title ext ""))
     (should-error (denote-format-file-name dir "" nil "" ext ""))
     (should (equal (denote-format-file-name dir nil kws title ext "") "/tmp/test-denote/--some-test__one_two.org"))
