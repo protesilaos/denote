@@ -1933,7 +1933,7 @@ If REVERSE is nil, use the value of the user option
     ;;
     ;; (define-key map (kbd "g") #'denote-dired-empty-revert-buffer)
     map)
-  "Key map for `denote-dired-empty-mode'.")
+  "Keymap for `denote-dired-empty-mode'.")
 
 (define-derived-mode denote-dired-empty-mode special-mode "Denote Dired Empty"
   "Major mode of a `denote-sort-dired' that no longer matches anything."
