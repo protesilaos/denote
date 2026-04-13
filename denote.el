@@ -447,7 +447,7 @@ format (also check the user option `denote-file-type'):
 
 If the value is a string, ignore the above and use it instead.
 The string must include format specifiers for the date.  These
-are described in the doc string of `format-time-string'."
+are described in the docstring of `format-time-string'."
   :type '(choice
           (const :tag "Use appropiate format for each file type" nil)
           (string :tag "Custom format for `format-time-string'"))
@@ -2403,7 +2403,7 @@ PROPERTY-LIST is a plist that consists of the following elements:
 - `:front-matter' is either a string passed to `format' or a
   variable holding such a string.  The `format' function accepts
   four arguments, which come from `denote' in this order: TITLE,
-  DATE, KEYWORDS, IDENTIFIER.  Read the doc string of `format' on
+  DATE, KEYWORDS, IDENTIFIER.  Read the docstring of `format' on
   how to reorder arguments.
 
 - `:title-key-regexp' is a regular expression that is used to

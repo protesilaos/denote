@@ -162,7 +162,7 @@ code sample if you need some ideas ([[#h:58c4746b-b0d8-4896-9d88-a99b1d487231][M
 
   ;; Automatically rename Denote buffers when opening them so that
   ;; instead of their long file name they have, for example, a literal
-  ;; "[D]" followed by the file's title.  Read the doc string of
+  ;; "[D]" followed by the file's title.  Read the docstring of
   ;; `denote-rename-buffer-format' for how to modify this.
   (denote-rename-buffer-mode 1))
 #+end_src
@@ -222,7 +222,7 @@ Here we include more of what you can configure with Denote ([[#h:998ae528-9276-4
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
 
   :config
-  ;; Remember to check the doc string of each of those variables.
+  ;; Remember to check the docstring of each of those variables.
   (setq denote-directory (expand-file-name "~/Documents/notes/"))
   (setq denote-save-buffers nil)
   (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics"))
@@ -418,7 +418,7 @@ with ~string-lessp~).
 The interactive behaviour of the ~denote~ command is influenced by the
 user option ~denote-prompts~ ([[#h:f9204f1f-fcee-49b1-8081-16a08a338099][The denote-prompts option]]).
 
-The ~denote~ command can also be called from Lisp.  Read its doc string
+The ~denote~ command can also be called from Lisp.  Read its docstring
 for the technicalities.
 
 #+findex: denote-create-note
@@ -783,7 +783,7 @@ has the `subdirectory' prompt appended to its existing prompts."
 #+end_src
 
 The hyphenated word after ~defun~ is the name of the function. It has
-to be unique. Then we have the documentation string (or "doc string")
+to be unique. Then we have the documentation string (or "docstring")
 which is for the user's convenience.
 
 This function is ~interactive~, meaning that it can be called via
@@ -2163,7 +2163,7 @@ as camelCase/CamelCase and are encouraged to use the
 The =EXTENSION= is the file type.  By default, it is =.org= (~org-mode~)
 though the user option ~denote-file-type~ provides support for Markdown
 with YAML or TOML variants (=.md= which runs ~markdown-mode~) and plain
-text (=.txt= via ~text-mode~).  Consult its doc string for the minutiae.
+text (=.txt= via ~text-mode~).  Consult its docstring for the minutiae.
 While files end in the =.org= extension by default, the Denote code base
 does not actually depend on org.el and/or its accoutrements.
 
@@ -3004,7 +3004,7 @@ format:
 
 If the value is a string, ignore the above and use it instead.  The
 string must include format specifiers for the date.  These are described
-in the doc string of ~format-time-string~..
+in the docstring of ~format-time-string~..
 
 ** Change the front matter format
 :PROPERTIES:
@@ -3468,7 +3468,7 @@ this end, Denote provides two convenience commands:
 + ~denote-link-after-creating~ :: Create new note in the background and
   link to it directly.
 
-  Use ~denote~ interactively to produce the new note.  Its doc string or
+  Use ~denote~ interactively to produce the new note.  Its docstring or
   this manual explains which prompts will be used and under what
   conditions ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).
 
@@ -6130,7 +6130,7 @@ there will be no corresponding prompt.
   3. =:front-matter= is either a string passed to ~format~ or a
      variable holding such a string.  The ~format~ function accepts
      four arguments, which come from ~denote~ in this order: =TITLE=,
-     =DATE=, =KEYWORDS=, =IDENTIFIER=.  Read the doc string of
+     =DATE=, =KEYWORDS=, =IDENTIFIER=.  Read the docstring of
      ~format~ on how to reorder arguments.
 
   4. =:title-key-regexp= is a regular expression that is used to
@@ -6913,7 +6913,7 @@ identifier of the current file and return any links to it.  For users
 of Emacs version 28 or higher, there exists a user option to specify
 the program that performs this search: ~xref-search-program~.  The
 default is =grep=, which can be slow, though one may opt for =ugrep=,
-=ripgrep=, or even specify something else (read the doc string of that
+=ripgrep=, or even specify something else (read the docstring of that
 user option for the details).
 
 Try either for these for better results:
