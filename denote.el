@@ -5959,41 +5959,35 @@ generally, any command that relies on the `denote-make-links-buffer'."
   (denote-make-links-buffer query denote-query--last-files nil '(display-buffer-same-window))
   (message "Searching `%s' in files: `%S'" query denote-query--last-files))
 
-;; TODO 2026-04-06: The `denote-query-exclude-files' and
-;; `denote-query-only-include-files' can be defined with a macro.
-(defun denote-query-exclude-files (regexp)
-  "Exclude files matching REGEXP from the current Denote query buffer.
+(defmacro denote--define-include-or-exclude-files (include-or-exclude)
+  "Define a function to include or exclude from the `denote-query-mode' buffer."
+  (unless (or (eq include-or-exclude 'include)
+	      (eq include-or-exclude 'exclude))
+    (error "The argument has to be `include' or `exclude.'"))
+  `(defun ,(intern (format "denote-query-%s-files" include-or-exclude)) (regexp)
+     ,(if (eq include-or-exclude 'include)
+	 "Only show files matching REGEXP in the current Denote query buffer.
 REGEXP is matched against the file name."
-  (interactive
-   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
-       (list (denote-query-prompt :exclude)))
-   denote-query-mode)
-  (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (let ((final-files nil))
-    (dolist (file denote-query--last-files)
-      (unless (string-match-p regexp file)
-        (push file final-files)))
-    (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files (buffer-name) '(display-buffer-same-window))
-      (user-error "No remaining files when applying that filter"))
-    (message "Excluding files matching `%s'" regexp)))
+       "Exclude files matching REGEXP from the current Denote query buffer.
+REGEXP is matched against the file name.")
+     (interactive
+      (or (denote--user-error-if-not-major-mode 'denote-query-mode)
+	  (list (denote-query-prompt ,(intern (format ":%s" include-or-exclude)))))
+      denote-query-mode)
+     (denote--user-error-if-not-major-mode 'denote-query-mode)
+     (let ((final-files nil))
+       (dolist (file denote-query--last-files)
+	 (,(if (eq include-or-exclude 'include)
+	       'when
+	     'unless) (string-match-p regexp file)
+	     (push file final-files)))
+       (if final-files
+	   (denote-make-links-buffer denote-query--last-query final-files (buffer-name) '(display-buffer-same-window))
+	 (user-error "No remaining files when applying that filter"))
+       (message "No files matching `%s'" regexp))))
 
-(defun denote-query-only-include-files (regexp)
-  "Only show files matching REGEXP in the current Denote query buffer.
-REGEXP is matched against the file name."
-  (interactive
-   (or (denote--user-error-if-not-major-mode 'denote-query-mode)
-       (list (denote-query-prompt :include)))
-   denote-query-mode)
-  (denote--user-error-if-not-major-mode 'denote-query-mode)
-  (let ((final-files nil))
-    (dolist (file denote-query--last-files)
-      (when (string-match-p regexp file)
-        (push file final-files)))
-    (if final-files
-        (denote-make-links-buffer denote-query--last-query final-files (buffer-name) '(display-buffer-same-window))
-      (user-error "No remaining files when applying that filter"))
-    (message "Only including files matching `%s'" regexp)))
+(denote--define-include-or-exclude-files include)
+(denote--define-include-or-exclude-files exclude)
 
 (defun denote-query--keywords-as-regexp (keywords)
   "Return KEYWORDS as a single regular expression.
