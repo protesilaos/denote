@@ -3912,6 +3912,14 @@ Return nil if the file type is not recognized."
                 ;; "# Title" without any front matter and
                 ;; `markdown-obsidian' (from the `denote-markdown'
                 ;; package) is in front of other markdown formats.
+                ;;
+                ;; Could we rely on a heuristic by this always means YAML?
+                ;;
+                ;;     (save-excursion
+                ;;       (goto-char (point-min))
+                ;;       (looking-at "^---"))
+                ;;
+                ;; Then TOML is with +++.  Otherwise, we search further.
                 (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file)))
             types)))
      ;; If the user has picked something like `markdown-toml' and this
