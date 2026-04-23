@@ -3921,12 +3921,14 @@ See the format of `denote-file-types'."
 
 (defun denote-file-type (file)
   "Use the file extension to detect the file type of FILE.
+Do so in accordance with `denote-file-types'.
 
-If more than one file type correspond to this file extension, use the
-first file type for which the :title-key-regexp in `denote-file-types'
-matches in the file.
+If more than one file type correspond to this file extension, return the
+first file type whose `:get-file-type-function' returns non-nil.  If
+`:get-file-type-function' is nil rely on the `:title-key-regexp' and
+return the first matching file type.
 
-Return nil if the file type is not recognized."
+Return nil if FILE is not recognized."
   (when-let* ((extension (denote-get-file-extension-sans-encryption file))
               (types (denote--file-types-with-extension extension))
               (length (length types)))
