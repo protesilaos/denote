@@ -3931,29 +3931,16 @@ Return nil if the file type is not recognized."
               (types (denote--file-types-with-extension extension))
               (length (length types)))
     (cond
-     ((= length 1)
-      (caar types))
-     ((car (seq-find
-            (lambda (type)
-              (ignore-errors
-                ;; TODO 2026-04-23: We should have a way to check if
-                ;; some key exists so as to perform another check
-                ;; here.  The problem I have in mind is when we have
-                ;; "# Title" without any front matter and
-                ;; `markdown-obsidian' (from the `denote-markdown'
-                ;; package) is in front of other markdown formats.
-                ;;
-                ;; Could we rely on a heuristic by this always means YAML?
-                ;;
-                ;;     (save-excursion
-                ;;       (goto-char (point-min))
-                ;;       (looking-at "^---"))
-                ;;
-                ;; Then TOML is with +++.  Otherwise, we search further.
-                (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file)))
-            types)))
-     ;; If the user has picked something like `markdown-toml' and this
-     ;; is an ".md" file, we can fall back to this.
+     ((when-let* ((_ (> length 1))
+                  (found (seq-find
+                          (lambda (type)
+                            (let ((properties (cdr type)))
+                              (if-let* ((file-type-fn (plist-get properties :get-file-type-function)))
+                                  (funcall file-type-fn file)
+                                (ignore-errors
+                                  (denote--regexp-in-file-p (plist-get properties :title-key-regexp) file)))))
+                          types)))
+        (car found)))
      ((and (> length 1)
            (memq denote-file-type (mapcar #'car types)))
       denote-file-type)
