@@ -2914,9 +2914,8 @@ If FILES is not given, use all text files as returned by
       (let* ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
         (dolist (file-type file-types)
           (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
-                      (format-parts (split-string
-                                     (denote--link-retrieval-format file-type)
-                                     "%VALUE%")) ; Should give two parts
+                      (type (denote--link-retrieval-format file-type))
+                      (format-parts (split-string type "%VALUE%")) ; Should give two parts
                       (query-simple (concat
                                      (regexp-quote (nth 0 format-parts))
                                      (regexp-quote identifier)
