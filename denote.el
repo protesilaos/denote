@@ -3906,6 +3906,12 @@ Return nil if the file type is not recognized."
      ((car (seq-find
             (lambda (type)
               (ignore-errors
+                ;; TODO 2026-04-23: We should have a way to check if
+                ;; some key exists so as to perform another check
+                ;; here.  The problem I have in mind is when we have
+                ;; "# Title" without any front matter and
+                ;; `markdown-obsidian' (from the `denote-markdown'
+                ;; package) is in front of other markdown formats.
                 (denote--regexp-in-file-p (plist-get (cdr type) :title-key-regexp) file)))
             types)))
      ;; If the user has picked something like `markdown-toml' and this
