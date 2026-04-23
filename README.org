@@ -6119,6 +6119,18 @@ there will be no corresponding prompt.
   matter =KEYWORDS= for org file type.  =KEYWORDS= is a list of
   strings.  Consult the ~denote-file-types~ for how this is used.
 
+#+findex: denote-get-file-type-markdown-yaml
++ Function ~denote-get-file-type-markdown-yaml~ :: Return
+  =markdown-yaml= if FILE has YAML front matter. YAML front matter
+  starts with =---= on the first line. Consult the ~denote-file-types~
+  for how this is used. [ Part of {{{development-version}}}. ]
+
+#+findex: denote-get-file-type-markdown-toml
++ Function ~denote-get-file-type-markdown-toml~ :: Return
+  =markdown-toml= if FILE has TOML front matter. Consult the
+  ~denote-file-types~ for how this is used. TOML front matter starts
+  with =+++= on the first line. [ Part of {{{development-version}}}. ]
+
 #+vindex: denote-file-types
 + Variable ~denote-file-types~ :: Alist of ~denote-file-type~ and
   their format properties.
