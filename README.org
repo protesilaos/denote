@@ -5841,7 +5841,7 @@ there will be no corresponding prompt.
 :CUSTOM_ID: h:9b32bf7d-1569-4495-801c-8835f022d72e
 :END:
 
-#+vindex: denote-file-type
+#+findex: denote-file-type
 + Function ~denote-file-type~ :: Use the file extension to detect the
   file type of FILE. Do so in accordance with ~denote-file-types~. If
   more than one file type correspond to this file extension, return
