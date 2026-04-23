@@ -2300,9 +2300,28 @@ Consult the `denote-file-types' for how this is used."
         nil
       (date-to-time date-string))))
 
+(defun denote-get-file-type-markdown-yaml (file)
+  "Return `markdown-yaml' if FILE has YAML front matter.
+YAML front matter starts with --- on the first line."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (looking-at (format "^%s" (make-string 3 ?-)))
+      'markdown-yaml)))
+
+(defun denote-get-file-type-markdown-toml (file)
+  "Return `markdown-toml' if FILE has TOML front matter.
+TOML front matter starts with +++ on the first line."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (when (looking-at (format "^%s" (make-string 3 ?+)))
+      'markdown-toml)))
+
 (defvar denote-file-types
   '((org
      :extension ".org"
+     :get-file-type-function nil
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
      :title-value-function denote-format-string-for-org-front-matter
@@ -2324,6 +2343,7 @@ Consult the `denote-file-types' for how this is used."
      :link-in-context-regexp denote-org-link-in-context-regexp)
     (markdown-yaml
      :extension ".md"
+     :get-file-type-function denote-get-file-type-markdown-yaml
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-format-string-for-md-front-matter
@@ -2345,6 +2365,7 @@ Consult the `denote-file-types' for how this is used."
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (markdown-toml
      :extension ".md"
+     :get-file-type-function denote-get-file-type-markdown-toml
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
      :title-value-function denote-format-string-for-md-front-matter
@@ -2366,6 +2387,7 @@ Consult the `denote-file-types' for how this is used."
      :link-in-context-regexp denote-md-link-in-context-regexp)
     (text
      :extension ".txt"
+     :get-file-type-function nil
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
      :title-value-function denote-format-string-for-org-front-matter
@@ -2395,6 +2417,12 @@ PROPERTY-LIST is a plist that consists of the following elements:
 
 - `:extension' is a string with the file extension including the
   period.
+
+- `:get-file-type-function' a function with one parameter, a given file,
+  that reads the file contents and returns the file type as a symbol or
+  nil.  If there is no function, Denote will fall back to a search for a
+  title in the front matter (per `:title-key-regexp', which is described
+  below).
 
 - `:date-function' is a function that can format a date.  See the
   functions `denote-date-iso-8601', `denote-date-rfc3339', and
