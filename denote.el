@@ -2473,6 +2473,8 @@ this list for new note creation.  The default is `org'.")
    (alist-get file-type denote-file-types)
    :title-value-function))
 
+;; NOTE 2026-04-23: This is used in the `denote--define-retrieve-front-matter-from-content'.
+;; I could not find it with a search, which made me think it was not being used.
 (defun denote--title-value-reverse-function (file-type)
   "Convert front matter title to the title string, per FILE-TYPE."
   (plist-get
