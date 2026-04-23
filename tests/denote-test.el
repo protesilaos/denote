@@ -443,6 +443,33 @@ does not involve the time zone."
   (should-error (denote-query--keywords-as-regexp "one"))
   (should-error (denote-query--keywords-as-regexp '("one" 1))))
 
+(ert-deftest dt-denote-file-type ()
+  "Test that function `denote-file-type' does what it is meant to."
+  (let* ((create-file-fn (lambda (name extension)
+                           (expand-file-name
+                            (format "denote-test-file-type-%s.%s" name extension)
+                            (temporary-file-directory))))
+         (modify-file-fn (lambda (file contents)
+                           (with-current-buffer (find-file-noselect file)
+                             (erase-buffer)
+                             (insert contents)
+                             (save-buffer))))
+         (yaml-file (funcall create-file-fn "yaml" "md"))
+         (toml-file (funcall create-file-fn "toml" "md"))
+         (org-file (funcall create-file-fn "org" "org")))
+    (progn
+      (funcall modify-file-fn yaml-file denote-yaml-front-matter)
+      (should (eq (denote-file-type yaml-file) 'markdown-yaml)))
+    (progn
+      (funcall modify-file-fn toml-file denote-toml-front-matter)
+      (should (eq (denote-file-type toml-file) 'markdown-toml)))
+    (progn
+      (funcall modify-file-fn org-file denote-org-front-matter)
+      (should (eq (denote-file-type org-file) 'org)))
+    (should-not (denote-file-type "test"))
+    (let ((denote-file-types nil))
+      (should-not (denote-file-type "test.md")))))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 
