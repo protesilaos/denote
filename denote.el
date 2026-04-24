@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2022-2026  Free Software Foundation, Inc.
 
-;; Author: Protesilaos Stavrou <info@protesilaos.com>
-;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
+;; Author: Protesilaos <info@protesilaos.com>
+;; Maintainer: Protesilaos <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
 ;; Version: 4.1.3
 ;; Package-Requires: ((emacs "28.1"))

@@ -1,5 +1,5 @@
 #+title: denote: Simple notes with an efficient file-naming scheme
-#+author: Protesilaos Stavrou
+#+author: Protesilaos
 #+email: info@protesilaos.com
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
@@ -13,13 +13,13 @@
 #+texinfo_dir_title: Denote: (denote)
 #+texinfo_dir_desc: Simple notes with an efficient file-naming scheme
 #+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
-#+texinfo_header: @set MAINTAINER Protesilaos Stavrou
+#+texinfo_header: @set MAINTAINER Protesilaos
 #+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}
 #+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 #+texinfo: @insertcopying
 
-This manual, written by Protesilaos Stavrou, describes the customization
+This manual, written by Protesilaos, describes the customization
 options for the Emacs package called ~denote~ (or =denote.el=), and
 provides every other piece of information pertinent to it.
 
@@ -6443,7 +6443,7 @@ GNU Emacs
 Even if that material is free software, we need to know about it.]
 
 Copied a few snippets from the same files I edited.  Their author,
-Protesilaos Stavrou, has already assigned copyright to the Free Software
+Protesilaos, has already assigned copyright to the Free Software
 Foundation.
 
 [Do you have an employer who might have a basis to claim to own
@@ -7010,7 +7010,7 @@ Doom Emacs configuration file.
 
 Denote is meant to be a collective effort.  Every bit of help matters.
 
-+ Author/maintainer :: Protesilaos Stavrou.
++ Author/maintainer :: Protesilaos.
 
 + Contributions to code or the manual :: Abdul-Lateef Haji-Ali, Abin
   Simon, Adam Růžička, Alan Schmitt, Alexandre Rousseau, Alvin Hsu,

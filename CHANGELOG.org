@@ -1,5 +1,5 @@
 #+title: Change log of Denote
-#+author: Protesilaos Stavrou
+#+author: Protesilaos
 #+email: info@protesilaos.com
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
@@ -252,7 +252,7 @@ copyright to the Free Software Foundation.
 
 #+begin_src sh
 ~/Git/Projects/denote $ git shortlog 4.0.0..4.1.0  --summary --numbered
-   156	Protesilaos Stavrou
+   156	Protesilaos
     29	Jean-Philippe Gagné Guay
      4	Lucas Quintana
      2	James Kalyan
@@ -372,7 +372,7 @@ core Denote as well as ~consult-denote~.
 
 #+begin_src sh
 ~/Git/Projects/denote-journal $ git shortlog 0.1.0..0.2.0  --summary --numbered
-    35	Protesilaos Stavrou
+    35	Protesilaos
      3	Alan Schmitt
      2	Ettore Berardi
      1	Abdelhak Bougouffa
@@ -422,7 +422,7 @@ core Denote as well as ~consult-denote~.
 
 #+begin_src sh
 ~/Git/Projects/denote-org $ git shortlog 0.1.0..0.2.0  --summary --numbered
-    42	Protesilaos Stavrou
+    42	Protesilaos
      8	Peter Prevos
 #+end_src
 
@@ -466,7 +466,7 @@ core Denote as well as ~consult-denote~.
 
 #+begin_src sh
 ~/Git/Projects/denote-sequence $ git shortlog 0.1.0..0.2.0  --summary --numbered
-    61	Protesilaos Stavrou
+    61	Protesilaos
      1	Ashton Wiersdorf
      1	Peter Prevos
      1	Rory Molinari
@@ -1034,7 +1034,7 @@ tiny.
 
 #+begin_src
 ~/Git/Projects/denote $ git shortlog 3.1.0..4.0.0  --summary --numbered
-   470	Protesilaos Stavrou
+   470	Protesilaos
     90	Jean-Philippe Gagné Guay
      6	Kierin Bell
      4	Alan Schmitt
@@ -1054,29 +1054,29 @@ after the reorganisation I made. But we have to start from somewhere.
 
 #+begin_src
 ~/Git/Projects/denote-journal $ git shortlog  --summary --numbered
-    54	Protesilaos Stavrou
+    54	Protesilaos
      2	Honza Pokorny
      1	Vineet C. Kulkarni
 #+end_src
 
 #+begin_src
 ~/Git/Projects/denote-sequence $ git shortlog  --summary --numbered
-    22	Protesilaos Stavrou
+    22	Protesilaos
 #+end_src
 
 #+begin_src
 ~/Git/Projects/denote-silo $ git shortlog  --summary --numbered
-    17	Protesilaos Stavrou
+    17	Protesilaos
 #+end_src
 
 #+begin_src
 ~/Git/Projects/denote-org $ git shortlog  --summary --numbered
-    15	Protesilaos Stavrou
+    15	Protesilaos
 #+end_src
 
 #+begin_src 
 ~/Git/Projects/denote-markdown $ git shortlog  --summary --numbered
-    11	Protesilaos Stavrou
+    11	Protesilaos
 #+end_src
 
 * Version 3.1.0 on 2024-09-04
@@ -1587,7 +1587,7 @@ involved!
 
 #+begin_src 
 ~/Git/Projects/denote $ git shortlog 3.0.0..3.1.0 --summary --numbered
-   104	Protesilaos Stavrou
+   104	Protesilaos
      7	Jean-Philippe Gagné Guay
      3	Ashton Wiersdorf
      1	Ad
@@ -2018,7 +2018,7 @@ Just an overview of what we did. Thanks again to everyone involved.
 
 #+begin_src sh
 ~/Git/Projects/denote $ git shortlog 2.3.0..3.0.0 --summary --numbered
-   169  Protesilaos Stavrou
+   169  Protesilaos
     52  Jean-Philippe Gagné Guay
      3  Al Haji-Ali
      2  Alan Schmitt
@@ -2733,7 +2733,7 @@ Just an overview of what we did. Thanks again to everyone involved.
 
 #+begin_src sh
 ~/Git/Projects/denote $ git shortlog 2.2.0..2.3.0 --summary --numbered
-   246	Protesilaos Stavrou
+   246	Protesilaos
     46	Jean-Philippe Gagné Guay
      6	Vedang Manerikar
      3	Joseph Turner
@@ -3111,7 +3111,7 @@ Just an overview of what we did. Thanks again to everyone involved.
 
 #+begin_src sh
 ~/Git/Projects/denote $ git shortlog 2.1.0..2.2.0 --summary --numbered
-   125	Protesilaos Stavrou
+   125	Protesilaos
     17	Jean-Philippe Gagné Guay
      2	Vedang Manerikar
      1	Henrik Hörmann
@@ -3740,7 +3740,7 @@ Just an overview of what we did. Every contribution matters.
 
 #+begin_src
 ~/Git/Projects/denote $ git shortlog 2.0.0..2.1.0 --summary --numbered
-   153	Protesilaos Stavrou
+   153	Protesilaos
     15	Jean-Philippe Gagné Guay
      5	Vedang Manerikar
      1	Alan Schmitt
@@ -5096,7 +5096,7 @@ such a section):
 #+begin_quote
 Denote is meant to be a collective effort.  Every bit of help matters.
 
-+ Author/maintainer :: Protesilaos Stavrou.
++ Author/maintainer :: Protesilaos.
 
 + Contributions to code or the manual :: Abin Simon, Alan Schmitt,
   Benjamin Kästner, Clemens Radermacher, Colin McLear, Damien Cassou,
@@ -6322,7 +6322,7 @@ Gagné Guay, Kaushal Modi, and Shreyas Ragavan.
 
 #+begin_example
 commit f35ef05cb451f265213c3aafc1e62c425b1ff043
-Author: Protesilaos Stavrou <info@protesilaos.com>
+Author: Protesilaos <info@protesilaos.com>
 Date:   Sun Jul 3 17:34:38 2022 +0300
 
     REMOVE support for 'id:' hyperlink types
