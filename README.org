@@ -4709,6 +4709,16 @@ dynamic blocks, with the ~denote-add-links~ command, and more:
 The ~denote-regexp~ documentation covers the technicalities:
 <https://git.sr.ht/~swflint/denote-regexp>.
 
+** Use the ~denote-sections~ package
+:PROPERTIES:
+:CUSTOM_ID: h:fa3c89c8-32f7-4224-bf31-edf7404a3e46
+:END:
+
+The ~denote-sections~ package by Samuel W. Flint is meant to provide a
+sidebar that can display useful information about Denote files. As of
+this writing (2026-04-27 22:47 +0300), the sidebar has one section for
+backlinks. Learn more here: <https://git.sr.ht/~swflint/denote-sections>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
