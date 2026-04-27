@@ -4719,6 +4719,21 @@ sidebar that can display useful information about Denote files. As of
 this writing (2026-04-27 22:47 +0300), the sidebar has one section for
 backlinks. Learn more here: <https://git.sr.ht/~swflint/denote-sections>.
 
+** Use the ~denote-wordcloud~ package
+:PROPERTIES:
+:CUSTOM_ID: h:7fd65be3-7e1d-475f-8619-84b5ecb53c05
+:END:
+
+The ~denote-wordcloud~ package by Alexander Kuzmin presents a "word
+cloud" for keywords in Denote files. Each keyword include a count for
+the number of times it is used. More frequently used keywords have a
+larger font size. The word cloud is interactive: clicking on a keyword
+opens a ~denote-dired~ buffer that matches all files with that
+keyword.
+
+The documentation of the package also includes a demonstration:
+<https://codeberg.org/treflip/denote-wordcloud>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
