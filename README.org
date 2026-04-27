@@ -4669,6 +4669,20 @@ given regular expression.
 Read more from the package's documentation:
 <https://git.sr.ht/~swflint/denote-agenda>.
 
+** Use the ~denote-project-notes~ package
+:PROPERTIES:
+:CUSTOM_ID: h:5d249c01-71ca-4583-959b-0a3368c30433
+:END:
+
+The ~denote-project-notes~ by Samuel W. Flint makes it possible to
+associate a =project.el= project with Denote files. The idea is to add
+directory-local variables to a project so that it can recognise note
+files therein. ~denote-project-notes~ defines commands to display
+project notes on the side.
+
+Learn about the technicalities on the package's webpage:
+<https://git.sr.ht/~swflint/denote-project-notes>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
