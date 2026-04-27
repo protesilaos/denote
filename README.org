@@ -4683,6 +4683,32 @@ project notes on the side.
 Learn about the technicalities on the package's webpage:
 <https://git.sr.ht/~swflint/denote-project-notes>.
 
+** Use the ~denote-regexp~ package
+:PROPERTIES:
+:CUSTOM_ID: h:1e3d1714-e444-4852-bf31-9059880e28b8
+:END:
+
+The ~denote-regexp~ package by Samuel W. Flint defines utilities to
+write regular expressions that work with the Denote file-naming scheme
+in light of the user option ~denote-file-name-components-order~
+([[#h:dc8c40e0-233a-4991-9ad3-2cf5f05ef1cd][Change the order of file name components]]). The idea is to make it
+easier to perform complex queries like:
+
+#+begin_example emacs-lisp
+(denote-regexp :keywords '(or "agenda" (and "project" "inprogress")))
+#+end_example
+
+The regular expressions produced by ~denote-regexp~ can be used
+anywhere, such as in a Dired buffer to mark the matching files, in Org
+dynamic blocks, with the ~denote-add-links~ command, and more:
+
+- [[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]].
+- [[#h:8b542c50-dcc9-4bca-8037-a36599b22779][Use Org dynamic blocks]].
+- [[#h:9bec2c83-36ca-4951-aefc-7187c5463f90][Insert links to all files matching a query in their file name]].
+
+The ~denote-regexp~ documentation covers the technicalities:
+<https://git.sr.ht/~swflint/denote-regexp>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
