@@ -4640,6 +4640,20 @@ and does not feature all the functionality that would make it a valid
 replacement of other incremental reading tools. However, work is
 underway to make it feature-complete.
 
+** Use the ~denote-journal-capture~ package
+:PROPERTIES:
+:CUSTOM_ID: h:0938f36c-92f7-4183-936d-96695b871987
+:END:
+
+The ~denote-journal-capture~ by Samuel W. Flint extends the
+~denote-journal~ package to work with the ~org-capture~ mechanism:
+
+- [[#h:4a6d92dd-19eb-4fcc-a7b5-05ce04da3a92][Use the ~denote-journal~ package which was formerly =denote-journal-extras.el=]].
+- [[#h:656c70cd-cf9a-4471-a0b5-4f0aaf60f881][Create note using Org capture]].
+
+The ~denote-journal-capture~ documentation covers the technicalities:
+<https://git.sr.ht/~swflint/denote-journal-capture>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
