@@ -4654,6 +4654,21 @@ The ~denote-journal-capture~ by Samuel W. Flint extends the
 The ~denote-journal-capture~ documentation covers the technicalities:
 <https://git.sr.ht/~swflint/denote-journal-capture>.
 
+** Use the ~denote-agenda~ package
+:PROPERTIES:
+:CUSTOM_ID: h:9838f36c-92f7-4183-936d-96695b871987
+:END:
+
+The ~denote-agenda~ package by Samuel W. Flint makes it easier to make
+the ~org-agenda~ work with Denote files. The package provides various
+ways to include files in the agenda, such as to pull in journal
+entries from the current and future days. The package also defines
+function to filter the files, such as to exclude those that match a
+given regular expression.
+
+Read more from the package's documentation:
+<https://git.sr.ht/~swflint/denote-agenda>.
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
