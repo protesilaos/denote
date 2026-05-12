@@ -3154,15 +3154,16 @@ A valid DATE is a value that can be parsed by either
 if DATE is a value they do not recognise.
 
 If DATE is nil or an empty string, return nil."
-  (cond ((null date)
-         nil)
-        ((and (stringp date) (string-empty-p date))
-         nil)
-        ((and (or (numberp date) (listp date))
-              (decode-time date))
-         date)
-        (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
-         (date-to-time (denote--date-add-current-time date)))))
+  (cond
+   ((null date)
+    nil)
+   ((and (stringp date) (string-empty-p date))
+    nil)
+   ((and (or (numberp date) (listp date))
+         (decode-time date))
+    date)
+   (t ; non-empty strings (e.g. "2024-01-01", "2024-01-01 12:00", etc.)
+    (date-to-time (denote--date-add-current-time date)))))
 
 (define-obsolete-function-alias
   'denote--id-to-date
