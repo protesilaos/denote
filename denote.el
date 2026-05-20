@@ -4155,14 +4155,14 @@ front matter lines."
             (next-prompt ""))
         (cond ((memq component to-remove)
                (setq next-prompt (format "\n-%s\n"
-                                         (propertize old-line 'face 'denote-faces-prompt-old-name))))
+                                         (propertize (denote-trim-whitespace old-line) 'face 'denote-faces-prompt-old-name))))
               ((memq component to-add)
                (setq next-prompt (format "\n-%s\n"
-                                         (propertize new-line 'face 'denote-faces-prompt-new-name))))
+                                         (propertize (denote-trim-whitespace new-line) 'face 'denote-faces-prompt-new-name))))
               ((memq component to-modify)
                (setq next-prompt (format "\n-%s\n-%s\n"
-                                         (propertize old-line 'face 'denote-faces-prompt-old-name)
-                                         (propertize new-line 'face 'denote-faces-prompt-new-name)))))
+                                         (propertize (denote-trim-whitespace old-line) 'face 'denote-faces-prompt-old-name)
+                                         (propertize (denote-trim-whitespace new-line) 'face 'denote-faces-prompt-new-name)))))
         (setq prompt (concat prompt next-prompt))))
     (concat prompt "?")))
 
