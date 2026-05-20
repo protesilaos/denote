@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 4.1.0
-#+macro: release-date 2025-10-17
-#+macro: development-version 4.2.0-dev
+#+macro: stable-version 4.2.0
+#+macro: release-date 2026-05-20
+#+macro: development-version 4.3.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -996,7 +996,6 @@ Otherwise, it produces a minibuffer prompt for every non-nil value
 that corresponds to the =TITLE=, =KEYWORDS=, =SUBDIRECTORY=, =DATE=,
 =TEMPLATE=, and =SIGNATURE= arguments. The prompts are those used by
 the standard ~denote~ command and all of its utility commands ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).
-[ The =SIGNATURE= was missing in previous versions and is now part of {{{development-version}}}. ]
 
 When returning the contents that fill in the Org capture template, the
 sequence is as follows: front matter, =TEMPLATE=, and then the value
@@ -1496,9 +1495,6 @@ The match is performed with ~string-match-p~.
 The user option ~denote-keywords-to-not-infer-regexp~ omits keywords
 that match a regular expression from the list of inferred keywords.
 
-[ The ~denote-excluded-keywords-regexp~ is an obsolete alias for
-  ~denote-keywords-to-not-infer-regexp~ as part of {{{development-version}}}. ]
-
 Keywords are inferred from file names and provided at relevant prompts
 as completion candidates when the user option ~denote-infer-keywords~
 is non-nil.
@@ -1532,10 +1528,10 @@ something like this in their configuration:
 (setq denote-known-keywords (list "politics" "economics" "emacs" "philosophy"))
 #+end_src
 
-[ As part of {{{development-version}}}, setting ~denote-infer-keywords~
-  to ~nil~ also makes the ~denote-keywords-prompt~ demand that the
-  input matches one of the keywords in ~denote-known-keywords~. In
-  previous versions, the prompt would accept arbitrary text. ]
+Setting ~denote-infer-keywords~ to ~nil~ also makes the
+~denote-keywords-prompt~ demand that the input matches one of the
+keywords in ~denote-known-keywords~. In previous versions, the prompt
+would accept arbitrary text.
 
 ** Use Denote commands from the menu bar or context menu
 :PROPERTIES:
@@ -2942,11 +2938,6 @@ as the date and unique identifier, which are derived automatically.
 This is how it looks for Org mode (when ~denote-file-type~ is set to
 the =org= symbol, which is the default):
 
-[ The ~org~ symbol is made the default as of {{{development-version}}}.
-  Previous versions were also defaulting to Org, but the ~denote-file-type~
-  was not explicitly set to ~org~, which could lead to unpredictable
-  results in certain cases. ]
-
 #+begin_example
 #+title:      This is a sample note
 #+date:       [2022-06-30 Thu 16:09]
@@ -3268,9 +3259,6 @@ as a typographic list, such as:
 - link3
 #+end_example
 
-[ The ~denote-link-to-all-files-with-regexp~ is an alias for
-  ~denote-add-links~ as part of {{{development-version}}}. ]
-
 Each link is formatted according to the file type of the current note,
 as explained further above about the ~denote-link~ command.  The current
 note is excluded from the matching entries (adding a link to itself is
@@ -3519,7 +3507,6 @@ this end, Denote provides two convenience commands:
 + ~denote-link-or-create-with-command~ :: This command is the same
   concept as ~denote-link-or-create~ except it prompts for the
   specific command for creating a new note ([[#h:98c732ac-da0e-4ebd-a0e3-5c47f9075e51][Choose which commands to prompt for]]).
-  [ The ~denote-link-or-create-with-command~ is part of {{{development-version}}}. ]
 
 In all of the above, an optional prefix argument (=C-u= by default)
 creates a link that consists of just the identifier.  This has the
@@ -3665,11 +3652,6 @@ appropriate than the other.
 :CUSTOM_ID: h:156c5ea3-147b-4f9d-a404-86a00558c60a
 :END:
 
-[ Revised as part of {{{development-version}}} to only target the
-  generic ~text-mode~. Org mode and Markdown mode are both excluded
-  because they work with Denote links by default. This revision also
-  inlcudes the =RET= and =C-c C-o= key bindings for fontified links. ]
-
 #+findex: denote-fontify-links-mode
 Denote links are automatically fontified in Org mode and Markdown mode
 buffers ([[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Adding a single link]]). This means that the given major mode
@@ -3706,9 +3688,6 @@ the signature if present).
 For backward compatibility, the function can also take a single
 parameter, the given file. In that case, it is responsible for
 figuring out the file type in order to return the correct description.
-
-[ The calling convention for the function with two arguments is
-  introduced as part of {{{development-version}}}. ]
 
 If the value is a string, it treats specially the following specifiers:
 
@@ -4017,8 +3996,6 @@ means of the non-interactive function ~denote-sort-files~.
 :PROPERTIES:
 :CUSTOM_ID: h:738b4895-00e3-47a5-a1de-bb0eeef93998
 :END:
-
-[ This is part of {{{development-version}}}. The specifics may change. ]
 
 #+findex: denote-dired-focus
 The command ~denote-dired-focus~ gives users the option to further
@@ -5751,8 +5728,6 @@ The following sections cover the specifics.
   optional =FILES-MATCHING-REGEXP=, to extract keywords only from the
   matching files. Otherwise, do it for all files. Filter inferred
   keywords with the user option ~denote-keywords-to-not-infer-regexp~.
-  [ The ~denote-excluded-keywords-regexp~ is an obsolete alias for
-    ~denote-keywords-to-not-infer-regexp~ as part of {{{development-version}}}. ]
 
 #+findex: denote-keywords-sort
 + Function ~denote-keywords-sort~ :: Sort =KEYWORDS= if
@@ -5952,7 +5927,7 @@ there will be no corresponding prompt.
   the first file type whose =:get-file-type-function= returns non-nil.
   If =:get-file-type-function= is nil rely on the ~:title-key-regexp~
   and return the first matching file type. Return nil if FILE is not
-  recognized. [ Revised as part of {{{development-version}}}. ]
+  recognized.
 
 #+vindex: denote-get-identifier-function
 + Variable ~denote-get-identifier-function~ :: The function to
@@ -6227,13 +6202,13 @@ there will be no corresponding prompt.
 + Function ~denote-get-file-type-markdown-yaml~ :: Return
   =markdown-yaml= if FILE has YAML front matter. YAML front matter
   starts with =---= on the first line. Consult the ~denote-file-types~
-  for how this is used. [ Part of {{{development-version}}}. ]
+  for how this is used.
 
 #+findex: denote-get-file-type-markdown-toml
 + Function ~denote-get-file-type-markdown-toml~ :: Return
   =markdown-toml= if FILE has TOML front matter. Consult the
   ~denote-file-types~ for how this is used. TOML front matter starts
-  with =+++= on the first line. [ Part of {{{development-version}}}. ]
+  with =+++= on the first line.
 
 #+vindex: denote-file-types
 + Variable ~denote-file-types~ :: Alist of ~denote-file-type~ and
@@ -6252,7 +6227,7 @@ there will be no corresponding prompt.
      file, that reads the file contents and returns the file type as a
      symbol or nil. If there is no function, Denote will fall back to
      a search for a title in the front matter (per =:title-key-regexp=,
-     which is described below). [ Part of {{{development-version}}}. ]
+     which is described below).
 
   3. =:date-function= is a function that can format a date.  See the
      functions ~denote--date-iso-8601~, ~denote--date-rfc3339~, and
@@ -6352,8 +6327,7 @@ there will be no corresponding prompt.
 + Function ~denote-link-description-with-signature-and-title~ :: Return
   link description for =FILE= with =FILE-TYPE=. For backward
   compatibility, =FILE-TYPE= is an optional parameter. If it is ~nil~,
-  then compute =FILE-TYPE= internally. [ =FILE-TYPE= is added as part
-  of {{{development-version}}}. ]
+  then compute =FILE-TYPE= internally.
 
   - If the region is active, use it as the description.
 
