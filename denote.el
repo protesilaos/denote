@@ -2046,7 +2046,7 @@ and (iv) a string, respectively."
 (defalias 'denote-dired 'denote-sort-dired
   "Alias for `denote-sort-dired' command.")
 
-(defun denote-sort-dired-focus (regexp &optional exclude-match)
+(defun denote-dired-focus (regexp &optional exclude-match)
   "Filter the current `denote-dired' buffer to include only files matching REGEXP.
 With optional EXCLUDE-MATCH as a prefix argument remove the files
 matching REGEXP from the buffer.
@@ -2071,9 +2071,6 @@ buffer's file list to operate only on those files."
             (denote-sort-dired last-regexp component reverse-sort regexp files)
           (denote-sort-dired regexp component reverse-sort exclude-regexp files)))
     (user-error "No last `denote-sort-dired' results to focus on")))
-
-(defalias 'denote-dired-focus 'denote-sort-dired-focus
-  "Alias for `denote-sort-dired-focus'.")
 
 ;;;; Keywords
 

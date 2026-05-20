@@ -4020,11 +4020,10 @@ means of the non-interactive function ~denote-sort-files~.
 
 [ This is part of {{{development-version}}}. The specifics may change. ]
 
-#+findex: denote-sort-dired-focus
 #+findex: denote-dired-focus
-The command ~denote-dired-focus~ (alias ~denote-sort-dired-focus~)
-gives users the option to further filter an existing Dired buffer that
-was produced by the ~denote-dired~ command ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]]).
+The command ~denote-dired-focus~ gives users the option to further
+filter an existing Dired buffer that was produced by the
+~denote-dired~ command ([[#h:9fe01e63-f34f-4479-8713-f162a5ca865e][Display filtered and sorted files with ~denote-sort-dired~ or ~denote-dired~]]).
 
 Call ~denote-dired-focus~ from inside such a Dired buffer to further
 limit its contents to files matching the given regular expression or
