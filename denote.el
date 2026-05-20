@@ -2054,14 +2054,16 @@ matching REGEXP from the buffer.
 This is not a new query.  It builds on top of the current `denote-dired'
 buffer's file list to operate only on those files."
   (interactive
-   (or (denote--user-error-if-not-major-mode 'dired-mode)
-       (let ((exclude-p current-prefix-arg))
-         (list
-          (denote-files-matching-regexp-prompt
-           (if exclude-p
-               "Remove files matching REGEXP in Denote Dired buffer"
-             "Show only files matching REGEXP in Denote Dired buffer"))
-          exclude-p))))
+   (if denote-sort-dired--last-files
+       (or (denote--user-error-if-not-major-mode 'dired-mode)
+           (let ((exclude-p current-prefix-arg))
+             (list
+              (denote-files-matching-regexp-prompt
+               (if exclude-p
+                   "Remove files matching REGEXP in Denote Dired buffer"
+                 "Show only files matching REGEXP in Denote Dired buffer"))
+              exclude-p)))
+     (user-error "This is not a `denote-dired' buffer")))
   (denote--user-error-if-not-major-mode 'dired-mode)
   (if-let* ((files denote-sort-dired--last-files))
       (pcase-let* ((`(,last-regexp ,component ,reverse-sort ,exclude-regexp ,_) denote-sort-dired--last-arguments))
