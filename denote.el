@@ -1536,8 +1536,7 @@ Use the identifier as a prefix and the keywords as a suffix."
    (cons 'group-function #'denote-file-prompt-group)
    (cons 'affixation-function #'denote-file-prompt-affixate)
    (cons 'display-sort-function #'denote-file-prompt-sort))
-  "Extra `completion-metadata' for the `denote-file-prompt'.
-This is in addition to the completion category, which is constant.")
+  "Extra `completion-metadata' for the `denote-file-prompt'.")
 
 (with-eval-after-load 'all-the-icons
   (cl-defmethod all-the-icons-completion-get-icon (cand (_cat (eql denote-file)))
