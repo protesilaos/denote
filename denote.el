@@ -1492,10 +1492,9 @@ there.")
 
 (defun denote-file-prompt--format-identifier (file)
   "Return identifier of FILE for `denote-file-prompt-affixate'."
-  (let* ((identifier (denote-retrieve-filename-identifier file))
-         (date-or-id (or (ignore-errors (denote-id-to-date identifier)) identifier))
-         (propertized (propertize date-or-id 'face 'completions-annotations)))
-    (format "%s " propertized)))
+  (when-let* ((identifier (denote-retrieve-filename-identifier file))
+              (date-or-id (or (ignore-errors (denote-id-to-date identifier)) identifier)))
+    (format "%s " (propertize date-or-id 'face 'completions-annotations))))
 
 (defun denote-file-prompt--format-keywords-and-signature (file)
   "Return keywords and signature of FILE for `denote-file-prompt-affixate'."
