@@ -3961,7 +3961,8 @@ Return nil if FILE is not recognized."
                   (found (seq-find
                           (lambda (type)
                             (let ((properties (cdr type)))
-                              (if-let* ((file-type-fn (plist-get properties :get-file-type-function)))
+                              (if-let* ((file-type-fn (plist-get properties :get-file-type-function))
+                                        (_ (file-exists-p file)))
                                   (funcall file-type-fn file)
                                 (ignore-errors
                                   (denote--regexp-in-file-p (plist-get properties :title-key-regexp) file)))))
