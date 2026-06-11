@@ -4721,6 +4721,27 @@ between file name and front matter, the validity of links, and
 related. The package defines multiple warning levels, each with its
 own semantics. Learn more here: <https://github.com/psmith1303/denote-lint>.
 
+** Use the ~denote-paperless~ package
+:PROPERTIES:
+:CUSTOM_ID: h:2617d7ec-501d-4554-85ee-d4ca801e5bb2
+:END:
+
+The ~denote-paperless~ package by Matthieu Muller allows the user to
+easily manage administrative document files such as bills, letters,
+taxes, etc.
+
+The workflow it implements is heavily inspired from how [[https://docs.paperless-ngx.com/][Paperless-ngx]]
+operates: giving each document a date, a type, a correspondent, a
+title, some keywords and (optionally) an archive serial number. It
+leverage the ~SIGNATURE~ component to insert these new elements in the
+file name.
+
+The package is designed to be used alongside Denote: manage your notes
+with Denote and your documents with Denote Paperless.
+
+Read more from the package’s documentation:
+<https://codeberg.org/matthieumuller/denote-paperless>
+
 * Extending Denote
 :PROPERTIES:
 :CUSTOM_ID: h:8ed2bb6f-b5be-4711-82e9-8bee5bb06ece
