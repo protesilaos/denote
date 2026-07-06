@@ -4449,6 +4449,29 @@ across their configuration.
 + Git repository: <https://github.com/protesilaos/denote-silo>
 + Backronym: Denote... Silos Insulate Localised Objects.
 
+** Use the ~denote-solo~ package
+:PROPERTIES:
+:CUSTOM_ID: h:3db6bbfb-e5b5-45a1-8064-ce52834436a2
+:END:
+
+Denote can operate on one of several independent note collections,
+what Denote calls "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for
+notes]]). The ~denote-silo~ package helps with this by prompting the
+user to pick a silo on every command.
+
+The ~denote-solo~ package by Pavlo V. Lysov takes the opposite stance:
+instead of prompting for a directory on every command, the user picks
+one - a *solo* - once, and every subsequent Denote command operates on
+it until the user switches again.
+
+The active solo is remembered across Emacs sessions and shown in the
+mode line. Its ~denote-keyword-history~ is kept separate per solo, so
+keyword completions do not leak between collections. Toggling back and
+forth between two solos takes a single keystroke, as the previously
+active one is pre-selected in the switching prompt.
+
++ Git repository: <https://github.com/pavlo/denote-solo>
+
 ** Use the ~denote-search~ package as a search interface
 :PROPERTIES:
 :CUSTOM_ID: h:c905b733-e959-4aa4-8f2c-0ed9eba459df
