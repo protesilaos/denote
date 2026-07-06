@@ -4455,9 +4455,9 @@ across their configuration.
 :END:
 
 Denote can operate on one of several independent note collections,
-what Denote calls "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for
-notes]]). The ~denote-silo~ package helps with this by prompting the
-user to pick a silo on every command.
+what Denote calls "silos" ([[#h:15719799-a5ff-4e9a-9f10-4ca03ef8f6c5][Maintain separate directory silos for notes]]).
+The ~denote-silo~ package helps with this by prompting the user to
+pick a silo on every command.
 
 The ~denote-solo~ package by Pavlo V. Lysov takes the opposite stance:
 instead of prompting for a directory on every command, the user picks
@@ -7146,14 +7146,14 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Kristoffer Balintona, Kyle Meyer, Laurent Gatto, Lucas Quintana,
   Maikol Solis, Marc Fargas, Marco Baringer, Matthew Batson, Matthew
   Lemon, Matthieu Muller, Matto Fransen, Noboru Ota (nobiot), Norwid
-  Behrnd, Octavian, Peter Prevos, Philip Kaludercic, Ryota, Samuel W.
-  Flint, Quiliro Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan
-  Thesing, Thibaut Benjamin, Tobias Lidman-Strauss, Tomasz Hołubowicz,
-  TomoeMami , Vedang Manerikar, Wesley Harvey, Yann Dutrieux, Zhenxu
-  Xu, alvmts, arsaber101, bplubell, bryanrinders, dulikiles, eum3l,
-  experimental-code-86, ezchi, gnuhack, gvalson, jarofromel, leinfink
-  (Henrik), l-o-l-h (Lincoln), mattyonweb, maxbrieiev,
-  mentalisttraceur, nescias, pmenair, relict007, skissue.
+  Behrnd, Octavian, Pavlo V. Lysov, Peter Prevos, Philip Kaludercic,
+  Ryota, Samuel W. Flint, Quiliro Ordóñez, Stephen R. Kifer, Stefan
+  Monnier, Stefan Thesing, Thibaut Benjamin, Tobias Lidman-Strauss,
+  Tomasz Hołubowicz, TomoeMami , Vedang Manerikar, Wesley Harvey, Yann
+  Dutrieux, Zhenxu Xu, alvmts, arsaber101, bplubell, bryanrinders,
+  dulikiles, eum3l, experimental-code-86, ezchi, gnuhack, gvalson,
+  jarofromel, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
+  maxbrieiev, mentalisttraceur, nescias, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
