@@ -2195,8 +2195,8 @@ Denote file-naming scheme."
 #+signature:  %s
 \n"
   "Org front matter.
-It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
-ID.  Advanced users are advised to consult Info node `(denote)
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS, ID,
+SIGNATURE.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
 (defvar denote-yaml-front-matter
@@ -2208,8 +2208,8 @@ identifier: %s
 signature:  %s
 ---\n\n"
   "YAML (Markdown) front matter.
-It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
-ID.  Advanced users are advised to consult Info node `(denote)
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS, ID,
+SIGNATURE.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
 (defvar denote-toml-front-matter
@@ -2221,8 +2221,8 @@ identifier = %s
 signature  = %s
 +++\n\n"
   "TOML (Markdown) front matter.
-It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
-ID.  Advanced users are advised to consult Info node `(denote)
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS, ID,
+SIGNATURE.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
 (defvar denote-text-front-matter
@@ -2233,8 +2233,8 @@ identifier: %s
 signature:  %s
 ---------------------------\n\n"
   "Plain text front matter.
-It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
-ID.  Advanced users are advised to consult Info node `(denote)
+It is passed to `format' with arguments TITLE, DATE, KEYWORDS, ID,
+SIGNATURE.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
 (defun denote-format-string-for-md-front-matter (s)

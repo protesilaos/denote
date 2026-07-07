@@ -3027,8 +3027,9 @@ The variables which hold the front matter format are:
 - ~denote-yaml-front-matter~
 
 These variables have a string value with specifiers that are used by the
-~format~ function.  The formatting operation passes four arguments which
-include the values of the given entries.  If you are an advanced user
+~format~ function.  The formatting operation passes five arguments which
+include the values of the given entries: =TITLE=, =DATE=, =KEYWORDS=,
+=IDENTIFIER=, and =SIGNATURE=.  If you are an advanced user
 who wants to edit this variable to affect how front matter is produced,
 consider using something like =%2$s= to control where the Nth argument
 is placed.
@@ -3053,6 +3054,7 @@ for all variables.
 #+DATE:       %s
 #+FILETAGS:   %s
 #+IDENTIFIER: %s
+#+SIGNATURE:  %s
 \n")
 
 ;; Change the order (notice the %N$s notation)
@@ -3061,6 +3063,7 @@ for all variables.
 #+filetags:   %3$s
 #+date:       %2$s
 #+identifier: %4$s
+#+signature:  %5$s
 \n")
 
 ;; Remove the date
@@ -3068,12 +3071,14 @@ for all variables.
   "#+title:      %1$s
 #+filetags:   %3$s
 #+identifier: %4$s
+#+signature:  %5$s
 \n")
 
 ;; Remove the date and the identifier
 (setq denote-org-front-matter
   "#+title:      %1$s
 #+filetags:   %3$s
+#+signature:  %5$s
 \n")
 #+end_src
 
@@ -6171,22 +6176,22 @@ there will be no corresponding prompt.
 #+vindex: denote-org-front-matter
 + Variable ~denote-org-front-matter~ :: Specifies the Org front
   matter.  It is passed to ~format~ with arguments =TITLE=, =DATE=,
-  =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+  =KEYWORDS=, =IDENTIFIER=, =SIGNATURE= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
 #+vindex: denote-yaml-front-matter
 + Variable ~denote-yaml-front-matter~ :: Specifies the YAML (Markdown)
   front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+  =DATE=, =KEYWORDS=, =IDENTIFIER=, =SIGNATURE= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
 #+vindex: denote-toml-front-matter
 + Variable ~denote-toml-front-matter~ :: Specifies the TOML (Markdown)
   front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+  =DATE=, =KEYWORDS=, =IDENTIFIER=, =SIGNATURE= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
 #+vindex: denote-text-front-matter
 + Variable ~denote-text-front-matter~ :: Specifies the plain text
   front matter.  It is passed to ~format~ with arguments =TITLE=,
-  =DATE=, =KEYWORDS=, =ID= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
+  =DATE=, =KEYWORDS=, =IDENTIFIER=, =SIGNATURE= ([[#h:7f918854-5ed4-4139-821f-8ee9ba06ad15][Change the front matter format]])
 
 #+findex: denote-date-org-timestamp
 + Function ~denote-date-org-timestamp~ :: Format =DATE= using the Org
