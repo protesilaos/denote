@@ -121,6 +121,19 @@ variable `denote-directory' still takes precedence."
                            (denote-directories--get-paths denote-directory)))))
       (delete-directory directory :recursive))))
 
+(ert-deftest dt-denote-link-preview-file ()
+  "Test that `denote-link-preview-file' handles unresolvable targets.
+An error here would abort the setup of `org-mode' entirely when link
+previews are enabled at startup."
+  (let ((denote-directory (file-name-as-directory
+                           (expand-file-name "denote-test-preview" temporary-file-directory))))
+    (unwind-protect
+        (with-temp-buffer
+          (should-not
+           (denote-link-preview-file
+            (make-overlay (point-min) (point-min)) "00000000T000000" nil)))
+      (delete-directory denote-directory :recursive))))
+
 (ert-deftest dt-denote-sluggify-title ()
   "Test that `denote-sluggify-title' removes punctuation from the string.
 Concretely, remove anything specified in `denote-sluggify-title'."

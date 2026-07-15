@@ -7097,11 +7097,12 @@ backend."
 ;;;###autoload
 (defun denote-link-preview-file (overlay link-target link-data)
   "Use `org-link-preview-file' for OVERLAY, LINK-TARGET, and LINK-DATA.
-Unless the LINK-TARGET has search options, then try to produce a preview.
+Produce no preview if LINK-TARGET has search options or does not
+resolve to a file.
 
 For more details, refer to the documentation of `org-link-set-parameters'."
   (pcase-let* ((`(,path ,_ ,file-search) (denote-link--ol-resolve-link-to-target link-target :full-data)))
-    (unless file-search
+    (when (and path (not file-search))
       (org-link-preview-file overlay path link-data))))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
