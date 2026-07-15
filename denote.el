@@ -961,25 +961,50 @@ Make any parent directories as well."
         (mapcar get-dir directory-or-directories)
       (list (funcall get-dir directory-or-directories)))))
 
+(declare-function hack-dir-local--get-variables "files" (&optional predicate))
+
+(defun denote-directories--dir-local-value ()
+  "Return the dir-local value of variable `denote-directory', if any.
+Read the value directly from the directory-local variables data, so
+that it is available even before `hack-local-variables' has applied it.
+Major mode bodies run before directory-local variables are applied to
+the buffer, so anything that resolves Denote paths during mode setup,
+such as Org link previews at startup, would otherwise see the wrong
+value inside a silo.
+
+Return nil if the variable `denote-directory' is buffer-local or
+dynamically bound, if directory-local variables are disabled, or if
+they do not specify a value for the variable `denote-directory'."
+  (when (and (not (local-variable-p 'denote-directory))
+             (eq denote-directory (default-toplevel-value 'denote-directory))
+             (fboundp 'hack-dir-local--get-variables))
+    (cdr (assq 'denote-directory
+               (cdr (hack-dir-local--get-variables))))))
+
 (defun denote-directories ()
   "Return path of variable `denote-directory' as a proper directory.
 If the variable `denote-directory' is set to a list of file paths,
 return the list with each element expanded to be a directory.  Create
 any directories and their parents, if needed.
 
+A directory-local value of the variable `denote-directory' is honored
+even when it has not yet been applied to the buffer, as is the case
+while the major mode is still initializing.
+
 Custom Lisp code can `let' bind the variable `denote-directory'
 to override what this function returns."
-  (if-let* (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
-            (silo-dir (denote--default-directory-is-silo-p)))
-      (progn
-        (display-warning
-         'denote
-         "Silo value must be a string; `local' or `default-directory' are obsolete"
-         :error)
-        (list silo-dir))
-    (let ((denote-directories (denote-directories--get-paths denote-directory)))
-      (denote-directories--make-paths denote-directories)
-      denote-directories)))
+  (let ((denote-directory (or (denote-directories--dir-local-value) denote-directory)))
+    (if-let* (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
+              (silo-dir (denote--default-directory-is-silo-p)))
+        (progn
+          (display-warning
+           'denote
+           "Silo value must be a string; `local' or `default-directory' are obsolete"
+           :error)
+          (list silo-dir))
+      (let ((denote-directories (denote-directories--get-paths denote-directory)))
+        (denote-directories--make-paths denote-directories)
+        denote-directories))))
 
 (defun denote-has-single-denote-directory-p ()
   "Return non-nil if the variable `denote-directory' is a single item."
@@ -7072,11 +7097,12 @@ backend."
 ;;;###autoload
 (defun denote-link-preview-file (overlay link-target link-data)
   "Use `org-link-preview-file' for OVERLAY, LINK-TARGET, and LINK-DATA.
-Unless the LINK-TARGET has search options, then try to produce a preview.
+Produce no preview if LINK-TARGET has search options or does not
+resolve to a file.
 
 For more details, refer to the documentation of `org-link-set-parameters'."
   (pcase-let* ((`(,path ,_ ,file-search) (denote-link--ol-resolve-link-to-target link-target :full-data)))
-    (unless file-search
+    (when (and path (not file-search))
       (org-link-preview-file overlay path link-data))))
 
 ;; The `eval-after-load' part with the quoted lambda is adapted from
