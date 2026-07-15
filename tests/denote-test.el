@@ -95,6 +95,32 @@ Also see `denote-test--denote--make-denote-directory',
     (should (and (seq-every-p #'file-directory-p denote-directory)
                  (seq-every-p #'file-name-absolute-p denote-directory)))))
 
+(ert-deftest dt-denote-directories--dir-local-value ()
+  "Test that an unapplied dir-local `denote-directory' is honored.
+Directory-local variables are applied only after the major mode is
+initialized, so `denote-directories' reads the dir-local value directly
+in that window.  A dynamic binding or a buffer-local value of the
+variable `denote-directory' still takes precedence."
+  (skip-unless (fboundp 'hack-dir-local--get-variables))
+  (let* ((directory (file-name-as-directory
+                     (expand-file-name "denote-test-silo" temporary-file-directory)))
+         (silo (file-name-as-directory (expand-file-name "notes" directory))))
+    (unwind-protect
+        (progn
+          (make-directory directory :parents)
+          (with-temp-file (expand-file-name ".dir-locals.el" directory)
+            (insert (format "((nil . ((denote-directory . %S))))" silo)))
+          (with-temp-buffer
+            (setq default-directory directory)
+            (should (equal (denote-directories) (list silo)))
+            (let ((denote-directory "/tmp/denote-test-notes"))
+              (should (equal (denote-directories)
+                             (denote-directories--get-paths denote-directory))))
+            (setq-local denote-directory "/tmp/denote-test-notes")
+            (should (equal (denote-directories)
+                           (denote-directories--get-paths denote-directory)))))
+      (delete-directory directory :recursive))))
+
 (ert-deftest dt-denote-sluggify-title ()
   "Test that `denote-sluggify-title' removes punctuation from the string.
 Concretely, remove anything specified in `denote-sluggify-title'."
