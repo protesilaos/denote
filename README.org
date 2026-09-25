@@ -4865,7 +4865,7 @@ modify the minibuffer prompt to indicate what we are doing:
   "Prompt for FILE in the variable `denote-directory' and open it."
   (declare (interactive-only t))
   (interactive)
-  (when-let* ((file (denote-file-prompt "\\.pdf" "Prompt for PDF file")))
+  (when-let* ((file (denote-file-prompt "\\.pdf" "Find PDF file")))
     (find-file file)))
 #+end_src
 
