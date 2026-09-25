@@ -4835,6 +4835,92 @@ operations the user is advised to rely on standard Emacs facilities or
 specialised third-party packages ([[#h:08b14682-e73f-4b11-b2e2-be3b788c8572][Packages that build on Denote]]). This
 section covers the details.
 
+** Find a file in the ~denote-directory~
+:PROPERTIES:
+:CUSTOM_ID: h:d75e6c08-312d-455e-9fa9-9b78ee0db02d
+:END:
+
+Because Denote files are standard files, we do not provide the
+equivalent of a ~find-file~ command to directly open a file in the
+~denote-directory~. Though users may still want to have that
+functionality, which is easy to implement with what core Denote
+already provides:
+
+#+begin_src emacs-lisp
+(defun my-denote-find-file ()
+  "Open a file in the variable `denote-directory'."
+  (declare (interactive-only t))
+  (interactive)
+  (when-let* ((file (denote-file-prompt)))
+    (find-file file)))
+#+end_src
+
+This can be extended to include commands that only match specific file
+types or regular expressions in general. For example, here is how we
+prompt only for files that include =.pdf= in their name and also
+modify the minibuffer prompt to indicate what we are doing:
+
+#+begin_src emacs-lisp
+(defun my-denote-find-file-pdf ()
+  "Prompt for FILE in the variable `denote-directory' and open it."
+  (declare (interactive-only t))
+  (interactive)
+  (when-let* ((file (denote-file-prompt "\\.pdf" "Prompt for PDF file")))
+    (find-file file)))
+#+end_src
+
+To take it a step further, we can define a keymap which we may then
+bind to a prefix key. This way we can access all the "Denote find
+file" commands we have defined for ourselves:
+
+#+begin_src emacs-lisp
+;; Define the keymap.  Notice the symbol of :prefix, which is used in
+;; the `define-key' below.
+(defvar-keymap my-denote-find-file-map
+  :doc "Commands to find a file in the variable `denote-directory'."
+  :prefix 'my-denote-find
+  "f" #'my-denote-find-file
+  "p" #'my-denote-find-file-pdf)
+
+;; Pick a suitable prefix key.  Here we use C-c f.  So
+;; `my-denote-find-file' is this: C-c f f.
+(define-key global-map (kbd "C-c f") 'my-denote-find)
+#+end_src
+
+Putting it all together:
+
+#+begin_src emacs-lisp
+;; Use this as a template to define as many commands as you need, like
+;; with `my-denote-find-file-pdf'.
+(defun my-denote-find-file ()
+  "Open a file in the variable `denote-directory'."
+  (declare (interactive-only t))
+  (interactive)
+  (when-let* ((file (denote-file-prompt)))
+    (find-file file)))
+
+(defun my-denote-find-file-pdf ()
+  "Prompt for FILE in the variable `denote-directory' and open it."
+  (declare (interactive-only t))
+  (interactive)
+  (when-let* ((file (denote-file-prompt "\\.pdf" "Prompt for PDF file")))
+    (find-file file)))
+
+;; Define the keymap.  Notice the symbol of :prefix, which is used in
+;; the `define-key' below.
+(defvar-keymap my-denote-find-file-map
+  :doc "Commands to find a file in the variable `denote-directory'."
+  :prefix 'my-denote-find
+  "f" #'my-denote-find-file
+  "p" #'my-denote-find-file-pdf)
+
+;; Pick a suitable prefix key.  Here we use C-c f.  So
+;; `my-denote-find-file' is this: C-c f f.
+(define-key global-map (kbd "C-c f") 'my-denote-find)
+#+end_src
+
+Enjoy!
+
 ** Define a custom file type to automatically encrypt new notes
 :PROPERTIES:
 :CUSTOM_ID: h:647ea7d0-7168-4ef7-8043-40403d924789
