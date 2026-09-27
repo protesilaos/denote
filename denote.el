@@ -7685,7 +7685,9 @@ Activating this mode also calls `denote-data-write-all'."
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
+    (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
+    (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
