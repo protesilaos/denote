@@ -7647,9 +7647,11 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
                            (:text (denote-data-entry-set-text entry new-value)))))
     (puthash identifier entry denote-data)))
 
-(defun denote-data-update (&optional file)
-  "Update the current Denote file or FILE entry in `denote-data'."
-  (denote-data-write-entry (or buffer-file-name file)))
+(defun denote-data-update ()
+  "Update the current Denote file entry in `denote-data'.
+Use this as part of `after-save-hook' or related.  Otherwise use
+`denote-data-write-entry'."
+  (denote-data-write-entry buffer-file-name))
 
 ;;;;; The `denote-data-mode'
 
