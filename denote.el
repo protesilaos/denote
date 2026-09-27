@@ -1880,6 +1880,9 @@ already called."
 
 ;;;;; The `denote-data-mode'
 
+(defvar denote-directory-files-get-function--original denote-directory-files-get-function
+  "Original function bound to `denote-directory-files-get-function'.")
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When non-nil, cache Denote data in the `denote-data' hashmap and use it.
@@ -1892,7 +1895,10 @@ Activating this mode also calls `denote-data-write-all'."
   (if denote-data-mode
       (progn
         (denote-data-write-all)
+        (setq denote-directory-files-get-function--original denote-directory-files-get-function)
+        (setq denote-directory-files-get-function #'denote-data-get-files)
         (add-hook 'after-save-hook #'denote-data-update))
+    (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
