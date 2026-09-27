@@ -2404,6 +2404,14 @@ the functions `denote-keywords'."
          keywords)
       keywords)))
 
+(defvar denote-infer-keywords-from-files-function #'denote-infer-keywords-from-files
+  "Function to return keywords found in files for `denote-keywords'.
+The function is called with one argument, FILES-MATCHING-REGEXP, as
+noted in `denote-keywords'.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 (defun denote-keywords (&optional files-matching-regexp)
   "Return appropriate list of keyword candidates.
 If `denote-infer-keywords' is non-nil, infer keywords from existing
@@ -2415,9 +2423,11 @@ to extract keywords only from the matching files.  Otherwise, do it for
 all files.
 
 Filter inferred keywords per `denote-keywords-to-not-infer-regexp'."
+  (unless (functionp denote-infer-keywords-from-files-function)
+    (error "The `denote-infer-keywords-from-files-function' must be set to a function"))
   (delete-dups
    (if denote-infer-keywords
-       (append (denote-infer-keywords-from-files files-matching-regexp) denote-known-keywords)
+       (append (funcall denote-infer-keywords-from-files-function files-matching-regexp) denote-known-keywords)
      denote-known-keywords)))
 
 (defvar denote-keyword-history nil
