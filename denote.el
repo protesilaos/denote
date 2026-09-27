@@ -7649,14 +7649,7 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 
 (defun denote-data-update (&optional file)
   "Update the current Denote file or FILE entry in `denote-data'."
-  (when-let* ((file (or file buffer-file-name))
-              (denote-file-has-denoted-filename-p file)
-              (identifier (denote-retrieve-filename-identifier file))
-              (title (denote-retrieve-filename-title file))
-              (signature (denote-retrieve-filename-signature file))
-              (keywords (denote-retrieve-filename-keywords-as-list file))
-              (entry (denote-data-entry-create :identifier identifier :title title :signature signature :keywords keywords :path file)))
-    (puthash identifier entry denote-data)))
+  (denote-data-write-entry (or buffer-file-name file)))
 
 ;;;;; The `denote-data-mode'
 
