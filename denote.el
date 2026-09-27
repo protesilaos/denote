@@ -1807,10 +1807,6 @@ already called."
         (message "Created `denote-data' for `%d' files" (length files)))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
 
-;; NOTE 2026-09-25: The idea with this function is to plug it in to
-;; the `denote-directory-files'.  That function would read from this
-;; one given some reasonable condition, such as if `denote-data-mode'
-;; is non-nil.
 (defun denote-data-get-files ()
   "Return list of files in `denote-data'."
   (let ((files nil))
