@@ -1379,6 +1379,11 @@ are not backups."
  "advanced users should write an advice for `denote-directory-files'"
  "4.2.0")
 
+(defvar denote-directory-files-get-function #'denote--directory-get-files
+  "Function to return files for use in `denote-directory-files'.
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 ;; The HAS-IDENTIFIER is there because we support cases where files do
 ;; not have an identifier.
 (defun denote-directory-files (&optional files-matching-regexp omit-current text-only exclude-regexp has-identifier)
@@ -1405,7 +1410,9 @@ OMIT-CURRENT have been applied.
 
 With optional HAS-IDENTIFIER as a non-nil value, limit the results to
 files that have an identifier."
-  (let ((files (denote--directory-get-files)))
+  (unless (functionp denote-directory-files-get-function)
+    (error "The `denote-directory-files-get-function' must be set to a function"))
+  (let ((files (funcall denote-directory-files-get-function)))
     (when (and omit-current buffer-file-name (denote-file-has-identifier-p buffer-file-name))
       (setq files (delete buffer-file-name files)))
     (when files-matching-regexp
