@@ -1883,15 +1883,16 @@ already called."
 (defvar denote-directory-files-get-function--original denote-directory-files-get-function
   "Original function bound to `denote-directory-files-get-function'.")
 
+;; TODO 2026-09-03: What about changes to the file happening outside of Emacs?
+;; TODO 2026-09-25: Same idea for changes happening in Dired.
+;; TODO 2026-09-25: What about a rename that changes the identifier?  Maybe a `before-save-hook' for that case?
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When non-nil, cache Denote data in the `denote-data' hashmap and use it.
 Activating this mode also calls `denote-data-write-all'."
   :global t
   :init-value nil
-  ;; TODO 2026-09-03: What about changes to the file happening outside of Emacs?
-  ;; TODO 2026-09-25: Same idea for changes happening in Dired.
-  ;; TODO 2026-09-25: What about a rename that changes the identifier?  Maybe a `before-save-hook' for that case?
   (if denote-data-mode
       (progn
         (denote-data-write-all)
@@ -1901,10 +1902,6 @@ Activating this mode also calls `denote-data-write-all'."
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
-
-;; TODO 2026-09-03: Determine what needs to be done in `denote.el' to
-;; SEAMLESSLY integrate the cache for all of its existing
-;; functionality.
 
 ;;;; The sort mechanism
 
