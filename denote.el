@@ -1821,6 +1821,26 @@ already called."
      denote-data)
     files))
 
+(defun denote-data-get-keywords (&optional files-matching-regexp)
+  "Return keywords found in files, optionally FILES-MATCHING-REGEXP.
+Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
+  (let ((keywords nil))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((file-keywords (denote-data-entry-keywords value))
+                   (final-keywords (seq-remove
+                                    (lambda (k)
+                                      (when denote-keywords-to-not-infer-regexp
+                                        (string-match-p denote-keywords-to-not-infer-regexp k)))
+                                    file-keywords)))
+         (if-let* ((_ files-matching-regexp)
+                   (path (denote-data-entry-path value))
+                   (_ (string-match-p files-matching-regexp path)))
+             (push final-keywords keywords)
+           (push final-keywords keywords))))
+     denote-data)
+    (flatten-list keywords)))
+
 ;; NOTE 2026-09-25: Here the idea is to call this after a file is
 ;; deleted or moved outside the `denote-directory'.
 (defun denote-data-clear-outdated ()
@@ -1883,6 +1903,9 @@ already called."
 (defvar denote-directory-files-get-function--original denote-directory-files-get-function
   "Original function bound to `denote-directory-files-get-function'.")
 
+(defvar denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function
+  "Original function bound to `denote-infer-keywords-from-files-function'.")
+
 ;; TODO 2026-09-03: What about changes to the file happening outside of Emacs?
 ;; TODO 2026-09-25: Same idea for changes happening in Dired.
 ;; TODO 2026-09-25: What about a rename that changes the identifier?  Maybe a `before-save-hook' for that case?
@@ -1898,8 +1921,11 @@ Activating this mode also calls `denote-data-write-all'."
         (denote-data-write-all)
         (setq denote-directory-files-get-function--original denote-directory-files-get-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
+        (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
+        (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
+    (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
@@ -2404,7 +2430,8 @@ the functions `denote-keywords'."
 (defvar denote-infer-keywords-from-files-function #'denote-infer-keywords-from-files
   "Function to return keywords found in files for `denote-keywords'.
 The function is called with one argument, FILES-MATCHING-REGEXP, as
-noted in `denote-keywords'.
+noted in `denote-keywords'.  It can also respect the user option
+`denote-keywords-to-not-infer-regexp'.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
