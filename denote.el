@@ -3262,13 +3262,13 @@ If DATE is nil or an empty string, return nil."
   (delq nil
         (mapcar
          (lambda (buffer)
-           (when-let* (((buffer-live-p buffer))
-                       (file (buffer-file-name buffer))
-                       ((denote-file-is-in-denote-directory-p file))
-                       ((denote-file-has-supported-extension-p file))
-                       ((denote-file-has-denoted-filename-p file))
-                       ((denote-file-has-identifier-p file)))
-             file))
+           (when (and (buffer-live-p buffer)
+                      buffer-file-name
+                      (denote-file-is-in-denote-directory-p buffer-file-name)
+                      (denote-file-has-supported-extension-p buffer-file-name)
+                      (denote-file-has-denoted-filename-p buffer-file-name)
+                      (denote-file-has-identifier-p buffer-file-name))
+             buffer-file-name))
          (buffer-list))))
 
 (define-obsolete-function-alias
