@@ -7587,36 +7587,6 @@ already called."
         (message "Created `denote-data' for `%d' files" (length files)))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
 
-(defun denote-data-get-files ()
-  "Return list of files in `denote-data'."
-  (let ((files nil))
-    (maphash
-     (lambda (_key value)
-       (when-let* ((path (denote-data-entry-path value)))
-         (push path files)))
-     denote-data)
-    files))
-
-(defun denote-data-get-keywords (&optional files-matching-regexp)
-  "Return keywords found in files, optionally FILES-MATCHING-REGEXP.
-Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
-  (let ((keywords nil))
-    (maphash
-     (lambda (_key value)
-       (when-let* ((file-keywords (denote-data-entry-keywords value))
-                   (final-keywords (seq-remove
-                                    (lambda (k)
-                                      (when denote-keywords-to-not-infer-regexp
-                                        (string-match-p denote-keywords-to-not-infer-regexp k)))
-                                    file-keywords)))
-         (if-let* ((_ files-matching-regexp)
-                   (path (denote-data-entry-path value))
-                   (_ (string-match-p files-matching-regexp path)))
-             (push final-keywords keywords)
-           (push final-keywords keywords))))
-     denote-data)
-    (flatten-list keywords)))
-
 ;; NOTE 2026-09-25: Here the idea is to call this after a file is
 ;; deleted or moved outside the `denote-directory'.
 (defun denote-data-clear-outdated ()
@@ -7670,6 +7640,36 @@ Use this as part of `after-save-hook' or related.  Otherwise use
   (denote-data-write-entry buffer-file-name))
 
 ;;;;; The `denote-data-mode'
+
+(defun denote-data-get-files ()
+  "Return list of files in `denote-data'."
+  (let ((files nil))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((path (denote-data-entry-path value)))
+         (push path files)))
+     denote-data)
+    files))
+
+(defun denote-data-get-keywords (&optional files-matching-regexp)
+  "Return keywords found in files, optionally FILES-MATCHING-REGEXP.
+Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
+  (let ((keywords nil))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((file-keywords (denote-data-entry-keywords value))
+                   (final-keywords (seq-remove
+                                    (lambda (k)
+                                      (when denote-keywords-to-not-infer-regexp
+                                        (string-match-p denote-keywords-to-not-infer-regexp k)))
+                                    file-keywords)))
+         (if-let* ((_ files-matching-regexp)
+                   (path (denote-data-entry-path value))
+                   (_ (string-match-p files-matching-regexp path)))
+             (push final-keywords keywords)
+           (push final-keywords keywords))))
+     denote-data)
+    (flatten-list keywords)))
 
 (defun denote-data-get-path (identifier)
   "Return file path of IDENTIFIER."
