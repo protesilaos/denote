@@ -3039,6 +3039,14 @@ If FILES is not given, use all text files as returned by
             (mapcar (lambda (x) (assoc x data)) files-sorted)
           data)))))
 
+(defvar denote-retrieve-xref-alist-for-backlinks-function #'denote-retrieve-xref-alist-for-backlinks
+  "Function to return xref alist for `denote-make-backlinks-buffer'.
+The function is called with one argument, IDENTIFIER, as noted in
+`denote-retrieve-xref-alist-for-backlinks'.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 ;;;; New note
 
 ;;;;; Common helpers for new notes
@@ -5995,7 +6003,7 @@ alist, such as `denote-backlinks-display-buffer-action'."
 DISPLAY-BUFFER-ACTION is a `display-buffer' action and concomitant
 alist, such as `denote-backlinks-display-buffer-action'."
   (setq denote-query--last-query identifier)
-  (when-let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
+  (when-let* ((xref-alist (funcall denote-retrieve-xref-alist-for-backlinks-function identifier)))
     (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))
 
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
@@ -7654,11 +7662,19 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 
 ;;;;; The `denote-data-mode'
 
+(defun denote-data-get-backlinks (identifier)
+  "Return an xref alist of backlinks for IDENTIFIER from `denote-data'."
+  (when-let* ((entry (denote-data-get identifier)))
+    (denote-data-entry-backlinks entry)))
+
 (defvar denote-directory-files-get-function--original denote-directory-files-get-function
   "Original function bound to `denote-directory-files-get-function'.")
 
 (defvar denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function
   "Original function bound to `denote-infer-keywords-from-files-function'.")
+
+(defvar denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function
+  "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.")
 
 ;; TODO 2026-09-03: What about changes to the file happening outside of Emacs?
 ;; TODO 2026-09-25: Same idea for changes happening in Dired.
@@ -7677,11 +7693,17 @@ Activating this mode also calls `denote-data-write-all'."
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
+        (when denote-data-read-contents
+          (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
+          (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
     (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
+    (when denote-data-read-contents
+      (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
+      (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function))
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
