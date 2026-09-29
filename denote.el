@@ -7463,7 +7463,7 @@ visited again in a new buffer (files are visited with the command
 ;; `denote-data-write-all' asynchronous while ensuring everything
 ;; still works?  Then we can even set this to non-nil by default.
 ;;
-;; TODO 2026-09-26: A :set function here is contingent on the above,
+;; FIXME 2026-09-26: A :set function here is contingent on the above,
 ;; otherwise it can cause trouble.  Plus, we want to guard against
 ;; multiple processes, so a `use-package' with a :custom followed by a
 ;; call to `denote-data-write-all' do not do extra work.
@@ -7606,8 +7606,10 @@ already called."
         (message "Created `denote-data' for `%d' files" (length files)))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
 
-;; NOTE 2026-09-25: Here the idea is to call this after a file is
-;; deleted or moved outside the `denote-directory'.
+;; TODO 2026-09-25: Here the idea is to call this after a file is
+;; deleted or moved outside the `denote-directory'.  This will
+;; probably be part of a wider approach to handling file changes
+;; outside of Emacs (see the TODO around `denote-data-mode').
 (defun denote-data-clear-outdated ()
   "Remove `denote-data' entries that do not correspond to a file."
   (maphash
