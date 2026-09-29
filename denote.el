@@ -7460,7 +7460,7 @@ visited again in a new buffer (files are visited with the command
 ;;;; The cache with `denote-data'
 
 (defgroup denote-data nil
-  "Cache Denote files in the `denote-data' hashmap."
+  "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
 
 ;; FIXME 2026-09-26: Can we make `denote-data-write-entry' and
@@ -7742,7 +7742,7 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 
 ;;;###autoload
 (define-minor-mode denote-data-mode
-  "When non-nil, cache Denote data in the `denote-data' hashmap and use it.
+  "When non-nil, cache Denote data in the `denote-data' hash-table and use it.
 Activating this mode also calls `denote-data-write-all'."
   :global t
   :init-value nil
