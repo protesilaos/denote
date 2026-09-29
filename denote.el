@@ -1501,10 +1501,18 @@ something like .org even if the actual file extension is
                     (member file-extension (denote-file-type-extensions))))))
        files))))
 
+(defvar denote-get-path-by-id-function #'denote-get-path-by-id
+  "Function to return file path corresponding to an identifier.
+The identifier is a string, as noted in the documentation of
+`denote-get-path-by-id'.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 (defun denote-get-relative-path-by-id (id &optional directory)
   "Return relative path of ID string in `denote-directory-files'.
 The path is relative to DIRECTORY (default: ‘default-directory’)."
-  (when-let* ((path (denote-get-path-by-id id)))
+  (when-let* ((path (funcall denote-get-path-by-id-function id)))
     (file-relative-name path directory)))
 
 (defvar denote-file-history nil
@@ -6229,7 +6237,7 @@ Return a list with the absoulte path of referenced files."
         (narrow-to-region start end)
         (goto-char (point-min))
         (while (re-search-forward denote-date-identifier-regexp nil t)
-          (push (denote-get-path-by-id (match-string 0)) id-list))))
+          (push (funcall denote-get-path-by-id-function (match-string 0)) id-list))))
     id-list))
 
 ;;;###autoload
@@ -6533,7 +6541,7 @@ This is the subroutine of `denote-link-open-at-point' and
 `denote-link-open-at-mouse'."
   (pcase-let* ((data (denote--link-at-point-get-data position))
                (`(,target . ,_) (car data))
-               (path (denote-get-path-by-id target)))
+               (path (funcall denote-get-path-by-id-function target)))
     (cond
      (path (funcall denote-open-link-function path))
      (target (denote--act-on-query-link target)))))
@@ -6622,7 +6630,7 @@ Use optional DATA, else get the data with `denote-fontify-links--get-data'."
 To be used as a `thing-at' provider."
   (let* ((data (denote--link-at-point-get-data (point)))
          (target (caar data)))
-    (when-let* ((path (denote-get-path-by-id target)))
+    (when-let* ((path (funcall denote-get-path-by-id-function target)))
       (concat "file:" path))))
 
 (defvar thing-at-point-provider-alist)
@@ -7008,7 +7016,7 @@ With optional FULL-DATA return a list in the form of (path query file-search)."
          (query (if (and file-search (not (string-empty-p file-search)))
                     (substring link 0 (match-beginning 0))
                   link))
-         (path (denote-get-path-by-id query)))
+         (path (funcall denote-get-path-by-id-function query)))
     (cond
      (full-data
       (list path query file-search))
@@ -7143,7 +7151,7 @@ backend."
   "Echo the full file path of the identifier at POSITION."
   (let* ((data (denote--link-at-point-get-data position))
          (target (caar data)))
-    (denote-get-path-by-id target)))
+    (funcall denote-get-path-by-id-function target)))
 
 (declare-function org-link-preview-file "ol" (ov path link))
 
@@ -7662,6 +7670,11 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 
 ;;;;; The `denote-data-mode'
 
+(defun denote-data-get-path (identifier)
+  "Return file path of IDENTIFIER."
+  (when-let* ((entry (denote-data-get identifier)))
+    (denote-data-entry-path entry)))
+
 (defun denote-data-get-backlinks (identifier)
   "Return an xref alist of backlinks for IDENTIFIER from `denote-data'."
   (when-let* ((entry (denote-data-get identifier)))
@@ -7672,6 +7685,9 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 
 (defvar denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function
   "Original function bound to `denote-infer-keywords-from-files-function'.")
+
+(defvar denote-get-path-by-id-function--original denote-get-path-by-id-function
+  "Original function bound to `denote-get-path-by-id-function'.")
 
 (defvar denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function
   "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.")
@@ -7693,6 +7709,8 @@ Activating this mode also calls `denote-data-write-all'."
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
+        (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
+        (setq denote-get-path-by-id-function #'denote-data-get-path)
         (when denote-data-read-contents
           (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
@@ -7701,6 +7719,8 @@ Activating this mode also calls `denote-data-write-all'."
     (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
     (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
+    (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
+    (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
     (when denote-data-read-contents
       (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
       (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function))
