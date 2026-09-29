@@ -3276,10 +3276,6 @@ If DATE is nil or an empty string, return nil."
   'denote-get-identifiers
   "4.3.0")
 
-;; TODO 2026-09-29: This should also be abstracted for `denote-data'.
-;; The problem is that it also checks buffers, so I am not sure how
-;; best to handle this with the cache?  Maybe we can read the buffers
-;; as well?
 (defun denote-get-identifiers ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
