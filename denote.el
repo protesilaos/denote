@@ -3273,14 +3273,14 @@ If DATE is nil or an empty string, return nil."
 
 (define-obsolete-function-alias
   'denote--get-all-used-ids
-  'denote-get-all-used-ids
+  'denote-get-all-used-identifiers
   "4.3.0")
 
 ;; TODO 2026-09-29: This should also be abstracted for `denote-data'.
 ;; The problem is that it also checks buffers, so I am not sure how
 ;; best to handle this with the cache?  Maybe we can read the buffers
 ;; as well?
-(defun denote-get-all-used-ids ()
+(defun denote-get-all-used-identifiers ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
   (let* ((ids (make-hash-table :test #'equal))
@@ -3318,7 +3318,7 @@ possible to derive an identifier from it, return this identifier.
 Else, use the DATE.  If it is nil, use `current-time'.
 
 This is a reference function for `denote-get-identifier-function'."
-  (let ((denote-used-identifiers (or denote-used-identifiers (denote-get-all-used-ids))))
+  (let ((denote-used-identifiers (or denote-used-identifiers (denote-get-all-used-identifiers))))
     (cond ((and initial-identifier
                 (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
@@ -4776,7 +4776,7 @@ the changes made to the file: perform them outright (same as
 setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (let ((denote-used-identifiers (denote-get-all-used-ids))
+  (let ((denote-used-identifiers (denote-get-all-used-identifiers))
         (denote-rename-confirmations nil))
     (if-let* ((marks (dired-get-marked-files)))
         (progn
@@ -4819,7 +4819,7 @@ This function is an internal implementation function."
       (let ((denote-prompts '())
             (denote-rename-confirmations nil)
             (user-input-keywords (denote-keywords-prompt keywords-prompt))
-            (denote-used-identifiers (denote-get-all-used-ids)))
+            (denote-used-identifiers (denote-get-all-used-identifiers)))
         (dolist (file marks)
           (pcase-let* ((`(,title ,keywords ,signature ,date ,identifier)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
@@ -4958,7 +4958,7 @@ they have front matter and what that may be."
                            (denote-file-is-writable-and-supported-p m)
                            (denote-file-has-identifier-p m)))
                     (dired-get-marked-files))))
-      (let ((denote-used-identifiers (denote-get-all-used-ids)))
+      (let ((denote-used-identifiers (denote-get-all-used-identifiers)))
         (dolist (file marks)
           (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))
