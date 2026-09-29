@@ -3252,7 +3252,12 @@ If DATE is nil or an empty string, return nil."
        identifier)
     (error "`%s' does not look like a Denote identifier per `denote-date-identifier-regexp'" identifier)))
 
-(defun denote--buffer-file-names ()
+(define-obsolete-function-alias
+  'denote--buffer-file-names
+  'denote-get-buffer-file-names
+  "4.3.0")
+
+(defun denote-get-buffer-file-names ()
   "Return file names of Denote buffers."
   (delq nil
         (mapcar
@@ -3282,7 +3287,7 @@ It checks files in variable `denote-directory' and active buffer files."
          (file-names (mapcar
                       (lambda (file) (file-name-nondirectory file))
                       (denote-directory-files nil nil nil nil :has-identifier)))
-         (names (append file-names (denote--buffer-file-names))))
+         (names (append file-names (denote-get-buffer-file-names))))
     (dolist (name names)
       (when-let* ((id (denote-retrieve-filename-identifier name)))
         (puthash id t ids)))
@@ -6842,7 +6847,7 @@ This command is meant to be used from a Dired buffer."
    (if (derived-mode-p 'dired-mode)
        (list
         (denote-link--map-over-notes)
-        (let ((file-names (denote--buffer-file-names)))
+        (let ((file-names (denote-get-buffer-file-names)))
           (find-buffer-visiting
            (cond
             ((null file-names)
