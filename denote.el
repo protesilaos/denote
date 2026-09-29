@@ -7501,8 +7501,7 @@ Do it when FILE-READABLE-P."
 
 (defun denote-data--get-contents-backlinks (_file identifier _file-type)
   "Return backlinks for file with IDENTIFIER for `denote-data--get-contents'."
-  (when-let* ((xrefs (denote-retrieve-xref-alist-for-backlinks identifier)))
-    (mapcar #'car xrefs)))
+  (denote-retrieve-xref-alist-for-backlinks identifier))
 
 (defun denote-data--get-contents-text (file-readable-p _identifier _file-type)
   "Return `buffer-string' for `denote-data--get-contents'.
