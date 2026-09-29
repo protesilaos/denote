@@ -5977,9 +5977,8 @@ alist, such as `denote-backlinks-display-buffer-action'."
 DISPLAY-BUFFER-ACTION is a `display-buffer' action and concomitant
 alist, such as `denote-backlinks-display-buffer-action'."
   (setq denote-query--last-query identifier)
-  (if-let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
-      (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)
-    (error "No matches for identifier `%s'" identifier)))
+  (when-let* ((xref-alist (denote-retrieve-xref-alist-for-backlinks identifier)))
+    (denote--display-buffer-from-xref-alist xref-alist buffer-name display-buffer-action)))
 
 ;; NOTE 2025-03-24: The `&rest' is there because we used to have an
 ;; extra SHOW-CONTEXT parameter.  This way we do not break anybody's
@@ -6254,10 +6253,11 @@ Place the buffer below the current window or wherever the user option
   (interactive)
   (if-let* ((file buffer-file-name))
       (if-let* ((identifier (denote-retrieve-filename-identifier file)))
-          (denote-make-backlinks-buffer
-           identifier
-           (denote--backlinks-get-buffer-name file identifier)
-           denote-backlinks-display-buffer-action)
+          (or (denote-make-backlinks-buffer
+               identifier
+               (denote--backlinks-get-buffer-name file identifier)
+               denote-backlinks-display-buffer-action)
+              (message "No matches for identifier `%s'" identifier))
         (user-error "The current file does not have a Denote identifier"))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
