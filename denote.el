@@ -3266,6 +3266,7 @@ If DATE is nil or an empty string, return nil."
              file))
          (buffer-list))))
 
+;; TODO 2026-09-29: This should also be abstracted for `denote-data'.
 (defun denote--get-all-used-ids ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
