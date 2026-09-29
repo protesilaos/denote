@@ -3273,14 +3273,14 @@ If DATE is nil or an empty string, return nil."
 
 (define-obsolete-function-alias
   'denote--get-all-used-ids
-  'denote-get-all-used-identifiers
+  'denote-get-identifiers
   "4.3.0")
 
 ;; TODO 2026-09-29: This should also be abstracted for `denote-data'.
 ;; The problem is that it also checks buffers, so I am not sure how
 ;; best to handle this with the cache?  Maybe we can read the buffers
 ;; as well?
-(defun denote-get-all-used-identifiers ()
+(defun denote-get-identifiers ()
   "Return a hash-table of all used identifiers.
 It checks files in variable `denote-directory' and active buffer files."
   (let* ((ids (make-hash-table :test #'equal))
@@ -3292,6 +3292,16 @@ It checks files in variable `denote-directory' and active buffer files."
       (when-let* ((id (denote-retrieve-filename-identifier name)))
         (puthash id t ids)))
     ids))
+
+(defvar denote-get-identifiers-function #'denote-get-identifiers
+  "Function to return all used identifiers.
+It is called without arguments and should return a hash-table where the
+identifier is the key and the value is ignored.  Note that the default
+function `denote-get-identifiers' also reads buffers that have not been
+saved, per `denote-get-buffer-file-names'.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
 
 (defun denote--find-first-unused-id-as-date (id)
   "Return the first unused id starting at ID.
@@ -3318,7 +3328,7 @@ possible to derive an identifier from it, return this identifier.
 Else, use the DATE.  If it is nil, use `current-time'.
 
 This is a reference function for `denote-get-identifier-function'."
-  (let ((denote-used-identifiers (or denote-used-identifiers (denote-get-all-used-identifiers))))
+  (let ((denote-used-identifiers (or denote-used-identifiers (funcall denote-get-identifiers-function))))
     (cond ((and initial-identifier
                 (not (gethash initial-identifier denote-used-identifiers)))
            initial-identifier)
@@ -4776,7 +4786,7 @@ the changes made to the file: perform them outright (same as
 setting `denote-rename-confirmations' to a nil value)."
   (declare (interactive-only t))
   (interactive nil dired-mode)
-  (let ((denote-used-identifiers (denote-get-all-used-identifiers))
+  (let ((denote-used-identifiers (funcall denote-get-identifiers-function))
         (denote-rename-confirmations nil))
     (if-let* ((marks (dired-get-marked-files)))
         (progn
@@ -4819,7 +4829,7 @@ This function is an internal implementation function."
       (let ((denote-prompts '())
             (denote-rename-confirmations nil)
             (user-input-keywords (denote-keywords-prompt keywords-prompt))
-            (denote-used-identifiers (denote-get-all-used-identifiers)))
+            (denote-used-identifiers (funcall denote-get-identifiers-function)))
         (dolist (file marks)
           (pcase-let* ((`(,title ,keywords ,signature ,date ,identifier)
                         (denote--rename-get-file-info-from-prompts-or-existing file))
@@ -4958,7 +4968,7 @@ they have front matter and what that may be."
                            (denote-file-is-writable-and-supported-p m)
                            (denote-file-has-identifier-p m)))
                     (dired-get-marked-files))))
-      (let ((denote-used-identifiers (denote-get-all-used-identifiers)))
+      (let ((denote-used-identifiers (funcall denote-get-identifiers-function)))
         (dolist (file marks)
           (denote-rename-file-using-front-matter file))
         (denote-update-dired-buffers))
@@ -7654,6 +7664,23 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 
 ;;;;; The `denote-data-mode'
 
+(defun denote-data-get-identifiers ()
+  "Return all identifiers as a hash-table.
+Include `denote-get-buffer-file-names'."
+  (let* ((table (make-hash-table :test #'equal))
+         (buffer-file-names (denote-get-buffer-file-names))
+         (buffer-identifiers (mapcar #'denote-retrieve-filename-identifier buffer-file-names))
+         (cached-identifiers nil)
+         (all-identifiers nil))
+    (maphash
+     (lambda (key _value)
+       (push key cached-identifiers))
+     denote-data)
+    (setq all-identifiers (seq-uniq (append buffer-identifiers cached-identifiers)))
+    (dolist (identifier all-identifiers)
+      (puthash identifier t table))
+    table))
+
 (defun denote-data-get-files ()
   "Return list of files in `denote-data'."
   (let ((files nil))
@@ -7703,6 +7730,9 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 (defvar denote-get-path-by-id-function--original denote-get-path-by-id-function
   "Original function bound to `denote-get-path-by-id-function'.")
 
+(defvar denote-get-identifiers-function--original denote-get-identifiers-function
+  "Original function bound to `denote-get-identifiers-function'.")
+
 (defvar denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function
   "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.")
 
@@ -7725,6 +7755,8 @@ Activating this mode also calls `denote-data-write-all'."
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
+        (setq denote-get-identifiers-function--original denote-get-identifiers-function)
+        (setq denote-get-identifiers-function #'denote-data-get-identifiers)
         (when denote-data-read-contents
           (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
@@ -7735,6 +7767,8 @@ Activating this mode also calls `denote-data-write-all'."
     (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
     (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
     (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
+    (setq denote-get-identifiers-function denote-get-identifiers-function--original)
+    (setq denote-get-identifiers-function--original denote-get-identifiers-function)
     (when denote-data-read-contents
       (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
       (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function))
