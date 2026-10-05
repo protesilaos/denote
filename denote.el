@@ -6769,7 +6769,7 @@ contents, not file names.  Optional ID-ONLY has the same meaning as in
                     (denote-get-completion-table file-names '(category . file))
                     nil t)))
     (if single-dir-p
-        (expand-file-name selected roots)
+        (expand-file-name selected (car roots))
       selected)))
 
 (defun denote-link--map-over-notes ()
