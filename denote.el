@@ -7600,6 +7600,14 @@ Do so by using the `denote-data--content-fns'."
 (defvar denote-data--write-all-called-p nil
   "Non-nil if `denote-data-write-all' has been called.")
 
+;; FIXME 2026-10-05: I just realised that in `denote-get-path-by-id'
+;; we actually check if there are multiple files with the same
+;; identifier (`denote--get-path-by-id-pick-likely-authoritative-file').
+;; But here we will not have that flexibility because there will be
+;; only one entry in the hash-table.  Maybe that logic should be built
+;; into how we build up the cache in `denote-data-write-all'?  Or
+;; maybe that goes even deeper into `denote--directory-get-files'?
+
 ;;;###autoload
 (defun denote-data-write-all (&optional files force)
   "Write all FILES to `denote-data'.
@@ -7719,13 +7727,8 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
      denote-data)
     (flatten-list keywords)))
 
-;; FIXME 2026-10-05: I just realised that in `denote-get-path-by-id'
-;; we actually check if there are multiple files with the same
-;; identifier (`denote--get-path-by-id-pick-likely-authoritative-file'.
-;; But here we will not have that flexibility because there will be
-;; only one entry in the hash-table.  Maybe that logic should be built
-;; into how we build up the cache in `denote-data-write-all'?  Or
-;; maybe that goes even deeper into `denote--directory-get-files'?
+;; TODO 2026-10-05: We need to deal with the scenario where one
+;; identifier is shared by multiple files.
 (defun denote-data-get-path (identifier)
   "Return file path of IDENTIFIER."
   (when-let* ((entry (denote-data-get identifier)))
