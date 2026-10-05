@@ -1476,13 +1476,15 @@ something like .org even if the actual file extension is
       extension)))
 
 (defun denote--get-path-by-id-prefer-org (files)
-  "Return the Org file among FILES for `denote-get-path-by-id'."
+  "Return like authoritative file among FILES for `denote-get-path-by-id'.
+Prefer the file that is specified by the value of the variable
+`denote-file-type', falling back to Org, and then to other known file
+types."
   (seq-find
    (lambda (file)
      (let ((file-extension (denote-get-file-extension-sans-encryption file)))
        (and (denote-file-has-supported-extension-p file)
-            (or (string= (denote--file-extension denote-file-type)
-                         file-extension)
+            (or (string= (denote--file-extension denote-file-type) file-extension)
                 (string= ".org" file-extension)
                 (member file-extension (denote-file-type-extensions))))))
    files))
@@ -1490,12 +1492,14 @@ something like .org even if the actual file extension is
 (defun denote-get-path-by-id (id)
   "Return absolute path of ID string in `denote-directory-files'.
 If there are multiple files with ID, assume that they are exports of an
-Org file, so return the Org file among them."
-  (let ((files
-         (seq-filter
-          (lambda (file)
-            (string= id (denote-retrieve-filename-identifier file)))
-          (denote-directory-files nil nil nil nil :has-identifier))))
+underlying file.  In such a case, prefer the file that is specified by
+the value of the variable `denote-file-type', falling back to Org, and
+then to other known file types."
+  (when-let* ((files
+               (seq-filter
+                (lambda (file)
+                  (string= id (denote-retrieve-filename-identifier file)))
+                (denote-directory-files nil nil nil nil :has-identifier))))
     (if (length< files 2)
         (car files)
       (denote--get-path-by-id-prefer-org files))))
