@@ -6127,7 +6127,11 @@ there will be no corresponding prompt.
 
 #+findex: denote-get-path-by-id
 + Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
-  string in ~denote-directory-files~.
+  string in ~denote-directory-files~. If there are multiple files with
+  ID, assume that they are exports of an underlying file. In such a
+  case, prefer the file that is specified by the value of the variable
+  ~denote-file-type~, falling back to Org, and then to other known
+  file types.
 
 #+findex: denote-extract-keywords-from-path
 + Function ~denote-extract-keywords-from-path~ :: Extract keywords
@@ -7281,20 +7285,20 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Colin McLear, Damien Cassou, Eduardo Grajeda, Elias Storms, Eshel
   Yaron, Florian, Glenna D., Graham Marlow, Hilde Rhyne, Ivan Sokolov,
   Jack Baty, Jakub Szczerbowski, James Kalyan, Jean-Charles Bagneris,
-  Jean-Philippe Gagné Guay, Jeff Valk, Jianwei Hou, Joseph Turner,
-  Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kierin Bell, Kostas
-  Andreadis, Kristoffer Balintona, Kyle Meyer, Laurent Gatto, Lucas
-  Quintana, Maikol Solis, Marc Fargas, Marco Baringer, Matthew Batson,
-  Matthew Lemon, Matthieu Muller, Matto Fransen, Michael Korat, Noboru
-  Ota (nobiot), Norwid Behrnd, Octavian, Pavlo V. Lysov, Peter Prevos,
-  Philip Kaludercic, Ryota, Samuel W. Flint, Quiliro Ordóñez, Stephen
-  R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut Benjamin, Tobias
-  Lidman-Strauss, Tomasz Hołubowicz, TomoeMami , Vedang Manerikar,
-  Wesley Harvey, Yann Dutrieux, Zhenxu Xu, alvmts, arsaber101,
-  bplubell, bryanrinders, dulikiles, eum3l, experimental-code-86,
-  ezchi, gnuhack, gvalson, jarofromel, kimsaram32, leinfink (Henrik),
-  l-o-l-h (Lincoln), mattyonweb, maxbrieiev, mentalisttraceur,
-  nescias, pmenair, relict007, skissue.
+  Jean-Philippe Gagné Guay, Jeff Valk, Jianwei Hou, João Sena, Joseph
+  Turner, Jürgen Hötzel, Kaushal Modi, Kai von Fintel, Kierin Bell,
+  Kostas Andreadis, Kristoffer Balintona, Kyle Meyer, Laurent Gatto,
+  Lucas Quintana, Maikol Solis, Marc Fargas, Marco Baringer, Matthew
+  Batson, Matthew Lemon, Matthieu Muller, Matto Fransen, Michael
+  Korat, Noboru Ota (nobiot), Norwid Behrnd, Octavian, Pavlo V. Lysov,
+  Peter Prevos, Philip Kaludercic, Ryota, Samuel W. Flint, Quiliro
+  Ordóñez, Stephen R. Kifer, Stefan Monnier, Stefan Thesing, Thibaut
+  Benjamin, Tobias Lidman-Strauss, Tomasz Hołubowicz, TomoeMami ,
+  Vedang Manerikar, Wesley Harvey, Yann Dutrieux, Zhenxu Xu, alvmts,
+  arsaber101, bplubell, bryanrinders, dulikiles, eum3l,
+  experimental-code-86, ezchi, gnuhack, gvalson, jarofromel,
+  kimsaram32, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
+  maxbrieiev, mentalisttraceur, nescias, pmenair, relict007, skissue.
 
 + Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
   Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
