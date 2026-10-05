@@ -1475,7 +1475,7 @@ something like .org even if the actual file extension is
         (substring extension 0 (match-beginning 0))
       extension)))
 
-(defun denote--get-path-by-id-prefer-org (files)
+(defun denote--get-path-by-id-pick-likely-authoritative-file (files)
   "Return like authoritative file among FILES for `denote-get-path-by-id'.
 Prefer the file that is specified by the value of the variable
 `denote-file-type', falling back to Org, and then to other known file
@@ -1502,7 +1502,7 @@ then to other known file types."
                 (denote-directory-files nil nil nil nil :has-identifier))))
     (if (length< files 2)
         (car files)
-      (denote--get-path-by-id-prefer-org files))))
+      (denote--get-path-by-id-pick-likely-authoritative-file files))))
 
 (defun denote-get-relative-path-by-id (id &optional directory)
   "Return relative path of ID string in `denote-directory-files'.
