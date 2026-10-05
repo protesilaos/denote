@@ -6127,7 +6127,11 @@ there will be no corresponding prompt.
 
 #+findex: denote-get-path-by-id
 + Function ~denote-get-path-by-id~ :: Return absolute path of =ID=
-  string in ~denote-directory-files~.
+  string in ~denote-directory-files~. If there are multiple files with
+  ID, assume that they are exports of an underlying file. In such a
+  case, prefer the file that is specified by the value of the variable
+  ~denote-file-type~, falling back to Org, and then to other known
+  file types.
 
 #+findex: denote-extract-keywords-from-path
 + Function ~denote-extract-keywords-from-path~ :: Extract keywords
