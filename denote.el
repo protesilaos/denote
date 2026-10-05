@@ -7721,11 +7721,11 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 
 ;; FIXME 2026-10-05: I just realised that in `denote-get-path-by-id'
 ;; we actually check if there are multiple files with the same
-;; identifier.  But here we will not have that flexibility because
-;; there will be only one entry in the hash-table.  Maybe that logic
-;; should be built into how we build up the cache in
-;; `denote-data-write-all'?  Or maybe that goes even deeper into
-;; `denote--directory-get-files'?
+;; identifier (`denote--get-path-by-id-pick-likely-authoritative-file'.
+;; But here we will not have that flexibility because there will be
+;; only one entry in the hash-table.  Maybe that logic should be built
+;; into how we build up the cache in `denote-data-write-all'?  Or
+;; maybe that goes even deeper into `denote--directory-get-files'?
 (defun denote-data-get-path (identifier)
   "Return file path of IDENTIFIER."
   (when-let* ((entry (denote-data-get identifier)))
