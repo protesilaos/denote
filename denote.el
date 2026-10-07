@@ -7806,6 +7806,7 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 Activating this mode also calls `denote-data-write-all'."
   :global t
   :init-value nil
+  (denote-data--cancel-asynchronous)
   (if denote-data-mode
       (progn
         (denote-data--write-all-asynchronous denote-data-read-contents)
@@ -7821,7 +7822,6 @@ Activating this mode also calls `denote-data-write-all'."
           (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
         (add-hook 'after-save-hook #'denote-data-update))
-    (denote-data--cancel-asynchronous)
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
