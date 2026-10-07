@@ -7696,8 +7696,8 @@ Use this as part of `after-save-hook' or related.  Otherwise use
   (if denote-data-read-contents
       (message "The `denote-data' cache is in process and will read ALL FILE CONTENTS")
     (message "The `denote-data' cache is in process"))
-  (let ((buffer-output (get-buffer-create "* denote-data*"))
-        (buffer-error (get-buffer-create "* denote-data-error*")))
+  (let ((buffer-output (get-buffer-create " *denote-data*"))
+        (buffer-error (get-buffer-create " *denote-data-error*")))
     (with-current-buffer buffer-output
       (erase-buffer))
     (with-current-buffer buffer-error
