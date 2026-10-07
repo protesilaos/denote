@@ -7510,20 +7510,20 @@ Each element is a cons cell of the form (SYMBOL . FUNCTION), where
 SYMBOL corresponds to a slot in `denote-data-entry' and thus describes
 what FUNCTION is about.")
 
-(defun denote-data--get-contents-title (file-readable-p _identifer file-type)
+(defun denote-data--get-contents-title (file-supported-p _identifer file-type)
   "Return title of FILE-TYPE for `denote-data--get-contents'.
-Do it when FILE-READABLE-P."
-  (when file-readable-p
+Do it when FILE-SUPPORTED-P is non-nil."
+  (when file-supported-p
     (goto-char (point-min))
     (when-let* ((regexp (denote--title-key-regexp file-type))
                 (value-fn (denote--title-value-reverse-function file-type))
                 (_ (re-search-forward regexp nil t 1)))
       (funcall value-fn (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote-data--get-contents-forelinks (file-readable-p _identifier file-type)
+(defun denote-data--get-contents-forelinks (file-supported-p _identifier file-type)
   "Return denote: links of FILE-TYPE for `denote-data--get-contents'.
-Do it when FILE-READABLE-P."
-  (when file-readable-p
+Do it when FILE-SUPPORTED-P is non-nil."
+  (when file-supported-p
     (goto-char (point-min))
     (let ((forelinks nil))
       (when-let* ((regexp (denote--link-in-context-regexp file-type)))
@@ -7535,24 +7535,23 @@ Do it when FILE-READABLE-P."
   "Return backlinks for file with IDENTIFIER for `denote-data--get-contents'."
   (denote-retrieve-xref-alist-for-backlinks identifier))
 
-(defun denote-data--get-contents-text (file-readable-p _identifier _file-type)
+(defun denote-data--get-contents-text (file-supported-p _identifier _file-type)
   "Return `buffer-string' for `denote-data--get-contents'.
-Do it when FILE-READABLE-P."
-  (when file-readable-p
+Do it when FILE-SUPPORTED-P is non-nil."
+  (when file-supported-p
     (buffer-string)))
 
 (defun denote-data--get-contents (file)
   "Read FILE contents and return relevant `denote-data'.
 Do so by using the `denote-data--content-fns'."
-  ;; FIXME 2026-10-07: Why is `file-readable-p' returning non-nil for PDFs?
-  (let ((file-readable-p (file-readable-p file))
+  (let ((file-supported-p (denote-file-is-writable-and-supported-p file))
         (identifier (denote-retrieve-filename-identifier file))
         (file-type (denote-filetype-heuristics file))
         (data nil))
     (with-temp-buffer
       (insert-file-contents file)
       (pcase-dolist (`(,slot . ,fn) denote-data--content-fns)
-        (when-let* ((return (funcall fn file-readable-p identifier file-type)))
+        (when-let* ((return (funcall fn file-supported-p identifier file-type)))
           (push (cons slot return) data))))
     data))
 
