@@ -7465,6 +7465,11 @@ visited again in a new buffer (files are visited with the command
 
 ;;;; The cache with `denote-data'
 
+;; NOTE 2026-10-07: I plan to put all this in a separate file.  Having
+;; it here allows me to test things better.  The essential work is to
+;; have `denote-directory-files-get-function' and related, so that
+;; packages can introduce their own functions.
+
 (defgroup denote-data nil
   "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
