@@ -7493,9 +7493,18 @@ provides, namely, identifier, signature, title, keywords, and file path."
 (cl-defstruct (denote-data-entry (:constructor denote-data-entry-create))
   "Data structure of a Denote file."
   ;; From file name
-  identifier signature title keywords path
+  (identifier nil :documentation "The file name IDENTIFIER." :type string)
+  (signature nil :documentation "The file name SIGNATURE." :type string)
+  (title nil :documentation "The file name TITLE." :type string)
+  (keywords nil :documentation "The file name KEYWORDS." :type list)
+  (path nil :documentation "The file name PATH." :type string)
   ;; From file contents
-  forelinks backlinks text)
+  (forelinks nil :documentation "The file name FORELINKS." :type list)
+  ;; TODO 2026-10-07: The backlinks right now has data for xref.  This
+  ;; is good for `denote-backlinks', but is not okay if we want to say
+  ;; "which files link to this one?".
+  (backlinks nil :documentation "The file name BACKLINKS." :type alist)
+  (text nil :documentation "The file name TEXT." :type string))
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
