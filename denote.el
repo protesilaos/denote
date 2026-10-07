@@ -7544,6 +7544,7 @@ Do it when FILE-READABLE-P."
 (defun denote-data--get-contents (file)
   "Read FILE contents and return relevant `denote-data'.
 Do so by using the `denote-data--content-fns'."
+  ;; FIXME 2026-10-07: Why is `file-readable-p' returning non-nil for PDFs?
   (let ((file-readable-p (file-readable-p file))
         (identifier (denote-retrieve-filename-identifier file))
         (file-type (denote-filetype-heuristics file))
