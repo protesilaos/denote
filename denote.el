@@ -7690,7 +7690,11 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
                (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
              ""))
   (let ((buffer-output (get-buffer-create " *denote-data*"))
-        (buffer-error (get-buffer-create " *denote-data-error*")))
+        (buffer-error (get-buffer-create " *denote-data-error*"))
+        ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
+        (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
+                                ;; (locate-file "denote.el" load-path)
+                                (error "File denote.el is not in the `load-path'"))))
     (with-current-buffer buffer-output
       (erase-buffer))
     (with-current-buffer buffer-error
@@ -7700,23 +7704,13 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
            :name "denote-data"
            :buffer buffer-output
            :stderr buffer-error
-           :command `("emacs" "--batch" "--eval"
+           :command `("emacs"
+                      "--batch"
+                      "-l"
+                      ,denote-source-file
+                      "--eval"
                       ,(format
-                        ;; FIXME 2026-10-07: This is what I have been
-                        ;; doing to test things and it seems to work.
-                        ;; But I am not sure it is the right approach.
-                        ;; Is --batch reading the user's load-path?
-                        ;; If not, do we need to install the package?
-                        ;; What if the archive is down, which is quite
-                        ;; common these days?
-                        ;;
-                        ;; (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
-                        ;;
-                        ;; Maybe passing "-l" "denote.el" is the right
-                        ;; way, but how do we reliably get the path
-                        ;; from the user's load-path?
                         "(progn
-                          (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
                           (denote-data-write-all %s nil :force)
                           (prin1 denote-data))"
                         read-contents))
