@@ -7818,7 +7818,8 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When non-nil, cache Denote data in the `denote-data' hash-table and use it.
-Activating this mode also calls `denote-data-write-all'."
+When non-nil also call `denote-data-write-all' and make it read file
+contents in accordance with the user option `denote-data-read-contents'."
   :global t
   :init-value nil
   (denote-data--cancel-asynchronous)
