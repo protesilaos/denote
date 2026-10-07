@@ -7499,12 +7499,12 @@ provides, namely, identifier, signature, title, keywords, and file path."
   (keywords nil :documentation "The file name KEYWORDS." :type list)
   (path nil :documentation "The file name PATH." :type string)
   ;; From file contents
-  (forelinks nil :documentation "The file name FORELINKS." :type list)
+  (forelinks nil :documentation "The FORELINKS as a list of identifiers." :type list)
   ;; TODO 2026-10-07: The backlinks right now has data for xref.  This
   ;; is good for `denote-backlinks', but is not okay if we want to say
   ;; "which files link to this one?".
-  (backlinks nil :documentation "The file name BACKLINKS." :type alist)
-  (text nil :documentation "The file name TEXT." :type string))
+  (backlinks nil :documentation "The BACKLINKS as an xref alist." :type alist)
+  (text nil :documentation "The file TEXT." :type string))
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
