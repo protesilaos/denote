@@ -7827,9 +7827,16 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
     (denote-data-entry-path entry)))
 
 (defun denote-data-get-backlinks (identifier)
-  "Return an xref alist of backlinks for IDENTIFIER from `denote-data'."
+  "Return an xref alist of backlinks for IDENTIFIER from `denote-data'.
+Also see `denote-data-get-backlinks-files-only'."
   (when-let* ((entry (denote-data-get identifier)))
     (denote-data-entry-backlinks entry)))
+
+(defun denote-data-get-backlinks-files-only (identifier)
+  "Return list of FILES that link to file with IDENTIFIER.
+Also see `denote-data-get-backlinks'."
+  (when-let* ((backlinks (denote-data-get-backlinks identifier)))
+    (mapcar #'car backlinks)))
 
 (defvar denote-directory-files-get-function--original denote-directory-files-get-function
   "Original function bound to `denote-directory-files-get-function'.")
