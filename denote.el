@@ -7676,17 +7676,6 @@ Use this as part of `after-save-hook' or related.  Otherwise use
     (kill-process denote-data--write-all-asynchronous-process)
     (setq denote-data--write-all-asynchronous-process nil)))
 
-;; NOTE 2026-10-07: I am keeping this as-is and am not calling it from
-;; anywhere for the time being.  THIS IS FOR TESTING PURPOSES in case
-;; someone wants to try it.  In that case UPDATE THE PATH TO your
-;; clone of denote.el.
-;;
-;; If you are testing this in your local copy, make sure to try
-;; `denote-data-read-contents' as well.
-;;
-;; If this works, then we can add it to `denote-data-mode'.  Maybe we
-;; need more `message' calls for that so that users known what is
-;; happening, but this is the idea.
 (defun denote-data--write-all-asynchronous (read-contents)
   "Call `denote-data-write-all' in a separate process.
 READ-CONTENTS has the meaning of `denote-data-read-contents'."
@@ -7707,10 +7696,19 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
            :stderr buffer-error
            :command `("emacs" "--batch" "--eval"
                       ,(format
+                        ;; FIXME 2026-10-07: This is what I have been
+                        ;; doing to test things and it seems to work.
+                        ;; But I am not sure it is the right approach.
+                        ;; Is --batch reading the user's load-path?
+                        ;; If not, do we need to install the package?
+                        ;; What if the archive is down, which is quite
+                        ;; common these days?
+                        ;;
+                        ;; (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
                         "(progn
-                    (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
-                    (denote-data-write-all %s nil :force)
-                    (prin1 denote-data))"
+                          (require 'denote)
+                          (denote-data-write-all %s nil :force)
+                          (prin1 denote-data))"
                         read-contents))
            :sentinel (lambda (process event)
                        (when-let* ((_ (string= event "finished\n"))
