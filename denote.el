@@ -7733,6 +7733,9 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
                         (denote-data-write-all %s nil :force)
                         (prin1 denote-data))"
                       read-contents))
+           ;; TODO 2026-10-07: Maybe we can print messages to report
+           ;; on the progress?  For example, if this takes 5 minutes,
+           ;; we report every 1 minute.  Maybe use the :filter?
            :sentinel #'denote-data--write-all-asynchronous-sentinel))))
 
 ;;;;; The `denote-data-mode'
