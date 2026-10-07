@@ -7469,36 +7469,14 @@ visited again in a new buffer (files are visited with the command
   "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
 
-;; FIXME 2026-09-26: Can we make `denote-data-write-entry' and
-;; `denote-data-write-all' asynchronous while ensuring everything
-;; still works?  Then we can even set this to non-nil by default.
-;;
-;; FIXME 2026-09-26: A :set function here is contingent on the above,
-;; otherwise it can cause trouble.  Plus, we want to guard against
-;; multiple processes, so a `use-package' with a :custom followed by a
-;; call to `denote-data-write-all' do not do extra work.
-(defcustom denote-data-read-contents nil
+(defcustom denote-data-read-contents t
   "When non-nil, read file contents for `denote-data'.
 Reading file contents means that `denote-data' will include non-nil
 slots for forelinks, backlinks, the exact file title, and the entire
 text of the file.
 
 When nil, `denote-data' only includes what the Denote file name
-provides, namely, identifier, signature, title, keywords, and file path.
-
-NOTE setting this user option to a non-nil value will making the initial
-indexing of all files considerably slower.  Here is a sample with 300
-moderately sized files (~1000 words on average), showing total elapsed
-time in seconds, number of garbage collections, and time spent on
-garbage collection:
-
-    (let ((denote-data-read-contents nil))
-      (benchmark-run 5 (denote-data-write-all nil :force-update)))
-    ;; => (0.16273555299999998 3 0.08853280699997867)
-
-    (let ((denote-data-read-contents t))
-      (benchmark-run 5 (denote-data-write-all nil :force-update)))
-    ;; => (127.905639756 2226 63.73085589600001)"
+provides, namely, identifier, signature, title, keywords, and file path."
   :type 'boolean
   :group 'denote-data)
 
@@ -7569,13 +7547,15 @@ Do so by using the `denote-data--content-fns'."
           (push (cons slot return) data))))
     data))
 
-(defun denote-data-write-entry (file)
-  "Write data about FILE to `denote-data'."
+(defun denote-data-write-entry (file read-contents)
+  "Write data about FILE to `denote-data'.
+With non-nil READ-CONTENTS, read FILE data.  Else fall back to the value
+of the user option `denote-data-read-contents'."
   (when-let* ((identifier (denote-retrieve-filename-identifier file)))
     (let* ((title (denote-retrieve-filename-title file))
            (signature (denote-retrieve-filename-signature file))
            (keywords (denote-retrieve-filename-keywords-as-list file))
-           (slots (if-let* ((_ denote-data-read-contents)
+           (slots (if-let* ((_ read-contents)
                             (data (denote-data--get-contents file)))
                       (let ((contents-title (alist-get 'title data))
                             (forelinks (alist-get 'forelinks data))
@@ -7609,8 +7589,11 @@ Do so by using the `denote-data--content-fns'."
 ;; maybe that goes even deeper into `denote--directory-get-files'?
 
 ;;;###autoload
-(defun denote-data-write-all (&optional files force)
+(defun denote-data-write-all (read-contents &optional files force)
   "Write all FILES to `denote-data'.
+If READ-CONTENTS is non-nil, then read each file for additional data,
+per `denote-data-read-contents'.
+
 If FILES is nil, then write all `denote-directory-files'.
 
 With optional FORCE build up the cache again even if this function was
@@ -7619,7 +7602,7 @@ already called."
             (files (or files (denote--directory-get-files))))
       (progn
         (dolist (file files)
-          (denote-data-write-entry file))
+          (denote-data-write-entry file read-contents))
         (setq denote-data--write-all-called-p t)
         (message "Created `denote-data' for `%d' files" (length files)))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
@@ -7676,9 +7659,19 @@ already called."
   "Update the current Denote file entry in `denote-data'.
 Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
-  (denote-data-write-entry buffer-file-name))
+  (denote-data-write-entry buffer-file-name denote-data-read-contents))
 
 ;;;;; The asynchronous call to build the `denote-data'
+
+(defvar denote-data--write-all-asynchronous-process nil
+  "Process object of `denote-data--write-all-asynchronous'.")
+
+(defun denote-data--cancel-asynchronous ()
+  "Cancel the asynchronous write process."
+  (when (and denote-data--write-all-asynchronous-process
+             (process-live-p denote-data--write-all-asynchronous-process))
+    (kill-process denote-data--write-all-asynchronous-process)
+    (setq denote-data--write-all-asynchronous-process nil)))
 
 ;; NOTE 2026-10-07: I am keeping this as-is and am not calling it from
 ;; anywhere for the time being.  THIS IS FOR TESTING PURPOSES in case
@@ -7691,33 +7684,41 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 ;; If this works, then we can add it to `denote-data-mode'.  Maybe we
 ;; need more `message' calls for that so that users known what is
 ;; happening, but this is the idea.
-(defun denote-data--make-process ()
-  "Call `denote-data-write-all' in a separate process."
-  (if denote-data-read-contents
-      (message "The `denote-data' cache is in process and will read ALL FILE CONTENTS")
-    (message "The `denote-data' cache is in process"))
+(defun denote-data--write-all-asynchronous (read-contents)
+  "Call `denote-data-write-all' in a separate process.
+READ-CONTENTS has the meaning of `denote-data-read-contents'."
+  (message "The `denote-data' cache is in process%s"
+           (if read-contents
+               (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
+             ""))
   (let ((buffer-output (get-buffer-create " *denote-data*"))
         (buffer-error (get-buffer-create " *denote-data-error*")))
     (with-current-buffer buffer-output
       (erase-buffer))
     (with-current-buffer buffer-error
       (erase-buffer))
-    (make-process
-     :name "denote-data"
-     :buffer buffer-output
-     :stderr buffer-error
-     :command '("emacs" "--batch" "--eval"
-                "(progn
-                  (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
-                  (denote-data-write-all)
-                  (prin1 denote-data))")
-     :sentinel (lambda (process event)
-                 (when-let* ((_ (string= event "finished\n"))
-                             (buffer-process (process-buffer process)))
-                   (with-current-buffer buffer-process
-                     (goto-char (point-min))
-                     (setq denote-data (read (current-buffer))))
-                   (message "The `denote-data' cache is ready"))))))
+    (setq denote-data--write-all-asynchronous-process
+          (make-process
+           :name "denote-data"
+           :buffer buffer-output
+           :stderr buffer-error
+           :command `("emacs" "--batch" "--eval"
+                      ,(format
+                        "(progn
+                    (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
+                    (denote-data-write-all %s nil :force)
+                    (prin1 denote-data))"
+                        read-contents))
+           :sentinel (lambda (process event)
+                       (when-let* ((_ (string= event "finished\n"))
+                                   (buffer-process (process-buffer process)))
+                         (with-current-buffer buffer-process
+                           (goto-char (point-min))
+                           (if-let* ((data (read (current-buffer)))
+                                     (_ (hash-table-p data)))
+                               (setq denote-data data)
+                             (error "Could not generate `denote-data' asynchronously")))
+                         (message "The `denote-data' cache%s" (propertize " is ready" 'face 'success))))))))
 
 ;;;;; The `denote-data-mode'
 
@@ -7807,7 +7808,7 @@ Activating this mode also calls `denote-data-write-all'."
   :init-value nil
   (if denote-data-mode
       (progn
-        (denote-data-write-all)
+        (denote-data--write-all-asynchronous denote-data-read-contents)
         (setq denote-directory-files-get-function--original denote-directory-files-get-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
@@ -7820,6 +7821,7 @@ Activating this mode also calls `denote-data-write-all'."
           (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
         (add-hook 'after-save-hook #'denote-data-update))
+    (denote-data--cancel-asynchronous)
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
