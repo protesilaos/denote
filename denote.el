@@ -7682,6 +7682,22 @@ Use this as part of `after-save-hook' or related.  Otherwise use
     (kill-process denote-data--write-all-asynchronous-process)
     (setq denote-data--write-all-asynchronous-process nil)))
 
+(defun denote-data--write-all-asynchronous-sentinel (process event)
+  "Process sentinel for `denote-data--write-all-asynchronous'.
+PROCESS is the process object and EVENT is the given event."
+  (cond
+   ((string= event "finished\n")
+    (when-let* ((buffer-process (process-buffer process)))
+      (with-current-buffer buffer-process
+        (goto-char (point-min))
+        (if-let* ((data (read (current-buffer)))
+                  (_ (hash-table-p data)))
+            (setq denote-data data)
+          (error "Could not generate `denote-data' asynchronously")))
+      (message "The `denote-data' cache%s" (propertize " is ready" 'face 'success))))
+   ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
+    (message "FAILED to build `denote-data'; something unexpected happened"))))
+
 (defun denote-data--write-all-asynchronous (read-contents)
   "Call `denote-data-write-all' in a separate process.
 READ-CONTENTS has the meaning of `denote-data-read-contents'."
@@ -7715,16 +7731,7 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
                         (denote-data-write-all %s nil :force)
                         (prin1 denote-data))"
                       read-contents))
-           :sentinel (lambda (process event)
-                       (when-let* ((_ (string= event "finished\n"))
-                                   (buffer-process (process-buffer process)))
-                         (with-current-buffer buffer-process
-                           (goto-char (point-min))
-                           (if-let* ((data (read (current-buffer)))
-                                     (_ (hash-table-p data)))
-                               (setq denote-data data)
-                             (error "Could not generate `denote-data' asynchronously")))
-                         (message "The `denote-data' cache%s" (propertize " is ready" 'face 'success))))))))
+           :sentinel #'denote-data--write-all-asynchronous-sentinel))))
 
 ;;;;; The `denote-data-mode'
 
