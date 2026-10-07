@@ -7678,6 +7678,47 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
   (denote-data-write-entry buffer-file-name))
 
+;;;;; The asynchronous call to build the `denote-data'
+
+;; NOTE 2026-10-07: I am keeping this as-is and am not calling it from
+;; anywhere for the time being.  THIS IS FOR TESTING PURPOSES in case
+;; someone wants to try it.  In that case UPDATE THE PATH TO your
+;; clone of denote.el.
+;;
+;; If you are testing this in your local copy, make sure to try
+;; `denote-data-read-contents' as well.
+;;
+;; If this works, then we can add it to `denote-data-mode'.  Maybe we
+;; need more `message' calls for that so that users known what is
+;; happening, but this is the idea.
+(defun denote-data--make-process ()
+  "Call `denote-data-write-all' in a separate process."
+  (if denote-data-read-contents
+      (message "The `denote-data' cache is in process and will read ALL FILE CONTENTS")
+    (message "The `denote-data' cache is in process"))
+  (let ((buffer-output (get-buffer-create "* denote-data*"))
+        (buffer-error (get-buffer-create "* denote-data-error*")))
+    (with-current-buffer buffer-output
+      (erase-buffer))
+    (with-current-buffer buffer-error
+      (erase-buffer))
+    (make-process
+     :name "denote-data"
+     :buffer buffer-output
+     :stderr buffer-error
+     :command '("emacs" "--batch" "--eval"
+                "(progn
+                  (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
+                  (denote-data-write-all)
+                  (prin1 denote-data))")
+     :sentinel (lambda (process event)
+                 (when-let* ((_ (string= event "finished\n"))
+                             (buffer-process (process-buffer process)))
+                   (with-current-buffer buffer-process
+                     (goto-char (point-min))
+                     (setq denote-data (read (current-buffer))))
+                   (message "The `denote-data' cache is ready"))))))
+
 ;;;;; The `denote-data-mode'
 
 (defun denote-data-get-identifiers ()
