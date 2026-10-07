@@ -7469,6 +7469,9 @@ visited again in a new buffer (files are visited with the command
   "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
 
+;; TODO 2026-10-07: :set with `denote-data--cancel-asynchronous' and
+;; `denote-data--write-all-asynchronous' is probably okay now, but I
+;; need to test it.
 (defcustom denote-data-read-contents t
   "When non-nil, read file contents for `denote-data'.
 Reading file contents means that `denote-data' will include non-nil
