@@ -7698,6 +7698,13 @@ PROCESS is the process object and EVENT is the given event."
    ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
     (message "FAILED to build `denote-data'; something unexpected happened"))))
 
+(defun denote-data--write-all-asynchronous-get-buffer (name)
+  "Return buffer with NAME for `denote-data--write-all-asynchronous'."
+  (let ((buffer (get-buffer-create name)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    buffer))
+
 (defun denote-data--write-all-asynchronous (read-contents)
   "Call `denote-data-write-all' in a separate process.
 READ-CONTENTS has the meaning of `denote-data-read-contents'."
@@ -7705,16 +7712,12 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
            (if read-contents
                (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
              ""))
-  (let ((buffer-output (get-buffer-create " *denote-data*"))
-        (buffer-error (get-buffer-create " *denote-data-error*"))
+  (let ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
+        (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
         ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
         (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
                                 ;; (locate-file "denote.el" load-path)
                                 (error "File denote.el is not in the `load-path'"))))
-    (with-current-buffer buffer-output
-      (erase-buffer))
-    (with-current-buffer buffer-error
-      (erase-buffer))
     (setq denote-data--write-all-asynchronous-process
           (make-process
            :name "denote-data"
