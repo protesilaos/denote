@@ -7705,8 +7705,12 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
                         ;; common these days?
                         ;;
                         ;; (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
+                        ;;
+                        ;; Maybe passing "-l" "denote.el" is the right
+                        ;; way, but how do we reliably get the path
+                        ;; from the user's load-path?
                         "(progn
-                          (require 'denote)
+                          (require 'denote \"/home/prot/Git/Projects/denote/denote.el\")
                           (denote-data-write-all %s nil :force)
                           (prin1 denote-data))"
                         read-contents))
