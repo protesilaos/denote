@@ -7704,16 +7704,17 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
            :name "denote-data"
            :buffer buffer-output
            :stderr buffer-error
-           :command `("emacs"
-                      "--batch"
-                      "-l"
-                      ,denote-source-file
-                      "--eval"
-                      ,(format
-                        "(progn
-                          (denote-data-write-all %s nil :force)
-                          (prin1 denote-data))"
-                        read-contents))
+           :command (list
+                     "emacs"
+                     "--batch"
+                     "-l"
+                     denote-source-file
+                     "--eval"
+                     (format
+                      "(progn
+                        (denote-data-write-all %s nil :force)
+                        (prin1 denote-data))"
+                      read-contents))
            :sentinel (lambda (process event)
                        (when-let* ((_ (string= event "finished\n"))
                                    (buffer-process (process-buffer process)))
