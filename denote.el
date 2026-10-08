@@ -4051,6 +4051,11 @@ See the format of `denote-file-types'."
            (string-match-p "\\`\\*Org Note\\*" (buffer-name))
            (null buffer-file-name))))
 
+;; TODO 2026-10-08: Do we benefit if `denote-file-type' relies on some
+;; cache?  What it does here is relatively cheap, but we can compute
+;; this once while building up the cache.  If something changes, such
+;; as by updating the file typpe, then we should still get what we
+;; need after the buffer is saved.
 (defun denote-file-type (file)
   "Use the file extension to detect the file type of FILE.
 Do so in accordance with `denote-file-types'.
