@@ -2483,7 +2483,7 @@ use the following in their Emacs configuration ([[#h:d375c6d2-92c7-425f-9d9d-219
    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" ""
                              (denote-slug-keep-only-ascii str))))
 
-(defcustom denote-file-name-slug-functions
+(setq denote-file-name-slug-functions
   '((identifier . identity) ; keep the original
     (title . my-denote-sluggify-title)
     (signature . my-denote-sluggify-signature)
@@ -2527,7 +2527,7 @@ Any front matter will retain the diacretics.
    (replace-regexp-in-string "[][{}!@#$%^&*()+'\"?,.\|;:~`‘’“”/_ =-]*" ""
                              (denote-slug-remove-accents str))))
 
-(defcustom denote-file-name-slug-functions
+(setq denote-file-name-slug-functions
   '((identifier . identity) ; keep the original
     (title . my-denote-sluggify-title)
     (signature . my-denote-sluggify-signature)
