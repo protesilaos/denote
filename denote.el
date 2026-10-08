@@ -2976,6 +2976,9 @@ pass it to `denote-directory-files'."
 
 (defvar denote-query-sorting)
 
+;; TODO 2026-10-08: This should already be covered by the
+;; `denote-data' cache because of `denote-directory-files', but I need
+;; to confirm as much.
 (defun denote-retrieve-xref-alist (query &optional files)
   "Return xref alist of absolute file paths with location of matches for QUERY.
 Optional FILES can be a list of files to search for.  It can also be a
