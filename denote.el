@@ -6333,6 +6333,13 @@ Place the buffer below the current window or wherever the user option
   'denote-get-backlinks
   "4.1.0")
 
+(defvar denote-get-backlinks-as-files-function #'denote-get-backlinks
+  "Function to return list of file paths linking to the current file.
+The function is called with one argument, the current file's identifier.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 (defun denote-get-backlinks (&optional file)
   "Return list of backlinks in current or optional FILE.
 Also see `denote-get-links'."
@@ -6367,7 +6374,7 @@ Alo see `denote-find-link'."
   (when-let* ((current-file buffer-file-name)
               (_ (or (denote-retrieve-filename-identifier current-file)
                      (user-error "The current file does not have a Denote identifier")))
-              (links (or (denote-get-backlinks current-file)
+              (links (or (funcall denote-get-backlinks-as-files-function current-file)
                          (user-error "No backlinks found")))
               (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
     (find-file selected)))
@@ -7835,6 +7842,8 @@ Also see `denote-data-get-backlinks-files-only'."
 (defun denote-data-get-backlinks-files-only (identifier)
   "Return list of FILES that link to file with IDENTIFIER.
 Also see `denote-data-get-backlinks'."
+  (when (file-exists-p (expand-file-name identifier))
+    (setq identifier (denote-retrieve-filename-identifier identifier)))
   (when-let* ((backlinks (denote-data-get-backlinks identifier)))
     (mapcar #'car backlinks)))
 
@@ -7857,6 +7866,9 @@ Also see `denote-data-get-backlinks'."
 ;; TODO 2026-09-25: Same idea for changes happening in Dired.
 ;; TODO 2026-09-25: What about a rename that changes the identifier?  Maybe a `before-save-hook' for that case?
 
+(defvar denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function
+  "Original function bound to `denote-get-backlinks-as-files-function'.")
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When non-nil, cache Denote data in the `denote-data' hash-table and use it.
@@ -7868,17 +7880,13 @@ contents in accordance with the user option `denote-data-read-contents'."
   (if denote-data-mode
       (progn
         (denote-data--write-all-asynchronous denote-data-read-contents)
-        (setq denote-directory-files-get-function--original denote-directory-files-get-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
-        (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
-        (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
-        (setq denote-get-identifiers-function--original denote-get-identifiers-function)
         (setq denote-get-identifiers-function #'denote-data-get-identifiers)
         (when denote-data-read-contents
-          (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
-          (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks))
+          (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
+          (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only))
         ;; TODO 2026-10-07: Updating the cache after saving is
         ;; reasonable.  But we can easily be out-of-sync if, say, we
         ;; link from one file, not save, then go to the other file to
@@ -7889,16 +7897,12 @@ contents in accordance with the user option `denote-data-read-contents'."
         ;; something I would do.
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
-    (setq denote-directory-files-get-function--original denote-directory-files-get-function)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
-    (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
     (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
-    (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
     (setq denote-get-identifiers-function denote-get-identifiers-function--original)
-    (setq denote-get-identifiers-function--original denote-get-identifiers-function)
     (when denote-data-read-contents
       (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
-      (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function))
+      (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original))
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
