@@ -6350,7 +6350,20 @@ Also see `denote-get-links'."
               (xrefs (denote-retrieve-xref-alist-for-backlinks id)))
     (mapcar #'car xrefs)))
 
-(defun denote--file-has-backlinks-p (file)
+(define-obsolete-function-alias
+  'denote--file-has-backlinks-p
+  'denote-file-has-backlinks-p
+  "4.3.0")
+
+(defvar denote-file-has-backlinks-function #'denote-file-has-backlinks-p
+  "Function to test if a file has backlinks.
+The function is called with one argument, the file path, and should
+return either nil or nil-nil.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
+(defun denote-file-has-backlinks-p (file)
   "Return non-nil if FILE has backlinks."
   (when-let* ((id (denote-retrieve-filename-identifier file))
               (files (denote-directory-files nil :omit-current :text-only)))
@@ -7399,7 +7412,7 @@ buffer will be used, if available."
     (let ((type (denote-filetype-heuristics file))
           (should-show-backlink-indicator (and ; only do search if format contains "%b"
                                            (string-match-p "%b" denote-rename-buffer-format)
-                                           (denote--file-has-backlinks-p file))))
+                                           (funcall denote-file-has-backlinks-function file))))
       (string-trim
        (format-spec denote-rename-buffer-format
                     (list (cons ?t (cond
@@ -7871,6 +7884,9 @@ Also see `denote-data-get-backlinks'."
 (defvar denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function
   "Original function bound to `denote-get-backlinks-as-files-function'.")
 
+(defvar denote-file-has-backlinks-function--original denote-file-has-backlinks-function
+  "Original function bound to `denote-file-has-backlinks-function'.")
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When non-nil, cache Denote data in the `denote-data' hash-table and use it.
@@ -7888,7 +7904,8 @@ contents in accordance with the user option `denote-data-read-contents'."
         (setq denote-get-identifiers-function #'denote-data-get-identifiers)
         (when denote-data-read-contents
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
-          (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only))
+          (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
+          (setq denote-file-has-backlinks-function #'denote-data-get-backlinks))
         ;; TODO 2026-10-07: Updating the cache after saving is
         ;; reasonable.  But we can easily be out-of-sync if, say, we
         ;; link from one file, not save, then go to the other file to
@@ -7904,7 +7921,8 @@ contents in accordance with the user option `denote-data-read-contents'."
     (setq denote-get-identifiers-function denote-get-identifiers-function--original)
     (when denote-data-read-contents
       (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
-      (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original))
+      (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
+      (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original))
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
