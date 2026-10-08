@@ -5671,6 +5671,8 @@ the generic one."
   'denote-get-links
   "4.1.0")
 
+;; TODO 2026-10-08: Consider a `denote-get-links-function' which is
+;; useful for `denote-data-mode'.
 (defun denote-get-links (&optional file files)
   "Return list of links in current or optional FILE.
 With optional FILES, consider only those, otherwise use the return value
