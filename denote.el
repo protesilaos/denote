@@ -7730,6 +7730,7 @@ PROCESS is the process object and EVENT is the given event."
         (goto-char (point-min))
         (if-let* ((data (read (current-buffer)))
                   (_ (hash-table-p data)))
+            (setq denote-data--write-all-called-p t)
             (setq denote-data data)
           (error "Could not generate `denote-data' asynchronously")))
       (message "The `denote-data' cache%s" (propertize " is ready" 'face 'success))))
@@ -7746,36 +7747,37 @@ PROCESS is the process object and EVENT is the given event."
 (defun denote-data--write-all-asynchronous (read-contents)
   "Call `denote-data-write-all' in a separate process.
 READ-CONTENTS has the meaning of `denote-data-read-contents'."
-  (message "The `denote-data' cache is in process%s"
-           (if read-contents
-               (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
-             ""))
-  (let ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
-        (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
-        ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
-        (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
-                                ;; (locate-file "denote.el" load-path)
-                                (error "File denote.el is not in the `load-path'"))))
-    (setq denote-data--write-all-asynchronous-process
-          (make-process
-           :name "denote-data"
-           :buffer buffer-output
-           :stderr buffer-error
-           :command (list
-                     "emacs"
-                     "--batch"
-                     "-l"
-                     denote-source-file
-                     "--eval"
-                     (format
-                      "(progn
+  (unless denote-data--write-all-called-p
+    (message "The `denote-data' cache is in process%s"
+             (if read-contents
+                 (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
+               ""))
+    (let ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
+          (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
+          ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
+          (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
+                                  ;; (locate-file "denote.el" load-path)
+                                  (error "File denote.el is not in the `load-path'"))))
+      (setq denote-data--write-all-asynchronous-process
+            (make-process
+             :name "denote-data"
+             :buffer buffer-output
+             :stderr buffer-error
+             :command (list
+                       "emacs"
+                       "--batch"
+                       "-l"
+                       denote-source-file
+                       "--eval"
+                       (format
+                        "(progn
                         (denote-data-write-all %s nil :force)
                         (prin1 denote-data))"
-                      read-contents))
-           ;; TODO 2026-10-07: Maybe we can print messages to report
-           ;; on the progress?  For example, if this takes 5 minutes,
-           ;; we report every 1 minute.  Maybe use the :filter?
-           :sentinel #'denote-data--write-all-asynchronous-sentinel))))
+                        read-contents))
+             ;; TODO 2026-10-07: Maybe we can print messages to report
+             ;; on the progress?  For example, if this takes 5 minutes,
+             ;; we report every 1 minute.  Maybe use the :filter?
+             :sentinel #'denote-data--write-all-asynchronous-sentinel)))))
 
 ;;;;; The `denote-data-mode'
 
