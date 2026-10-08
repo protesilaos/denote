@@ -4344,7 +4344,7 @@ prompt to confirm the rewriting of the front matter."
 
 ;;;;; The renaming commands and their prompts
 
-(defun denote--rename-dired-file-or-current-file-or-prompt ()
+(defun denote--rename-dired-file-or-current-file-prompt ()
   "Return Dired file at point or the current file, else prompt for one.
 Throw error if FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
@@ -4618,7 +4618,7 @@ file-naming scheme.
 For a version of this command that works with multiple files
 one-by-one, use `denote-dired-rename-files'."
   (interactive
-   (pcase-let* ((file (denote--rename-dired-file-or-current-file-or-prompt))
+   (pcase-let* ((file (denote--rename-dired-file-or-current-file-prompt))
                 (`(,title ,keywords ,signature ,date ,identifier)
                  (denote--rename-get-file-info-from-prompts-or-existing file)))
      (list file title keywords signature date identifier)))
@@ -4955,7 +4955,7 @@ Construct the file name in accordance with the user option
 `denote-file-name-components-order'."
   (interactive
    (list
-    (denote--rename-dired-file-or-current-file-or-prompt)
+    (denote--rename-dired-file-or-current-file-prompt)
     (denote--valid-file-type (or (denote-file-type-prompt) denote-file-type))))
   (let* ((initial-state (if (find-buffer-visiting file) 'visited 'not-visited))
          (dir (file-name-directory file))
