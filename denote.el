@@ -7695,17 +7695,16 @@ already called."
 
 (defun denote-data-modify (slot new-value identifier)
   "Modify the SLOT with NEW-VALUE of file with IDENTIFIER in `denote-data'."
-  (when-let* ((entry (denote-data-get identifier))
-              (new-entry (pcase-exhaustive slot
-                           (:identifier (denote-data-entry-set-identifier entry new-value))
-                           (:signature (denote-data-entry-set-signature entry new-value))
-                           (:keywords (denote-data-entry-set-keywords entry new-value))
-                           (:title (denote-data-entry-set-title entry new-value))
-                           (:path (denote-data-entry-set-path entry new-value))
-                           (:forelinks (denote-data-entry-set-forelinks entry new-value))
-                           (:backlinks (denote-data-entry-set-backlinks entry new-value))
-                           (:text (denote-data-entry-set-text entry new-value)))))
-    (puthash identifier entry denote-data)))
+  (when-let* ((entry (denote-data-get identifier)))
+    (pcase-exhaustive slot
+      (:identifier (denote-data-entry-set-identifier entry new-value))
+      (:signature (denote-data-entry-set-signature entry new-value))
+      (:keywords (denote-data-entry-set-keywords entry new-value))
+      (:title (denote-data-entry-set-title entry new-value))
+      (:path (denote-data-entry-set-path entry new-value))
+      (:forelinks (denote-data-entry-set-forelinks entry new-value))
+      (:backlinks (denote-data-entry-set-backlinks entry new-value))
+      (:text (denote-data-entry-set-text entry new-value)))))
 
 (defun denote-data-update ()
   "Update the current Denote file entry in `denote-data'.
