@@ -7767,6 +7767,19 @@ PROCESS is the process object and EVENT is the given event."
    ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
     (message "FAILED to build `denote-data'; something unexpected happened"))))
 
+(defun denote-data--write-all-asynchronous-progress-pipe-filter (process string)
+  "Process filter for `make-pipe-process' of `denote-data--write-all-asynchronous'.
+PROCESS and STRING are the arguments described in Info node `(elisp)
+Filter Functions'."
+  ;; I learnt about `message-log-max' from `progress-reporter--pulse-characters'.
+  (let ((message-log-max nil))
+    (message "%s" (string-trim string))
+    (when-let* ((buffer-pipe (process-buffer process)))
+      (with-current-buffer buffer-pipe
+        (save-excursion
+          (goto-char (point-max))
+          (insert string))))))
+
 (defun denote-data--write-all-asynchronous-get-buffer (name)
   "Return buffer with NAME for `denote-data--write-all-asynchronous'."
   (let ((buffer (get-buffer-create name)))
@@ -7790,15 +7803,7 @@ before."
            (progress-pipe (make-pipe-process
                            :name "denote-data-progress-pipe"
                            :buffer buffer-error
-                           :filter (lambda (process string)
-                                     ;; I learnt about `message-log-max' from `progress-reporter--pulse-characters'.
-                                     (let ((message-log-max nil))
-                                       (message "%s" (string-trim string))
-                                       (when-let* ((buffer-pipe (process-buffer process)))
-                                         (with-current-buffer buffer-pipe
-                                           (save-excursion
-                                             (goto-char (point-max))
-                                             (insert string))))))))
+                           :filter #'denote-data--write-all-asynchronous-progress-pipe-filter))
            (command (list "emacs" "--batch" "-l" denote-source-file "--eval"
                           (format "(progn (denote-data-write-all %s nil :force) (prin1 denote-data))" read-contents)))
            (process (make-process
