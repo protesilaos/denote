@@ -7504,6 +7504,9 @@ visited again in a new buffer (files are visited with the command
   "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
 
+;; TODO 2026-10-09: Does it even make sense to keep this as an option
+;; given commit b131202eae2e570a8e1c8a123e692c9ad031dd84?  Now
+;; everything is fast, even without the asynchronous process.
 (defcustom denote-data-read-contents t
   "When non-nil, read file contents for `denote-data'.
 Reading file contents means that `denote-data' will include non-nil
