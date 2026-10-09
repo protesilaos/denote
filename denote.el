@@ -7763,8 +7763,7 @@ PROCESS is the process object and EVENT is the given event."
                   (_ (hash-table-p data)))
             (setq denote-data--write-all-called-p t)
             (setq denote-data data)
-          (error "Could not generate `denote-data' asynchronously")))
-      (message "The `denote-data' cache%s" (propertize " is ready" 'face 'success))))
+          (error "Could not generate `denote-data' asynchronously")))))
    ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
     (message "FAILED to build `denote-data'; something unexpected happened"))))
 
@@ -7775,25 +7774,36 @@ PROCESS is the process object and EVENT is the given event."
       (erase-buffer))
     buffer))
 
-(defun denote-data--write-all-asynchronous (read-contents)
+(defun denote-data--write-all-asynchronous (read-contents &optional force)
   "Call `denote-data-write-all' in a separate process.
-READ-CONTENTS has the meaning of `denote-data-read-contents'."
-  (unless denote-data--write-all-called-p
-    (message "The `denote-data' cache is in process%s"
-             (if read-contents
-                 (propertize " and will read ALL FILE CONTENTS" 'face 'warning)
-               ""))
-    (let ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
-          (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
-          ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
-          (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
-                                  ;; (locate-file "denote.el" load-path)
-                                  (error "File denote.el is not in the `load-path'"))))
+READ-CONTENTS has the meaning of `denote-data-read-contents'.
+
+With optional FORCE run the process again even if it was already called
+before."
+  (when (or force (null denote-data--write-all-called-p))
+    (let* ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
+           (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
+           ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
+           (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
+                                   ;; (locate-file "denote.el" load-path)
+                                   (error "File denote.el is not in the `load-path'")))
+           (progress-pipe (make-pipe-process
+                           :name "denote-data-progress-pipe"
+                           :buffer buffer-error
+                           :filter (lambda (process string)
+                                     ;; I learnt about `message-log-max' from `progress-reporter--pulse-characters'.
+                                     (let ((message-log-max nil))
+                                       (message "%s" (string-trim string))
+                                       (when-let* ((buffer-pipe (process-buffer process)))
+                                         (with-current-buffer buffer-pipe
+                                           (save-excursion
+                                             (goto-char (point-max))
+                                             (insert string)))))))))
       (setq denote-data--write-all-asynchronous-process
             (make-process
              :name "denote-data"
              :buffer buffer-output
-             :stderr buffer-error
+             :stderr progress-pipe
              :command (list
                        "emacs"
                        "--batch"
@@ -7805,9 +7815,6 @@ READ-CONTENTS has the meaning of `denote-data-read-contents'."
                         (denote-data-write-all %s nil :force)
                         (prin1 denote-data))"
                         read-contents))
-             ;; TODO 2026-10-07: Maybe we can print messages to report
-             ;; on the progress?  For example, if this takes 5 minutes,
-             ;; we report every 1 minute.  Maybe use the :filter?
              :sentinel #'denote-data--write-all-asynchronous-sentinel)))))
 
 ;;;;; The `denote-data-mode'
