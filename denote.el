@@ -7669,12 +7669,20 @@ If FILES is nil, then write all `denote-directory-files'.
 With optional FORCE build up the cache again even if this function was
 already called."
   (if-let* ((_ (or force (null denote-data--write-all-called-p)))
-            (files (or files (denote--directory-get-files))))
+            (files (or files (denote--directory-get-files)))
+            (total (length files))
+            (index 1)
+            ;; TODO 2026-10-09: I got the reporter from dabbrev.el.
+            ;; Now I have to figure out how best to do the same in the
+            ;; `denote-data--write-all-asynchronous'.
+            (reporter (make-progress-reporter "`denote-data' processing files..." 0 total 0 1 1.5)))
       (progn
         (dolist (file files)
+          (progress-reporter-update reporter index)
+          (setq index (+ index 1))
           (denote-data-write-entry file read-contents))
         (setq denote-data--write-all-called-p t)
-        (message "Created `denote-data' for `%d' files" (length files)))
+        (progress-reporter-done reporter))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
 
 ;; TODO 2026-09-25: Here the idea is to call this after a file is
