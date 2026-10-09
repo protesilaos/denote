@@ -7729,12 +7729,12 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 PROCESS and EVENT are the arguments described in Info node `(elisp) Sentinels'."
   (cond
    ((string= event "finished\n")
+    (setq denote-data--write-all-called-p t)
     (when-let* ((buffer-process (process-buffer process)))
       (with-current-buffer buffer-process
         (goto-char (point-min))
         (if-let* ((data (read (current-buffer)))
                   (_ (hash-table-p data)))
-            (setq denote-data--write-all-called-p t)
             (setq denote-data data)
           (error "Could not generate `denote-data' asynchronously")))))
    ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
