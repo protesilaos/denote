@@ -3036,7 +3036,7 @@ If FILES is not given, use all text files as returned by
   (let* ((files (denote-directory-files))
          (file-types (denote--file-type-keys))
          (xref-file-name-display 'abs)
-         (xref-matches '()))
+         (xref-matches nil))
     (when-let* ((backlinks (gethash identifier (denote--get-all-backlinks files))))
       (let* ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
         (dolist (file-type file-types)
@@ -7504,17 +7504,16 @@ visited again in a new buffer (files are visited with the command
   "Cache Denote files in the `denote-data' hash-table."
   :group 'denote)
 
-;; TODO 2026-10-07: :set with `denote-data--cancel-asynchronous' and
-;; `denote-data--write-all-asynchronous' is probably okay now, but I
-;; need to test it.
 (defcustom denote-data-read-contents t
   "When non-nil, read file contents for `denote-data'.
 Reading file contents means that `denote-data' will include non-nil
-slots for forelinks, backlinks, the exact file title, and the entire
-text of the file.
+slots for forelinks (denote: links to other files), the exact file
+title, and the entire text of the file.
 
 When nil, `denote-data' only includes what the Denote file name
-provides, namely, identifier, signature, title, keywords, and file path."
+provides, namely: identifier, signature, title, keywords, and file path.
+Anything else that relies on reading file contents still needs to be
+calculated upon request."
   :type 'boolean
   :group 'denote-data)
 
@@ -7530,7 +7529,6 @@ provides, namely, identifier, signature, title, keywords, and file path."
   (path nil :documentation "The file PATH." :type string)
   ;; From file contents
   (forelinks nil :documentation "The FORELINKS as a list of identifiers." :type list)
-  (backlinks nil :documentation "The BACKLINKS as an xref alist." :type alist)
   (text nil :documentation "The file TEXT." :type string))
 
 (defvar denote-data (make-hash-table :test #'equal)
@@ -7539,7 +7537,6 @@ provides, namely, identifier, signature, title, keywords, and file path."
 (defvar denote-data--content-fns
   '((title . denote-data--get-contents-title)
     (forelinks . denote-data--get-contents-forelinks)
-    (backlinks . denote-data--get-contents-backlinks)
     (text . denote-data--get-contents-text))
   "List of entries to read data from a file for `denote-data--get-contents'.
 Each element is a cons cell of the form (SYMBOL . FUNCTION), where
@@ -7566,10 +7563,6 @@ Do it when FILE-SUPPORTED-P is non-nil."
         (while (re-search-forward regexp nil t)
           (push (match-string 1) forelinks))
         (seq-uniq forelinks)))))
-
-(defun denote-data--get-contents-backlinks (_file identifier _file-type)
-  "Return backlinks for file with IDENTIFIER for `denote-data--get-contents'."
-  (denote-retrieve-xref-alist-for-backlinks identifier))
 
 (defun denote-data--get-contents-text (file-supported-p _identifier _file-type)
   "Return `buffer-string' for `denote-data--get-contents'.
@@ -7603,7 +7596,6 @@ of the user option `denote-data-read-contents'."
                             (data (denote-data--get-contents file)))
                       (let ((contents-title (alist-get 'title data))
                             (forelinks (alist-get 'forelinks data))
-                            (backlinks (alist-get 'backlinks data))
                             (text (alist-get 'text data)))
                         (list :identifier identifier
                               :title (or contents-title title)
@@ -7611,7 +7603,6 @@ of the user option `denote-data-read-contents'."
                               :keywords keywords
                               :path file
                               :forelinks forelinks
-                              :backlinks backlinks
                               :text text))
                     (list :identifier identifier
                           :title title
@@ -7690,7 +7681,6 @@ already called."
 (denote-data--define-entry-set keywords)
 (denote-data--define-entry-set path)
 (denote-data--define-entry-set forelinks)
-(denote-data--define-entry-set backlinks)
 (denote-data--define-entry-set text)
 
 (defun denote-data-modify (slot new-value identifier)
@@ -7703,7 +7693,6 @@ already called."
       (:title (denote-data-entry-set-title entry new-value))
       (:path (denote-data-entry-set-path entry new-value))
       (:forelinks (denote-data-entry-set-forelinks entry new-value))
-      (:backlinks (denote-data-entry-set-backlinks entry new-value))
       (:text (denote-data-entry-set-text entry new-value)))))
 
 (defun denote-data-update ()
@@ -7844,19 +7833,56 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
   (when-let* ((entry (denote-data-get identifier)))
     (denote-data-entry-path entry)))
 
-(defun denote-data-get-backlinks (identifier)
-  "Return an xref alist of backlinks for IDENTIFIER from `denote-data'.
-Also see `denote-data-get-backlinks-files-only'."
-  (when-let* ((entry (denote-data-get identifier)))
-    (denote-data-entry-backlinks entry)))
-
 (defun denote-data-get-backlinks-files-only (identifier)
   "Return list of FILES that link to file with IDENTIFIER.
 Also see `denote-data-get-backlinks'."
   (when (file-exists-p (expand-file-name identifier))
     (setq identifier (denote-retrieve-filename-identifier identifier)))
-  (when-let* ((backlinks (denote-data-get-backlinks identifier)))
-    (mapcar #'car backlinks)))
+  (let ((files nil))
+    (maphash
+     (lambda (_key value)
+       (when (member identifier (denote-data-entry-forelinks value))
+         (push (denote-data-entry-path value) files)))
+     denote-data)
+    files))
+
+;; NOTE 2026-10-09: I copied `denote-retrieve-xref-alist-for-backlinks'
+;; and changed the files it considers.  This is fine for what I am
+;; doing right now but it makes no sense to have it this way
+;; long-term.  The underlying function should accept FILES and behave
+;; accordingly.
+;;
+;; The last big related to `denote-retrieve-xref-alist-for-backlinks'
+;; was in commit b43149df38920d2bf1d766a34cb755c2221f191 by Jean-Philippe Gagné Guay.
+(defun denote-data-get-backlinks (identifier)
+  "Return an xref alist of backlinks for IDENTIFIER.
+Also see `denote-data-get-backlinks-files-only'."
+  (when-let* ((backlinks (denote-data-get-backlinks-files-only identifier)))
+    (let* ((file-types (denote--file-type-keys))
+           (xref-file-name-display 'abs)
+           (xref-matches nil)
+           (backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
+      (dolist (file-type file-types)
+        (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
+                    (type (denote--link-retrieval-format file-type))
+                    (format-parts (split-string type "%VALUE%"))
+                    (query-simple (concat
+                                   (regexp-quote (nth 0 format-parts))
+                                   (regexp-quote identifier)
+                                   (regexp-quote (nth 1 format-parts))))
+                    (query-org-link (concat
+                                     (regexp-quote (nth 0 format-parts))
+                                     (regexp-quote identifier)
+                                     "::")))
+          (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
+          (when (eq file-type 'org)
+            (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
+      (let ((data (xref--analyze xref-matches)))
+        (if-let* ((sort denote-query-sorting)
+                  (files-matched (mapcar #'car data))
+                  (files-sorted (denote-sort-files files-matched sort)))
+            (mapcar (lambda (x) (assoc x data)) files-sorted)
+          data)))))
 
 (defvar denote-directory-files-get-function--original denote-directory-files-get-function
   "Original function bound to `denote-directory-files-get-function'.")
@@ -7901,7 +7927,7 @@ contents in accordance with the user option `denote-data-read-contents'."
         (when denote-data-read-contents
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
           (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
-          (setq denote-file-has-backlinks-function #'denote-data-get-backlinks))
+          (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only))
         ;; TODO 2026-10-07: Updating the cache after saving is
         ;; reasonable.  But we can easily be out-of-sync if, say, we
         ;; link from one file, not save, then go to the other file to
