@@ -7753,7 +7753,7 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 
 (defun denote-data--write-all-asynchronous-sentinel (process event)
   "Process sentinel for `denote-data--write-all-asynchronous'.
-PROCESS is the process object and EVENT is the given event."
+PROCESS and EVENT are the arguments described in Info node `(elisp) Sentinels'."
   (cond
    ((string= event "finished\n")
     (when-let* ((buffer-process (process-buffer process)))
