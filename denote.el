@@ -7523,41 +7523,15 @@ provides, namely, identifier, signature, title, keywords, and file path."
 (cl-defstruct (denote-data-entry (:constructor denote-data-entry-create))
   "Data structure of a Denote file."
   ;; From file name
-  (identifier
-   nil
-   :documentation "The file name IDENTIFIER."
-   :type string)
-  (signature
-   nil
-   :documentation "The file name SIGNATURE."
-   :type string)
-  (title
-   nil
-   :documentation "The file name TITLE.
-If `denote-data-read-contents' is non-nil, then TITLE is read from the
-file contents, falling back to the file name."
-   :type string)
-  (keywords
-   nil
-   :documentation "The file name KEYWORDS."
-   :type list)
-  (path
-   nil
-   :documentation "The file PATH."
-   :type string)
+  (identifier nil :documentation "The file IDENTIFIER." :type string)
+  (signature nil :documentation "The file SIGNATURE." :type string)
+  (title nil :documentation "The file TITLE." :type string)
+  (keywords nil :documentation "The file KEYWORDS." :type list)
+  (path nil :documentation "The file PATH." :type string)
   ;; From file contents
-  (forelinks
-   nil
-   :documentation "The FORELINKS as a list of identifiers."
-   :type list)
-  (backlinks
-   nil
-   :documentation "The BACKLINKS as an xref alist."
-   :type alist)
-  (text
-   nil
-   :documentation "The file TEXT."
-   :type string))
+  (forelinks nil :documentation "The FORELINKS as a list of identifiers." :type list)
+  (backlinks nil :documentation "The BACKLINKS as an xref alist." :type alist)
+  (text nil :documentation "The file TEXT." :type string))
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
