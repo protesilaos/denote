@@ -7927,14 +7927,6 @@ contents in accordance with the user option `denote-data-read-contents'."
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
           (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
           (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only))
-        ;; TODO 2026-10-07: Updating the cache after saving is
-        ;; reasonable.  But we can easily be out-of-sync if, say, we
-        ;; link from one file, not save, then go to the other file to
-        ;; check for backlinks.
-        ;;
-        ;; Should we even bother with such cases?  I will leave that
-        ;; open to feedback from users because to me this is not
-        ;; something I would do.
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
