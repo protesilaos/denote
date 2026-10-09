@@ -7829,10 +7829,10 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
                                       (when denote-keywords-to-not-infer-regexp
                                         (string-match-p denote-keywords-to-not-infer-regexp k)))
                                     file-keywords)))
-         (if-let* ((_ files-matching-regexp)
-                   (path (denote-data-entry-path value))
-                   (_ (string-match-p files-matching-regexp path)))
-             (push final-keywords keywords)
+         (if files-matching-regexp
+             (when-let* ((path (denote-data-entry-path value))
+                         (_ (string-match-p files-matching-regexp path)))
+               (push final-keywords keywords))
            (push final-keywords keywords))))
      denote-data)
     (flatten-list keywords)))
