@@ -7748,9 +7748,7 @@ before."
   (when (or force (null denote-data--write-all-called-p))
     (let* ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
            (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
-           ;; NOTE 2026-10-07: I am hardcoding the path for testing purposes.
-           (denote-source-file (or "/home/prot/Git/Projects/denote/denote.el"
-                                   ;; (locate-file "denote.el" load-path)
+           (denote-source-file (or (locate-file "denote.el" load-path)
                                    (error "File denote.el is not in the `load-path'")))
            (progress-pipe (make-pipe-process
                            :name "denote-data-progress-pipe"
