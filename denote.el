@@ -7798,24 +7798,16 @@ before."
                                          (with-current-buffer buffer-pipe
                                            (save-excursion
                                              (goto-char (point-max))
-                                             (insert string)))))))))
-      (setq denote-data--write-all-asynchronous-process
-            (make-process
-             :name "denote-data"
-             :buffer buffer-output
-             :stderr progress-pipe
-             :command (list
-                       "emacs"
-                       "--batch"
-                       "-l"
-                       denote-source-file
-                       "--eval"
-                       (format
-                        "(progn
-                        (denote-data-write-all %s nil :force)
-                        (prin1 denote-data))"
-                        read-contents))
-             :sentinel #'denote-data--write-all-asynchronous-sentinel)))))
+                                             (insert string))))))))
+           (command (list "emacs" "--batch" "-l" denote-source-file "--eval"
+                          (format "(progn (denote-data-write-all %s nil :force) (prin1 denote-data))" read-contents)))
+           (process (make-process
+                     :name "denote-data"
+                     :buffer buffer-output
+                     :stderr progress-pipe
+                     :command command
+                     :sentinel #'denote-data--write-all-asynchronous-sentinel)))
+      (setq denote-data--write-all-asynchronous-process process))))
 
 ;;;;; The `denote-data-mode'
 
