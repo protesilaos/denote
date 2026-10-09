@@ -7931,6 +7931,7 @@ contents in accordance with the user option `denote-data-read-contents'."
           (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
           (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
           (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only))
+        ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
