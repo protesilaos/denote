@@ -7769,6 +7769,16 @@ before."
 
 ;;;;; The `denote-data-mode'
 
+;; NOTE 2026-10-09: I wrote `denote-data--maphash-with-file-exists-p'
+;; to HOPEFULLY circumvent the problem of how to handle changes to
+;; files outside of Emacs.  Basically, if the file does not exist the
+;; moment we read the cache, then we remove it.  This practically
+;; means that if we do something like `denote-backlinks' we will only
+;; see valid results.  Maybe there are some cases I am not even
+;; thinking of here, in which case I am happy to revise this.
+;;
+;; TODO 2026-09-25: What about a rename that changes the identifier?
+;; Maybe a `before-save-hook' for that case?
 (defmacro denote-data--maphash-with-file-exists-p (&rest body)
   "Evaluate BODY in `maphash' over `denote-data'.
 Do it to remove the relevant key from `denote-data' if its value no
@@ -7897,10 +7907,6 @@ Also see `denote-data-get-backlinks-files-only'."
 
 (defvar denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function
   "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.")
-
-;; TODO 2026-09-03: What about changes to the file happening outside of Emacs?
-;; TODO 2026-09-25: Same idea for changes happening in Dired.
-;; TODO 2026-09-25: What about a rename that changes the identifier?  Maybe a `before-save-hook' for that case?
 
 (defvar denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function
   "Original function bound to `denote-get-backlinks-as-files-function'.")
