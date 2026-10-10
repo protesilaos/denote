@@ -7578,7 +7578,6 @@ Do so by using the `denote-data--content-fns'."
 ;; into how we build up the cache in `denote-data-write-all'?  Or
 ;; maybe that goes even deeper into `denote--directory-get-files'?
 
-;;;###autoload
 (defun denote-data-write-all (&optional files force)
   "Write all FILES to `denote-data'.
 
