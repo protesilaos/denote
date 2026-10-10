@@ -7889,7 +7889,7 @@ last known preference.")
 
 ;;;###autoload
 (define-minor-mode denote-data-mode
-  "When non-nil, cache Denote data in the `denote-data' hash-table and use it."
+  "When enabled, store all Denote file data in `denote-data' and use it."
   :global t
   :init-value nil
   (denote-data--cancel-asynchronous)
