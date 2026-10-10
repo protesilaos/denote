@@ -7789,6 +7789,10 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 (defun denote-data-get-backlinks-files-only (identifier)
   "Return list of FILES that link to file with IDENTIFIER.
 Also see `denote-data-get-backlinks'."
+  ;; NOTE 2026-10-10: The `when' is because this will be called with a
+  ;; FILE argument, per `denote-get-backlinks-as-files-function'.
+  ;; Maybe long-term we should change everything to expect an
+  ;; IDENTIFIER instead.
   (when (file-exists-p (expand-file-name identifier))
     (setq identifier (denote-retrieve-filename-identifier identifier)))
   (let ((files nil))
