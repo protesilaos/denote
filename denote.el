@@ -7852,26 +7852,40 @@ Also see `denote-data-get-backlinks-files-only'."
             (mapcar (lambda (x) (assoc x data)) files-sorted)
           data)))))
 
-(defvar denote-directory-files-get-function--original denote-directory-files-get-function
-  "Original function bound to `denote-directory-files-get-function'.")
+(defvar denote-directory-files-get-function--original nil
+  "Original function bound to `denote-directory-files-get-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function
-  "Original function bound to `denote-infer-keywords-from-files-function'.")
+(defvar denote-infer-keywords-from-files-function--original nil
+  "Original function bound to `denote-infer-keywords-from-files-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-get-path-by-id-function--original denote-get-path-by-id-function
-  "Original function bound to `denote-get-path-by-id-function'.")
+(defvar denote-get-path-by-id-function--original nil
+  "Original function bound to `denote-get-path-by-id-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-get-identifiers-function--original denote-get-identifiers-function
-  "Original function bound to `denote-get-identifiers-function'.")
+(defvar denote-get-identifiers-function--original nil
+  "Original function bound to `denote-get-identifiers-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function
-  "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.")
+(defvar denote-retrieve-xref-alist-for-backlinks-function--original nil
+  "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function
-  "Original function bound to `denote-get-backlinks-as-files-function'.")
+(defvar denote-get-backlinks-as-files-function--original nil
+  "Original function bound to `denote-get-backlinks-as-files-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
-(defvar denote-file-has-backlinks-function--original denote-file-has-backlinks-function
-  "Original function bound to `denote-file-has-backlinks-function'.")
+(defvar denote-file-has-backlinks-function--original nil
+  "Original function bound to `denote-file-has-backlinks-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
 
 ;;;###autoload
 (define-minor-mode denote-data-mode
@@ -7882,6 +7896,13 @@ Also see `denote-data-get-backlinks-files-only'."
   (if denote-data-mode
       (progn
         (denote-data--write-all-asynchronous)
+        (setq denote-directory-files-get-function--original denote-directory-files-get-function)
+        (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
+        (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
+        (setq denote-get-identifiers-function--original denote-get-identifiers-function)
+        (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
+        (setq denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function)
+        (setq denote-file-has-backlinks-function--original denote-file-has-backlinks-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
