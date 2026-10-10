@@ -7717,7 +7717,7 @@ before."
                            :filter #'denote-data--write-all-asynchronous-progress-pipe-filter))
            (emacs-binary (expand-file-name invocation-name invocation-directory))
            (command (list emacs-binary "--batch" "-l" denote-source-file "--eval"
-                          "(progn (denote-data-write-all nil :force) (prin1 denote-data))"))
+                          "(progn (denote-data-write-all) (prin1 denote-data))"))
            (process (make-process
                      :name "denote-data"
                      :buffer buffer-output
