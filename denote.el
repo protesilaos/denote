@@ -7529,10 +7529,10 @@ calculated upon request."
   (identifier nil :documentation "The file IDENTIFIER." :type string)
   (signature nil :documentation "The file SIGNATURE." :type string)
   (title nil :documentation "The file TITLE." :type string)
-  (keywords nil :documentation "The file KEYWORDS." :type list)
+  (keywords nil :documentation "The file KEYWORDS as a list of strings." :type list)
   (path nil :documentation "The file PATH." :type string)
   ;; From file contents
-  (forelinks nil :documentation "The FORELINKS as a list of identifiers." :type list)
+  (forelinks nil :documentation "The FORELINKS as a list of identifiers as strings." :type list)
   (text nil :documentation "The file TEXT." :type string))
 
 (defvar denote-data (make-hash-table :test #'equal)
