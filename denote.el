@@ -7589,8 +7589,8 @@ already called."
   (if-let* ((_ (or force (null denote-data--write-all-called-p)))
             (files (or files (denote--directory-get-files)))
             (total (length files))
-            (index 1)
-            (reporter (make-progress-reporter "`denote-data' processing files..." 0 total 0 1 1.5)))
+            (reporter (make-progress-reporter "`denote-data' processing files..." 0 total 0 1 1.5))
+            (index 1))
       (progn
         (dolist (file files)
           (progress-reporter-update reporter index)
