@@ -96,8 +96,6 @@ To use the value of this variable from Lisp, call the function
   :type '(choice (directory :tag "Single directory")
                  (repeat :tag "List of directories" directory)))
 
-(define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
-
 (defcustom denote-save-buffers nil
   "Control whether to save buffers automatically.
 This applies to commands that create new notes, such as `denote', or
@@ -3898,11 +3896,6 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 (defalias 'denote-create-note 'denote
   "Alias for `denote' command.")
 
-(define-obsolete-function-alias
-  'denote--add-prompts
-  'denote-add-prompts
-  "3.0.0")
-
 (defun denote-add-prompts (additional-prompts)
   "Add list of ADDITIONAL-PROMPTS to `denote-prompts'.
 This is best done inside of a `let' to create a wrapper function around
@@ -4772,11 +4765,6 @@ how a completion User Interface may accept an empty input."
   (let ((denote-prompts '(identifier)))
     (call-interactively #'denote-rename-file)))
 
-(define-obsolete-function-alias 'denote-keywords-add 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-rename-add-keywords 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-keywords-remove 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-rename-rename-keywords 'denote-rename-file-keywords "3.0.0")
-
 (defun denote-rename-file-signature ()
   "Convenience command to change the signature of a file.
 Like `denote-rename-file', but prompts only for the signature.
@@ -4792,9 +4780,6 @@ how a completion User Interface may accept an empty input."
   (interactive)
   (let ((denote-prompts '(signature)))
     (call-interactively #'denote-rename-file)))
-
-(define-obsolete-function-alias 'denote-add-signature 'denote-rename-file-signature "3.0.0")
-(define-obsolete-function-alias 'denote-remove-signature 'denote-rename-file-signature "3.0.0")
 
 ;;;###autoload
 (defun denote-dired-rename-files ()
@@ -5877,11 +5862,6 @@ This is used by the commands `denote-backlinks', `denote-grep',
   "4.0.0")
 
 (make-obsolete-variable 'denote-backlinks-show-context nil "4.0.0")
-
-(define-obsolete-variable-alias
-  'denote-link-backlinks-display-buffer-action
-  'denote-backlinks-display-buffer-action
-  "3.1.0")
 
 (defgroup denote-query ()
   "Integration between Denote and Xref for grep/query/backlink buffers."
