@@ -7606,9 +7606,6 @@ already called."
             (files (or files (denote--directory-get-files)))
             (total (length files))
             (index 1)
-            ;; TODO 2026-10-09: I got the reporter from dabbrev.el.
-            ;; Now I have to figure out how best to do the same in the
-            ;; `denote-data--write-all-asynchronous'.
             (reporter (make-progress-reporter "`denote-data' processing files..." 0 total 0 1 1.5)))
       (progn
         (dolist (file files)
