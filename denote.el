@@ -1419,7 +1419,8 @@ files that have an identifier."
       (let ((dirs (denote-directories)))
         (setq files (seq-filter
                      (lambda (f)
-                       (string-match-p files-matching-regexp (denote--get-file-name-relative-to-directories f dirs)))
+                       (when-let* ((file (denote--get-file-name-relative-to-directories f dirs)))
+                         (string-match-p files-matching-regexp file)))
                      files))))
     (when text-only
       (setq files (seq-filter #'denote-file-has-supported-extension-p files)))
