@@ -3032,34 +3032,39 @@ If FILES is not given, use all text files as returned by
                 (puthash file-identifier (list file) links-hash-table)))))))
     links-hash-table))
 
-(defun denote-retrieve-xref-alist-for-backlinks (identifier)
-  "Return xref alist of absolute file paths of matches for IDENTIFIER."
-  (let* ((files (denote-directory-files))
-         (file-types (denote--file-type-keys))
+(defun denote--make-xref-alist (identifier files)
+  "Make xref alist for IDENTIFIER with matches in FILES."
+  (let* ((file-types (denote--file-type-keys))
          (xref-file-name-display 'abs)
          (xref-matches nil))
+    (dolist (file-type file-types)
+      (when-let* ((current-backlinks (gethash file-type files))
+                  (type (denote--link-retrieval-format file-type))
+                  (format-parts (split-string type "%VALUE%"))
+                  (query-simple (concat
+                                 (regexp-quote (nth 0 format-parts))
+                                 (regexp-quote identifier)
+                                 (regexp-quote (nth 1 format-parts))))
+                  (query-org-link (concat
+                                   (regexp-quote (nth 0 format-parts))
+                                   (regexp-quote identifier)
+                                   "::")))
+        (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
+        (when (eq file-type 'org)
+          (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
+    (let ((data (xref--analyze xref-matches)))
+      (if-let* ((sort denote-query-sorting)
+                (files-matched (mapcar #'car data))
+                (files-sorted (denote-sort-files files-matched sort)))
+          (mapcar (lambda (x) (assoc x data)) files-sorted)
+        data))))
+
+(defun denote-retrieve-xref-alist-for-backlinks (identifier)
+  "Return xref alist of absolute file paths of matches for IDENTIFIER."
+  (let ((files (denote-directory-files)))
     (when-let* ((backlinks (gethash identifier (denote--get-all-backlinks files))))
-      (let* ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
-        (dolist (file-type file-types)
-          (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
-                      (type (denote--link-retrieval-format file-type))
-                      (format-parts (split-string type "%VALUE%")) ; Should give two parts
-                      (query-simple (concat
-                                     (regexp-quote (nth 0 format-parts))
-                                     (regexp-quote identifier)
-                                     (regexp-quote (nth 1 format-parts))))
-                      (query-org-link (concat
-                                       (regexp-quote (nth 0 format-parts))
-                                       (regexp-quote identifier)
-                                       "::")))
-            (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
-            (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
-      (let ((data (xref--analyze xref-matches)))
-        (if-let* ((sort denote-query-sorting)
-                  (files-matched (mapcar #'car data))
-                  (files-sorted (denote-sort-files files-matched sort)))
-            (mapcar (lambda (x) (assoc x data)) files-sorted)
-          data)))))
+      (let ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
+        (denote--make-xref-alist identifier backlinks-by-file-type)))))
 
 (defvar denote-retrieve-xref-alist-for-backlinks-function #'denote-retrieve-xref-alist-for-backlinks
   "Function to return xref alist for `denote-make-backlinks-buffer'.
@@ -7814,43 +7819,12 @@ Also see `denote-data-get-backlinks'."
         (push path files)))
     files))
 
-;; NOTE 2026-10-09: I copied `denote-retrieve-xref-alist-for-backlinks'
-;; and changed the files it considers.  This is fine for what I am
-;; doing right now but it makes no sense to have it this way
-;; long-term.  The underlying function should accept FILES and behave
-;; accordingly.
-;;
-;; The last big related to `denote-retrieve-xref-alist-for-backlinks'
-;; was in commit b43149df38920d2bf1d766a34cb755c2221f191 by Jean-Philippe Gagné Guay.
 (defun denote-data-get-backlinks (identifier)
   "Return an xref alist of backlinks for IDENTIFIER.
 Also see `denote-data-get-backlinks-files-only'."
   (when-let* ((backlinks (denote-data-get-backlinks-files-only identifier)))
-    (let* ((file-types (denote--file-type-keys))
-           (xref-file-name-display 'abs)
-           (xref-matches nil)
-           (backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
-      (dolist (file-type file-types)
-        (when-let* ((current-backlinks (gethash file-type backlinks-by-file-type))
-                    (type (denote--link-retrieval-format file-type))
-                    (format-parts (split-string type "%VALUE%"))
-                    (query-simple (concat
-                                   (regexp-quote (nth 0 format-parts))
-                                   (regexp-quote identifier)
-                                   (regexp-quote (nth 1 format-parts))))
-                    (query-org-link (concat
-                                     (regexp-quote (nth 0 format-parts))
-                                     (regexp-quote identifier)
-                                     "::")))
-          (setq xref-matches (append xref-matches (xref-matches-in-files query-simple current-backlinks)))
-          (when (eq file-type 'org)
-            (setq xref-matches (append xref-matches (xref-matches-in-files query-org-link current-backlinks))))))
-      (let ((data (xref--analyze xref-matches)))
-        (if-let* ((sort denote-query-sorting)
-                  (files-matched (mapcar #'car data))
-                  (files-sorted (denote-sort-files files-matched sort)))
-            (mapcar (lambda (x) (assoc x data)) files-sorted)
-          data)))))
+    (let ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
+      (denote--make-xref-alist identifier backlinks-by-file-type))))
 
 (defvar denote-directory-files-get-function--original nil
   "Original function bound to `denote-directory-files-get-function'.
