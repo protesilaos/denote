@@ -7580,8 +7580,8 @@ Do so by using the `denote-data--content-fns'."
 
 (defun denote-data-write-all (&optional files force)
   "Write all FILES to `denote-data'.
-
-If FILES is nil, then write all `denote-directory-files'.
+If FILES is nil, then write all files in the variable `denote-directory'
+that satisfy `denote-file-has-denoted-filename-p'.
 
 With optional FORCE build up the cache again even if this function was
 already called."
