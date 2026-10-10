@@ -896,18 +896,18 @@ If the region is active, its text is used as the link's description."
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
 
 (define-obsolete-variable-alias
- 'denote-id-format
- 'denote-date-identifier-format
- "4.1.0")
+  'denote-id-format
+  'denote-date-identifier-format
+  "4.1.0")
 
 (defconst denote-date-identifier-format "%Y%m%dT%H%M%S"
   "Format of ID prefix of a note's filename.
 The note's ID is derived from the date and time of its creation.")
 
 (define-obsolete-variable-alias
- 'denote-id-regexp
- 'denote-date-identifier-regexp
- "4.1.0")
+  'denote-id-regexp
+  'denote-date-identifier-regexp
+  "4.1.0")
 
 (defconst denote-date-identifier-regexp "\\([0-9]\\{8\\}\\)\\(T[0-9]\\{6\\}\\)"
   "Regular expression to match `denote-date-identifier-format'.")
@@ -3114,8 +3114,7 @@ which case it is not added to the base file name."
    ((not (string-suffix-p "/" dir-path))
     (error "DIR-PATH does not end with a / as directories ought to")))
   (let ((file-name "")
-        (components (seq-union denote-file-name-components-order
-                               '(identifier signature title keywords))))
+        (components (seq-union denote-file-name-components-order '(identifier signature title keywords))))
     (dolist (component components)
       (cond ((and (eq component 'identifier) id (not (string-empty-p id)))
              (setq file-name (concat file-name "@@" (denote-sluggify 'identifier id))))
@@ -3368,7 +3367,7 @@ This is a reference function for `denote-get-identifier-function'."
      (completing-read
       (format-prompt "Run note-creating Denote command" default)
       (denote-get-completion-table denote-commands-for-new-notes '(category . command))
-       nil t nil 'denote-command-prompt-history default))))
+      nil t nil 'denote-command-prompt-history default))))
 
 ;;;;; The `denote' command and its prompts
 
