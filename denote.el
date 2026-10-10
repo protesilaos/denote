@@ -7496,33 +7496,6 @@ visited again in a new buffer (files are visited with the command
 
 ;;;; The cache with `denote-data'
 
-;; NOTE 2026-10-07: I plan to put all this in a separate file.  Having
-;; it here allows me to test things better.  The essential work is to
-;; have `denote-directory-files-get-function' and related, so that
-;; packages can introduce their own functions.
-
-(defgroup denote-data nil
-  "Cache Denote files in the `denote-data' hash-table."
-  :group 'denote)
-
-;; TODO 2026-10-09: Does it even make sense to keep this as an option
-;; given commit b131202eae2e570a8e1c8a123e692c9ad031dd84?  Now
-;; everything is fast, even without the asynchronous process.
-(defcustom denote-data-read-contents t
-  "When non-nil, read file contents for `denote-data'.
-Reading file contents means that `denote-data' will include non-nil
-slots for forelinks (denote: links to other files), the exact file
-title, and the entire text of the file.
-
-When nil, `denote-data' only includes what the Denote file name
-provides, namely: identifier, signature, title, keywords, and file path.
-Anything else that relies on reading file contents still needs to be
-calculated upon request."
-  :type 'boolean
-  :group 'denote-data)
-
-;;;;; Prepare the cache
-
 (cl-defstruct (denote-data-entry (:constructor denote-data-entry-create))
   "Data structure of a Denote file."
   ;; From file name
@@ -7537,6 +7510,8 @@ calculated upon request."
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
+
+;;;;; Prepare the cache
 
 (defvar denote-data--content-fns
   '((title . denote-data--get-contents-title)
@@ -7588,31 +7563,23 @@ Do so by using the `denote-data--content-fns'."
           (push (cons slot return) data))))
     data))
 
-(defun denote-data-write-entry (file read-contents)
-  "Write data about FILE to `denote-data'.
-With non-nil READ-CONTENTS, read FILE data.  Else fall back to the value
-of the user option `denote-data-read-contents'."
+(defun denote-data-write-entry (file)
+  "Write data about FILE to `denote-data'."
   (when-let* ((identifier (denote-retrieve-filename-identifier file)))
     (let* ((title (denote-retrieve-filename-title file))
            (signature (denote-retrieve-filename-signature file))
            (keywords (denote-retrieve-filename-keywords-as-list file))
-           (slots (if-let* ((_ read-contents)
-                            (data (denote-data--get-contents file)))
-                      (let ((contents-title (alist-get 'title data))
-                            (forelinks (alist-get 'forelinks data))
-                            (text (alist-get 'text data)))
-                        (list :identifier identifier
-                              :title (or contents-title title)
-                              :signature signature
-                              :keywords keywords
-                              :path file
-                              :forelinks forelinks
-                              :text text))
-                    (list :identifier identifier
-                          :title title
-                          :signature signature
-                          :keywords keywords
-                          :path file)))
+           (data (denote-data--get-contents file))
+           (contents-title (alist-get 'title data))
+           (forelinks (alist-get 'forelinks data))
+           (text (alist-get 'text data))
+           (slots (list :identifier identifier
+                        :title (or contents-title title)
+                        :signature signature
+                        :keywords keywords
+                        :path file
+                        :forelinks forelinks
+                        :text text))
            (entry (apply 'denote-data-entry-create slots)))
       (puthash identifier entry denote-data))))
 
@@ -7628,10 +7595,8 @@ of the user option `denote-data-read-contents'."
 ;; maybe that goes even deeper into `denote--directory-get-files'?
 
 ;;;###autoload
-(defun denote-data-write-all (read-contents &optional files force)
+(defun denote-data-write-all (&optional files force)
   "Write all FILES to `denote-data'.
-If READ-CONTENTS is non-nil, then read each file for additional data,
-per `denote-data-read-contents'.
 
 If FILES is nil, then write all `denote-directory-files'.
 
@@ -7649,7 +7614,7 @@ already called."
         (dolist (file files)
           (progress-reporter-update reporter index)
           (setq index (+ index 1))
-          (denote-data-write-entry file read-contents))
+          (denote-data-write-entry file))
         (setq denote-data--write-all-called-p t)
         (progress-reporter-done reporter))
     (message "Data already exists; call `denote-data-write-all' with FORCE if needed")))
@@ -7690,7 +7655,7 @@ already called."
   "Update the current Denote file entry in `denote-data'.
 Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
-  (denote-data-write-entry buffer-file-name denote-data-read-contents))
+  (denote-data-write-entry buffer-file-name))
 
 ;;;;; The asynchronous call to build the `denote-data'
 
@@ -7740,10 +7705,8 @@ Filter Functions'."
       (erase-buffer))
     buffer))
 
-(defun denote-data--write-all-asynchronous (read-contents &optional force)
+(defun denote-data--write-all-asynchronous (&optional force)
   "Call `denote-data-write-all' in a separate process.
-READ-CONTENTS has the meaning of `denote-data-read-contents'.
-
 With optional FORCE run the process again even if it was already called
 before."
   (when (or force (null denote-data--write-all-called-p))
@@ -7757,7 +7720,7 @@ before."
                            :filter #'denote-data--write-all-asynchronous-progress-pipe-filter))
            (emacs-binary (expand-file-name invocation-name invocation-directory))
            (command (list emacs-binary "--batch" "-l" denote-source-file "--eval"
-                          (format "(progn (denote-data-write-all %s nil :force) (prin1 denote-data))" read-contents)))
+                          "(progn (denote-data-write-all nil :force) (prin1 denote-data))"))
            (process (make-process
                      :name "denote-data"
                      :buffer buffer-output
@@ -7915,33 +7878,29 @@ Also see `denote-data-get-backlinks-files-only'."
 
 ;;;###autoload
 (define-minor-mode denote-data-mode
-  "When non-nil, cache Denote data in the `denote-data' hash-table and use it.
-When non-nil also call `denote-data-write-all' and make it read file
-contents in accordance with the user option `denote-data-read-contents'."
+  "When non-nil, cache Denote data in the `denote-data' hash-table and use it."
   :global t
   :init-value nil
   (denote-data--cancel-asynchronous)
   (if denote-data-mode
       (progn
-        (denote-data--write-all-asynchronous denote-data-read-contents)
+        (denote-data--write-all-asynchronous)
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
         (setq denote-get-identifiers-function #'denote-data-get-identifiers)
-        (when denote-data-read-contents
-          (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
-          (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
-          (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only))
+        (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
+        (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
+        (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
     (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
     (setq denote-get-identifiers-function denote-get-identifiers-function--original)
-    (when denote-data-read-contents
-      (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
-      (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
-      (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original))
+    (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
+    (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
+    (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
