@@ -1539,12 +1539,28 @@ Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
 ;; TODO 2026-10-11: Review all `denote-retrieve-filename-title' calls
-;; to determine where it makes sense to keep it and where to call
-;; `denote-get-title-function'.
+;; and related to determine where it makes sense to keep them as they
+;; are and where to call their respective variable.
 (defvar denote-get-title-function #'denote-retrieve-filename-title
   "Function to return the Denote file title.
 The function is called with one argument, the file path, and should
 return the title as a string.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
+(defvar denote-get-signature-function #'denote-retrieve-filename-signature
+  "Function to return the Denote file signature.
+The function is called with one argument, the file path, and should
+return the signature as a string.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
+(defvar denote-get-keywords-function #'denote-retrieve-filename-keywords
+  "Function to return the Denote file keywords.
+The function is called with one argument, the file path, and should
+return the keywords as a list of strings
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
@@ -1569,8 +1585,8 @@ they need, such as to read from a cache or database.")
 
 (defun denote-file-prompt--format-keywords-and-signature (file)
   "Return keywords and signature of FILE for `denote-file-prompt-affixate'."
-  (let ((keywords (denote-retrieve-filename-keywords file))
-        (signature (denote-retrieve-filename-signature file)))
+  (let ((keywords (funcall denote-get-keywords-function file))
+        (signature (funcall denote-get-signature-function file)))
     (when-let* ((combined (cond
                            ((and keywords signature) (concat "=" signature "  " keywords))
                            (keywords)
@@ -7807,6 +7823,20 @@ Also see `denote-data-get-backlinks'."
     (or (denote-data-entry-title entry)
         (denote-retrieve-filename-title identifier))))
 
+(defun denote-data-get-signature-function (identifier)
+  "Return signature of file with IDENTIFIER."
+  (let* ((id (denote-data--resolve-file-identifier identifier))
+         (entry (denote-data-get id)))
+    (or (denote-data-entry-signature entry)
+        (denote-retrieve-filename-signature identifier))))
+
+(defun denote-data-get-keywords-function (identifier)
+  "Return keywords of file with IDENTIFIER as a string."
+  (let* ((id (denote-data--resolve-file-identifier identifier))
+         (entry (denote-data-get id)))
+    (or (denote-data-entry-keywords entry)
+        (denote-retrieve-filename-keywords identifier))))
+
 (defun denote-data-get-backlinks (identifier)
   "Return an xref alist of backlinks for IDENTIFIER.
 Also see `denote-data-get-backlinks-files-only'."
@@ -7854,6 +7884,16 @@ last known preference.")
 The `denote-data-mode' sets this variable in order to capture the user's
 last known preference.")
 
+(defvar denote-get-signature-function--original nil
+  "Original function bound to `denote-get-signature-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
+
+(defvar denote-get-keywords-function--original nil
+  "Original function bound to `denote-get-keywords-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When enabled, store all Denote file data in `denote-data' and use it."
@@ -7879,6 +7919,8 @@ last known preference.")
         (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
         (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only)
         (setq denote-get-title-function--original #'denote-data-get-title-function)
+        (setq denote-get-signature-function--original #'denote-data-get-signature-function)
+        (setq denote-get-keywords-function--original #'denote-data-get-keywords-function)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
@@ -7889,6 +7931,8 @@ last known preference.")
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-get-title-function denote-get-title-function--original)
+    (setq denote-get-signature-function denote-get-signature-function--original)
+    (setq denote-get-keywords-function denote-get-keywords-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
