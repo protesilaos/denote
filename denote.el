@@ -7764,7 +7764,7 @@ Include `denote-get-buffer-file-names'."
       (push path files))
     files))
 
-(defun denote-data-get-keywords (&optional files-matching-regexp)
+(defun denote-data-get-keywords-all (&optional files-matching-regexp)
   "Return keywords found in files, optionally FILES-MATCHING-REGEXP.
 Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
   (let ((keywords nil))
@@ -7915,7 +7915,7 @@ last known preference.")
         (setq denote-get-signature-function--original denote-get-signature-function)
         (setq denote-get-keywords-function--original denote-get-keywords-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
-        (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
+        (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
         (setq denote-get-identifiers-function #'denote-data-get-identifiers)
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
