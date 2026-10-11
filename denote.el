@@ -7802,8 +7802,9 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 ;; instead.
 (defun denote-data--resolve-file-identifier (arg)
   "Return ARG identifier if it is a file, else return ARG."
-  (when (file-exists-p (expand-file-name arg))
-    (denote-retrieve-filename-identifier arg)))
+  (if (file-exists-p (expand-file-name arg))
+      (denote-retrieve-filename-identifier arg)
+    arg))
 
 (defun denote-data-get-backlinks-files-only (identifier)
   "Return list of FILES that link to file with IDENTIFIER.
