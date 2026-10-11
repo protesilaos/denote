@@ -1575,7 +1575,6 @@ they need, such as to read from a cache or database.")
    ((file-name-extension file))
    (t "Other files")))
 
-;; TODO 2026-10-11: These should use the equivalent of `denote-get-title-function'.
 (defun denote-file-prompt--format-identifier (file)
   "Return identifier of FILE for `denote-file-prompt-affixate'."
   (when-let* ((identifier (denote-retrieve-filename-identifier file))
