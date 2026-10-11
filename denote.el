@@ -7819,24 +7819,21 @@ Also see `denote-data-get-backlinks'."
 
 (defun denote-data-get-title (identifier)
   "Return title of file with IDENTIFIER."
-  (if-let* ((id (denote-data--resolve-file-identifier identifier))
-            (entry (denote-data-get id)))
-      (denote-data-entry-title entry)
-    (denote-retrieve-filename-title identifier)))
+  (when-let* ((id (denote-data--resolve-file-identifier identifier))
+              (entry (denote-data-get id)))
+    (denote-data-entry-title entry)))
 
 (defun denote-data-get-signature (identifier)
   "Return signature of file with IDENTIFIER."
-  (if-let* ((id (denote-data--resolve-file-identifier identifier))
-            (entry (denote-data-get id)))
-      (denote-data-entry-signature entry)
-    (denote-retrieve-filename-signature identifier)))
+  (when-let* ((id (denote-data--resolve-file-identifier identifier))
+              (entry (denote-data-get id)))
+    (denote-data-entry-signature entry)))
 
 (defun denote-data-get-keywords (identifier)
   "Return keywords of file with IDENTIFIER as a string."
-  (if-let* ((id (denote-data--resolve-file-identifier identifier))
-            (entry (denote-data-get id)))
-      (denote-data-entry-keywords entry)
-    (denote-retrieve-filename-keywords identifier)))
+  (when-let* ((id (denote-data--resolve-file-identifier identifier))
+              (entry (denote-data-get id)))
+    (denote-data-entry-keywords entry)))
 
 (defun denote-data-get-backlinks (identifier)
   "Return an xref alist of backlinks for IDENTIFIER.
