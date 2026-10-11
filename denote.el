@@ -1538,12 +1538,23 @@ the title prompt of `denote-open-or-create' and related commands.")
 Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
+;; TODO 2026-10-11: Review all `denote-retrieve-filename-title' calls
+;; to determine where it makes sense to keep it and where to call
+;; `denote-get-title-function'.
+(defvar denote-get-title-function #'denote-retrieve-filename-title
+  "Function to return the Denote file title.
+The function is called with one argument, the file path, and should
+return the title as a string.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 (defun denote-file-prompt-group (file transform)
   "Retun group of FILE if TRANSFORM is non-nil, per `completion-metadata'."
   (cond
    ;; FIXME 2025-12-16: Why do we not get highlights of matched
    ;; visible words?  It works if I just return FILE.
-   (transform (or (denote-retrieve-filename-title file) file))
+   (transform (or (funcall denote-get-title-function file) file))
    ((file-name-directory file))
    ((file-name-extension file))
    (t "Other files")))
@@ -7766,22 +7777,34 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
     (if (file-exists-p path)
         path
       (remhash identifier denote-data)
-      nil)))
+                                        nil)))
+
+;; This is because the original function is called with a FILE
+;; argument, as in `denote-get-backlinks-as-files-function'.  Maybe
+;; long-term we should change everything to expect an IDENTIFIER
+;; instead.
+(defun denote-data--resolve-file-identifier (arg)
+  "Return ARG identifier if it is a file, else return ARG."
+  (when (file-exists-p (expand-file-name arg))
+    (denote-retrieve-filename-identifier arg)))
 
 (defun denote-data-get-backlinks-files-only (identifier)
   "Return list of FILES that link to file with IDENTIFIER.
 Also see `denote-data-get-backlinks'."
-  ;; The `when' is because this will be called with a FILE argument,
-  ;; per `denote-get-backlinks-as-files-function'.  Maybe long-term we
-  ;; should change everything to expect an IDENTIFIER instead.
-  (when (file-exists-p (expand-file-name identifier))
-    (setq identifier (denote-retrieve-filename-identifier identifier)))
-  (let ((files nil))
+  (let ((id (denote-data--resolve-file-identifier identifier))
+        (files nil))
     (denote-data--maphash-with-file-exists-p
       (when-let* ((forelinks (denote-data-entry-forelinks value))
-                  (_ (member identifier forelinks)))
+                  (_ (member id forelinks)))
         (push path files)))
     files))
+
+(defun denote-data-get-title-function (identifier)
+  "Return title of file with IDENTIFIER."
+  (let* ((id (denote-data--resolve-file-identifier identifier))
+         (entry (denote-data-get id)))
+    (or (denote-data-entry-title entry)
+        (denote-retrieve-filename-title identifier))))
 
 (defun denote-data-get-backlinks (identifier)
   "Return an xref alist of backlinks for IDENTIFIER.
@@ -7825,6 +7848,11 @@ last known preference.")
 The `denote-data-mode' sets this variable in order to capture the user's
 last known preference.")
 
+(defvar denote-get-title-function--original nil
+  "Original function bound to `denote-get-title-function'.
+The `denote-data-mode' sets this variable in order to capture the user's
+last known preference.")
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
   "When enabled, store all Denote file data in `denote-data' and use it."
@@ -7841,6 +7869,7 @@ last known preference.")
         (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
         (setq denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function)
         (setq denote-file-has-backlinks-function--original denote-file-has-backlinks-function)
+        (setq denote-get-title-function--original denote-get-title-function)
         (setq denote-directory-files-get-function #'denote-data-get-files)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords)
         (setq denote-get-path-by-id-function #'denote-data-get-path)
@@ -7848,6 +7877,7 @@ last known preference.")
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
         (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
         (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only)
+        (setq denote-get-title-function--original #'denote-data-get-title-function)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
         (add-hook 'after-save-hook #'denote-data-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
@@ -7857,6 +7887,7 @@ last known preference.")
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
+    (setq denote-get-title-function denote-get-title-function--original)
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)))
 
