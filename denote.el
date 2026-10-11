@@ -7543,7 +7543,7 @@ Do so by using the `denote-data--content-fns'."
   (when-let* ((identifier (denote-retrieve-filename-identifier file)))
     (let* ((title (denote-retrieve-filename-title file))
            (signature (denote-retrieve-filename-signature file))
-           (keywords (denote-retrieve-filename-keywords-as-list file))
+           (keywords (denote-retrieve-filename-keywords file))
            (data (denote-data--get-contents file))
            (contents-title (alist-get 'title data))
            (forelinks (alist-get 'forelinks data))
