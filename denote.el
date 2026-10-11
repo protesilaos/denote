@@ -2169,6 +2169,16 @@ Also see `denote-retrieve-filename-keywords'."
   'denote-infer-keywords-from-files
   "4.0.0")
 
+(defun denote--infer-keywords-from-files-filter (keywords)
+  "Remove KEYWORDS that match `denote-keywords-to-not-infer-regexp'."
+  (if-let* ((regexp denote-keywords-to-not-infer-regexp)
+            (_ (stringp regexp)))
+      (seq-remove
+       (lambda (keyword)
+         (string-match-p denote-keywords-to-not-infer-regexp keyword))
+       keywords)
+    keywords))
+
 (defun denote-infer-keywords-from-files (&optional files-matching-regexp)
   "Return list of keywords in `denote-directory-files'.
 With optional FILES-MATCHING-REGEXP, only extract keywords from the
@@ -2178,12 +2188,7 @@ Keep any duplicates.  Users who do not want duplicates should refer to
 the functions `denote-keywords'."
   (when-let* ((files (denote-directory-files files-matching-regexp))
               (keywords (mapcan #'denote-extract-keywords-from-path files)))
-    (if-let* ((regexp denote-keywords-to-not-infer-regexp))
-        (seq-remove
-         (lambda (k)
-           (string-match-p regexp k))
-         keywords)
-      keywords)))
+    (denote--infer-keywords-from-files-filter keywords)))
 
 (defvar denote-infer-keywords-from-files-function #'denote-infer-keywords-from-files
   "Function to return keywords found in files for `denote-keywords'.
