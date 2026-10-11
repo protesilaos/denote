@@ -7770,12 +7770,8 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
   (let ((keywords nil))
     (denote-data--maphash-with-file-exists-p
       (when-let* ((file-keywords (denote-data-entry-keywords value))
-                  (final-keywords (if denote-keywords-to-not-infer-regexp
-                                      (seq-remove
-                                       (lambda (k)
-                                         (string-match-p denote-keywords-to-not-infer-regexp k))
-                                       file-keywords)
-                                    file-keywords)))
+                  (file-keywords-list (split-string file-keywords "_" :omit-nulls))
+                  (final-keywords (denote--infer-keywords-from-files-filter file-keywords-list)))
         (if files-matching-regexp
             (when (string-match-p files-matching-regexp path)
               (push final-keywords keywords))
