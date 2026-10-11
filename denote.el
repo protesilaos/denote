@@ -7845,55 +7845,16 @@ Also see `denote-data-get-backlinks-files-only'."
     (let ((backlinks-by-file-type (denote--get-files-by-file-type backlinks)))
       (denote--make-xref-alist identifier backlinks-by-file-type))))
 
-(defvar denote-directory-files-get-function--original nil
-  "Original function bound to `denote-directory-files-get-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-infer-keywords-from-files-function--original nil
-  "Original function bound to `denote-infer-keywords-from-files-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-path-by-id-function--original nil
-  "Original function bound to `denote-get-path-by-id-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-identifiers-function--original nil
-  "Original function bound to `denote-get-identifiers-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-retrieve-xref-alist-for-backlinks-function--original nil
-  "Original function bound to `denote-retrieve-xref-alist-for-backlinks-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-backlinks-as-files-function--original nil
-  "Original function bound to `denote-get-backlinks-as-files-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-file-has-backlinks-function--original nil
-  "Original function bound to `denote-file-has-backlinks-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-title-function--original nil
-  "Original function bound to `denote-get-title-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-signature-function--original nil
-  "Original function bound to `denote-get-signature-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
-
-(defvar denote-get-keywords-function--original nil
-  "Original function bound to `denote-get-keywords-function'.
-The `denote-data-mode' sets this variable in order to capture the user's
-last known preference.")
+(defvar denote-directory-files-get-function--original nil)
+(defvar denote-infer-keywords-from-files-function--original nil)
+(defvar denote-get-path-by-id-function--original nil)
+(defvar denote-get-identifiers-function--original nil)
+(defvar denote-retrieve-xref-alist-for-backlinks-function--original nil)
+(defvar denote-get-backlinks-as-files-function--original nil)
+(defvar denote-file-has-backlinks-function--original nil)
+(defvar denote-get-title-function--original nil)
+(defvar denote-get-signature-function--original nil)
+(defvar denote-get-keywords-function--original nil)
 
 ;;;###autoload
 (define-minor-mode denote-data-mode
