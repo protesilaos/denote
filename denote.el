@@ -7492,7 +7492,7 @@ visited again in a new buffer (files are visited with the command
   (identifier nil :documentation "The file IDENTIFIER." :type string)
   (signature nil :documentation "The file SIGNATURE." :type string)
   (title nil :documentation "The file TITLE." :type string)
-  (keywords nil :documentation "The file KEYWORDS as a list of strings." :type list)
+  (keywords nil :documentation "The file KEYWORDS as a string." :type string)
   (path nil :documentation "The file PATH." :type string)
   ;; From file contents
   (forelinks nil :documentation "The FORELINKS as a list of identifiers as strings." :type list)
