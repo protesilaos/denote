@@ -7555,7 +7555,8 @@ Do so by using the `denote-data--content-fns'."
 
 (defun denote-data-write-entry (file)
   "Write data about FILE to `denote-data'."
-  (when-let* ((identifier (denote-retrieve-filename-identifier file)))
+  (when-let* ((_ (file-exists-p file))
+              (identifier (denote-retrieve-filename-identifier file)))
     (let* ((title (denote-retrieve-filename-title file))
            (signature (denote-retrieve-filename-signature file))
            (keywords (denote-retrieve-filename-keywords file))
