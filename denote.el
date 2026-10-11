@@ -7794,7 +7794,7 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
     (if (file-exists-p path)
         path
       (remhash identifier denote-data)
-                                        nil)))
+      nil)))
 
 ;; This is because the original function is called with a FILE
 ;; argument, as in `denote-get-backlinks-as-files-function'.  Maybe
