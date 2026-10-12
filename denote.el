@@ -7711,6 +7711,9 @@ before."
                            :buffer buffer-error
                            :filter #'denote-data--write-all-asynchronous-progress-pipe-filter))
            (emacs-binary (expand-file-name invocation-name invocation-directory))
+           ;; TODO 2026-10-12: Doing it this way means that we load
+           ;; the default Denote settings.  Whereas, we need to load
+           ;; all of the relevant user options, such as `denote-directory'.
            (command (list emacs-binary "--batch" "-l" denote-source-file "--eval"
                           "(progn (denote-data-write-all) (prin1 denote-data))"))
            (process (make-process
