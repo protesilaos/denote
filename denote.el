@@ -4479,6 +4479,19 @@ The purpose of this variable is to be `let' bound to nil by a caller of
 the command `denote-rename-file' or related.  This will have the effect
 of not rewriting the file's front matter.")
 
+(defvar denote--after-rename-functions nil
+  "Abnormal hook for `denote--rename-file'.
+Each function is called with the following arguments: OLD-IDENTIFIER,
+IDENTIFIER, TITLE, KEYWORDS, SIGNATURE, NEW-NAME (the path).")
+
+(defvar denote-file-has-backlinks-function #'denote-file-has-backlinks-p
+  "Function to test if a file has backlinks.
+The function is called with one argument, the file path, and should
+return either nil or nil-nil.
+
+Package developers can set this variable to a function that does what
+they need, such as to read from a cache or database.")
+
 (defun denote--rename-file (file title keywords signature date identifier)
   "Rename FILE according to the other parameters.
 Parameters TITLE, KEYWORDS, SIGNATURE, DATE, and IDENTIFIER are as
@@ -4515,7 +4528,8 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
                        identifier))
          (identifier (cond ((string-empty-p identifier) identifier)
                            ((string= old-identifier identifier) identifier)
-                           ((and (not (string-empty-p old-identifier)) (denote--file-has-backlinks-p file))
+                           ((and (not (string-empty-p old-identifier))
+                                 (funcall denote-file-has-backlinks-function file))
                             (user-error "The identifier cannot be modified: that will break existing links"))
                            (t (funcall denote-get-identifier-function identifier nil))))
          (new-name (denote-format-file-name directory identifier keywords title extension signature))
@@ -4547,6 +4561,7 @@ Respect `denote-rename-confirmations', `denote-save-buffers' and
            (cons 'id identifier)
            (cons 'file-type file-type)
            (cons 'template "")))
+    (run-hook-with-args 'denote--after-rename-functions old-identifier identifier title keywords signature new-name)
     (run-hooks 'denote-after-rename-file-hook)
     new-name))
 
@@ -6367,14 +6382,6 @@ Also see `denote-get-links'."
   'denote-file-has-backlinks-p
   "4.3.0")
 
-(defvar denote-file-has-backlinks-function #'denote-file-has-backlinks-p
-  "Function to test if a file has backlinks.
-The function is called with one argument, the file path, and should
-return either nil or nil-nil.
-
-Package developers can set this variable to a function that does what
-they need, such as to read from a cache or database.")
-
 (defun denote-file-has-backlinks-p (file)
   "Return non-nil if FILE has backlinks."
   (when-let* ((id (denote-retrieve-filename-identifier file))
@@ -7640,6 +7647,22 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
   (denote-data-write-entry buffer-file-name))
 
+(defun denote-data--post-rename-update (old-identifier identifier title keywords signature new-name)
+  "Function to add to `denote--after-rename-functions'.
+The arguments OLD-IDENTIFIER, IDENTIFIER, TITLE, KEYWORDS, SIGNATURE,
+NEW-NAME have the meaning of that hook."
+  (remhash old-identifier denote-data)
+  (let* ((data (denote-data--get-contents new-name))
+         (links (alist-get 'links data))
+         (slots (list :identifier identifier
+                      :title title
+                      :signature signature
+                      :keywords (denote-keywords-combine keywords)
+                      :path new-name
+                      :links links))
+         (entry (apply 'denote-data-entry-create slots)))
+    (puthash identifier entry denote-data)))
+
 ;;;;; The asynchronous call to build the `denote-data'
 
 (defvar denote-data--write-all-asynchronous-process nil
@@ -7885,7 +7908,8 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
-        (add-hook 'after-save-hook #'denote-data-update))
+        (add-hook 'after-save-hook #'denote-data-update)
+        (add-hook 'denote--after-rename-functions #'denote-data--post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
@@ -7898,7 +7922,8 @@ Also see `denote-data-get-backlinks-files-only'."
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
 
     (setq denote-data--write-all-called-p nil)
-    (remove-hook 'after-save-hook #'denote-data-update)))
+    (remove-hook 'after-save-hook #'denote-data-update)
+    (remove-hook 'denote--after-rename-functions #'denote-data--post-rename-update)))
 
 (provide 'denote)
 ;;; denote.el ends here
