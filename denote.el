@@ -7632,6 +7632,8 @@ already called."
       (:path (denote-data-entry-set-path entry new-value))
       (:links (denote-data-entry-set-links entry new-value)))))
 
+;; TODO 2026-10-12: Maybe it makes sense to use modified time here,
+;; subject to storing it, of course.
 (defun denote-data-update ()
   "Update the current Denote file entry in `denote-data'.
 Use this as part of `after-save-hook' or related.  Otherwise use
