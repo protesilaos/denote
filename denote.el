@@ -7704,7 +7704,7 @@ before."
   (when (or force (null denote-data--write-all-called-p))
     (let* ((buffer-output (denote-data--write-all-asynchronous-get-buffer " *denote-data*"))
            (buffer-error (denote-data--write-all-asynchronous-get-buffer " *denote-data-error*"))
-           (denote-source-file (or (locate-file "denote.el" load-path)
+           (denote-source-file (or (locate-library "denote")
                                    (error "File denote.el is not in the `load-path'")))
            (progress-pipe (make-pipe-process
                            :name "denote-data-progress-pipe"
