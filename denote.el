@@ -7741,35 +7741,6 @@ before."
 
 ;;;;; The `denote-data-mode'
 
-;; I wrote `denote-data--maphash-with-file-exists-p' to HOPEFULLY
-;; circumvent the problem of how to handle changes to files outside of
-;; Emacs.  Basically, if the file does not exist the moment we read
-;; the cache, then we remove it.  This practically means that if we do
-;; something like `denote-backlinks' we will only see valid results.
-;; Maybe there are some cases I am not even thinking of here, in which
-;; case I am happy to revise this.
-;;
-;; TODO 2026-09-25: What about a rename that changes the identifier?
-;; Maybe a `before-save-hook' for that case?
-(defmacro denote-data--maphash-with-file-exists-p (&rest body)
-  "Evaluate BODY in `maphash' over `denote-data'.
-Do it to remove the relevant key from `denote-data' if its value no
-longer has a path that conforms with `file-exists-p'."
-  (declare (indent 0))
-  `(maphash
-    (lambda (key value)
-      (if-let* ((path (denote-data-entry-path value))
-                ;; TODO 2026-10-12: It probably makes no sense to do
-                ;; `file-exists-p' each time we use `maphash'.  This
-                ;; will be too heavy.  We should have another way to
-                ;; remove files that no longer exist.  Maybe hook or
-                ;; advice into `delete-file' and `dired-do-delete'?
-                (_ (file-exists-p path)))
-          (progn ,@body)
-        (remhash key denote-data)
-        nil))
-    denote-data))
-
 (defun denote-data-get-identifiers ()
   "Return all identifiers as a hash-table.
 Include `denote-get-buffer-file-names'."
@@ -7778,8 +7749,10 @@ Include `denote-get-buffer-file-names'."
          (buffer-identifiers (mapcar #'denote-retrieve-filename-identifier buffer-file-names))
          (cached-identifiers nil)
          (all-identifiers nil))
-    (denote-data--maphash-with-file-exists-p
-      (push key cached-identifiers))
+    (maphash
+     (lambda (key _value)
+       (push key cached-identifiers))
+     denote-data)
     (setq all-identifiers (seq-uniq (append buffer-identifiers cached-identifiers)))
     (dolist (identifier all-identifiers)
       (puthash identifier t table))
@@ -7788,22 +7761,28 @@ Include `denote-get-buffer-file-names'."
 (defun denote-data-get-files ()
   "Return list of files in `denote-data'."
   (let ((files nil))
-    (denote-data--maphash-with-file-exists-p
-      (push path files))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((path (denote-data-entry-path value)))
+         (push path files)))
+     denote-data)
     files))
 
 (defun denote-data-get-keywords-all (&optional files-matching-regexp)
   "Return keywords found in files, optionally FILES-MATCHING-REGEXP.
 Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
   (let ((keywords nil))
-    (denote-data--maphash-with-file-exists-p
-      (when-let* ((file-keywords (denote-data-entry-keywords value))
-                  (file-keywords-list (split-string file-keywords "_" :omit-nulls))
-                  (final-keywords (denote--infer-keywords-from-files-filter file-keywords-list)))
-        (if files-matching-regexp
-            (when (string-match-p files-matching-regexp path)
-              (push final-keywords keywords))
-          (push final-keywords keywords))))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((path (denote-data-entry-path value))
+                   (file-keywords (denote-data-entry-keywords value))
+                   (file-keywords-list (split-string file-keywords "_" :omit-nulls))
+                   (final-keywords (denote--infer-keywords-from-files-filter file-keywords-list)))
+         (if files-matching-regexp
+             (when (string-match-p files-matching-regexp path)
+               (push final-keywords keywords))
+           (push final-keywords keywords))))
+     denote-data)
     (flatten-list keywords)))
 
 ;; TODO 2026-10-05: We need to deal with the scenario where one
@@ -7835,10 +7814,13 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
 Also see `denote-data-get-backlinks'."
   (let ((id (denote-data--resolve-file-identifier identifier))
         (files nil))
-    (denote-data--maphash-with-file-exists-p
-      (when-let* ((links (denote-data-entry-links value))
-                  (_ (member id links)))
-        (push path files)))
+    (maphash
+     (lambda (_key value)
+       (when-let* ((path (denote-data-entry-path value))
+                   (links (denote-data-entry-links value))
+                   (_ (member id links)))
+         (push path files)))
+     denote-data)
     files))
 
 (defun denote-data-get-title (identifier)
