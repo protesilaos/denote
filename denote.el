@@ -7909,6 +7909,13 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
+        ;;
+        ;; TODO 2026-10-12: I actually think now that the
+        ;; `after-save-hook' is the wrong approach.  We should do the
+        ;; equivalent of the abnormal hooks for the `denote' command.
+        ;; I do have the suspicion that `after-save-hook' will be a
+        ;; problem under certain conditions.  Plus, I want to keep
+        ;; this self-contained.
         (add-hook 'after-save-hook #'denote-data-update)
         (add-hook 'denote--link-file-no-exist-functions #'denote-data--remove-file)
         (add-hook 'denote--after-rename-functions #'denote-data--post-rename-update))
