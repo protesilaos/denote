@@ -5744,6 +5744,9 @@ Also see `denote-find-backlink'."
   (when-let* ((links (or (denote-get-links)
                          (user-error "No links found")))
               (selected (denote-select-from-files-prompt links "Select among LINKS")))
+    (unless (file-exists-p selected)
+      (run-hook-with-args 'denote--link-file-no-exist-functions selected)
+      (user-error "The linked file does not exist"))
     (find-file selected)))
 
 ;;;###autoload
@@ -6418,6 +6421,9 @@ Alo see `denote-find-link'."
               (links (or (funcall denote-get-backlinks-as-files-function current-file)
                          (user-error "No backlinks found")))
               (selected (denote-select-from-files-prompt links "Select among BACKLINKS")))
+    (unless (file-exists-p selected)
+      (run-hook-with-args 'denote--link-file-no-exist-functions selected)
+      (user-error "The linked file does not exist"))
     (find-file selected)))
 
 ;;;###autoload
