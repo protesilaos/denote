@@ -7491,6 +7491,9 @@ visited again in a new buffer (files are visited with the command
 
 ;;;; The cache with `denote-data'
 
+;; TODO 2026-10-12: Maybe we can leverage the `file-attribute-modification-time'
+;; to do this sort of thing: check files for newer modified time and
+;; only then update the cache.
 (cl-defstruct (denote-data-entry (:constructor denote-data-entry-create))
   "Data structure of a Denote file."
   (identifier nil :documentation "The file IDENTIFIER." :type string)
