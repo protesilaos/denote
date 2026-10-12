@@ -7501,7 +7501,7 @@ visited again in a new buffer (files are visited with the command
   (title nil :documentation "The file TITLE." :type string)
   (keywords nil :documentation "The file KEYWORDS as a string." :type string)
   (path nil :documentation "The file PATH." :type string)
-  (forelinks nil :documentation "The FORELINKS as a list of identifiers as strings." :type list))
+  (links nil :documentation "The LINKS as a list of identifiers (strings)." :type list))
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
@@ -7510,7 +7510,7 @@ visited again in a new buffer (files are visited with the command
 
 (defvar denote-data--content-fns
   '((title . denote-data--get-contents-title)
-    (forelinks . denote-data--get-contents-forelinks))
+    (links . denote-data--get-contents-links))
   "List of entries to read data from a file for `denote-data--get-contents'.
 Each element is a cons cell of the form (SYMBOL . FUNCTION), where
 SYMBOL corresponds to a slot in `denote-data-entry' and thus describes
@@ -7526,16 +7526,16 @@ Do it when FILE-SUPPORTED-P is non-nil."
                 (_ (re-search-forward regexp nil t 1)))
       (funcall value-fn (buffer-substring-no-properties (point) (line-end-position))))))
 
-(defun denote-data--get-contents-forelinks (file-supported-p _identifier file-type)
+(defun denote-data--get-contents-links (file-supported-p _identifier file-type)
   "Return denote: links of FILE-TYPE for `denote-data--get-contents'.
 Do it when FILE-SUPPORTED-P is non-nil."
   (when file-supported-p
     (goto-char (point-min))
-    (let ((forelinks nil))
+    (let ((links nil))
       (when-let* ((regexp (denote--link-in-context-regexp file-type)))
         (while (re-search-forward regexp nil t)
-          (push (match-string 1) forelinks))
-        (seq-uniq forelinks)))))
+          (push (match-string 1) links))
+        (seq-uniq links)))))
 
 (defun denote-data--get-contents (file)
   "Read FILE contents and return relevant `denote-data'.
@@ -7560,13 +7560,13 @@ Do so by using the `denote-data--content-fns'."
            (keywords (denote-retrieve-filename-keywords file))
            (data (denote-data--get-contents file))
            (contents-title (alist-get 'title data))
-           (forelinks (alist-get 'forelinks data))
+           (links (alist-get 'links data))
            (slots (list :identifier identifier
                         :title (or contents-title title)
                         :signature signature
                         :keywords keywords
                         :path file
-                        :forelinks forelinks))
+                        :links links))
            (entry (apply 'denote-data-entry-create slots)))
       (puthash identifier entry denote-data))))
 
@@ -7619,7 +7619,7 @@ already called."
 (denote-data--define-entry-set title)
 (denote-data--define-entry-set keywords)
 (denote-data--define-entry-set path)
-(denote-data--define-entry-set forelinks)
+(denote-data--define-entry-set links)
 
 (defun denote-data-modify (slot new-value identifier)
   "Modify the SLOT with NEW-VALUE of file with IDENTIFIER in `denote-data'."
@@ -7630,7 +7630,7 @@ already called."
       (:keywords (denote-data-entry-set-keywords entry new-value))
       (:title (denote-data-entry-set-title entry new-value))
       (:path (denote-data-entry-set-path entry new-value))
-      (:forelinks (denote-data-entry-set-forelinks entry new-value)))))
+      (:links (denote-data-entry-set-links entry new-value)))))
 
 (defun denote-data-update ()
   "Update the current Denote file entry in `denote-data'.
@@ -7810,8 +7810,8 @@ Also see `denote-data-get-backlinks'."
   (let ((id (denote-data--resolve-file-identifier identifier))
         (files nil))
     (denote-data--maphash-with-file-exists-p
-      (when-let* ((forelinks (denote-data-entry-forelinks value))
-                  (_ (member id forelinks)))
+      (when-let* ((links (denote-data-entry-links value))
+                  (_ (member id links)))
         (push path files)))
     files))
 
