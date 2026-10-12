@@ -5718,7 +5718,7 @@ of `denote-directory-files'.
 
 Also see `denote-get-backlinks'."
   (when-let* ((current-file (or file (buffer-file-name)))
-              ((denote-file-has-supported-extension-p current-file))
+              (_ (denote-file-has-supported-extension-p current-file))
               (file-type (denote-filetype-heuristics current-file))
               (regexp (denote--link-in-context-regexp file-type))
               (files (or files (denote-directory-files nil nil nil nil :has-identifier)))
