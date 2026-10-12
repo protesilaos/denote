@@ -7493,15 +7493,12 @@ visited again in a new buffer (files are visited with the command
 
 (cl-defstruct (denote-data-entry (:constructor denote-data-entry-create))
   "Data structure of a Denote file."
-  ;; From file name
   (identifier nil :documentation "The file IDENTIFIER." :type string)
   (signature nil :documentation "The file SIGNATURE." :type string)
   (title nil :documentation "The file TITLE." :type string)
   (keywords nil :documentation "The file KEYWORDS as a string." :type string)
   (path nil :documentation "The file PATH." :type string)
-  ;; From file contents
-  (forelinks nil :documentation "The FORELINKS as a list of identifiers as strings." :type list)
-  (text nil :documentation "The file TEXT." :type string))
+  (forelinks nil :documentation "The FORELINKS as a list of identifiers as strings." :type list))
 
 (defvar denote-data (make-hash-table :test #'equal)
   "List of `denote-data-entry' elements.")
@@ -7510,8 +7507,7 @@ visited again in a new buffer (files are visited with the command
 
 (defvar denote-data--content-fns
   '((title . denote-data--get-contents-title)
-    (forelinks . denote-data--get-contents-forelinks)
-    (text . denote-data--get-contents-text))
+    (forelinks . denote-data--get-contents-forelinks))
   "List of entries to read data from a file for `denote-data--get-contents'.
 Each element is a cons cell of the form (SYMBOL . FUNCTION), where
 SYMBOL corresponds to a slot in `denote-data-entry' and thus describes
@@ -7538,12 +7534,6 @@ Do it when FILE-SUPPORTED-P is non-nil."
           (push (match-string 1) forelinks))
         (seq-uniq forelinks)))))
 
-(defun denote-data--get-contents-text (file-supported-p _identifier _file-type)
-  "Return `buffer-string' for `denote-data--get-contents'.
-Do it when FILE-SUPPORTED-P is non-nil."
-  (when file-supported-p
-    (buffer-string)))
-
 (defun denote-data--get-contents (file)
   "Read FILE contents and return relevant `denote-data'.
 Do so by using the `denote-data--content-fns'."
@@ -7568,14 +7558,12 @@ Do so by using the `denote-data--content-fns'."
            (data (denote-data--get-contents file))
            (contents-title (alist-get 'title data))
            (forelinks (alist-get 'forelinks data))
-           (text (alist-get 'text data))
            (slots (list :identifier identifier
                         :title (or contents-title title)
                         :signature signature
                         :keywords keywords
                         :path file
-                        :forelinks forelinks
-                        :text text))
+                        :forelinks forelinks))
            (entry (apply 'denote-data-entry-create slots)))
       (puthash identifier entry denote-data))))
 
@@ -7629,7 +7617,6 @@ already called."
 (denote-data--define-entry-set keywords)
 (denote-data--define-entry-set path)
 (denote-data--define-entry-set forelinks)
-(denote-data--define-entry-set text)
 
 (defun denote-data-modify (slot new-value identifier)
   "Modify the SLOT with NEW-VALUE of file with IDENTIFIER in `denote-data'."
@@ -7640,8 +7627,7 @@ already called."
       (:keywords (denote-data-entry-set-keywords entry new-value))
       (:title (denote-data-entry-set-title entry new-value))
       (:path (denote-data-entry-set-path entry new-value))
-      (:forelinks (denote-data-entry-set-forelinks entry new-value))
-      (:text (denote-data-entry-set-text entry new-value)))))
+      (:forelinks (denote-data-entry-set-forelinks entry new-value)))))
 
 (defun denote-data-update ()
   "Update the current Denote file entry in `denote-data'.
