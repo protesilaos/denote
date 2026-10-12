@@ -4359,7 +4359,8 @@ matter values if appropriate.
 If `denote-rename-confirmations' contains `rewrite-front-matter',
 prompt to confirm the rewriting of the front matter."
   (let* ((front-matter (denote--front-matter file-type))
-         (file-content (with-current-buffer (find-file-noselect file) (buffer-string)))
+         (buffer (find-file-noselect file))
+         (file-content (with-current-buffer buffer (buffer-string)))
          (components-in-template (denote--get-front-matter-components-order front-matter file-type))
          (components-in-file (denote--get-front-matter-components-order file-content file-type))
          (components-to-add '())
@@ -4389,7 +4390,7 @@ prompt to confirm the rewriting of the front matter."
                (or components-to-add components-to-remove components-to-modify))
       (when-let* ((final-components (denote--get-final-components-for-rewrite
                                      components-in-file components-in-template components-to-add)))
-        (with-current-buffer (find-file-noselect file)
+        (with-current-buffer buffer
           (when (or (not (memq 'rewrite-front-matter denote-rename-confirmations))
                     (y-or-n-p (denote--get-front-matter-rewrite-prompt
                                final-components
