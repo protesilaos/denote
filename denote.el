@@ -7730,6 +7730,11 @@ longer has a path that conforms with `file-exists-p'."
   `(maphash
     (lambda (key value)
       (if-let* ((path (denote-data-entry-path value))
+                ;; TODO 2026-10-12: It probably makes no sense to do
+                ;; `file-exists-p' each time we use `maphash'.  This
+                ;; will be too heavy.  We should have another way to
+                ;; remove files that no longer exist.  Maybe hook or
+                ;; advice into `delete-file' and `dired-do-delete'?
                 (_ (file-exists-p path)))
           (progn ,@body)
         (remhash key denote-data)
