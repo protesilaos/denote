@@ -5608,6 +5608,12 @@ own to return the appropriate description."
   'denote-get-link-description
   "4.0.0")
 
+(defvar denote--link-file-no-exist-functions nil
+  "Abnormal hook called from `denote-link'.
+It is called when `denote-link' tried to link to a file that fails
+`file-exist-p'.  Functions are called with one argument, the file path,
+as a string.")
+
 ;;;###autoload
 (defun denote-link (file file-type description &optional id-only)
   "Create link to FILE note in variable `denote-directory' with DESCRIPTION.
@@ -5642,6 +5648,7 @@ the active region specially, is up to it."
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
   (unless (file-exists-p file)
+    (run-hook-with-args 'denote--link-file-no-exist-functions file)
     (user-error "The linked file does not exist"))
   (denote--delete-active-region-content)
   (insert (denote-format-link file description file-type id-only)))
@@ -7648,6 +7655,13 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
   (denote-data-write-entry buffer-file-name))
 
+(defun denote-data--remove-file (file)
+  "Remove FILE from `denote-data'.
+FILE may be a file path or the identifier."
+  (let ((id (denote-retrieve-filename-identifier file)))
+    (remhash id denote-data)
+    (message "Removed file with identifier `%s' from `denote-data'" id)))
+
 (defun denote-data--post-rename-update (old-identifier identifier title keywords signature new-name)
   "Function to add to `denote--after-rename-functions'.
 The arguments OLD-IDENTIFIER, IDENTIFIER, TITLE, KEYWORDS, SIGNATURE,
@@ -7889,6 +7903,7 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
         ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
         (add-hook 'after-save-hook #'denote-data-update)
+        (add-hook 'denote--link-file-no-exist-functions #'denote-data--remove-file)
         (add-hook 'denote--after-rename-functions #'denote-data--post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
@@ -7903,6 +7918,7 @@ Also see `denote-data-get-backlinks-files-only'."
 
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)
+    (remove-hook 'denote--link-file-no-exist-functions #'denote-data--remove-file)
     (remove-hook 'denote--after-rename-functions #'denote-data--post-rename-update)))
 
 (provide 'denote)
