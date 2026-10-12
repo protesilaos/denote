@@ -7794,7 +7794,7 @@ Respect `denote-keywords-to-not-infer-regexp' and do not remove any duplicates."
   "Return file path of IDENTIFIER."
   (when-let* ((entry (denote-data-get identifier))
               (path (denote-data-entry-path entry)))
-    path)
+    path))
 
 ;; This is because the original function is called with a FILE
 ;; argument, as in `denote-get-backlinks-as-files-function'.  Maybe
