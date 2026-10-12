@@ -6385,7 +6385,8 @@ Also see `denote-get-links'."
 (defun denote-file-has-backlinks-p (file)
   "Return non-nil if FILE has backlinks."
   (when-let* ((id (denote-retrieve-filename-identifier file))
-              (files (denote-directory-files nil :omit-current :text-only)))
+              (files (denote-directory-files nil :omit-current :text-only))
+              (_ (file-exists-p file)))
     (catch 'has-backlinks
       (dolist (file files)
         (with-temp-buffer
