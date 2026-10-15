@@ -7300,15 +7300,15 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   kimsaram32, leinfink (Henrik), l-o-l-h (Lincoln), mattyonweb,
   maxbrieiev, mentalisttraceur, nescias, pmenair, relict007, skissue.
 
-+ Ideas and/or user feedback :: Abin Simon, Aditya Yadav, Alan
-  Schmitt, Aleksandr Vityazev, Alex Griffin, Alex Hirschfeld, Alexis
-  Purslane, Alfredo Borrás, Ali Bozorgzadeh, Alp Eren Kose, André
-  Bering, Ashton Wiersdorf, Bhargav Kulkarni, Benjamin Kästner,
-  Claudio Migliorelli, Claudiu Tănăselia, Colin McLear,
-  Cosmin-Octavian C, Damien Cassou, Davi Ramos, Elias Storms, Federico
-  Stilman, Florian, Frédéric Willem Frank Ehmsen, Glenna D., Guo Yong,
-  Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty, Jay
-  Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
++ Ideas and/or user feedback :: Aaron Jensen, Abin Simon, Aditya
+  Yadav, Alan Schmitt, Aleksandr Vityazev, Alex Griffin, Alex
+  Hirschfeld, Alexis Purslane, Alfredo Borrás, Ali Bozorgzadeh, Alp
+  Eren Kose, André Bering, Ashton Wiersdorf, Bhargav Kulkarni,
+  Benjamin Kästner, Claudio Migliorelli, Claudiu Tănăselia, Colin
+  McLear, Cosmin-Octavian C, Damien Cassou, Davi Ramos, Elias Storms,
+  Federico Stilman, Florian, Frédéric Willem Frank Ehmsen, Glenna D.,
+  Guo Yong, Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty,
+  Jay Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
   Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
   Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
   Kevin Izevbigie, Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol
