@@ -7662,14 +7662,14 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
   (denote-data-write-entry buffer-file-name))
 
-(defun denote-data--remove-file (file)
+(defun denote-data-remove-file (file)
   "Remove FILE from `denote-data'.
 FILE may be a file path or the identifier."
   (let ((id (denote-retrieve-filename-identifier file)))
     (remhash id denote-data)
     (message "Removed file with identifier `%s' from `denote-data'" id)))
 
-(defun denote-data--post-rename-update (old-identifier identifier title keywords signature new-name)
+(defun denote-data-post-rename-update (old-identifier identifier title keywords signature new-name)
   "Function to add to `denote--after-rename-functions'.
 The arguments OLD-IDENTIFIER, IDENTIFIER, TITLE, KEYWORDS, SIGNATURE,
 NEW-NAME have the meaning of that hook."
@@ -7917,8 +7917,8 @@ Also see `denote-data-get-backlinks-files-only'."
         ;; problem under certain conditions.  Plus, I want to keep
         ;; this self-contained.
         (add-hook 'after-save-hook #'denote-data-update)
-        (add-hook 'denote--link-file-no-exist-functions #'denote-data--remove-file)
-        (add-hook 'denote--after-rename-functions #'denote-data--post-rename-update))
+        (add-hook 'denote--link-file-no-exist-functions #'denote-data-remove-file)
+        (add-hook 'denote--after-rename-functions #'denote-data-post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
@@ -7932,8 +7932,8 @@ Also see `denote-data-get-backlinks-files-only'."
 
     (setq denote-data--write-all-called-p nil)
     (remove-hook 'after-save-hook #'denote-data-update)
-    (remove-hook 'denote--link-file-no-exist-functions #'denote-data--remove-file)
-    (remove-hook 'denote--after-rename-functions #'denote-data--post-rename-update)))
+    (remove-hook 'denote--link-file-no-exist-functions #'denote-data-remove-file)
+    (remove-hook 'denote--after-rename-functions #'denote-data-post-rename-update)))
 
 (provide 'denote)
 ;;; denote.el ends here
