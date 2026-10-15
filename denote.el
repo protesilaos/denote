@@ -3638,6 +3638,11 @@ instead of that of the parameter."
          (signature (or signature "")))
     (list title keywords file-type directory date identifier template signature)))
 
+(defvar denote-new-note-functions nil
+  "Abnormal hook to be called by `denote'.
+Each function is called with the following arguments: IDENTIFIER,
+SIGNATURE, TITLE, KEYWORDS, NOTE-PATH.")
+
 ;;;###autoload
 (defun denote (&optional title keywords file-type directory date template signature identifier)
   "Create a new note with the appropriate metadata and file name.
@@ -3696,6 +3701,7 @@ When called from Lisp, all arguments are optional.
            (cons 'id identifier)
            (cons 'file-type file-type)
            (cons 'template template)))
+    (run-hook-with-args 'denote-new-note-functions identifier signature title keywords note-path)
     (run-hooks 'denote-after-new-note-hook)
     (denote--handle-save-and-kill-buffer 'creation note-path nil)
     note-path))
@@ -7559,15 +7565,20 @@ Do it when FILE-SUPPORTED-P is non-nil."
           (push (match-string 1) links))
         (seq-uniq links)))))
 
-(defun denote-data--get-contents (file)
+(defun denote-data--get-contents (file file-contents)
   "Read FILE contents and return relevant `denote-data'.
+With optional FILE-CONTENTS, use those outright instead of reading from
+FILE.
+
 Do so by using the `denote-data--content-fns'."
   (let ((file-supported-p (denote-file-is-writable-and-supported-p file))
         (identifier (denote-retrieve-filename-identifier file))
         (file-type (denote-filetype-heuristics file))
         (data nil))
     (with-temp-buffer
-      (insert-file-contents file)
+      (if file-contents
+          (insert file-contents)
+        (insert-file-contents file))
       (pcase-dolist (`(,slot . ,fn) denote-data--content-fns)
         (when-let* ((return (funcall fn file-supported-p identifier file-type)))
           (push (cons slot return) data))))
@@ -7580,7 +7591,7 @@ Do so by using the `denote-data--content-fns'."
     (let* ((title (denote-retrieve-filename-title file))
            (signature (denote-retrieve-filename-signature file))
            (keywords (denote-retrieve-filename-keywords file))
-           (data (denote-data--get-contents file))
+           (data (denote-data--get-contents file nil))
            (contents-title (alist-get 'title data))
            (links (alist-get 'links data))
            (slots (list :identifier identifier
@@ -7662,6 +7673,24 @@ Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
   (denote-data-write-entry buffer-file-name))
 
+(defun denote-data-add-file (identifier signature title keywords note-path)
+  "Add file to `denote-data'.
+IDENTIFIER, SIGNATURE, TITLE, KEYWORDS, NOTE-PATH are those documented
+in `denote-new-note-functions'."
+  (let* ((buffer (get-file-buffer note-path))
+         (buffer-contents (with-current-buffer buffer
+                            (buffer-string)))
+         (data (denote-data--get-contents note-path buffer-contents))
+         (links (alist-get 'links data))
+         (slots (list :identifier identifier
+                      :title title
+                      :signature signature
+                      :keywords (denote-keywords-combine keywords)
+                      :path note-path
+                      :links links))
+         (entry (apply 'denote-data-entry-create slots)))
+    (puthash identifier entry denote-data)))
+
 (defun denote-data-remove-file (file)
   "Remove FILE from `denote-data'.
 FILE may be a file path or the identifier."
@@ -7674,7 +7703,7 @@ FILE may be a file path or the identifier."
 The arguments OLD-IDENTIFIER, IDENTIFIER, TITLE, KEYWORDS, SIGNATURE,
 NEW-NAME have the meaning of that hook."
   (remhash old-identifier denote-data)
-  (let* ((data (denote-data--get-contents new-name))
+  (let* ((data (denote-data--get-contents new-name nil))
          (links (alist-get 'links data))
          (slots (list :identifier identifier
                       :title title
@@ -7908,15 +7937,8 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-get-title-function #'denote-data-get-title)
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
-        ;; TODO 2026-10-09: Could this be a problem for `save-some-buffers'?
-        ;;
-        ;; TODO 2026-10-12: I actually think now that the
-        ;; `after-save-hook' is the wrong approach.  We should do the
-        ;; equivalent of the abnormal hooks for the `denote' command.
-        ;; I do have the suspicion that `after-save-hook' will be a
-        ;; problem under certain conditions.  Plus, I want to keep
-        ;; this self-contained.
-        (add-hook 'after-save-hook #'denote-data-update)
+
+        (add-hook 'denote-new-note-functions #'denote-data-add-file)
         (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
         (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
@@ -7931,7 +7953,7 @@ Also see `denote-data-get-backlinks-files-only'."
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
 
     (setq denote-data--write-all-called-p nil)
-    (remove-hook 'after-save-hook #'denote-data-update)
+    (remove-hook 'denote-new-note-functions #'denote-data-add-file)
     (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
     (remove-hook 'denote-after-rename-functions #'denote-data-post-rename-update)))
 
