@@ -3301,7 +3301,7 @@ If DATE is nil or an empty string, return nil."
                        (_ (denote-file-has-supported-extension-p file))
                        (_ (denote-file-has-denoted-filename-p file))
                        (_ (denote-file-has-identifier-p file)))
-             buffer-file-name))
+             file))
          (buffer-list))))
 
 (define-obsolete-function-alias
