@@ -7762,6 +7762,30 @@ Filter Functions'."
       (erase-buffer))
     buffer))
 
+;; TODO 2026-10-15: Maybe tweak the formatting here, but the point is
+;; that it works.
+(defun denote-data--get-user-configuration ()
+  "Return user configuration for `denote-data--write-all-asynchronous'."
+  (let ((format-fn (lambda (symbol)
+                     (let ((value (symbol-value symbol)))
+                       (format "%s %s%S\n"
+                               symbol
+                               (if (and value
+                                        (or (listp value)
+                                            (symbolp value)))
+                                   "'"
+                                 "")
+                               value)))))
+    (concat "(setq "
+            (funcall format-fn 'denote-directory)
+            (funcall format-fn 'denote-file-name-components-order)
+            (funcall format-fn 'denote-file-type)
+            (funcall format-fn 'denote-excluded-directories-regexp)
+            (funcall format-fn 'denote-keywords-to-not-infer-regexp)
+            (funcall format-fn 'denote-excluded-files-regexp)
+            (funcall format-fn 'denote-file-name-slug-functions)
+            ")")))
+
 (defun denote-data--write-all-asynchronous (&optional force)
   "Call `denote-data-write-all' in a separate process.
 With optional FORCE run the process again even if it was already called
@@ -7776,11 +7800,9 @@ before."
                            :buffer buffer-error
                            :filter #'denote-data--write-all-asynchronous-progress-pipe-filter))
            (emacs-binary (expand-file-name invocation-name invocation-directory))
-           ;; TODO 2026-10-12: Doing it this way means that we load
-           ;; the default Denote settings.  Whereas, we need to load
-           ;; all of the relevant user options, such as `denote-directory'.
+           (user-options (denote-data--get-user-configuration))
            (command (list emacs-binary "--batch" "-l" denote-source-file "--eval"
-                          "(progn (denote-data-write-all) (prin1 denote-data))"))
+                          (format "(progn %s (denote-data-write-all) (prin1 denote-data))" user-options)))
            (process (make-process
                      :name "denote-data"
                      :buffer buffer-output
