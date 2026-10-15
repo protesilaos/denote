@@ -1240,21 +1240,22 @@ provides the command ~denote-open-or-create~ as well as its more
 flexible counterpart ~denote-open-or-create-with-command~.
 
 The ~denote-open-or-create~ prompts to visit a file in the
-~denote-directory~.  At this point, the user must type in search terms
-that match a file name.  If the input does not return any matches and
-the user confirms their choice to proceed (usually by typing RET
-twice, depending on the minibuffer settings), ~denote-open-or-create~
-will call the ~denote~ command interactively to create a new note.  It
-will then use whatever prompts ~denote~ normally has, per the user
-option ~denote-prompts~ ([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]).  If the title prompt
-is involved (the default behaviour), the ~denote-open-or-create~ sets
-up this prompt to have the previous input as the default title of the
-note to-be-created.  This means that the user can type RET at the
-empty prompt to re-use what they typed in previously.  Commands to use
-previous inputs from the history are also available (=M-p= or =M-n= in
-the minibuffer, which call ~previous-history-element~ and
-~next-history-element~ by default).  Accessing the history is helpful
-to, for example, make further edits to the available text.
+~denote-directory~ ([[#h:2442d6ef-e5d2-4d98-b3cb-93e0fb9db7f8][Control the style of the file prompt]]). At this
+point, the user must type in search terms that match a file name. If
+the input does not return any matches and the user confirms their
+choice to proceed (usually by typing RET twice, depending on the
+minibuffer settings), ~denote-open-or-create~ will call the ~denote~
+command interactively to create a new note. It will then use whatever
+prompts ~denote~ normally has, per the user option ~denote-prompts~
+([[#h:6a92a8b5-d766-42cc-8e5b-8dc255466a23][Standard note creation]]). If the title prompt is involved (the default
+behaviour), the ~denote-open-or-create~ sets up this prompt to have
+the previous input as the default title of the note to-be-created.
+This means that the user can type RET at the empty prompt to re-use
+what they typed in previously. Commands to use previous inputs from
+the history are also available (=M-p= or =M-n= in the minibuffer,
+which call ~previous-history-element~ and ~next-history-element~ by
+default). Accessing the history is helpful to, for example, make
+further edits to the available text.
 
 The ~denote-open-or-create-with-command~ is like the above, except
 when it is about to create the new note it first prompts for the
@@ -3184,10 +3185,11 @@ The following sections cover all the details ([[#h:4f354db1-aa78-47fd-ac60-c3d1e
 #+findex: denote-link
 #+findex: denote-insert-link
 The ~denote-link~ command (alias ~denote-insert-link~) inserts a link
-at point to a file selected at the minibuffer prompt. Links are
-formatted depending on the file type of the current note. In Org and
-plain text buffers, links are formatted thus: =[[denote:IDENTIFIER][DESCRIPTION]]=.
-While in Markdown they are expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
+at point to a file selected at the minibuffer prompt ([[#h:2442d6ef-e5d2-4d98-b3cb-93e0fb9db7f8][Control the style of the file prompt]]).
+Links are formatted depending on the file type of the current note. In
+Org and plain text buffers, links are formatted thus:
+=[[denote:IDENTIFIER][DESCRIPTION]]=. While in Markdown they are
+expressed as =[DESCRIPTION](denote:IDENTIFIER)=.
 
 When ~denote-link~ is called with a prefix argument (=C-u= by
 default), it formats links like =[[denote:IDENTIFIER]]=, regardless of
@@ -3800,6 +3802,33 @@ The default value includes all the basic file-creating commands
 ([[#h:17896c8c-d97a-4faa-abf6-31df99746ca6][Points of entry]]).  Users may customise this value if (i) they only
 want to see fewer options and/or (ii) wish to include their own custom
 command in the list ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own convenience commands]]).
+
+* Control the style of the file prompt
+:PROPERTIES:
+:CUSTOM_ID: h:2442d6ef-e5d2-4d98-b3cb-93e0fb9db7f8
+:END:
+
+[ The user option ~denote-fancy-file-prompt~ is part of {{{development-version}}}. ]
+
+#+vindex: denote-fancy-file-prompt
+The user option ~denote-fancy-file-prompt~ specifies the user's
+preference for a fancy or simple prompt.
+
+When the value is ~nil~, the file prompt shows file names exactly as
+they are. Whereas a non-~nil~ value transforms file names to make
+their components more apparent and to change their style accordingly.
+
+This is relevant for commands such as ~denote-link~ and
+~denote-open-or-create~ which prompt for a file:
+
+- [[#h:ad91ca39-cf10-4e16-b224-fdf78f093883][Open an existing note or create it if missing]].
+- [[#h:5e5e3370-12ab-454f-ba09-88ff44214324][Add a single direct link using a file name prompt]].
+
+#+vindex: denote-file-prompt-extra-metadata
+Users who want to control exactly what the fancy prompt displays can
+configure the variable ~denote-file-prompt-extra-metadata~. This is
+only meant for advanced users, because any changes to it will involve
+custom Emacs Lisp functions.
 
 * Fontification in Dired
 :PROPERTIES:
@@ -6220,7 +6249,10 @@ there will be no corresponding prompt.
   filter the candidates per the given regular expression. With
   optional =PROMPT-TEXT=, use it instead of the default call to select
   a file. With optional =NO-REQUIRE-MATCH= accept the given input
-  as-is. Return the absolute path to the matching file.
+  as-is. Return the absolute path to the matching file. Present the
+  completion candidates in accordance with the user option
+  ~denote-fancy-file-prompt~. [ The ~denote-fancy-file-prompt~ is part
+  of {{{development-version}}}. ]
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.
@@ -7307,24 +7339,24 @@ Denote is meant to be a collective effort.  Every bit of help matters.
   Benjamin Kästner, Claudio Migliorelli, Claudiu Tănăselia, Colin
   McLear, Cosmin-Octavian C, Damien Cassou, Davi Ramos, Elias Storms,
   Federico Stilman, Florian, Frédéric Willem Frank Ehmsen, Glenna D.,
-  Guo Yong, Hanspeter Gisler Harold Ollivier, IceAsteroid, Jack Baty,
-  Jay Rajput, Jean-Charles Bagneris, Jeff Valk, Jens Östlund, Jeremy
-  Friesen, Jonathan Sahar, Johan Bolmsjö, Jonas Großekathöfer,
-  Jousimies, Juanjo Presa, Julian Hoch, Kai von Fintel, Kaushal Modi,
-  Kevin Izevbigie, Kolmas, Lukas C. Bossert, M. Hadi Timachi, Maikol
-  Solis, Mark Olson, Michael Jones, Mirko Hernandez, Morten
-  Kjeldgaard, Niall Dooley, Nick Bell, Oliver Epper, Paul van Gelder,
-  Peter Prevos, Peter Smith, Riccardo Giannitrapani, Rory Molinari,
-  Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas Ragavan, Stefan
-  Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ Stankus, Vick
-  (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade Mealing, Wilf, Yi
-  Liu, Ypot, 82Kang, atanasj, azegas, babusri, bdillahu,
-  coherentstate, doolio, duli, drcxd, elge70, elliottw, fingerknight,
-  GuutBoy, hpgisler, hyperfocus1337,johkneisl, jtpavlock, juh,
-  leafarbelm, mentalisttraceur, mjkalyan, o-rxw, oatmealm,
-  potchie-maker, Pratik-Mishra-4979, pRot0ta1p, rbenit68, relict007,
-  sarcom-sar, sienic, skissue, sundar bp, wuzhihao, yetanotherfossman,
-  zadca123
+  Guo Yong, Hanspeter Gisler Harold Ollivier, Honza Pokorný,
+  IceAsteroid, Jack Baty, Jay Rajput, Jean-Charles Bagneris, Jeff
+  Valk, Jens Östlund, Jeremy Friesen, Jonathan Sahar, Johan Bolmsjö,
+  Jonas Großekathöfer, Jousimies, Juanjo Presa, Julian Hoch, Kai von
+  Fintel, Kaushal Modi, Kevin Izevbigie, Kolmas, Lukas C. Bossert, M.
+  Hadi Timachi, Maikol Solis, Mark Olson, Michael Jones, Mirko
+  Hernandez, Morten Kjeldgaard, Niall Dooley, Nick Bell, Oliver Epper,
+  Paul van Gelder, Peter Prevos, Peter Smith, Riccardo Giannitrapani,
+  Rory Molinari, Samuel W. Flint, Sergio Rey, Suhail Singh, Shreyas
+  Ragavan, Stefan Thesing, Summer Emacs, Sven Seebeck, Taoufik, TJ
+  Stankus, Vick (VicZz), Viktor Haag, Vineet C. Kulkarni, Wade
+  Mealing, Wilf, Yi Liu, Ypot, 82Kang, atanasj, azegas, babusri,
+  bdillahu, coherentstate, doolio, duli, drcxd, elge70, elliottw,
+  fingerknight, GuutBoy, hpgisler, hyperfocus1337,johkneisl,
+  jtpavlock, juh, leafarbelm, mentalisttraceur, mjkalyan, o-rxw,
+  oatmealm, potchie-maker, Pratik-Mishra-4979, pRot0ta1p, rbenit68,
+  relict007, sarcom-sar, sienic, skissue, sundar bp, wuzhihao,
+  yetanotherfossman, zadca123
 
 Special thanks to Peter Povinec who helped refine the file-naming
 scheme, which is the cornerstone of this project.

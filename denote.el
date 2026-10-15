@@ -889,6 +889,22 @@ If the region is active, its text is used as the link's description."
   :package-version '(denote . "4.0.0")
   :group 'denote)
 
+(defcustom denote-fancy-file-prompt t
+  "Control whether to use a fancy file prompt.
+When the value is nil, the file prompt shows file names exactly as they
+are.  Whereas a non-nil value transforms file names to make their
+components more apparent and to change their style accordingly.
+
+This is relevant for `denote-link', `denote-open-or-create', and other
+such commands that may prompt for a file.
+
+The exact style of the fancy prompt is handled by the variable
+`denote-file-prompt-extra-metadata'.  Though that is only meant to be
+redefined by experienced users."
+  :type 'boolean
+  :package-version '(denote . "4.3.0")
+  :group 'denote)
+
 ;;;; Main variables
 
 ;; For character classes, evaluate: (info "(elisp) Char Classes")
@@ -1649,7 +1665,10 @@ With optional NO-REQUIRE-MATCH, accept the given input as-is.
 With optional HAS-IDENTIFIER, only show candidates that have an
 identifier.
 
-Return the absolute path to the matching file."
+Return the absolute path to the matching file.
+
+Present the completion candidates in accordance with the user option
+`denote-fancy-file-prompt'."
   (let* ((roots (denote-directories))
          (single-dir-p (null (cdr roots)))
          ;; Some external program may use `default-directory' with the
@@ -1673,7 +1692,9 @@ Return the absolute path to the matching file."
                            (propertize default-directory 'face 'denote-faces-prompt-current-name))))
          (input (completing-read
                  prompt
-                 (apply 'denote-get-completion-table relative-files denote-file-prompt-extra-metadata)
+                 (if denote-fancy-file-prompt
+                     (apply 'denote-get-completion-table relative-files denote-file-prompt-extra-metadata)
+                   relative-files)
                  nil (unless no-require-match t)
                  nil 'denote-file-history))
          (absolute-file (if single-dir-p
@@ -5704,7 +5725,9 @@ the generic one."
                        files))
          (selected (completing-read
                     (format-prompt (or prompt-text "Select file among files") nil)
-                    (apply 'denote-get-completion-table file-names denote-file-prompt-extra-metadata)
+                    (if denote-fancy-file-prompt
+                        (apply 'denote-get-completion-table file-names denote-file-prompt-extra-metadata)
+                      file-names)
                     nil t nil 'denote-link-find-file-history)))
     (if single-dir-p
         (expand-file-name selected (car roots))
