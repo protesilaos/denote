@@ -7768,7 +7768,14 @@ Filter Functions'."
 ;; TODO 2026-10-15: Double-check that the configuration here is
 ;; exhaustive.  We want to capture EVERYTHING.  Specifically, we might
 ;; need to think about options to extend this, such as
-;; `denote-journal-directory', and so on.
+;; `denote-journal-directory', and so on.  Maybe the best approach is
+;; to have some kind of arrangement whereby packages/users add
+;; arbitrary things for us to include in the cache's configuration.
+;; This could be as simple as adding an OPTIONS parameter which is an
+;; alist of cons cells of the form (USER-OPTION . VALUE) and then we
+;; take care to run the formatting here.  That would have to be called
+;; before `denote-data-mode' or the cache would need to be rebuilt
+;; accordingly.
 (defun denote-data--get-user-configuration ()
   "Return user configuration for `denote-data--write-all-asynchronous'."
   (let ((format-fn (lambda (symbol)
