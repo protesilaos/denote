@@ -7764,6 +7764,11 @@ Filter Functions'."
 
 ;; TODO 2026-10-15: Maybe tweak the formatting here, but the point is
 ;; that it works.
+;;
+;; TODO 2026-10-15: Double-check that the configuration here is
+;; exhaustive.  We want to capture EVERYTHING.  Specifically, we might
+;; need to think about options to extend this, such as
+;; `denote-journal-directory', and so on.
 (defun denote-data--get-user-configuration ()
   "Return user configuration for `denote-data--write-all-asynchronous'."
   (let ((format-fn (lambda (symbol)
