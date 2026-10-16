@@ -7996,6 +7996,7 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
 
         (add-hook 'denote-new-note-functions #'denote-data-add-file)
+        ;; TODO 2026-10-16: We need the same for new links.
         (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
         (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
