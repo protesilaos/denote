@@ -7637,6 +7637,8 @@ Do so by using the `denote-data--content-fns'."
 ;; into how we build up the cache in `denote-data-write-all'?  Or
 ;; maybe that goes even deeper into `denote--directory-get-files'?
 
+;; TODO 2026-10-16: Clear `denote-data' if FORCE.
+;; TODO 2026-10-16: What about silos?
 (defun denote-data-write-all (&optional files force)
   "Write all FILES to `denote-data'.
 If FILES is nil, then write all files in the variable `denote-directory'
