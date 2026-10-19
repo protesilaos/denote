@@ -7258,11 +7258,7 @@ backend."
           (_ path))
       (format-message "[[Denote query for `%s']]" query))))
 
-(defun denote-link-ol-help-echo (_window _object position)
-  "Echo the full file path of the identifier at POSITION."
-  (let* ((data (denote--link-at-point-get-data position))
-         (target (caar data)))
-    (funcall denote-get-path-by-id-function target)))
+(make-obsolete 'denote-link-ol-help-echo nil "4.3.0")
 
 (declare-function org-link-preview-file "ol" (ov path link))
 
@@ -7291,7 +7287,6 @@ For more details, refer to the documentation of `org-link-set-parameters'."
            :preview #'denote-link-preview-file
            :follow #'denote-link-ol-follow
            :face #'denote-get-link-face
-           :help-echo #'denote-link-ol-help-echo
            :complete #'denote-link-ol-complete
            :store #'denote-link-ol-store
            :export #'denote-link-ol-export)))))
