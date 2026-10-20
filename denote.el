@@ -7685,13 +7685,12 @@ already called."
       (:path (denote-data-entry-set-path entry new-value))
       (:links (denote-data-entry-set-links entry new-value)))))
 
-;; TODO 2026-10-12: Maybe it makes sense to use modified time here,
-;; subject to storing it, of course.
 (defun denote-data-update ()
   "Update the current Denote file entry in `denote-data'.
 Use this as part of `after-save-hook' or related.  Otherwise use
 `denote-data-write-entry'."
-  (denote-data-write-entry buffer-file-name))
+  (when (denote-file-has-denoted-filename-p buffer-file-name)
+    (denote-data-write-entry buffer-file-name)))
 
 (defun denote-data-add-file (identifier signature title keywords note-path)
   "Add file to `denote-data'.
@@ -7992,8 +7991,8 @@ Also see `denote-data-get-backlinks-files-only'."
         (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
         (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
 
+        (add-hook 'after-save-hook #'denote-data-update)
         (add-hook 'denote-new-note-functions #'denote-data-add-file)
-        ;; TODO 2026-10-16: We need the same for new links.
         (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
         (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
@@ -8008,6 +8007,7 @@ Also see `denote-data-get-backlinks-files-only'."
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
 
     (setq denote-data--write-all-called-p nil)
+    (remove-hook 'after-save-hook #'denote-data-update)
     (remove-hook 'denote-new-note-functions #'denote-data-add-file)
     (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
     (remove-hook 'denote-after-rename-functions #'denote-data-post-rename-update)))
