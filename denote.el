@@ -7583,6 +7583,9 @@ Do it when FILE-SUPPORTED-P is non-nil."
           (push (match-string 1) links))
         (seq-uniq links)))))
 
+;; FIXME 2026-10-20: This should not try to open encrypted files.  It
+;; is okay for a single file, but it is a problem if it needs to index
+;; lots of them and requests the password each time.
 (defun denote-data--get-contents (file file-contents)
   "Read FILE contents and return relevant `denote-data'.
 With optional FILE-CONTENTS, use those outright instead of reading from
