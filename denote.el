@@ -7583,23 +7583,32 @@ Do it when FILE-SUPPORTED-P is non-nil."
           (push (match-string 1) links))
         (seq-uniq links)))))
 
-;; FIXME 2026-10-20: This should not try to open encrypted files.  It
-;; is okay for a single file, but it is a problem if it needs to index
-;; lots of them and requests the password each time.
 (defun denote-data--get-contents (file file-contents)
   "Read FILE contents and return relevant `denote-data'.
+Do not read FILE contents if FILE has `denote-encryption-file-extensions'.
+
 With optional FILE-CONTENTS, use those outright instead of reading from
 FILE.
 
 Do so by using the `denote-data--content-fns'."
   (let ((file-supported-p (denote-file-is-writable-and-supported-p file))
-        (identifier (denote-retrieve-filename-identifier file))
-        (file-type (denote-filetype-heuristics file))
-        (data nil))
+         (identifier (denote-retrieve-filename-identifier file))
+         (file-type (denote-filetype-heuristics file))
+         (data nil))
     (with-temp-buffer
-      (if file-contents
-          (insert file-contents)
-        (insert-file-contents file))
+      (cond
+       (file-contents
+        (insert file-contents))
+       ;; NOTE 2026-10-21: Maybe we need a more general approach to
+       ;; how we `insert-file-contents' when dealing with encrypted
+       ;; files, but this is the only case I am aware of right now
+       ;; where we can run into problems.
+       ((when-let* ((extension (file-name-extension file :period))
+                    (_ (member extension denote-encryption-file-extensions)))
+          (setq file-supported-p nil)
+          t))
+       (t
+        (insert-file-contents file)))
       (pcase-dolist (`(,slot . ,fn) denote-data--content-fns)
         (when-let* ((return (funcall fn file-supported-p identifier file-type)))
           (push (cons slot return) data))))
