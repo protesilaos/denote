@@ -8007,6 +8007,7 @@ Also see `denote-data-get-backlinks-files-only'."
         (add-hook 'denote-new-note-functions #'denote-data-add-file)
         (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
         (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
+    ;; TODO 2026-10-26: Do we need `clrhash' here?
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
