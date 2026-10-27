@@ -8003,7 +8003,6 @@ Also see `denote-data-get-backlinks-files-only'."
         (add-hook 'denote-new-note-functions #'denote-data-add-file)
         (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
         (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
-    ;; TODO 2026-10-26: Do we need `clrhash' here?
     (setq denote-directory-files-get-function denote-directory-files-get-function--original)
     (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
     (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
@@ -8016,6 +8015,13 @@ Also see `denote-data-get-backlinks-files-only'."
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
 
     (setq denote-data--write-all-called-p nil)
+    ;; NOTE 2026-10-27: If I do the following, then I get confusing
+    ;; output from `hash-table-keys' and `hash-table-size'.  The
+    ;; former returns nil, which is what I expect, but the latter
+    ;; returns the length that the hash-table had.  Indeed, if I check
+    ;; the Help buffer it still shows #<hash-table equal 0/N...>.
+    ;; I guess this is normal, so I will keep it this way for now.
+    (setq denote-data (clrhash denote-data))
     (remove-hook 'after-save-hook #'denote-data-update)
     (remove-hook 'denote-new-note-functions #'denote-data-add-file)
     (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
