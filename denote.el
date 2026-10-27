@@ -4449,7 +4449,7 @@ prompt to confirm the rewriting of the front matter."
 
 ;;;;; The renaming commands and their prompts
 
-(defun denote--rename-dired-file-or-current-file-prompt ()
+(defun denote--rename-dired-file-or-current-file-or-prompt ()
   "Return Dired file at point or the current file, else prompt for one.
 Throw error if FILE is not regular, else return FILE."
   (or (dired-get-filename nil t)
