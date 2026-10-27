@@ -7862,12 +7862,8 @@ Include `denote-get-buffer-file-names'."
   (let* ((table (make-hash-table :test #'equal))
          (buffer-file-names (denote-get-buffer-file-names))
          (buffer-identifiers (mapcar #'denote-retrieve-filename-identifier buffer-file-names))
-         (cached-identifiers nil)
+         (cached-identifiers (hash-table-keys denote-data))
          (all-identifiers nil))
-    (maphash
-     (lambda (key _value)
-       (push key cached-identifiers))
-     denote-data)
     (setq all-identifiers (seq-uniq (append buffer-identifiers cached-identifiers)))
     (dolist (identifier all-identifiers)
       (puthash identifier t table))
