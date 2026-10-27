@@ -7550,7 +7550,7 @@ visited again in a new buffer (files are visited with the command
   (links nil :documentation "The LINKS as a list of identifiers (strings)." :type list))
 
 (defvar denote-data (make-hash-table :test #'equal)
-  "List of `denote-data-entry' elements.")
+  "The hash-table of `denote-data-entry' elements.")
 
 ;;;;; Prepare the cache
 
