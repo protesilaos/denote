@@ -475,6 +475,24 @@ does not involve the time zone."
     (let ((denote-file-types nil))
       (should-not (denote-file-type "test.md")))))
 
+(ert-deftest dt-denote-extra-backslashes-p ()
+  "Test that `denote-extra-backslashes-p' does the right thing."
+  (should (denote-extra-backslashes-p "\\\\(first\\\\)"))
+  (should (denote-extra-backslashes-p "\\\\(first\\\\|second\\\\)"))
+  (should (denote-extra-backslashes-p "first\\\\|second"))
+  (should-not (denote-extra-backslashes-p "\\(first\\)"))
+  (should-not (denote-extra-backslashes-p "\\(first\\|second\\)"))
+  (should-not (denote-extra-backslashes-p "first\\|second")))
+
+(ert-deftest dt-denote-extra-backslashes-with-error ()
+  "Test that `denote-extra-backslashes-with-error' does the right thing."
+  (should-error (denote-extra-backslashes-with-error "\\\\(first\\\\)"))
+  (should-error (denote-extra-backslashes-with-error "\\\\(first\\\\|second\\\\)"))
+  (should-error (denote-extra-backslashes-with-error "First\\\\|second"))
+  (should (string= (denote-extra-backslashes-with-error "\\(first\\)") "\\(first\\)"))
+  (should (string= (denote-extra-backslashes-with-error "\\(first\\|second\\)") "\\(first\\|second\\)"))
+  (should (string= (denote-extra-backslashes-with-error "First\\|second") "First\\|second")))
+
 (provide 'denote-test)
 ;;; denote-test.el ends here
 

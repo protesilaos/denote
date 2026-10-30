@@ -6515,6 +6515,25 @@ If FILE-TYPE is nil, use that of Org."
           (format "%s:%s" type query)
           (format "%s%s" denote-query-description-prefix query)))
 
+(defun denote-extra-backslashes-p (string)
+  "Return non-nil if STRING has extra backslashes.
+Extra backslashes occur when the user provides a regexp that is valid in
+Lisp calls but is then further escaped by `read-string' and related."
+  (if-let* ((strings (split-string string "[()|]" :omit-nulls)))
+      (seq-some
+       (lambda (string)
+         (let ((total (seq-count (lambda (character) (eq character ?\\)) string)))
+           (= total 2)))
+       strings)
+    string))
+
+(defun denote-extra-backslashes-with-error (string)
+  "Throw an error if STRING has extra backslashes else return STRING.
+Do so in accordance with `denote-extra-backslashes-p'."
+  (or (and (denote-extra-backslashes-p string)
+           (error "The string `%s' has extra backslashes" string))
+      string))
+
 ;;;###autoload
 (defun denote-query-contents-link (query)
   "Insert query link for file contents.
@@ -6524,8 +6543,9 @@ built-in Xref mechanism).  This is the equivalent of a Unix grep command
 across the variable `denote-directory'."
   (interactive
    (list
-    (or (denote--get-active-region-content)
-        (denote-query-link-prompt nil "Query in file CONTENTS"))))
+    (let ((query (or (denote--get-active-region-content)
+                     (denote-query-link-prompt nil "Query in file CONTENTS"))))
+      (denote-extra-backslashes-with-error query))))
   (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
@@ -6541,8 +6561,9 @@ built-in Dired mechanism).  This is the equivalent of a Unix find
 command across the variable `denote-directory'."
   (interactive
    (list
-    (or (denote--get-active-region-content)
-        (denote-query-link-prompt nil "Query in file NAMES"))))
+    (let ((query (or (denote--get-active-region-content)
+                     (denote-query-link-prompt nil "Query in file NAMES"))))
+      (denote-extra-backslashes-with-error query))))
   (unless (or (denote--file-type-org-extra-p)
               (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
     (user-error "The current file type is not recognized by Denote"))
@@ -6869,7 +6890,9 @@ This is similar to `denote-link', except that the file prompt is limited
 to files matching QUERY.  Optional ID-ONLY has the same meaning as in
 `denote-link'."
   (interactive
-   (list (denote-query-link-prompt nil "Files whose contents include QUERY")))
+   (list
+    (let ((query (denote-query-link-prompt nil "Files whose contents include QUERY")))
+      (denote-extra-backslashes-with-error query))))
   (if-let* ((files (denote-retrieve-files-xref-query query))
             ;; NOTE 2025-03-29: Maybe we should have a named prompt
             ;; for this case, but I think we do not need it right now.
@@ -6891,7 +6914,9 @@ This is similar to `denote-add-links', except it searches inside file
 contents, not file names.  Optional ID-ONLY has the same meaning as in
 `denote-link' and `denote-add-links'."
   (interactive
-   (list (denote-query-link-prompt nil "Files whose contents include QUERY")))
+   (list
+    (let ((query (denote-query-link-prompt nil "Files whose contents include QUERY")))
+      (denote-extra-backslashes-with-error query))))
   (if-let* ((files (denote-retrieve-files-xref-query query)))
       (denote-link--insert-links files (denote-filetype-heuristics buffer-file-name) id-only)
     (user-error "No files include the query `%s' in their contents" query)))
