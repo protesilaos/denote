@@ -2852,7 +2852,11 @@ BODY."
           (file-exist (file-exists-p ,file)))
      (with-temp-buffer
        (cond
-        (buffer (insert-buffer-substring buffer))
+        ;; We used to rely on `insert-buffer-substring' but this does
+        ;; not do the right thing when the buffer is narrowed.
+        ;; Perhaps there is a function that works with the widened
+        ;; buffer.
+        (buffer (insert (with-current-buffer buffer (save-restriction (widen) (buffer-string)))))
         (file-exist (insert-file-contents ,file))
         (t (error "Cannot find anything about file `%s'" ,file)))
        (goto-char (point-min))
