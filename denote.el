@@ -1554,6 +1554,11 @@ the title prompt of `denote-open-or-create' and related commands.")
 Only ever `let' bind this, otherwise the restriction will always be
 there.")
 
+(defvar denote-file-prompt-use-exclude-regexp nil
+  "Regular expression of files that are excluded from `denote-file-prompt'.
+Only ever `let' bind this, otherwise the restriction will always be
+there.")
+
 ;; TODO 2026-10-11: Review all `denote-retrieve-filename-title' calls
 ;; and related to determine where it makes sense to keep them as they
 ;; are and where to call their respective variable.
@@ -1678,7 +1683,7 @@ Present the completion candidates in accordance with the user option
                               (denote-directories-get-common-root)))
          (files (denote-directory-files
                  (or denote-file-prompt-use-files-matching-regexp files-matching-regexp)
-                 :omit-current nil nil has-identifier))
+                 :omit-current nil denote-file-prompt-use-exclude-regexp has-identifier))
          (relative-files (if single-dir-p
                              (mapcar
                               (lambda (file)
