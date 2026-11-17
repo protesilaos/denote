@@ -7667,6 +7667,16 @@ Do so by using the `denote-data--content-fns'."
            (entry (apply 'denote-data-entry-create slots)))
       (puthash identifier entry denote-data))))
 
+;; NOTE 2026-10-27: If I do `clrhash', then I get confusing output
+;; from `hash-table-keys' and `hash-table-size'.  The former returns
+;; nil, which is what I expect, but the latter returns the length that
+;; the hash-table had.  Indeed, if I check the Help buffer it still
+;; shows #<hash-table equal 0/N...>.  I guess this is normal, so I
+;; will keep it this way for now.
+(defun denote-data-clear ()
+  "Clear `denote-data'."
+  (setq denote-data (clrhash denote-data)))
+
 (defvar denote-data--write-all-called-p nil
   "Non-nil if `denote-data-write-all' has been called.")
 
@@ -8049,13 +8059,7 @@ Also see `denote-data-get-backlinks-files-only'."
     (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
 
     (setq denote-data--write-all-called-p nil)
-    ;; NOTE 2026-10-27: If I do the following, then I get confusing
-    ;; output from `hash-table-keys' and `hash-table-size'.  The
-    ;; former returns nil, which is what I expect, but the latter
-    ;; returns the length that the hash-table had.  Indeed, if I check
-    ;; the Help buffer it still shows #<hash-table equal 0/N...>.
-    ;; I guess this is normal, so I will keep it this way for now.
-    (setq denote-data (clrhash denote-data))
+    (denote-data-clear)
     (remove-hook 'after-save-hook #'denote-data-update)
     (remove-hook 'denote-new-note-functions #'denote-data-add-file)
     (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
