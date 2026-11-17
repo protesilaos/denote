@@ -7803,6 +7803,21 @@ NEW-NAME have the meaning of that hook."
     (kill-process denote-data--write-all-asynchronous-process)
     (setq denote-data--write-all-asynchronous-process nil)))
 
+(defvar denote-data-mode)
+
+(defun denote-data--write-all-asynchronous-sentinel-done (data)
+  "Set the `denote-data' to DATA as part of the process sentinel."
+  (when denote-data-mode
+    (denote-data-mode--enable))
+  (setq denote-data data))
+
+(defun denote-data--write-all-asynchronous-sentinel-fail ()
+  "Handle case where `denote-data' failed."
+  (when denote-data-mode
+    (denote-data-mode--disable)
+    (denote-data-mode -1))
+  (error "Could not generate `denote-data' asynchronously"))
+
 (defun denote-data--write-all-asynchronous-sentinel (process event)
   "Process sentinel for `denote-data--write-all-asynchronous'.
 PROCESS and EVENT are the arguments described in Info node `(elisp) Sentinels'."
@@ -7814,8 +7829,8 @@ PROCESS and EVENT are the arguments described in Info node `(elisp) Sentinels'."
         (goto-char (point-min))
         (if-let* ((data (read (current-buffer)))
                   (_ (hash-table-p data)))
-            (setq denote-data data)
-          (error "Could not generate `denote-data' asynchronously")))))
+            (denote-data--write-all-asynchronous-sentinel-done data)
+          (denote-data--write-all-asynchronous-sentinel-fail)))))
    ((string-match-p "\\(exited abnormally\\|failed with code\\)" event)
     (message "FAILED to build `denote-data'; something unexpected happened"))))
 
@@ -8013,59 +8028,65 @@ Also see `denote-data-get-backlinks-files-only'."
 (defvar denote-infer-keywords-from-files-function--original nil)
 (defvar denote-retrieve-xref-alist-for-backlinks-function--original nil)
 
+(defun denote-data-mode--enable ()
+  "Change the state when `denote-data-mode' is enabled."
+  (setq denote-directory-files-get-function--original denote-directory-files-get-function)
+  (setq denote-file-has-backlinks-function--original denote-file-has-backlinks-function)
+  (setq denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function)
+  (setq denote-get-identifiers-function--original denote-get-identifiers-function)
+  (setq denote-get-keywords-function--original denote-get-keywords-function)
+  (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
+  (setq denote-get-signature-function--original denote-get-signature-function)
+  (setq denote-get-title-function--original denote-get-title-function)
+  (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
+  (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
+
+  (setq denote-directory-files-get-function #'denote-data-get-files)
+  (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only)
+  (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
+  (setq denote-get-identifiers-function #'denote-data-get-identifiers)
+  (setq denote-get-keywords-function #'denote-data-get-keywords)
+  (setq denote-get-path-by-id-function #'denote-data-get-path)
+  (setq denote-get-signature-function #'denote-data-get-signature)
+  (setq denote-get-title-function #'denote-data-get-title)
+  (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
+  (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
+
+  (add-hook 'after-save-hook #'denote-data-update)
+  (add-hook 'denote-new-note-functions #'denote-data-add-file)
+  (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
+  (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
+
+(defun denote-data-mode--disable ()
+  "Undo changes made by `denote-data-mode'."
+  (setq denote-directory-files-get-function denote-directory-files-get-function--original)
+  (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
+  (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
+  (setq denote-get-identifiers-function denote-get-identifiers-function--original)
+  (setq denote-get-keywords-function denote-get-keywords-function--original)
+  (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
+  (setq denote-get-signature-function denote-get-signature-function--original)
+  (setq denote-get-title-function denote-get-title-function--original)
+  (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
+  (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
+
+  (setq denote-data--write-all-called-p nil)
+  (denote-data-clear)
+  (remove-hook 'after-save-hook #'denote-data-update)
+  (remove-hook 'denote-new-note-functions #'denote-data-add-file)
+  (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
+  (remove-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
+
 ;;;###autoload
 (define-minor-mode denote-data-mode
-  "When enabled, store all Denote file data in `denote-data' and use it."
+  "When enabled, store all Denote file data in `denote-data' and use it.
+If `denote-data' fails to build, this mode is automatically disabled."
   :global t
   :init-value nil
   (denote-data--cancel-asynchronous)
   (if denote-data-mode
-      (progn
-        (denote-data--write-all-asynchronous)
-
-        (setq denote-directory-files-get-function--original denote-directory-files-get-function)
-        (setq denote-file-has-backlinks-function--original denote-file-has-backlinks-function)
-        (setq denote-get-backlinks-as-files-function--original denote-get-backlinks-as-files-function)
-        (setq denote-get-identifiers-function--original denote-get-identifiers-function)
-        (setq denote-get-keywords-function--original denote-get-keywords-function)
-        (setq denote-get-path-by-id-function--original denote-get-path-by-id-function)
-        (setq denote-get-signature-function--original denote-get-signature-function)
-        (setq denote-get-title-function--original denote-get-title-function)
-        (setq denote-infer-keywords-from-files-function--original denote-infer-keywords-from-files-function)
-        (setq denote-retrieve-xref-alist-for-backlinks-function--original denote-retrieve-xref-alist-for-backlinks-function)
-
-        (setq denote-directory-files-get-function #'denote-data-get-files)
-        (setq denote-file-has-backlinks-function #'denote-data-get-backlinks-files-only)
-        (setq denote-get-backlinks-as-files-function #'denote-data-get-backlinks-files-only)
-        (setq denote-get-identifiers-function #'denote-data-get-identifiers)
-        (setq denote-get-keywords-function #'denote-data-get-keywords)
-        (setq denote-get-path-by-id-function #'denote-data-get-path)
-        (setq denote-get-signature-function #'denote-data-get-signature)
-        (setq denote-get-title-function #'denote-data-get-title)
-        (setq denote-infer-keywords-from-files-function #'denote-data-get-keywords-all)
-        (setq denote-retrieve-xref-alist-for-backlinks-function #'denote-data-get-backlinks)
-
-        (add-hook 'after-save-hook #'denote-data-update)
-        (add-hook 'denote-new-note-functions #'denote-data-add-file)
-        (add-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
-        (add-hook 'denote-after-rename-functions #'denote-data-post-rename-update))
-    (setq denote-directory-files-get-function denote-directory-files-get-function--original)
-    (setq denote-file-has-backlinks-function denote-file-has-backlinks-function--original)
-    (setq denote-get-backlinks-as-files-function denote-get-backlinks-as-files-function--original)
-    (setq denote-get-identifiers-function denote-get-identifiers-function--original)
-    (setq denote-get-keywords-function denote-get-keywords-function--original)
-    (setq denote-get-path-by-id-function denote-get-path-by-id-function--original)
-    (setq denote-get-signature-function denote-get-signature-function--original)
-    (setq denote-get-title-function denote-get-title-function--original)
-    (setq denote-infer-keywords-from-files-function denote-infer-keywords-from-files-function--original)
-    (setq denote-retrieve-xref-alist-for-backlinks-function denote-retrieve-xref-alist-for-backlinks-function--original)
-
-    (setq denote-data--write-all-called-p nil)
-    (denote-data-clear)
-    (remove-hook 'after-save-hook #'denote-data-update)
-    (remove-hook 'denote-new-note-functions #'denote-data-add-file)
-    (remove-hook 'denote-link-file-no-exist-functions #'denote-data-remove-file)
-    (remove-hook 'denote-after-rename-functions #'denote-data-post-rename-update)))
+      (denote-data--write-all-asynchronous)
+    (denote-data-mode--disable)))
 
 (provide 'denote)
 ;;; denote.el ends here
