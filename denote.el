@@ -2222,9 +2222,10 @@ the functions `denote-keywords'."
 
 (defvar denote-infer-keywords-from-files-function #'denote-infer-keywords-from-files
   "Function to return keywords found in files for `denote-keywords'.
-The function is called with one argument, FILES-MATCHING-REGEXP, as
-noted in `denote-keywords'.  It can also respect the user option
-`denote-keywords-to-not-infer-regexp'.
+The function is called with one optional argument, the
+FILES-MATCHING-REGEXP, as noted in `denote-keywords'.  It can also
+respect the user option `denote-keywords-to-not-infer-regexp'.  It
+should return a list of keywords, as strings, or nil.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
