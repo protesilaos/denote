@@ -4433,6 +4433,13 @@ uses the same presentation of data in the minibuffer to stay in sync
 with Denote and make its feature set entirely optional ([[#h:8907f4bc-992a-45bc-a60e-267ed1ce9c2d][Use the ~consult-notes~ package]]).
 It also only works with Denote.
 
++ Package name (GNU ELPA): ~consult-denote~
++ Official manual: <https://protesilaos.com/emacs/consult-denote>
++ Change log: <https://protesilaos.com/emacs/consult-denote-changelog>
++ Git repository: <https://github.com/protesilaos/consult-denote>
++ Backronym: Consult-Orchestrated Navigation and Selection of
+  Unambiguous Targets...denote.
+
 ** Use the ~denote-sequence~ package to write sequence notes or "folgezettel"
 :PROPERTIES:
 :CUSTOM_ID: h:d5ca722d-e7fa-46fa-9a57-6363b1d4186f
