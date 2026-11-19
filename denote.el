@@ -1529,8 +1529,9 @@ then to other known file types."
 
 (defvar denote-get-path-by-id-function #'denote-get-path-by-id
   "Function to return file path corresponding to an identifier.
-The identifier is a string, as noted in the documentation of
-`denote-get-path-by-id'.
+The function is called with one argument, the identifier.  The
+identifier is a string, as noted in the documentation of
+`denote-get-path-by-id'.  It should return either nil or a file path.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
