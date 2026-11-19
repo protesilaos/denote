@@ -4409,6 +4409,25 @@ This is a list of packages that extend Denote. If you are a package
 author, please let us know about your work and we will include it
 here (either use the Git repositories or email Protesilaos directly).
 
+** Use the ~denote-data~ package to speed up certain operations
+:PROPERTIES:
+:CUSTOM_ID: h:1c62cd23-de76-43b9-bc7c-fd23c5adae05
+:END:
+
+[ This package is still in development and depends on the current
+  Denote devepoment version {{{development-version}}}. ]
+
+The ~denote-data~ package by me (Protesilaos) extends Denote to have
+an optional, in-memory cache ([[#h:175b3b5f-4490-4cb0-81d7-26652cf08e79][Abstractions for a cache or database]]).
+This makes it possible to maintain very large collections of files
+without noticing any performance penalty. It can also help with
+additional functionality that may be built on top, such as a graph
+view of all notes.
+
++ Package name (GNU ELPA): ~denote-data~ (⚠️ Coming soon!)
++ Git repository: <https://github.com/protesilaos/denote-data>
++ Backronym: DENOTE ... Data Assiduously Transferred Asynchronously.
+
 ** Use the ~consult-denote~ package for enhanced minibuffer interactions
 :PROPERTIES:
 :CUSTOM_ID: h:113a13e1-35da-46f1-9414-81e9be2facc1
