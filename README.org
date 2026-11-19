@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 4.2.0
-#+macro: release-date 2026-05-20
-#+macro: development-version 4.3.0-dev
+#+macro: stable-version 4.3.0
+#+macro: release-date 2026-11-19
+#+macro: development-version 4.4.0-dev
 #+export_file_name: denote.texi
 #+texinfo_filename: denote.info
 #+texinfo_dir_category: Emacs misc features
@@ -3421,8 +3421,6 @@ heading, like this:
 
 : [[*Heading text][Heading text]].
 
-[ The ~local~ option is part of {{{development-version}}}. ]
-
 However, if there already exists a =CUSTOM_ID= property for the
 current heading, this is always given priority and is used instead of
 the context or local heading.
@@ -3807,8 +3805,6 @@ command in the list ([[#h:11946562-7eb0-4925-a3b5-92d75f1f5895][Write your own c
 :PROPERTIES:
 :CUSTOM_ID: h:2442d6ef-e5d2-4d98-b3cb-93e0fb9db7f8
 :END:
-
-[ The user option ~denote-fancy-file-prompt~ is part of {{{development-version}}}. ]
 
 #+vindex: denote-fancy-file-prompt
 The user option ~denote-fancy-file-prompt~ specifies the user's
@@ -4414,8 +4410,7 @@ here (either use the Git repositories or email Protesilaos directly).
 :CUSTOM_ID: h:1c62cd23-de76-43b9-bc7c-fd23c5adae05
 :END:
 
-[ This package is still in development and depends on the current
-  Denote devepoment version {{{development-version}}}. ]
+[ This package is still in development. ]
 
 The ~denote-data~ package by me (Protesilaos) extends Denote to have
 an optional, in-memory cache ([[#h:175b3b5f-4490-4cb0-81d7-26652cf08e79][Abstractions for a cache or database]]).
@@ -5873,8 +5868,6 @@ The following sections cover the specifics.
 :CUSTOM_ID: h:175b3b5f-4490-4cb0-81d7-26652cf08e79
 :END:
 
-[ This is part of {{{development-version}}}. ]
-
 The following variables can be bound by other packages to change how
 Denote fetches the relevant data.
 
@@ -6345,8 +6338,7 @@ there will be no corresponding prompt.
   a file. With optional =NO-REQUIRE-MATCH= accept the given input
   as-is. Return the absolute path to the matching file. Present the
   completion candidates in accordance with the user option
-  ~denote-fancy-file-prompt~. [ The ~denote-fancy-file-prompt~ is part
-  of {{{development-version}}}. ]
+  ~denote-fancy-file-prompt~.
 
 #+findex: denote-keywords-prompt
 + Function ~denote-keywords-prompt~ :: Prompt for one or more keywords.

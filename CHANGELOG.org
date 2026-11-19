@@ -13,6 +13,207 @@ the manual: <https://protesilaos.com/emacs/denote>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+
+* Version 4.3.0 on 2026-11-19
+:PROPERTIES:
+:CUSTOM_ID: h:7eff9099-c35b-4a98-a36a-82d959e76141
+:END:
+
+This version introduces quality-of-life improvements as well as a
+series of abstractions that empower developers to change how Denote
+retrieves its data. Concretely, developers can write an optional cache
+or database for Denote.
+
+I am developing ~denote-data~, which is an in-memory cache. Its job is
+to make certain operations faster. The package is still in
+development, though I hope to have an initial release within the next
+weeks: <https://github.com/protesilaos/denote-data>.
+
+Once ~denote-data~ is ready, users will be able to experiment with
+another package that will be made public soon. That one will provide a
+much-requested feature. But I will write more about it when the time
+is right.
+
+** AI policy changes
+:PROPERTIES:
+:CUSTOM_ID: h:49015131-9c54-49df-9fb3-f5d784b0d4ca
+:END:
+
+I have added =AGENTS.md= and =CLAUDE.md= to denote.git. I copied those
+files from the emacs.git repository. They instruct AI agents to not
+write patches or comments for the Denote source code. Users can still
+use whatever program they want, though they are expected to prepare
+their own code or bug reports.
+
+I am doing this because Denote is legally part of Emacs: I have
+assigned copyright to the Free Software Foundation. The GNU project as
+a whole is waiting for legal advice on how to handle AI-generated
+contributions. I agree with the current GNU position and will adapt
+accordingly.
+
+In addition to that, I prefer to write even these release notes by
+hand even if nobody will read them. They give me an opportunity to
+review the entire package. I go through the commit logs and check back
+on the diffs. Then I know what is the state of the project and what
+may be done next.
+
+** Abstractions for a cache or a database
+:PROPERTIES:
+:CUSTOM_ID: h:3f073395-7df1-4b13-91c6-5740c8cb96c7
+:END:
+
+I have introduced several variables and hooks that allow developers to
+affect how Denote retrieves its data. Existing users will not notice
+any difference. This is relevant for those who plan to write relevant
+packages. Users will have to opt in to whatever new functionality.
+
+The manual describes all the technicalities:
+
+- Web page :: <https://protesilaos.com/emacs/denote#h:175b3b5f-4490-4cb0-81d7-26652cf08e79>.
+- Info node :: Evaluate =(info "(denote) Abstractions for a cache or database")=.
+
+I did this in response to issue 724 by kimsaram32, with participation
+from Aaron Jensen, relict007, Samuel W. Flint, mentalisttraceur,
+Mirko Hernandez: <https://github.com/protesilaos/denote/issues/724>.
+
+** Disable the "fancy" file prompt
+:PROPERTIES:
+:CUSTOM_ID: h:581707f9-f3fa-4116-bc45-31816700dfe0
+:END:
+
+By default, Denote's file prompt reformats file names. A Denote-style
+file name is split into columns so that its components are easier to
+read. Users who prefer to see the actual file names can now set the
+user option ~denote-fancy-file-prompt~ to a ~nil~ value.
+
+I did this in response to issue 732 by Honza Pokorný:
+<https://github.com/protesilaos/denote/issues/732>.
+
+Note that in addition to this user option advanced users can also
+change the relevant completion metadata. Check the variable
+~denote-file-prompt-extra-metadata~ and the functions mentioned
+therein.
+
+** Extra backslashes in query links now result in an error
+:PROPERTIES:
+:CUSTOM_ID: h:fbb27d1c-833a-4377-ab38-2512647fc831
+:END:
+
+Denote supports direct links to files as well as "query links". Those
+look like links but actually produce a buffer with files that match
+the given query for file contents or file names. Query links are
+documented at length in the manual. They are the functional equivalent
+of the commands ~denote-dired~ (search for file names and put them in
+a Dired buffer) and ~denote-grep~ (search for file contents and put
+them in an Xref buffer).
+
+Queries that have extra backslashes will now report an error. This can
+happen when users try their regular expression in something like =M-x
+re-builder= and then bring it into the query link. That is a common
+mistake with Emacs regular expressions in general (I do it as well):
+in Lisp programs we write double backslashes but in interactive calls
+we use single backslashes.
+
+I did this in response to issue 733 by hapst3r: <https://github.com/protesilaos/denote/issues/733>.
+I actually did it as part of a live stream, which you can watch if you are
+curious about the technicalities: <https://protesilaos.com/codelog/2026-10-30-emacs-live-denote-refinements/>.
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:6840165e-37ea-47be-9587-965d87e444fd
+:END:
+
+- I developed ~denote-data~ as part of denote.git because this made it
+  easier for testing purposes. This helped me write the necessary
+  abstractions. Now ~denote-data~ will become its own package as was
+  the plan from the beginning.
+
+- I made lots of minor refinements that improve the reliability of
+  relevant functions. I also introduce stylistic changes on occasion
+  in the interest of ensuring consistency throughout the code base.
+  This is the kind of boring yet essential work that makes it easier
+  to maintain the project long-term.
+
+- The variable ~denote-file-prompt-use-files-matching-regexp~ can be
+  ~let~ bound to affect the =FILES-MATCHING-REGEXP= value of the
+  ~denote-file-prompt~. There are many such "use" variables that help
+  users write simple wrappers around Denote functions. Thanks to
+  andsy10 for the contribution in pull request 735:
+  <https://github.com/protesilaos/denote/pull/735>. The change is
+  small, meaning that andsy10 does not need to assign copyright to the
+  Free Software Foundation.
+
+- I documented some of the packages that extend Denote. If you are a
+  package developer, please contact me and I will add your package to
+  the list---everybody is welcome! To this end, thanks to Matthieu
+  Muller for writing the section about the ~denote-paperless~ package
+  and Pavlo V. Lysov for writing about the ~denote-solo~ package.
+  Those were done in pull requests 711 and 713, respectively:
+
+  - <https://github.com/protesilaos/denote/pull/711>.
+  - <https://github.com/protesilaos/denote/pull/713>.
+
+- Fixed a crash in the ~denote-file-prompt~ that could happen with
+  some unexpected file names. Thanks to Marco Baringer for the
+  contribution in pull request 708: <https://github.com/protesilaos/denote/pull/708>.
+
+- Fixed an issue with a helper function that could under certain
+  conditions do the wrong thing for the command
+  ~denote-link-dired-marked-notes~. Thanks to João Sena for the
+  contribution. This was done in pull request 730:
+  <https://github.com/protesilaos/denote/pull/730>. No copyright
+  assignment is needed.
+
+- The user option ~denote-org-store-link-to-heading~ supports a new
+  =local= value, as a symbol. It produces links to headings like
+  =[[*Heading text][Heading text]]=. Thanks to Michael Korat for the
+  contribution in pull request 723: <https://github.com/protesilaos/denote/pull/723>.
+  No copyright assignment is needed.
+
+- Removed obsolete functions from the manual. Thanks to kimsaram32 for
+  the contribution in pull request 728: <https://github.com/protesilaos/denote/pull/728>.
+  No copyright assignment is needed.
+
+- The ~denote-date-prompt~ supports Unix timestamps. Thanks to Jeff
+  Valk for the original contribution in pull request 722:
+  <https://github.com/protesilaos/denote/pull/722>. No copyright
+  assignment is needed. Also thanks to Jean-Philippe Gagné Guay for
+  making a follow-up tweak to how this is handled internally. This was
+  done in pull request 726: <https://github.com/protesilaos/denote/pull/722>.
+  Jean-Philippe is a long-term contributor who has assigned copyright
+  to the Free Software Foundation.
+
+- The already comprehensive manual includes more useful information.
+  For example, on how to handle files with accented characters in
+  their title. To this end, we now have the function
+  ~denote-slug-remove-accents~. This is based on the code originally
+  written by Jean-Philippe Gagné Guay in issue 603:
+  <https://github.com/protesilaos/denote/issues/603#issuecomment-2869702877>.
+  I made stylistic changes to it to make it fit with the rest of
+  the code. I added it in response to issues 603 and 718:
+  
+  - <https://github.com/protesilaos/denote/issues/603> with participation from Davi Ramos and Jean-Philippe Gagné Guay;
+  - <https://github.com/protesilaos/denote/issues/718> with participation from o-rxw and Alan Schmitt.
+
+** Git commits
+:PROPERTIES:
+:CUSTOM_ID: h:be281d1e-f6c6-4467-a372-7fad8ff9f3ff
+:END:
+
+#+begin_src sh
+~/Git/Projects/denote $ git shortlog 4.2.0..4.3.0 --summary --numbered
+   214	Protesilaos
+     2	Marco Baringer
+     1	Jean-Philippe Gagné Guay
+     1	Jeff Valk
+     1	João Sena
+     1	Matthieu MULLER
+     1	Michael Korat
+     1	Pavlo V. Lysov
+     1	andsy10
+     1	kimsaram32
+#+end_src
+
 * Version 4.2.0 on 2026-05-20
 :PROPERTIES:
 :CUSTOM_ID: h:68f86f8a-928d-4a1e-b83c-62c648753965
