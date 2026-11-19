@@ -1395,6 +1395,9 @@ are not backups."
 
 (defvar denote-directory-files-get-function #'denote--directory-get-files
   "Function to return files for use in `denote-directory-files'.
+The function is called without arguments.  It should return a list of
+files as absolute paths.
+
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
 
