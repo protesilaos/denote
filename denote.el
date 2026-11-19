@@ -6417,6 +6417,8 @@ Place the buffer below the current window or wherever the user option
 (defvar denote-get-backlinks-as-files-function #'denote-get-backlinks
   "Function to return list of file paths linking to the current file.
 The function is called with one argument, the current file's identifier.
+It should return either nil or a list of files that contain links to the
+given identifier.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
