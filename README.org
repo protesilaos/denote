@@ -4400,7 +4400,7 @@ configuration:
   (savehist-mode 1))
 #+end_src
 
-* Packages that build on Denote
+* Packages that extend Denote
 :PROPERTIES:
 :CUSTOM_ID: h:08b14682-e73f-4b11-b2e2-be3b788c8572
 :END:
