@@ -3121,7 +3121,7 @@ If FILES is not given, use all text files as returned by
 
 (defvar denote-retrieve-xref-alist-for-backlinks-function #'denote-retrieve-xref-alist-for-backlinks
   "Function to return xref alist for `denote-make-backlinks-buffer'.
-The function is called with one argument, IDENTIFIER, as noted in
+The function is called with one argument, the IDENTIFIER, as noted in
 `denote-retrieve-xref-alist-for-backlinks'.
 
 Package developers can set this variable to a function that does what
