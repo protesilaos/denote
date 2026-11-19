@@ -3359,10 +3359,10 @@ It checks files in variable `denote-directory' and active buffer files."
 
 (defvar denote-get-identifiers-function #'denote-get-identifiers
   "Function to return all used identifiers.
-It is called without arguments and should return a hash-table where the
-identifier is the key and the value is ignored.  Note that the default
-function `denote-get-identifiers' also reads buffers that have not been
-saved, per `denote-get-buffer-file-names'.
+The function is called without arguments and should return a hash-table
+where the identifier is the key and the value is ignored.  Note that the
+default function `denote-get-identifiers' also reads buffers that have
+not been saved, per `denote-get-buffer-file-names'.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
