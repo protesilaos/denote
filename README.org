@@ -4394,12 +4394,10 @@ The built-in =savehist= library saves minibuffer histories.  Sample
 configuration:
 
 #+begin_src emacs-lisp
-(require 'savehist)
-(setq savehist-file (locate-user-emacs-file "savehist"))
-(setq history-length 500)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history t)
-(add-hook 'after-init-hook #'savehist-mode)
+(use-package savehist
+  :ensure nil
+  :config
+  (savehist-mode 1))
 #+end_src
 
 * Packages that build on Denote
