@@ -7279,6 +7279,9 @@ Add an .html extension if PATH is an Org file."
        (concat (file-name-sans-extension path) ".html")
      path)))
 
+;; TODO 2026-11-17: It seems that `org-link-parameters' has changed
+;; its documentation about the :export, so double-check.
+
 ;;;###autoload
 (defun denote-link-ol-export (link description format)
   "Export a `denote:' link from Org files.
