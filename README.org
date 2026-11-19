@@ -5849,6 +5849,76 @@ might change them without further notice.
 
 The following sections cover the specifics.
 
+** Abstractions for a cache or database
+:PROPERTIES:
+:CUSTOM_ID: h:175b3b5f-4490-4cb0-81d7-26652cf08e79
+:END:
+
+[ This is part of {{{development-version}}}. ]
+
+The following variables can be bound by other packages to change how
+Denote fetches the relevant data.
+
+- ~denote-directory-files-get-function~ :: Function to return files
+  for use in ~denote-directory-files~. The function is called without
+  arguments. It should return a list of files as absolute paths.
+- ~denote-file-has-backlinks-function~ :: Function to test if a file
+  has backlinks. The function is called with one argument, the file
+  path, and should return either ~nil~ or non-~nil~.
+- ~denote-get-backlinks-as-files-function~ :: Function to return list
+  of file paths linking to the current file. The function is called
+  with one argument, the current file's identifier. It should return
+  either ~nil~ or a list of files that contain links to the given
+  identifier.
+- ~denote-get-identifiers-function~ :: Function to return all used
+  identifiers. The function is called without arguments and should
+  return a hash-table where the identifier is the key and the value is
+  ignored. Note that the default function ~denote-get-identifiers~
+  also reads buffers that have not been saved, per
+  ~denote-get-buffer-file-names~.
+- ~denote-get-keywords-function~ :: Function to return the Denote file
+  keywords. The function is called with one argument, the file path,
+  and should return the keywords as a list of strings or ~nil~.
+- ~denote-get-path-by-id-function~ :: Function to return file path
+  corresponding to an identifier. The function is called with one
+  argument, the identifier. The identifier is a string, as noted in
+  the documentation of ~denote-get-path-by-id~. It should return
+  either ~nil~ or a file path.
+- ~denote-get-signature-function~ :: Function to return the Denote
+  file signature. The function is called with one argument, the file
+  path, and should return the signature as a string or ~nil~.
+- ~denote-get-title-function~ :: Function to return the Denote file
+  title. The function is called with one argument, the file path, and
+  should return the title as a string or ~nil~.
+- ~denote-infer-keywords-from-files-function~ :: Function to return
+  keywords found in files for ~denote-keywords~. The function is
+  called with one optional argument, the =FILES-MATCHING-REGEXP=, as
+  noted in ~denote-keywords~. It can also respect the user option
+  ~denote-keywords-to-not-infer-regexp~. It should return a list of
+  keywords, as strings, or ~nil~.
+- ~denote-retrieve-xref-alist-for-backlinks-function~ :: Function to
+  return xref alist for ~denote-make-backlinks-buffer~. The function
+  is called with one argument, the =IDENTIFIER=, as noted in
+  ~denote-retrieve-xref-alist-for-backlinks~.
+
+In addition, the following hooks may be relevant:
+
+- ~after-save-hook~ :: The regular Emacs hook called after saving a
+  file. Any function added here should check that it is working only
+  in the ~denote-directory~ or something to that effect so as to not
+  influence the behaviour of Emacs across all buffers.
+- ~denote-new-note-functions~ :: Abnormal hook called by the ~denote~
+  function. Each function is called with the following arguments:
+  =IDENTIFIER=, =SIGNATURE=, =TITLE=, =KEYWORDS=, =NOTE-PATH=.
+- ~denote-link-file-no-exist-functions~ :: Abnormal hook called from
+  ~denote-link~. It is called when ~denote-link~ tried to link to a
+  file that fails ~file-exist-p~. Functions are called with one
+  argument, the file path, as a string.
+- ~denote-after-rename-functions~ :: Abnormal hook for
+  ~denote--rename-file~. Each function is called with the following
+  arguments: =OLD-IDENTIFIER=, =IDENTIFIER=, =TITLE=, =KEYWORDS=,
+  =SIGNATURE=, =NEW-NAME= (the path).
+
 ** Common building blocks for developers or advanced users
 :PROPERTIES:
 :CUSTOM_ID: h:c98aed45-341a-40a0-91ce-347a29c98ab4
