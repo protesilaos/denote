@@ -1569,7 +1569,7 @@ there.")
 (defvar denote-get-title-function #'denote-retrieve-filename-title
   "Function to return the Denote file title.
 The function is called with one argument, the file path, and should
-return the title as a string.
+return the title as a string or nil.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
