@@ -4529,7 +4529,7 @@ IDENTIFIER, TITLE, KEYWORDS, SIGNATURE, NEW-NAME (the path).")
 (defvar denote-file-has-backlinks-function #'denote-file-has-backlinks-p
   "Function to test if a file has backlinks.
 The function is called with one argument, the file path, and should
-return either nil or nil-nil.
+return either nil or non-nil.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
