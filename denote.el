@@ -5,7 +5,7 @@
 ;; Author: Protesilaos <info@protesilaos.com>
 ;; Maintainer: Protesilaos <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/denote
-;; Version: 4.3.0
+;; Version: 4.3.1
 ;; Package-Requires: ((emacs "28.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -1585,7 +1585,7 @@ they need, such as to read from a cache or database.")
 (defvar denote-get-keywords-function #'denote-retrieve-filename-keywords
   "Function to return the Denote file keywords.
 The function is called with one argument, the file path, and should
-return the keywords as a list of strings or nil.
+return the keywords as a single strings or nil.
 
 Package developers can set this variable to a function that does what
 they need, such as to read from a cache or database.")
